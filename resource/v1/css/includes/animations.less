@@ -1,0 +1,697 @@
+*
+{
+	margin: 0;
+	padding: 0;
+	-webkit-transition: all .2s linear;
+	-moz-transition: all .2s linear;
+	-o-transition: all .2s linear;
+	transition: all .2s linear;
+}
+
+.clear
+{
+	clear: both;
+	line-height: 0;
+}
+
+body
+{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #6B6B6B;
+	background: #000;
+	overflow: hidden;
+}
+
+a:link { color: #ff670f; text-decoration: none; }
+a:visited { color: #ff670f; text-decoration: none; }
+a:hover { color: #121212; text-decoration: none; }
+
+.header
+{
+	padding:3px 10px;
+	font-size:16px;
+	color:#FFFFFF;
+}
+
+.header a { color:#fff; }
+
+h1, h2 { position:relative; font-weight: normal; text-align:center; color:#fff; }
+h1 { font-size: 5em; z-index:9999; padding:10px 0; }
+h2 { font-family: Georgia; font-style: italic; font-size: 16px; color: #787878; }
+
+#browser_support
+{
+	text-align: center;
+	font-size: 14px;
+	z-index: 9999;
+}
+
+.container
+{
+	position: absolute;
+	width: 100%;
+	height: 80%;
+	bottom: 0;
+}
+
+.block
+{
+	position: absolute;
+	bottom: 0;
+	width: 2%;
+	text-indent: -9999px;
+}
+
+/*------- Background Colors --------*/
+.pink
+{
+	background: rgb(251,131,250); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(251,131,250,1) 0%, rgba(198,3,201,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(251,131,250,1)), color-stop(100%,rgba(198,3,201,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(251,131,250,1) 0%,rgba(198,3,201,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(251,131,250,1) 0%,rgba(198,3,201,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(251,131,250,1) 0%,rgba(198,3,201,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(251,131,250,1) 0%,rgba(198,3,201,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fb83fa', endColorstr='#c603c9',GradientType=0 ); /* IE6-9 */
+}
+
+.blue
+{
+	background: rgb(84,146,255); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(84,146,255,1) 0%, rgba(10,17,193,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(84,146,255,1)), color-stop(100%,rgba(10,17,193,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(84,146,255,1) 0%,rgba(10,17,193,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(84,146,255,1) 0%,rgba(10,17,193,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(84,146,255,1) 0%,rgba(10,17,193,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(84,146,255,1) 0%,rgba(10,17,193,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5492ff', endColorstr='#0a11c1',GradientType=0 ); /* IE6-9 */
+}
+
+.cyan
+{
+	background: rgb(160,255,240); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(160,255,240,1) 1%, rgba(8,203,186,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(160,255,240,1)), color-stop(100%,rgba(8,203,186,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(160,255,240,1) 1%,rgba(8,203,186,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(160,255,240,1) 1%,rgba(8,203,186,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(160,255,240,1) 1%,rgba(8,203,186,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(160,255,240,1) 1%,rgba(8,203,186,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a0fff0', endColorstr='#08cbba',GradientType=0 ); /* IE6-9 */
+
+}
+
+.green
+{
+	background: rgb(172,255,145); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(172,255,145,1) 1%, rgba(43,216,26,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(172,255,145,1)), color-stop(100%,rgba(43,216,26,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(172,255,145,1) 1%,rgba(43,216,26,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(172,255,145,1) 1%,rgba(43,216,26,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(172,255,145,1) 1%,rgba(43,216,26,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(172,255,145,1) 1%,rgba(43,216,26,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#acff91', endColorstr='#2bd81a',GradientType=0 ); /* IE6-9 */
+}
+
+.yellow
+{
+	background: rgb(255,251,137); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(255,251,137,1) 0%, rgba(222,217,33,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,251,137,1)), color-stop(100%,rgba(222,217,33,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,251,137,1) 0%,rgba(222,217,33,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,251,137,1) 0%,rgba(222,217,33,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,251,137,1) 0%,rgba(222,217,33,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,251,137,1) 0%,rgba(222,217,33,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fffb89', endColorstr='#ded921',GradientType=0 ); /* IE6-9 */
+}
+
+.orange
+{
+	background: rgb(255,160,117); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(255,160,117,1) 0%, rgba(229,92,24,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,160,117,1)), color-stop(100%,rgba(229,92,24,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,160,117,1) 0%,rgba(229,92,24,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,160,117,1) 0%,rgba(229,92,24,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,160,117,1) 0%,rgba(229,92,24,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,160,117,1) 0%,rgba(229,92,24,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffa075', endColorstr='#e55c18',GradientType=0 ); /* IE6-9 */
+}
+
+.red
+{
+	background: rgb(255,79,81); /* Old browsers */
+	background: -moz-linear-gradient(top,  rgba(255,79,81,1) 0%, rgba(229,0,3,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,79,81,1)), color-stop(100%,rgba(229,0,3,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,79,81,1) 0%,rgba(229,0,3,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,79,81,1) 0%,rgba(229,0,3,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,79,81,1) 0%,rgba(229,0,3,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,79,81,1) 0%,rgba(229,0,3,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff4f51', endColorstr='#e50003',GradientType=0 ); /* IE6-9 */
+}
+
+
+/*------- BLOCKS -------*/
+#block1
+{
+	left: 0;
+	-webkit-animation: movingblock1 .9s infinite alternate both;
+	-moz-animation: movingblock1 .9s infinite alternate both;
+	animation: movingblock1 .9s infinite alternate both;
+}
+
+#block2
+{
+	left: 2.5%;
+	-webkit-animation: movingblock2 1.1s infinite alternate both;
+	-moz-animation: movingblock2 1.1s infinite alternate both;
+	animation: movingblock2 1.1s infinite alternate both;
+}
+
+#block3
+{
+	left: 5%;
+	-webkit-animation: movingblock3 .8s infinite alternate both;
+	-moz-animation: movingblock3 .8s infinite alternate both;
+	animation: movingblock3 .8s infinite alternate both;
+}
+
+#block4
+{
+	left: 7.5%;
+	-webkit-animation: movingblock4 1.5s infinite alternate both;
+	-moz-animation: movingblock4 1.5s infinite alternate both;
+	animation: movingblock4 1.5s infinite alternate both;
+}
+
+#block5
+{
+	left: 10%;
+	-webkit-animation: movingblock5 2s infinite alternate both;
+	-moz-animation: movingblock5 2s infinite alternate both;
+	animation: movingblock5 2s infinite alternate both;
+}
+
+#block6
+{
+	left: 12.5%;
+	-webkit-animation: movingblock6 1.5s infinite alternate both;
+	-moz-animation: movingblock6 1.5s infinite alternate both;
+	animation: movingblock6 1.5s infinite alternate both;
+}
+
+#block7
+{
+	left: 15%;
+	-webkit-animation: movingblock7 1.8s infinite alternate both;
+	-moz-animation: movingblock7 1.8s infinite alternate both;
+	animation: movingblock7 1.8s infinite alternate both;
+}
+
+#block8
+{
+	left: 17.5%;
+	-webkit-animation: movingblock8 2.2s infinite alternate both;
+	-moz-animation: movingblock8 2.2s infinite alternate both;
+	animation: movingblock8 2.2s infinite alternate both;
+}
+
+#block9
+{
+	left: 20%;
+	-webkit-animation: movingblock9 1.3s infinite alternate both;
+	-moz-animation: movingblock9 1.3s infinite alternate both;
+	animation: movingblock9 1.3s infinite alternate both;
+}
+
+#block10
+{
+	left: 22.5%;
+	-webkit-animation: movingblock10 1.5s infinite alternate both;
+	-moz-animation: movingblock10 1.5s infinite alternate both;
+	animation: movingblock10 1.5s infinite alternate both;
+}
+
+#block11
+{
+	left: 25%;
+	-webkit-animation: movingblock11 2s infinite alternate both;
+	-moz-animation: movingblock11 2s infinite alternate both;
+	animation: movingblock11 2s infinite alternate both;
+}
+
+#block12
+{
+	left: 27.5%;
+	-webkit-animation: movingblock12 1.8s infinite alternate both;
+	-moz-animation: movingblock12 1.8s infinite alternate both;
+	animation: movingblock12 1.8s infinite alternate both;
+}
+
+#block13
+{
+	left: 30%;
+	-webkit-animation: movingblock13 1.5s infinite alternate both;
+	-moz-animation: movingblock13 1.5s infinite alternate both;
+	animation: movingblock13 1.5s infinite alternate both;
+}
+
+#block14
+{
+	left: 32.5%;
+	-webkit-animation: movingblock14 1.5s infinite alternate both;
+	-moz-animation: movingblock14 1.5s infinite alternate both;
+	animation: movingblock14 1.5s infinite alternate both;
+}
+
+#block15
+{
+	left: 35%;
+	-webkit-animation: movingblock15 2s infinite alternate both;
+	-moz-animation: movingblock15 2s infinite alternate both;
+	animation: movingblock15 2s infinite alternate both;
+}
+
+#block16
+{
+	left: 37.5%;
+	-webkit-animation: movingblock16 1.7s infinite alternate both;
+	-moz-animation: movingblock16 1.7s infinite alternate both;
+	animation: movingblock16 1.7s infinite alternate both;
+}
+
+#block17
+{
+	left: 40%;
+	-webkit-animation: movingblock17 1.9s infinite alternate both;
+	-moz-animation: movingblock17 1.9s infinite alternate both;
+	animation: movingblock17 1.9s infinite alternate both;
+}
+
+#block18
+{
+	left: 42.5%;
+	-webkit-animation: movingblock18 2.1s infinite alternate both;
+	-moz-animation: movingblock18 2.1s infinite alternate both;
+	animation: movingblock18 2.1s infinite alternate both;
+}
+
+#block19
+{
+	left: 45%;
+	-webkit-animation: movingblock19 2.2s infinite alternate both;
+	-moz-animation: movingblock19 2.2s infinite alternate both;
+	animation: movingblock19 2.2s infinite alternate both;
+}
+
+#block20
+{
+	left: 47.5%;
+	-webkit-animation: movingblock20 1.8s infinite alternate both;
+	-moz-animation: movingblock20 1.8s infinite alternate both;
+	animation: movingblock20 1.8s infinite alternate both;
+}
+
+#block21
+{
+	left: 50%;
+	-webkit-animation: movingblock21 1.8s infinite alternate both;
+	-moz-animation: movingblock21 1.8s infinite alternate both;
+	animation: movingblock21 1.8s infinite alternate both;
+}
+
+#block22
+{
+	left: 52.5%;
+	-webkit-animation: movingblock22 1.5s infinite alternate both;
+	-moz-animation: movingblock22 1.5s infinite alternate both;
+	animation: movingblock22 1.5s infinite alternate both;
+}
+
+#block23
+{
+	left: 55%;
+	-webkit-animation: movingblock23 1.3s infinite alternate both;
+	-moz-animation: movingblock23 1.3s infinite alternate both;
+	animation: movingblock23 1.3s infinite alternate both;
+}
+
+#block24
+{
+	left: 57.5%;
+	-webkit-animation: movingblock23 1.6s infinite alternate both;
+	-moz-animation: movingblock23 1.6s infinite alternate both;
+	animation: movingblock23 1.6s infinite alternate both;
+}
+
+#block25
+{
+	left: 60%;
+	-webkit-animation: movingblock25 1.4s infinite alternate both;
+	-moz-animation: movingblock25 1.4s infinite alternate both;
+	animation: movingblock25 1.4s infinite alternate both;
+}
+
+#block26
+{
+	left: 62.5%;
+	-webkit-animation: movingblock26 1.8s infinite alternate both;
+	-moz-animation: movingblock26 1.8s infinite alternate both;
+	animation: movingblock26 1.8s infinite alternate both;
+}
+
+#block27
+{
+	left: 65%;
+	-webkit-animation: movingblock27 1.5s infinite alternate both;
+	-moz-animation: movingblock27 1.5s infinite alternate both;
+	animation: movingblock27 1.5s infinite alternate both;
+}
+
+#block28
+{
+	left: 67.5%;
+	-webkit-animation: movingblock28 1.8s infinite alternate both;
+	-moz-animation: movingblock28 1.8s infinite alternate both;
+	animation: movingblock28 1.8s infinite alternate both;
+}
+
+#block29
+{
+	left: 70%;
+	-webkit-animation: movingblock29 1.5s infinite alternate both;
+	-moz-animation: movingblock29 1.5s infinite alternate both;
+	animation: movingblock29 1.5s infinite alternate both;
+}
+
+#block30
+{
+	left: 72.5%;
+	-webkit-animation: movingblock30 1.4s infinite alternate both;
+	-moz-animation: movingblock30 1.4s infinite alternate both;
+	animation: movingblock30 1.4s infinite alternate both;
+}
+
+#block31
+{
+	left: 75%;
+	-webkit-animation: movingblock31 1.6s infinite alternate both;
+	-moz-animation: movingblock31 1.6s infinite alternate both;
+	animation: movingblock31 1.6s infinite alternate both;
+}
+
+#block32
+{
+	left: 77.5%;
+	-webkit-animation: movingblock32 1.8s infinite alternate both;
+	-moz-animation: movingblock32 1.8s infinite alternate both;
+	animation: movingblock32 1.8s infinite alternate both;
+}
+
+#block33
+{
+	left: 80%;
+	-webkit-animation: movingblock33 1.8s infinite alternate both;
+	-moz-animation: movingblock33 1.8s infinite alternate both;
+	animation: movingblock33 1.8s infinite alternate both;
+}
+
+#block34
+{
+	left: 82.5%;
+	-webkit-animation: movingblock34 1.8s infinite alternate both;
+	-moz-animation: movingblock34 1.8s infinite alternate both;
+	animation: movingblock34 1.8s infinite alternate both;
+}
+
+#block35
+{
+	left: 85%;
+	-webkit-animation: movingblock35 1.4s infinite alternate both;
+	-moz-animation: movingblock35 1.4s infinite alternate both;
+	animation: movingblock35 1.4s infinite alternate both;
+}
+
+#block36
+{
+	left: 87.5%;
+	-webkit-animation: movingblock36 1.6s infinite alternate both;
+	-moz-animation: movingblock36 1.6s infinite alternate both;
+	animation: movingblock36 1.6s infinite alternate both;
+}
+
+#block37
+{
+	left: 90%;
+	-webkit-animation: movingblock37 1.5s infinite alternate both;
+	-moz-animation: movingblock37 1.5s infinite alternate both;
+	animation: movingblock37 1.5s infinite alternate both;
+}
+
+#block38
+{
+	left: 92.5%;
+	-webkit-animation: movingblock38 .8s infinite alternate both;
+	-moz-animation: movingblock38 .8s infinite alternate both;
+	animation: movingblock38 .8s infinite alternate both;
+}
+
+#block39
+{
+	left: 95%;
+	-webkit-animation: movingblock39 1.4s infinite alternate both;
+	-moz-animation: movingblock39 1.4s infinite alternate both;
+	animation: movingblock39 1.4s infinite alternate both;
+}
+
+#block40
+{
+	left: 97.5%;
+	-webkit-animation: movingblock40 1.3s infinite alternate both;
+	-moz-animation: movingblock40 1.3s infinite alternate both;
+	animation: movingblock40 1.3s infinite alternate both;
+}
+
+
+/*----------- BLOCKS ANIMATIONS -----------*/
+/* Moving Block 1 */
+@-webkit-keyframes movingblock1{ 0%{height:20%;} 25%{height:30%;} 50%{height:12%;} 75%{height:25%;} 100%{height:30%;} }
+@-moz-keyframes movingblock1{ 0%{height:20%;} 25%{height:30%;} 50%{height:12%;} 75%{height:25%;} 100%{height:30%;} }
+@keyframes movingblock1{ 0%{height:20%;} 25%{height:30%;} 50%{height:12%;} 75%{height:25%;} 100%{height:30%;} }
+
+/* Moving Block 2 */
+@-webkit-keyframes movingblock2{ 0%{height:10%;} 25%{height:28%;} 50%{height:34%;} 75%{height:23%;} 100%{height:40%;} }
+@-moz-keyframes movingblock2{ 0%{height:10%;} 25%{height:28%;} 50%{height:34%;} 75%{height:23%;} 100%{height:40%;} }
+@keyframes movingblock2{ 0%{height:10%;} 25%{height:28%;} 50%{height:34%;} 75%{height:23%;} 100%{height:40%;} }
+
+/* Moving Block 3 */
+@-webkit-keyframes movingblock3{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+@-moz-keyframes movingblock3{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+@keyframes movingblock3{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+
+/* Moving Block 4 */
+@-webkit-keyframes movingblock4{ 0%{height:20%;} 25%{height:42%;} 50%{height:23%;} 75%{height:12%;} 100%{height:31%;} }
+@-moz-keyframes movingblock4{ 0%{height:20%;} 25%{height:42%;} 50%{height:23%;} 75%{height:12%;} 100%{height:31%;} }
+@keyframes movingblock4{ 0%{height:20%;} 25%{height:42%;} 50%{height:23%;} 75%{height:12%;} 100%{height:31%;} }
+
+/* Moving Block 5 */
+@-webkit-keyframes movingblock5{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+@-moz-keyframes movingblock5{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+@keyframes movingblock5{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+
+/* Moving Block 6 */
+@-webkit-keyframes movingblock6{ 0%{height:9%;} 25%{height:25%;} 50%{height:32%;} 75%{height:42%;} 100%{height:30%;} }
+@-moz-keyframes movingblock6{ 0%{height:9%;} 25%{height:25%;} 50%{height:32%;} 75%{height:42%;} 100%{height:30%;} }
+@keyframes movingblock6{ 0%{height:9%;} 25%{height:25%;} 50%{height:32%;} 75%{height:42%;} 100%{height:30%;} }
+
+/* Moving Block 7 */
+@-webkit-keyframes movingblock7{ 0%{height:23%;} 25%{height:12%;} 50%{height:36%;} 75%{height:52%;} 100%{height:24%;} }
+@-moz-keyframes movingblock7{ 0%{height:23%;} 25%{height:12%;} 50%{height:36%;} 75%{height:52%;} 100%{height:24%;} }
+@keyframes movingblock7{ 0%{height:23%;} 25%{height:12%;} 50%{height:36%;} 75%{height:52%;} 100%{height:24%;} }
+
+/* Moving Block 8 */
+@-webkit-keyframes movingblock8{ 0%{height:16%;} 25%{height:6%;} 50%{height:26%;} 75%{height:34%;} 100%{height:41%;} }
+@-moz-keyframes movingblock8{ 0%{height:16%;} 25%{height:6%;} 50%{height:26%;} 75%{height:34%;} 100%{height:41%;} }
+@keyframes movingblock8{ 0%{height:16%;} 25%{height:6%;} 50%{height:26%;} 75%{height:34%;} 100%{height:41%;} }
+
+/* Moving Block 9 */
+@-webkit-keyframes movingblock9{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+@-moz-keyframes movingblock9{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+@keyframes movingblock9{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+
+/* Moving Block 10 */
+@-webkit-keyframes movingblock10{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+@-moz-keyframes movingblock10{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+@keyframes movingblock10{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+
+/* Moving Block 11 */
+@-webkit-keyframes movingblock11{ 0%{height:32%;} 25%{height:18%;} 50%{height:40%;} 75%{height:32%;} 100%{height:49%;} }
+@-moz-keyframes movingblock11{ 0%{height:32%;} 25%{height:18%;} 50%{height:40%;} 75%{height:32%;} 100%{height:49%;} }
+@keyframes movingblock11{ 0%{height:32%;} 25%{height:18%;} 50%{height:40%;} 75%{height:32%;} 100%{height:49%;} }
+
+/* Moving Block 12 */
+@-webkit-keyframes movingblock12{ 0%{height:9%;} 25%{height:19%;} 50%{height:27%;} 75%{height:18%;} 100%{height:32%;} }
+@-moz-keyframes movingblock12{ 0%{height:9%;} 25%{height:19%;} 50%{height:27%;} 75%{height:18%;} 100%{height:32%;} }
+@keyframes movingblock12{ 0%{height:9%;} 25%{height:19%;} 50%{height:27%;} 75%{height:18%;} 100%{height:32%;} }
+
+/* Moving Block 13 */
+@-webkit-keyframes movingblock13{ 0%{height:18%;} 25%{height:35%;} 50%{height:42%;} 75%{height:28%;} 100%{height:34%;} }
+@-moz-keyframes movingblock13{ 0%{height:18%;} 25%{height:35%;} 50%{height:42%;} 75%{height:28%;} 100%{height:34%;} }
+@keyframes movingblock13{ 0%{height:18%;} 25%{height:35%;} 50%{height:42%;} 75%{height:28%;} 100%{height:34%;} }
+
+/* Moving Block 14 */
+@-webkit-keyframes movingblock14{ 0%{height:48%;} 25%{height:60%;} 50%{height:82%;} 75%{height:68%;} 100%{height:90%;} }
+@-moz-keyframes movingblock14{ 0%{height:48%;} 25%{height:60%;} 50%{height:82%;} 75%{height:68%;} 100%{height:90%;} }
+@keyframes movingblock14{ 0%{height:48%;} 25%{height:60%;} 50%{height:82%;} 75%{height:68%;} 100%{height:90%;} }
+
+/* Moving Block 15 */
+@-webkit-keyframes movingblock15{ 0%{height:32%;} 25%{height:80%;} 50%{height:56%;} 75%{height:100%;} 100%{height:84%;} }
+@-moz-keyframes movingblock15{ 0%{height:32%;} 25%{height:80%;} 50%{height:56%;} 75%{height:100%;} 100%{height:84%;} }
+@keyframes movingblock15{ 0%{height:32%;} 25%{height:80%;} 50%{height:56%;} 75%{height:100%;} 100%{height:84%;} }
+
+/* Moving Block 16 */
+@-webkit-keyframes movingblock16{ 0%{height:20%;} 25%{height:58%;} 50%{height:90%;} 75%{height:74%;} 100%{height:53%;} }
+@-moz-keyframes movingblock16{ 0%{height:20%;} 25%{height:58%;} 50%{height:90%;} 75%{height:74%;} 100%{height:53%;} }
+@keyframes movingblock16{ 0%{height:20%;} 25%{height:58%;} 50%{height:90%;} 75%{height:74%;} 100%{height:53%;} }
+
+/* Moving Block 17 */
+@-webkit-keyframes movingblock17{ 0%{height:34%;} 25%{height:69%;} 50%{height:100%;} 75%{height:82%;} 100%{height:41%;} }
+@-moz-keyframes movingblock17{ 0%{height:34%;} 25%{height:69%;} 50%{height:100%;} 75%{height:82%;} 100%{height:41%;} }
+@keyframes movingblock17{ 0%{height:34%;} 25%{height:69%;} 50%{height:100%;} 75%{height:82%;} 100%{height:41%;} }
+
+/* Moving Block 18 */
+@-webkit-keyframes movingblock18{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+@-moz-keyframes movingblock18{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+@keyframes movingblock18{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+
+/* Moving Block 19 */
+@-webkit-keyframes movingblock19{ 0%{height:100%;} 25%{height:82%;} 50%{height:66%;} 75%{height:100%;} 100%{height:92%;} }
+@-moz-keyframes movingblock19{ 0%{height:100%;} 25%{height:82%;} 50%{height:66%;} 75%{height:100%;} 100%{height:92%;} }
+@keyframes movingblock19{ 0%{height:100%;} 25%{height:82%;} 50%{height:66%;} 75%{height:100%;} 100%{height:92%;} }
+
+/* Moving Block 20 */
+@-webkit-keyframes movingblock20{ 0%{height:92%;} 25%{height:55%;} 50%{height:80%;} 75%{height:66%;} 100%{height:81%;} }
+@-moz-keyframes movingblock20{ 0%{height:92%;} 25%{height:55%;} 50%{height:80%;} 75%{height:66%;} 100%{height:81%;} }
+@keyframes movingblock20{ 0%{height:92%;} 25%{height:55%;} 50%{height:80%;} 75%{height:66%;} 100%{height:81%;} }
+
+/* Moving Block 21 */
+@-webkit-keyframes movingblock21{ 0%{height:56%;} 25%{height:84%;} 50%{height:24%;} 75%{height:78%;} 100%{height:92%;} }
+@-moz-keyframes movingblock21{ 0%{height:56%;} 25%{height:84%;} 50%{height:24%;} 75%{height:78%;} 100%{height:92%;} }
+@keyframes movingblock21{ 0%{height:56%;} 25%{height:84%;} 50%{height:24%;} 75%{height:78%;} 100%{height:92%;} }
+
+/* Moving Block 22 */
+@-webkit-keyframes movingblock22{ 0%{height:48%;} 25%{height:69%;} 50%{height:80%;} 75%{height:32%;} 100%{height:89%;} }
+@-moz-keyframes movingblock22{ 0%{height:48%;} 25%{height:69%;} 50%{height:80%;} 75%{height:32%;} 100%{height:89%;} }
+@keyframes movingblock22{ 0%{height:48%;} 25%{height:69%;} 50%{height:80%;} 75%{height:32%;} 100%{height:89%;} }
+
+/* Moving Block 23 */
+@-webkit-keyframes movingblock23{ 0%{height:92%;} 25%{height:75%;} 50%{height:98%;} 75%{height:66%;} 100%{height:81%;} }
+@-moz-keyframes movingblock23{ 0%{height:92%;} 25%{height:75%;} 50%{height:98%;} 75%{height:66%;} 100%{height:81%;} }
+@keyframes movingblock23{ 0%{height:92%;} 25%{height:75%;} 50%{height:98%;} 75%{height:66%;} 100%{height:81%;} }
+
+/* Moving Block 24 */
+@-webkit-keyframes movingblock24{ 0%{height:49%;} 25%{height:82%;} 50%{height:67%;} 75%{height:52%;} 100%{height:71%;} }
+@-moz-keyframes movingblock24{ 0%{height:49%;} 25%{height:82%;} 50%{height:67%;} 75%{height:52%;} 100%{height:71%;} }
+@keyframes movingblock24{ 0%{height:49%;} 25%{height:82%;} 50%{height:67%;} 75%{height:52%;} 100%{height:71%;} }
+
+/* Moving Block 25 */
+@-webkit-keyframes movingblock25{ 0%{height:66%;} 25%{height:89%;} 50%{height:45%;} 75%{height:59%;} 100%{height:81%;} }
+@-moz-keyframes movingblock25{ 0%{height:66%;} 25%{height:89%;} 50%{height:45%;} 75%{height:59%;} 100%{height:81%;} }
+@keyframes movingblock25{ 0%{height:66%;} 25%{height:89%;} 50%{height:45%;} 75%{height:59%;} 100%{height:81%;} }
+
+/* Moving Block 26 */
+@-webkit-keyframes movingblock26{ 0%{height:16%;} 25%{height:56%;} 50%{height:35%;} 75%{height:66%;} 100%{height:91%;} }
+@-moz-keyframes movingblock26{ 0%{height:16%;} 25%{height:56%;} 50%{height:35%;} 75%{height:66%;} 100%{height:91%;} }
+@keyframes movingblock26{ 0%{height:16%;} 25%{height:56%;} 50%{height:35%;} 75%{height:66%;} 100%{height:91%;} }
+
+/* Moving Block 27 */
+@-webkit-keyframes movingblock27{ 0%{height:56%;} 25%{height:73%;} 50%{height:23%;} 75%{height:38%;} 100%{height:57%;} }
+@-moz-keyframes movingblock27{ 0%{height:56%;} 25%{height:73%;} 50%{height:23%;} 75%{height:38%;} 100%{height:57%;} }
+@keyframes movingblock27{ 0%{height:56%;} 25%{height:73%;} 50%{height:23%;} 75%{height:38%;} 100%{height:57%;} }
+
+/* Moving Block 28 */
+@-webkit-keyframes movingblock28{ 0%{height:95%;} 25%{height:65%;} 50%{height:53%;} 75%{height:74%;} 100%{height:93%;} }
+@-moz-keyframes movingblock28{ 0%{height:95%;} 25%{height:65%;} 50%{height:53%;} 75%{height:74%;} 100%{height:93%;} }
+@keyframes movingblock28{ 0%{height:95%;} 25%{height:65%;} 50%{height:53%;} 75%{height:74%;} 100%{height:93%;} }
+
+/* Moving Block 29 */
+@-webkit-keyframes movingblock29{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+@-moz-keyframes movingblock29{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+@keyframes movingblock29{ 0%{height:80%;} 25%{height:49%;} 50%{height:59%;} 75%{height:82%;} 100%{height:65%;} }
+
+/* Moving Block 30 */
+@-webkit-keyframes movingblock30{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+@-moz-keyframes movingblock30{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+@keyframes movingblock30{ 0%{height:13%;} 25%{height:5%;} 50%{height:19%;} 75%{height:26%;} 100%{height:35%;} }
+
+/* Moving Block 31 */
+@-webkit-keyframes movingblock31{ 0%{height:25%;} 25%{height:15%;} 50%{height:37%;} 75%{height:42%;} 100%{height:51%;} }
+@-moz-keyframes movingblock31{ 0%{height:25%;} 25%{height:15%;} 50%{height:37%;} 75%{height:42%;} 100%{height:51%;} }
+@keyframes movingblock31{ 0%{height:25%;} 25%{height:15%;} 50%{height:37%;} 75%{height:42%;} 100%{height:51%;} }
+
+/* Moving Block 32 */
+@-webkit-keyframes movingblock32{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+@-moz-keyframes movingblock32{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+@keyframes movingblock32{ 0%{height:26%;} 25%{height:14%;} 50%{height:30%;} 75%{height:41%;} 100%{height:20%;} }
+
+/* Moving Block 33 */
+@-webkit-keyframes movingblock33{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+@-moz-keyframes movingblock33{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+@keyframes movingblock33{ 0%{height:6%;} 25%{height:22%;} 50%{height:17%;} 75%{height:29%;} 100%{height:43%;} }
+
+/* Moving Block 34 */
+@-webkit-keyframes movingblock34{ 0%{height:16%;} 25%{height:42%;} 50%{height:25%;} 75%{height:38%;} 100%{height:49%;} }
+@-moz-keyframes movingblock34{ 0%{height:16%;} 25%{height:42%;} 50%{height:25%;} 75%{height:38%;} 100%{height:49%;} }
+@keyframes movingblock34{ 0%{height:16%;} 25%{height:42%;} 50%{height:25%;} 75%{height:38%;} 100%{height:49%;} }
+
+/* Moving Block 35 */
+@-webkit-keyframes movingblock35{ 0%{height:22%;} 25%{height:14%;} 50%{height:28%;} 75%{height:49%;} 100%{height:59%;} }
+@-moz-keyframes movingblock35{ 0%{height:22%;} 25%{height:14%;} 50%{height:28%;} 75%{height:49%;} 100%{height:59%;} }
+@keyframes movingblock35{ 0%{height:22%;} 25%{height:14%;} 50%{height:28%;} 75%{height:49%;} 100%{height:59%;} }
+
+/* Moving Block 36 */
+@-webkit-keyframes movingblock36{ 0%{height:15%;} 25%{height:29%;} 50%{height:20%;} 75%{height:40%;} 100%{height:52%;} }
+@-moz-keyframes movingblock36{ 0%{height:15%;} 25%{height:29%;} 50%{height:20%;} 75%{height:40%;} 100%{height:52%;} }
+@keyframes movingblock36{ 0%{height:15%;} 25%{height:29%;} 50%{height:20%;} 75%{height:40%;} 100%{height:52%;} }
+
+/* Moving Block 37 */
+@-webkit-keyframes movingblock37{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+@-moz-keyframes movingblock37{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+@keyframes movingblock37{ 0%{height:5%;} 25%{height:23%;} 50%{height:16%;} 75%{height:32%;} 100%{height:24%;} }
+
+/* Moving Block 38 */
+@-webkit-keyframes movingblock38{ 0%{height:12%;} 25%{height:29%;} 50%{height:35%;} 75%{height:21%;} 100%{height:40%;} }
+@-moz-keyframes movingblock38{ 0%{height:12%;} 25%{height:29%;} 50%{height:35%;} 75%{height:21%;} 100%{height:40%;} }
+@keyframes movingblock38{ 0%{height:12%;} 25%{height:29%;} 50%{height:35%;} 75%{height:21%;} 100%{height:40%;} }
+
+/* Moving Block 39 */
+@-webkit-keyframes movingblock39{ 0%{height:25%;} 25%{height:14%;} 50%{height:29%;} 75%{height:34%;} 100%{height:18%;} }
+@-moz-keyframes movingblock39{ 0%{height:25%;} 25%{height:14%;} 50%{height:29%;} 75%{height:34%;} 100%{height:18%;} }
+@keyframes movingblock39{ 0%{height:25%;} 25%{height:14%;} 50%{height:29%;} 75%{height:34%;} 100%{height:18%;} }
+
+/* Moving Block 40 */
+@-webkit-keyframes movingblock40{ 0%{height:3%;} 25%{height:10%;} 50%{height:26%;} 75%{height:12%;} 100%{height:29%;} }
+@-moz-keyframes movingblock40{ 0%{height:3%;} 25%{height:10%;} 50%{height:26%;} 75%{height:12%;} 100%{height:29%;} }
+@keyframes movingblock40{ 0%{height:3%;} 25%{height:10%;} 50%{height:26%;} 75%{height:12%;} 100%{height:29%;} }
+
+
+
+/*------------- MEDIA QUERIES -------------*/
+@media (max-width: 1000px) {
+	h1 { font-size: 4em; }
+}
+
+@media (max-width: 800px) {
+	h1 { font-size: 3.5em; }
+}
+@media (max-width: 700px) {
+	h1 { font-size: 3em; }
+}
+@media (max-width: 600px) {
+	h1 { font-size: 2.5em; }
+}
+@media (max-width: 500px) {
+	h1 { font-size: 2em; }
+}
+@media (max-width: 400px) {
+	h1 { font-size: 1.5em; }
+}

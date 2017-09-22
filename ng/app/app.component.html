@@ -1,0 +1,104 @@
+<div *ngIf="false" style="text-align:center" class="hidden-md-up m-t-1 m-b-2">
+    <img [@menu_click]="menu_click" id="mobile_menu_icon"(click)="menu_click_toggle()" src="resource/img/menu_icon.png" class="pull-xs-left m-l-1" height="25" width="25"/>
+    <span class="h5 d">AtYorku</span>
+</div>
+<nav *ngIf="false" (window:resize)="menu_click_toggle_onresize()" [@menu_dropdown]="menu_click" id="nav_mobile">
+    <a id="close" (click)="menu_click_toggle()">
+        &times;
+    </a>
+    <ul class="p-l-0 m-t-3">
+        <li>
+            <a (click)="menu_click_toggle()">校园</a>
+        </li>
+        <li>
+            <a (click)="menu_click_toggle()">课评</a>
+        </li>
+        <li>
+            <a (click)="menu_click_toggle()" >同学圈</a>
+        </li>
+        <li>
+            <a (click)="menu_click_toggle()">我</a>
+        </li>
+
+    </ul>
+</nav>
+
+
+<nav id="navbar">
+
+
+    <ul class="m-b-0">
+        <li><a><img src="resource/img/navigation/logo.png" width="150" class="img-fluid"/></a></li>
+        <li class="navlink" id="guide"><a routerLink="/guide" routerLinkActive="link_active">
+            <img src="resource/img/navigation/guide.png" height="22" width="22" /><span class="nav_items">校园</span></a></li>
+
+        <li class="navlink" id="course"><a routerLink="/course" routerLinkActive="link_active" (click)="courseService.current_course_class_id = '1' ">
+            <img src="resource/img/navigation/course.png" height="22" width = "22"/><span class="nav_items">课评</span></a></li>
+
+        <li class="navlink" id="forum"><a routerLink="/forum" routerLinkActive="link_active">
+            <img src="resource/img/navigation/forum.png" height="22" width="22"/><span class="nav_items">同学圈</span></a></li>
+
+        <li class="b log" *ngIf="loginService.logged_in" (click)="logOff()">注销</li>
+        <li class="b log" *ngIf="!loginService.logged_in" (click)="showLogin()">登录</li>
+        <li id="profile_picture" routerLink="/user" *ngIf="loginService.logged_in"><div [style.background-image]="sanitizeStyle(this.getCookie('cc_im'))"></div></li>
+    </ul>
+
+</nav>
+
+<div id="content" class="m-y-0">
+    <router-outlet></router-outlet>
+</div>
+
+<div id="rate_background" [hidden]="courseService.rate_window">
+    <div id="rate">
+        <a id="rate_close" (click)="courseService.close_rate_window()">
+            &times;
+        </a>
+        <div class="p-y-3 p-x-3">
+            <h6 class="c label1" >你认为此课程的难度是:</h6>
+            <div id="star_grade">
+                <span class="stars" *ngFor="let dif of courseService.star_grades" (click)="courseService.selected_star_grade=dif" [class.star_selected]="dif <= courseService.selected_star_grade"></span>
+
+            </div>
+            <h6 class="c label1">
+                你的成绩是:<br/>
+                <span class="label2 a">你的成绩只会被用来计算平均分,不会有任何人知道</span>
+            </h6>
+            <ul id="letter_grade">
+               <li class="letter_grade" *ngFor="let grade of letter_grades" (click)="courseService.selected_letter_grade=grade" [class.letter_grade_selected]="courseService.selected_letter_grade == grade">
+                   <span>{{grade}}</span>
+               </li>
+            </ul>
+        </div>
+        <button class="btn btn-danger" id="submit_rate" (click)="addRate()">提交</button>
+    </div>
+</div>
+
+<div id="login_container" *ngIf="!login_hide">
+    <div id="login_background" class="b">
+        <span id="login_title">用户登录</span>
+        <span class="close" (click)="hideLogin(login_form);clear_error()">&times;</span>
+    </div>
+    <form id="login_form" #login_form="ngForm">
+        <h6 [hidden]="!login_error" class="b" id="login_error">用户名或密码错误</h6>
+        <input requried class="form-control" placeholder="用户名(邮箱)" ngModel name="username" [class.login_error]="login_error"/>
+        <input required type="password" ngModel name="password" class="form-control" placeholder="密码" [class.login_error]="login_error"/>
+        <button class="c btn btn-danger" (click)="login(login_form)" id="login_button">登录</button>
+        <button class="c btn" id="register_button" (click)="hideLogin(login_form);showRegister()">注册</button>
+    </form>
+</div>
+
+<div id="register_container" *ngIf="!register_hide">
+    <div id="register_background" class="b">
+        <span id="register_title">注册</span>
+        <span class="close" (click)="hideRegister(register_form);clear_error()">&times;</span>
+    </div>
+    <form id="register_form" #register_form="ngForm">
+        <h6 [hidden]="!register_password_error" id="register_password_error">密码跟确认密码必须一致</h6>
+        <h6 [hidden]="!register_error" class="b" id="register_error">{{register_error_message}}</h6>
+        <input requried class="form-control" placeholder="用户名(邮箱)" ngModel name="register_username" [class.login_error]="register_error"/>
+        <input required type="password" ngModel name="register_password" class="form-control" placeholder="密码" [class.login_error]="register_error||register_password_error"/>
+        <input required type="password" ngModel name="check_password" class="form-control" placeholder="确认密码" [class.login_error]="register_error||register_password_error"/>
+        <button class="c btn btn-danger" (click)="register(register_form)" id="register_button2">注册</button>
+    </form>
+</div>

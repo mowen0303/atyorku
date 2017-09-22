@@ -1,0 +1,47 @@
+<div id="container" *ngIf="pyqs">
+    <h6 [hidden]="!posting_error" style="color:#e52121;">上传失败.{{posting_error_message}}.</h6>
+    <form id="form" #form="ngForm" *ngIf="reload">
+        <label #label for="file"></label>
+        <div class="form-group" id="form_container">
+            <textarea class="form-control" name="content" required #content="ngModel" ngModel>
+            </textarea>
+            <select required name="forum_class_id" class="form-control" name="forum_class_id" (change)="categoryChange($event)" #forum_class_id="ngModel" ngModel>
+                <option value="" disabled selected hidden>分类</option>
+                <option *ngFor="let forum_class of forumService.forum_classes;let i = index" [hidden]="i==0" [attr.value]="forum_class.id">
+                    {{forum_class.title}}
+                </option>
+            </select>
+            <input *ngIf="!hidden_buy_price" [hidden]="!forumService.category" #price="ngModel" type="number" name="price" placeholder="输入价格" id="price" class="form-control" ngModel/>
+            <div id="button_container" [hidden]="hidden_buy_price" [hidden]="!forumService.category">
+                <button type="button" class="buttons btn" id="buy" [class.btn-info]="forumService.category=='buy'" (click)="forumService.set_buy()" [class.btn-default]="forumService.category=='sell'">买</button>
+                <button class="buttons btn" type="button" id="sell" [class.btn-info]="forumService.category=='sell'" (click)="forumService.set_sell()" [class.btn-default]="forumService.category=='buy'">卖</button>
+            </div>
+            <button class="btn btn-danger" id="submit" [disabled]="button_disable"(click)="addForumWithJson(form,label,file)">发布</button>
+            <button class="btn btn-info" type="button" id="clear" (click)="clear(form,label,file)">清空</button>
+        </div>
+        <input type="file" #file id="file" name="img1" (change)="fileChangeListener($event,label)" accept="image/*"/>
+    </form>
+
+    <div class="pyqs" *ngFor="let pyq of pyqs;let i = index" [@flyInOut]="pyq.state">
+        <div class="pyq_img" [style.background-image]="sanitizeStyle(pyq.img)" (click)="navi(pyq.user_id)">
+        </div>
+        <div class="pyq_container" [routerLink]="['/forum/detail',pyq.id]" (click)="forumService.current_pyq=pyq">
+            <span class="name">{{pyq.alias}}</span><img class="gender" height="15" width="15" [attr.src]="pyq.gender"/>
+            <span class="forum_class_tag">{{pyq.classTitle}}</span>
+            <span class="sell_tag" *ngIf="pyq.category == 'sell'">出售</span>
+            <span class="buy_tag" *ngIf="pyq.category == 'buy'">求购</span>
+            <h6 class="descript" *ngIf="pyq.major && pyq.enroll_year">{{pyq.enroll_year}}&nbsp;&nbsp;{{pyq.major}}</h6>
+            <pre class="content">{{pyq.content}}</pre>
+            <img class="pyq_img1" *ngIf="pyq.img1"[attr.src]="pyq.img1"/>
+            <br *ngIf="pyq.img1"/>
+            <img class="comment_img" src="resource/img/forum_icon/comment.png" width="14" height="14"/>&nbsp;
+            <span class="comment_count">{{pyq.comment_num}}</span>
+            <img src="resource/img/forum_icon/read.png" width="14" height="14"/>
+            <span class="read_count">{{pyq.count_view}}</span>
+            <span class="time">{{pyq.time}}</span>
+            <span class="delete" *ngIf="pyq.editable=='yes'" (click)="delForum($event,i,pyq.id)">删除</span>
+            <span class="price_tag" *ngIf="pyq.price != '0'">${{pyq.price}}</span>
+        </div>
+    </div>
+    <img id="loading_image" [hidden]="!page_loading" src="resource/img/loading.gif" height="70" width="70"/>
+</div>

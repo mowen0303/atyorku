@@ -1,0 +1,54 @@
+
+@media only screen and (min-width : 40px) {
+    #container {
+        padding-top: 2rem;
+        padding-left: 2rem;
+        position: relative;
+        padding-right: 6rem;
+        width: 800px;
+    }
+    .jumb{
+        border:solid 1px #CCCCCC;
+        padding:1rem 1rem;
+        padding-bottom: 36px;
+        width:800px;
+        margin-bottom:1.5rem;
+        position:relative;
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+    .course_name{
+        font-size:0.72rem;
+        color:#999999;
+    }
+    .row{
+        width:730px;
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+    #container{
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+}
+
+
+@media only screen and (min-width : 1200px) {
+
+}
+
+@media only screen and (min-width : 1450px) {
+}

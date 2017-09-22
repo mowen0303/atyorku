@@ -1,0 +1,38 @@
+<div id="container" *ngIf="pyq">
+    <div [style.background-image]="sanitizeStyle(pyq.img)" id="pyq_img" [routerLink]="['/otheruser',pyq.user_id]">
+    </div>
+    <div id="pyq_container">
+        <span id="name">{{pyq.alias}}</span>
+        <img id="gender" height="15" width="15" [attr.src]="pyq.gender"/>
+        <span id="forum_class_tag">{{pyq.classTitle}}</span>
+        <span id="sell_tag" *ngIf="pyq.category == 'sell'">出售</span>
+        <span id="buy_tag" *ngIf="pyq.category == 'buy'">求购</span>
+
+        <h6 id="descript" *ngIf="pyq.major && pyq.enroll_year">{{pyq.enroll_year}}&nbsp;&nbsp;{{pyq.major}}</h6>
+        <pre id="content">{{pyq.content}}</pre>
+        <img id="pyq_img1" *ngIf="pyq.img1" [attr.src]="pyq.img1"/>
+        <br *ngIf="pyq.img1"/>
+        <img src="resource/img/course_icon/read.png" width="14" height="14" style="position:relative;bottom:2.2px"/>
+        <span id="read_count">{{pyq.count_view}}</span>
+        <span id="time">{{pyq.time}}</span>
+        <span id="delete" *ngIf="pyq.editable=='yes'" (click)="delForum(pyq_id)">删除</span>
+        <span id="price_tag"  *ngIf="pyq.price != '0'">${{pyq.price}}</span>
+        <div id="add_comment" class="form-group">
+            <p>{{pyq.comment_num}}条评论</p>
+            <textarea required class="form-control" style="min-height: 130px" [(ngModel)]="user_comment"></textarea>
+            <button class="btn btn-danger" id="comment_button" [disabled]="comment_button_disable" (click)="addComment(pyq.id,user_comment)">评论</button>
+        </div>
+    </div>
+
+    <div class="comments_z" *ngFor="let comment of comments;let i = index" [@flyInOut]="comment.state">
+        <div class="comment_img_z" [style.background-image]="sanitizeStyle(comment.img)" [routerLink]="['/otheruser',comment.user_id]">
+        </div>
+        <div class="comment_container_z">
+            <span class="name_z">{{comment.alias}}</span><img class="gender_z" height="15" width="15" [attr.src]="comment.gender"/>
+            <pre class="comment_z">{{comment.content_comment}}</pre>
+            <span class="time_z">{{comment.time}}</span>
+            <span class="delete_z" *ngIf="comment.editable=='yes'" (click)="delComment(comment.id,i)">删除</span>
+        </div>
+    </div>
+    <img id="loading_image" [hidden]="!page_loading" src="resource/img/loading.gif" height="70" width="70"/>
+</div>

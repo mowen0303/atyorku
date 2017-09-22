@@ -1,0 +1,11 @@
+/*container*/
+.loginBg { background:url(../img/bg_login2.png) top left repeat-x}
+#container { width:1000px; margin:0 auto}
+/*##loginLogo##*/
+.loginLogo { background:url(../img/logo_login.png) no-repeat 50% 140px; height:205px}
+.loginFm{width:300px; margin:0 auto; margin-top:30px;}
+	.loginFm dt { width:56px; color:#fff;}
+	.loginFm dd input { width:220px; }
+	.loginFm .fmBtn input { float:right; margin-right:20px; height:25px; line-height:28px}
+
+	

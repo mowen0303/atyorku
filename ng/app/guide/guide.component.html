@@ -1,0 +1,11 @@
+<nav id="guide_nav">
+    <ul>
+        <li class="p-y-1 p-x-1"  [routerLink]="['/guide',guide.id]" [class.guide_class_active]="guide.id == guideService.current_guide_id" *ngFor="let guide of guides;let i = index">
+            <img [attr.src]="icons[i]" width="15" height="15" class="m-r-1"/><span>{{guide.title}}</span>
+        </li>
+    </ul>
+</nav>
+
+<div id="guide_content">
+    <router-outlet></router-outlet>
+</div>

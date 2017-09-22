@@ -1,0 +1,20 @@
+<nav id="user_nav" *ngIf="info">
+    <ul>
+        <li routerLink="/user/profile" routerLinkActive="user_class_active">
+            个人资料
+        </li>
+        <li [routerLink]="['/user/view','postedForums']" routerLinkActive="user_class_active">
+            我的帖子
+        </li>
+        <li [routerLink]="['/user/view','commentedForums']" routerLinkActive="user_class_active">
+            我评论过的帖子
+        </li>
+        <li routerLink="/user/commentedcourses" routerLinkActive="user_class_active">
+            我回评论过的课评
+        </li>
+    </ul>
+</nav>
+
+<div id="user_content">
+    <router-outlet></router-outlet>
+</div>

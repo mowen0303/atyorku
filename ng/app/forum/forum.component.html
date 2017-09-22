@@ -1,0 +1,12 @@
+<nav id="forum_nav">
+    <ul>
+        <li class="p-y-1 p-x-1"  [routerLink]="['/forum',forum.id]" (click)="forumService.current_forum_id = forum.id;forumService.selected_forum_amount = forum.count_all"
+            [class.forum_class_active]="forum.id == forumService.current_forum_id" *ngFor="let forum of forums;let i = index">
+            <img [attr.src]="icons[i]" width="15" height="15" class="m-r-1"/><span>{{forum.title}}</span>
+        </li>
+    </ul>
+</nav>
+
+<div id="forum_content">
+    <router-outlet></router-outlet>
+</div>

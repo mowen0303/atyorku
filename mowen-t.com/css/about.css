@@ -1,0 +1,59 @@
+#bgimg_line { background:url(../img/bg2.png)}
+#menuBg { width:100%}
+#menuBox { top:0}
+#menucur { display:block}
+
+/*搞定删除*/
+#aboout { z-index:99; position:relative; width:550px; margin:0 auto;}
+
+	#gybox { position:absolute; width:100%; top:200px; height:550px;  background:#fff}
+	.weixin { position:absolute; top:20px; left:20px;}
+	.link { line-height:50px; font-family:"微软雅黑"; position:absolute; width:190px; top:210px; right:-50px}
+		.link a { color:#eee;font-size:26px;  display:block; background:#5a0024; padding:20px; height:30px; line-height:30px; margin:20px 0; text-align:center; border:1px solid #8f0039}
+		.link a:hover { background:#6f002c}
+		
+/*新添加*/
+#aboutBox { position:absolute; width:100%;top:80px; z-index:0; overflow:hidden}
+#mainLine_HD { background:url("../img/mainLine.png"); position:absolute; width:3px; height:1000px; left:50%; top:100px; margin-left:1px}
+	
+	
+	.msgBox { width:370px; position:absolute;border-radius:4px}
+	.msgBox_l { background:url("../img/msgBox_l.png") no-repeat 370px 14px; padding-right:56px; left:-460px; }
+	.msgBox_r { background:url("../img/msgBox_r.png") no-repeat 10px 16px; padding-left:56px; left:40px;}
+		.msgIn { height:100%; background:url(../img/aboutbg.png); border-radius:6px; font-family:"微软雅黑"; overflow:hidden; padding:20px}
+			.msgIn .top {  border-radius:6px 6px 0 0;height:200px; overflow:visible}
+				.msgIn .top img { width:100%; display:block;}
+			.msgIn .mid { padding:10px 10px; line-height:22px; font-size:14px; color:#333;}
+			.msgIn .mid a { color:#7A0031; text-decoration:underline}
+			.msgIn .bot {background:url(../img/aboutbg5.png) no-repeat right 0; position:absolute; width:88px; height:26px; line-height:24px;  font-family:Verdana, Geneva, sans-serif;top:10px; border-radius:50px}
+			.msgBox_l .bot {right:-41px; text-indent:2em}
+			.msgBox_r .bot {left:-44px; background-position:0 0; text-indent:3em}
+			
+			
+			
+			.start { background:url(../img/aboutbg4.png) no-repeat; width:131px; height:131px; position:absolute; left:-64px; text-align:center; line-height:100px; font-size:46px; letter-spacing:2px; border-radius:120px; font-family:Georgia,serif;text-shadow:1px 1px 0px #111}
+			.start span { display:block; letter-spacing:0; position:absolute; width:50px; line-height:17px;height:20px; bottom:25px; left:50%; margin-left:-22px;color:#ccc;font-size:18px; font-family:"微软雅黑"; font-weight:bold}
+			
+			#scrollbar { background:url(../img/scrollbar2.png) no-repeat; width:11px; height:84px; position:absolute ;top:200px; right:10%;}
+
+
+#scrollbarBox { width:11px;height:95%; top:5%; right:10%;position:absolute; display:block}
+#scrollbar { background:url(../img/scrollbar2.png) no-repeat; width:11px; height:84px; top:0; position:absolute ; cursor:pointer; position:absolute;}
+
+
+
+
+#list { position:absolute;  top:30%; left:0; z-index:99; background:url(../img/aboutbg3.png) no-repeat; width:205px;overflow:hidden}
+	.listmenu {  width:100%; margin-top:110px; overflow:hidden}
+	.listmenu div {width:100%; height:45px; line-height:45px;}
+	.listmenu div a { display:block; width:100%; height:100%; margin-top:2px;  text-align:center; color:#aaa}
+	.listmenu div .hover,.listmenu div a:hover { background:#7a0031; color:#eee}
+
+
+#tapsBox { position:absolute; z-index:10; right:10px; top:100px;}
+	#tapsBox div { background:url(../img/aboutbg6.png) no-repeat; width:28px; height:28px; float:left; margin-right:5px; cursor:pointer}
+	#tapsBox .taps1 { background-position:0 -35px;}
+	#tapsBox .taps2 { background-position:-32px -35px;}
+	
+	#tapsBox .taps1.hover { background-position:0 0;}
+	#tapsBox .taps2.hover { background-position:-32px 0;}

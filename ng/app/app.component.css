@@ -1,0 +1,268 @@
+
+@media only screen and (min-width : 320px) {
+    .nav_items{
+        text-decoration: none;
+        display:inline-block;
+    }
+    /*评分窗口*/
+    #rate_background{
+        bottom:0.1px;
+        height:100vh;
+        width:100vw;
+        background-color:rgba(0,0,0,0.85);
+        position:fixed;
+        z-index:10001;
+
+    }
+    #rate{
+        position:relative;
+        background-color:white;
+        top:50%;
+        left:50%;
+        width:700px;
+        transform:translate3d(-50%,-50%,0);
+        padding-bottom:3rem;
+    }
+
+    #rate_close{
+        float:right;
+        font-size:2rem;
+        color:black;
+        position:relative;
+        right:1.5rem;
+        cursor:pointer;
+
+    }
+
+    #letter_grade{
+        background-color:white;
+        margin-top:1rem;
+
+    }
+
+    #star_grade{
+        background-color:white;
+        margin-bottom:1.5rem;
+        direction:RTL;
+        text-align:center;
+        padding-top:1rem;
+    }
+
+    .stars{
+        display:inline-block;
+        height:30px;
+        width:30px;
+        content:URL("resource/img/course_icon/star-gray.png");
+        cursor:pointer;
+    }
+    .stars:hover{
+        content:URL("resource/img/course_icon/star-yellow.png");
+    }
+
+    .stars:hover ~ span{
+        content:URL("resource/img/course_icon/star-yellow.png");
+    }
+
+    .star_selected{
+        content:URL("resource/img/course_icon/star-yellow.png");
+    }
+
+    .label1{
+        color:black;
+        font-size:0.95rem;
+    }
+    .label2{
+        color:#a7a7a7;
+        font-size:0.78rem;
+    }
+
+    #submit_rate{
+        float:right;
+        transform:translate3d(-48px,-16px,0);
+    }
+
+
+
+    .letter_grade{
+        height:40px;
+        width:40px;
+        padding-top:7px;
+        color:#272727;
+        background-color:#e9ecf4;
+        display:inline-block;
+        margin:0 0.60rem;
+        position:relative;
+        text-align:center;
+        cursor:pointer;
+        transition:background-color 0.18s ease-out,color 0.18s ease-out;
+    }
+
+    .letter_grade:hover{
+        background-color:black;
+        color:white;
+    }
+
+    .letter_grade_selected{
+        background-color:black;
+        color:white;
+    }
+    /*评分窗口*/
+
+    /*登录窗口*/
+    #login_container{
+        width:450px;
+        background-color:white;
+        position:fixed;
+        left:50vw;
+        top:50vh;
+        transform:translate3d(-50%,-50%,0);
+        z-index:10000;
+        box-shadow: 0px 0px 10px lightgrey;
+    }
+    #login_background{
+        background-color:#c91616;
+        font-size:16px;
+        padding:0.65rem 0;
+        color:white;
+        text-align:center;
+    }
+
+    #login_form{
+        padding:0 5rem;
+        padding-top:2rem;
+        padding-bottom:5rem;
+    }
+    #login_title{
+        position:relative;
+        left:20px;
+    }
+    #login_container input:nth-child(3){
+        margin-top:1.2rem;
+    }
+    #login_button{
+        float:left;
+        cursor:pointer;
+        background-color:#c91616;
+        padding:0.2rem 3rem;
+        margin-top:1.2rem;
+    }
+    #register_button{
+        float:right;
+        background-color:#40d867;
+        cursor:pointer;
+        color:white;
+        padding: 0.2rem 1.5rem;
+        margin-top:1.2rem;
+    }
+    #login_error,#register_error,#register_password_error{
+        color:#aa0505;
+        margin-bottom: 0.25rem;
+        padding-left:4px;
+        font-size:0.92rem;
+    }
+
+    .login_error{
+        border-left:solid 5px red;
+    }
+    /*登录窗口*/
+    /*注册窗口*/
+    #register_container{
+        width:450px;
+        background-color:white;
+        position:fixed;
+        left:50vw;
+        top:50vh;
+        transform:translate3d(-50%,-50%,0);
+        z-index:10000;
+        box-shadow: 0px 0px 10px lightgrey;
+    }
+    #register_background{
+        background-color:#c91616;
+        font-size:16px;
+        padding:0.65rem 0;
+        color:white;
+        text-align:center;
+    }
+    .close{
+        background-color:rgba(0,0,0,0.5);
+        float:right;
+        font-size:16px;
+        padding:0 4px;
+        color:whitesmoke;
+        bottom:2px;
+        cursor:pointer;
+        margin-right:1rem;
+        top:4px;
+        position:relative;
+    }
+    #register_form{
+        padding:2rem 5rem;
+    }
+    #register_title{
+        position:relative;
+        left:20px;
+    }
+    #register_container input:nth-child(4),#register_container input:nth-child(5){
+        margin-top:1.2rem;
+    }
+    #register_button2{
+        cursor:pointer;
+        background-color:#c91616;
+        padding:0.2rem 3rem;
+        margin-top:1.2rem;
+        position:relative;
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+    /*注册窗口*/
+
+
+
+    .log{
+        cursor:pointer;
+        color:white !important;
+        position:relative !important;
+        float:right  !important;
+        margin-right:3.5rem !important;
+        margin-left:0 !important;
+    }
+
+    #profile_picture{
+        float:right;
+        margin-right:1.5rem;
+        height:50px;
+    }
+    #profile_picture>div{
+        height:50px;
+        width:50px;
+        margin:0 0;
+        padding: 0 0;
+        display:inline-block;
+        background-position: center center;
+        background-size:cover;
+        background-repeat: no-repeat;
+        cursor:pointer;
+        border-radius: 50%;
+        border: 2px #fff4f5 solid;
+        box-shadow: 2px 2px 3px rgba(25,25,25,0.3);
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+
+
+}
+
+

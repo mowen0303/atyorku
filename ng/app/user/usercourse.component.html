@@ -1,0 +1,23 @@
+<div id="container">
+    <div class="jumb"  style="cursor:pointer" *ngFor="let course of courses"
+         (click)="navi(course.id)">
+
+        <div class="pull-xs-right">
+            难度<img style="margin-left:0.5rem" [attr.src]="course.diff"/>
+        </div>
+        <h5>{{course.mtitle}}&nbsp;{{course.title}}</h5>
+        <p class="c course_name" >{{course.course_name}}</p>
+
+        <ul class="m-t-3">
+            <li class="pull-xs-left">
+                学分&nbsp;{{course.credits}}
+            </li>
+            <li class="pull-xs-right m-l-1"  style="color:#999999">
+                <img src="resource/img/course_icon/comment.png" width="16" height="16"/>&nbsp;{{course.comment_num}}
+            </li>
+            <li class="pull-xs-right m-l-1"  style="color:#999999">
+                <img src="resource/img/course_icon/read.png" width="16" height="16"/>&nbsp;{{course.readcounter}}
+            </li>
+        </ul>
+    </div>
+</div>

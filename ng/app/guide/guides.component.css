@@ -1,0 +1,95 @@
+
+@media only screen and (min-width : 40px) {
+    a{
+        color:black;
+        text-decoration: none;
+    }
+    a:hover{
+        color:black;
+        text-decoration: none;
+    }
+    .guides{
+        min-height:150px;
+        margin-bottom: 2rem;
+        padding-left:332px;
+        position:relative;
+    }
+    .cover{
+        position:absolute;
+        left:0;
+        top:0;
+        display:inline-block;
+        height:150px;
+        width:300px;
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position:center center;
+
+    }
+    #container{
+        padding-top:2rem;
+        padding-left:2rem;
+        position:relative;
+        padding-right:6rem;
+        width:800px;
+        left:60px;
+    }
+    .intro{
+        margin-top:0.7rem;
+        margin-bottom:0.7rem;
+        color:#666666;
+        font-size:0.96rem;
+        max-height:69px;
+        overflow:hidden;
+        text-overflow: ellipsis;
+    }
+    .time{
+        color:#999999;
+        font-size:0.9rem;
+    }
+
+    .read{
+        font-size:0.9rem;
+    }
+    .tag1{
+        color:#b8b8b8;
+        position:relative;
+        top:2px;
+    }
+    .tag2{
+        color:#26AFF5;
+        font-size:14px;
+        margin-left:1rem;
+    }
+    #loading_image{
+        position:relative;
+        left:50%;
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+    #container{
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+}
+
+
+@media only screen and (min-width : 1200px) {
+
+}
+
+@media only screen and (min-width : 1450px) {
+}

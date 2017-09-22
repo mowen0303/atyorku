@@ -1,0 +1,82 @@
+body { background:none}
+.leftBody { background:url(../img/bg_left.gif) repeat-y}
+/*按钮*/
+.resBtn2 { background:url(../img/bg_btn_red.png) repeat; height:30px; padding:0 20px; line-height:30px; color:#fff; display:inline-block; margin:10px; border-radius:6px; text-align:center}
+
+
+/*框架_左侧*/
+#containerL { width:230px; text-align:right; color:#888; padding-top:130px; overflow:hidden; zoom:1; background:url(../img/bg_left_top.png) no-repeat}	
+
+
+	
+	
+/*左侧*/
+.userInfo { padding-right:15px; line-height:35px; margin-bottom:20px}
+	.userInfo a { color:#ccc}
+
+.menu { float:right}
+	.menuTit{ background:url(../img/bg_menu.gif) no-repeat left top; width:206px; height:33px; line-height:33px; margin-top:15px; font-weight:bold;font-size:15px; color:#fff; }
+		.menuTit span { padding-right:25px; display:block; cursor:pointer}
+	.menuCon {display:none; }
+		.menuCon li { padding-right:25px; line-height:30px}
+		.menuCon li a { color:#999}	
+		.menuCon li a:hover { color:#ccc}
+
+/*右侧*/
+#containerR { padding:30px}
+	.welcome {}
+	
+	
+/*添加作品 opus_add.php */
+.imgListFm .fmBtn input { height:30px; line-height:30px; float:left; margin-top:10px; padding:0 20px}
+	.imgListFm .fmBtn { clear:both}
+	.imgConBox { border:1px solid #e8e8e8; background:#f7f7f7; border-radius:4px; padding:20px; margin:0px 0 30px 0; overflow:hidden; zoom:1}
+	.imgConBox .resBtn { margin:10px}
+	.imgBox {padding:10px;vertical-align:bottom;zoom:1; overflow:hidden; margin:10px 10px 20px 10px; float:left}
+		.imgCon { text-align:center; width:200px; padding:4px; height:133px;border:1px solid #ccc; background:#fff; overflow:hidden;}
+			.imgCon img { height:133px; background:#fbfbfb}
+		.imgTxt { font-size:12px; color:#555; font-family:"宋体";}
+		.imgTxt textarea { width:200px;height:50px; font-family:Verdana, Geneva, sans-serif; font-size:13px; color:#555;border:1px solid #ccc;  padding:6px 4px;}
+		.imgTxt input {font-size:13px; width:20px; color:#555;border:1px solid #ccc;  padding:6px 4px;}
+		.imgBox a {color:#57A000; font-size:13px;}
+		.mgTit { line-height:18px; padding-top:8px;font-family:Verdana, Geneva, sans-serif; color:#999; line-height:21px}
+		.mgTit .tit { font-size:14px; padding-bottom:5px}
+	.imgTxtMs { padding-left:4px}
+	.maImgBox { border:1px solid #ddd; background:#f5f5f5; padding:10px}	
+	#content {  border:1px solid #bada90; background:#e5ffc4;  padding:10px; width:393px; border-radius:6px}
+	.endBtnBox { border-bottom:1px dashed #ccc; margin-bottom:20px; padding:0 0 10px 10px}
+	
+	.imgBoxBtn { overflow:hidden; zoom:1}
+	.imgBoxBtn a { float:right}
+	.imgBoxBtn span { float:left; width:70px;}
+	.imgBoxBtn label,.imgBoxBtn input { cursor:pointer}	
+	
+	
+/*作品分类*/
+.classFm {}
+	.classFm dd input {padding:5px 8px; width:200px; border:1px solid #d5d5d5; background:#fbfbfb; line-height:20px; height:18px; font-family:Verdana, Geneva, sans-serif; color:#4a4a4a;}
+	.classFm dt { padding:0 8px; vertical-align:top; padding:0 10px; display:inline-block}
+	.classFm .resBtn {  height:30px; display:inline-block; float:left;margin-right:10px}
+	
+	.showClass .resBtn { height:24px; margin-top:4px; line-height:24px}
+	
+	
+.addClass { border:1px solid #CCC; background:#eee; padding:40px; padding-bottom:30px; border-radius:6px; margin-bottom:40px; }
+
+	
+/*作品列表*/
+.titleList { border-collapse:collapse}
+	.titleList td { padding:10px 20px}
+	.titleList thead  { font-weight:bold; border-bottom:1px solid #ddd; font-size:15px; color:#555}
+	.titleList .oddtr { background:#f3f3f3}
+	.titleList tbody td { font-size:13px}
+
+	.czIcon { margin-right:10px}
+	
+
+	
+	
+/**/
+#upfileid { border:1px solid #F00; background:#900; color:#fff; border-radius:4px; padding:5px 20px; cursor:pointer; margin-left:10px}
+	
+	

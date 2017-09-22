@@ -1,0 +1,96 @@
+<div id="container" *ngIf="course">
+    <h3>{{course.mtitle}}&nbsp;{{course.title}}</h3>
+    <h6 class="m-t-1" id="credit" >学分{{course.credits}}.0</h6>
+    <h6 class="m-t-1" id="course_name">{{course.course_name}}</h6>
+    <div id="rectangles" class="m-t-2">
+        <div id="diff" class="m-r-1">
+            <img [attr.src]="course.diff" width="120" height="20"/>
+            <h6 >课程难度</h6>
+        </div>
+        <div id="pass_rate" class="m-r-1">
+            <h5>
+                {{course.pass_rate}}
+            </h5>
+            <h6>通过率</h6>
+        </div>
+        <div id="average" >
+            <h5>
+                {{course.average}}
+            </h5>
+            <h6>平均成绩</h6>
+        </div>
+    </div>
+    <div class="m-t-2">
+        <button class="m-r-1 btn" id="rate_button" (click)="courseService.open_rate_window();courseService.rate_class_id=id" [disabled]="courseService.current_course.rateAllowed == 'no'"
+        [style.background-color]="(courseService.current_course.rateAllowed == 'no')?'#B2B2B2 !important':'#DB2D34'">
+            {{(courseService.current_course.rateAllowed=='no')?"你已完成评级":"我要评级"}}
+        </button>
+        <span>共有{{courseService.current_course.average_count}}人参与评级</span>
+    </div>
+    <div id="options" *ngIf="config">
+        <button class="btn option_button" (click)="showSummary()" [class.option_button_clicked]="!config.summary"
+                [class.option_button_not_clicked]="config.summary">学霸点评</button><button class="btn option_button" (click)="showComment()" [class.option_button_clicked]="!config.comment"
+                [class.option_button_not_clicked]="config.comment">评论({{course.comment_num}})</button>
+        <button class="btn option_button" (click)="showInfo()" [class.option_button_clicked]="!config.info"
+                [class.option_button_not_clicked]="config.info">选课要求</button>
+    </div>
+    <div id="course_detail" class="m-t-2">
+        <h6 *ngIf="course.descript" [hidden]="config.info">
+            课程简介
+        </h6>
+        <pre *ngIf="course.descript" [hidden]="config.info">{{course.descript}}</pre>
+
+        <h6 *ngIf="course.credit_ex" [hidden]="config.info">
+            Exclusion(学分排除)
+        </h6>
+        <pre *ngIf="course.credit_ex" [hidden]="config.info">{{course.credit_ex}}</pre>
+
+        <h6 *ngIf="course.prerequest" [hidden]="config.info">
+            Pre-requisites(选课前提)
+        </h6>
+        <pre *ngIf="course.prerequest" [hidden]="config.info">{{course.prerequest}}</pre>
+
+        <h6 *ngIf="course.summary" [hidden]="config.summary">
+            课程总结&nbsp;&&nbsp;难点分析
+        </h6>
+        <pre *ngIf="course.summary"  [hidden]="config.summary">{{course.summary}}</pre>
+
+        <h6 *ngIf="course.structure"  [hidden]="config.summary">
+            评分标准&nbsp;&&nbsp;考试题型
+        </h6>
+        <pre *ngIf="course.structure"  [hidden]="config.summary">{{course.structure}} </pre>
+
+        <h6 *ngIf="course.wisechooes"  [hidden]="config.summary">
+            选课建议
+        </h6>
+        <pre *ngIf="course.wisechooes"  [hidden]="config.summary">{{course.wisechooes}}</pre>
+
+        <h6 *ngIf="course.strategy"  [hidden]="config.summary">
+            高分攻略
+        </h6>
+        <pre *ngIf="course.strategy"  [hidden]="config.summary">{{course.strategy}}</pre>
+ </div>
+    <div id="author" *ngIf="course.img"  [hidden]="config.summary">
+        <div [style.background-image]="sanitizeStyle(course.img)" style="cursor:pointer" (click)="navi(course.user_id)">
+        </div>
+        <h6>作者:{{course.alias}}</h6>
+        <pre>{{course.userDescription}}</pre>
+    </div>
+    <div id="comment" class="m-t-3"  [hidden]="config.comment">
+        <textarea required class="form-control" style="min-height: 130px" #text [(ngModel)]="user_comment"></textarea>
+        <button class="btn" id="comment_button" [disabled]="comment_button_disable"(click)="addComment(user_comment)">评论</button>
+    </div>
+
+    <div id="comments" *ngFor="let comment of comments;let i = index" [@flyInOut]="comment.state" [hidden]="config.comment">
+        <div class="comment_img" [style.background-image]="sanitizeStyle(comment.img)" (click)="navi(comment.user_id)">
+        </div>
+        <div class="comment_container">
+            <span class="name">{{comment.alias}}</span><img class="gender" height="15" width="15" [attr.src]="comment.gender"/>
+            <pre class="comment">{{comment.comment}}</pre>
+            <span class="time">{{comment.time}}</span>
+            <span class="delete" *ngIf="comment.editable=='yes'" (click)="delComment(comment.id,i)">删除</span>
+        </div>
+    </div>
+    <img id="loading_image" [hidden]="!page_loading" src="resource/img/loading.gif" height="70" width="70"/>
+
+</div>

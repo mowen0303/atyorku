@@ -1,0 +1,62 @@
+
+/*container*/
+.bg1 { background:url(../img/bg_index2.png) top left repeat-x; padding-bottom:30px}
+#container { width:1000px; margin:0 auto}
+.logo { background:url(../img/logo_index2.png) no-repeat 50% 80px; height:205px}
+.logo_in { width:1000px; overflow:hidden; margin:0 auto; position:relative; height:100%}
+.ahref { display:block; position:absolute; z-index:9;}
+#a_1 { left:359px; top:69px; width:312px; height:123px;}
+
+/*index*/
+.news { margin:50px 140px;}
+.news a { color:#CCC; text-decoration:underline}
+.newsConTit { color:#CCC; text-indent:-1em; padding-top:10px; font-weight:bold}
+.author { text-align:right; margin:20px 10px 0 0}
+
+
+/*test-pup*/
+#bgC { background:#000; position:absolute;}
+.pup {overflow:hidden;  position:absolute; left:0; top:0; display:none; width:200px;border:1px solid #333; background:#171717;  color:#fff; padding:10px 40px 20px 40px; border-radius:10px;}
+.close { text-align:right; color:#fff; padding-bottom:20px}
+.lb {text-align:center; font-size:13px}
+.pup a{ color:#fff; text-decoration:underline}
+.num { display:none}
+
+
+/*tab*/
+.tab_box .tab_tit dl { overflow:hidden; zoom:1 }
+.tab_box .tab_tit dd { float:left }
+.tab_box .tab_conin { display:none }
+.tab_box .tabconshow { display:block }
+
+
+
+/*tabother*/
+.tab1 .tab_tit dd { background:url(../img/bg-tabbtn2.png) no-repeat 0 0; width:154px; height:44px; overflow:hidden; cursor:pointer; line-height:44px; text-align:center; margin:0 4px;color:#bbb; font-family:"微软雅黑"; font-size:16px}
+.tab1 .tab_tit .hover { background-position:0 -55px; color:#fff; }
+.tab1 .tab_tit { padding-left:10px}
+.tab1 .tab_con { color:#fff; padding:30px; color:#aaa; border:1px solid #333; background:#181818 url(../img/bg_index3.png); color:#666; line-height:26px; border-radius:6px}
+.tab1 .tab_tit dd span { color:#fff; padding:0 3px; font-size:18px}
+
+.tab2 {position:relative; width:100%}
+.tab2 .tab_tit { position:absolute; right:0; top:0; width:50px;}
+.tab2 .tab_tit dd { width:30px; height:auto; clear:both; padding:15px 5px;layout-flow : horizontal; line-height:30px;border:none;  border-radius:0 5px 5px 0;background:#232323 none;text-align:center; margin:15px 0 0px 1px;color:#888; font-family:"微软雅黑"; font-size:16px}
+.tab2 .tab_tit .hover { background:#435f00;color:#fff; padding-right:10px}
+.tab2 .tab_tit { padding-left:0px}
+.tab2 .tab_con {border:1px solid #222;background:#151515;  width:568px;color:#fff; border-radius:0; padding:20px; height:500px}
+.tab2 .txtBox { padding-left:30px; font-size:14px; line-height:30px}
+.tab1 span { color:#900}
+
+.tab_con .tit1 { display:block; color:#82b800; font-size:16px; text-align:center; font-weight:bold; padding:10px; border-bottom:1px dashed #333; margin-bottom:10px}
+.tab_con .tit1 span { font-size:18px; padding:0 5px}
+.tab_con .tit2 {color:#82b800; font-size:14px; font-weight:bold; text-indent:-1em; margin-top:10px}
+
+
+.tuchme {padding:10px 20px; background:#4b0b00; border:1px solid #891400; color:#fff; font-size:14px; width:568px; color:#ccc}
+.tuchme b { color:#f6ff00; font-weight:normal; font-weight:bold; margin-left:20px}
+
+.wzbox { border:1px solid #222; background:#111; padding:20px; color:#ccc}
+.tuchmewz { width:616px}
+
+.back { text-align:center}
+.back a { display:block; width:150px; height:30px; line-height:30px; color:#FF0; background:#435f00; border:1px solid #6b9700; margin:0 auto;}

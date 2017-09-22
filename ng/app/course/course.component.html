@@ -1,0 +1,12 @@
+ <nav id="course_nav">
+        <ul>
+            <li class="p-y-1 p-x-3" [routerLink]="['/course',class.id]" (click)="courseService.current_course_class_id=class.id"
+                [class.course_class_active]="class.id==courseService.current_course_class_id" *ngFor="let class of courseClass">
+                {{class.title}}
+            </li>
+        </ul>
+ </nav>
+
+ <div id="course_content">
+    <router-outlet></router-outlet>
+ </div>

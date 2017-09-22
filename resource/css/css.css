@@ -1,0 +1,20 @@
+body { background: #efefef; font-size: 14px}
+
+#container { width:600px; margin: 0 auto; color: #4a4a4a}
+.title { font-size: 1.4em; padding: 2em; text-align: center; font-weight: bold}
+a {color: #ef054c; text-decoration: none}
+
+
+.commentBox { background: #f8f8f8; border-radius: 6px;padding:1.5em; line-height: 1.6em; margin-bottom: 1.5em}
+    .submitBox .tit { padding:10px 0}
+    .submitBox textarea { width: 96%;background: #f8f8f8; height:90px;border-radius: 6px; border:none; padding: 2%}
+    .submitBox .buttionBox { text-align: center; padding: 2em}
+    .submitBox .btn { width: 100px; height:40px; background: #444; border: none; cursor: pointer; color: #fff; transition: background 0.5s;}
+    .submitBox .btn:hover { background: #ef054c; transition: background 0.5s;}
+
+.pageArea { text-align:right}
+    .pageArea a { display: block-inline; background:#444; border-radius: 6px; color: #fff; width: 20px; height: 20px; line-height: 20px; padding: 5px 10px; text-decoration: none;transition: background 0.5s }
+    .pageArea a.current { background: #ef054c}
+    .pageArea a:hover {background: #ef054c; transition: background 0.5s}
+
+.msgArea { padding: 20%; text-align:center; line-height: 2em; background: #f8f8f8; border: 1px solid #626262; margin-top: 20%}

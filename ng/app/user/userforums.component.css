@@ -1,0 +1,153 @@
+
+@media only screen and (min-width : 40px) {
+
+    #container{
+        padding-top:2rem;
+        padding-left:2rem;
+        position:relative;
+        padding-right:6rem;
+        width:900px;
+    }
+
+    .pyqs{
+        margin-bottom:3.4rem;
+        width:700px;
+        position:relative;
+        left:50%;
+        transform:translate3d(-60%,0,0);
+    }
+
+    .pyq_container{
+        overflow:hidden;
+        margin-left:5rem;
+        padding:1rem 1rem;
+        box-shadow: 0 0 6px lightgrey;
+        cursor:pointer;
+    }
+    .pyq_img{
+        border-radius: 25px;
+        float: left;
+        height:50px;
+        width:50px;
+        cursor:pointer;
+        display:inline-block;;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size:cover;
+    }
+
+    .name{
+        color:#333333;
+    }
+    .gender{
+        margin-left:1rem;
+    }
+    .descript{
+        font-size:0.05rem;
+        color:#666666;
+        margin-top:0.5rem;
+    }
+    .content{
+        color:#666666;
+        margin-top:0.5rem;
+        margin-bottom:0.4rem;
+        font-size:0.95rem;
+        max-height:70px;
+        overflow:hidden;
+        text-overflow: ellipsis;
+    }
+    .pyq_img1{
+        display:inline-block;
+        margin-top:0.75rem;
+        margin-bottom:0.75rem;
+        max-height:150px;
+        max-width:700px;
+    }
+    .time,.comment_count,.read_count{
+        margin-right:0.4rem;
+        font-size:0.87rem;
+        color:#b7b7b7;
+    }
+
+    .delete{
+        font-size:0.87rem;
+        cursor:pointer;
+        color:#b7b7b7;
+    }
+
+
+    .forum_class_tag{
+        top:7px;
+        float:right;
+        border-radius:14px;
+        padding:0 17px;
+        font-size:14px;
+        position:relative;
+        background-color:white;
+        color:#6cbee4;
+        border:solid 1px #6cbee4;
+    }
+
+    .buy_tag{
+        top:7px;
+        float:right;
+        background-color:white;
+        border-radius:14px;
+        color:#f38d9e;
+        padding:0 17px;
+        font-size:14px;
+        margin-right:1rem;
+        position:relative;
+        border:solid 1px #f38d9e;
+
+    }
+    .sell_tag{
+        top:7px;
+        color:#51df9e;
+        float:right;
+        background-color:white;
+        border-radius:14px;
+        padding:0 17px;
+        font-size:14px;
+        margin-right:1rem;
+        position:relative;
+        border:solid 1px #51df9e;
+    }
+    .price_tag {
+        font-size: 18.2px;
+        float: right;
+        color: black;
+        margin-right: 1rem;
+        position:relative;
+        bottom:3px;
+    }
+
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+
+    #container{
+        width:100%;
+    }
+}
+
+@media only screen and (min-width: 1100px){
+
+}
+
+@media only screen and (min-width: 1350px){
+
+}
+

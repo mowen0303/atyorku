@@ -1,0 +1,23 @@
+<div id="container">
+    <a  *ngFor="let guide of guides" style="display:block;cursor:pointer"  [hidden]="iframe['loadIframe']" [routerLink]="['/guide/detail',guide.id]">
+        <div class="guides">
+            <div class="cover" [style.background-image]="sanitizeStyle(guide.cover)">
+            </div>
+            <h5 class="title">
+                {{guide.title}}
+            </h5>
+            <h6 class="time b">
+                {{guide.time}}
+            </h6>
+            <p class="intro">
+                {{guide.introduction}}
+            </p>
+            <div class="read">
+                <img src="resource/img/guide_icon/read.png" height="14" width="14"/>
+                <span class="tag1">{{guide.view_no}}</span>
+                <span *ngIf="guide_class_id==0" class="tag2">{{guide.classTitle}}</span>
+            </div>
+        </div>
+    </a>
+    <img id="loading_image" [hidden]="!page_loading" src="resource/img/loading.gif" height="70" width="70"/>
+</div>

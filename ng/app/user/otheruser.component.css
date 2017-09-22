@@ -1,0 +1,86 @@
+
+@media only screen and (min-width : 40px) {
+    body{
+        height:100vh;
+    }
+    #container{
+        position:relative;
+        width:900px;
+        padding-top:80px;
+    }
+    #profile_container{
+        width:400px;
+        position:relative;
+        top:5rem;
+        box-shadow: 0 0 7px lightgrey;
+        padding-top:3.7rem;
+        padding-bottom:1rem;
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+    #profile_picture{
+        position:absolute;
+        left:50%;
+        top:0;
+        border-radius:100px;
+        transform:translate3d(-50%,-50%,0);
+        border:solid 4px #f6f6f6;
+    }
+    #alias{
+        text-align: center;
+        color:black;
+
+    }
+
+    #memo{
+        text-align:center;
+        padding:0 1.9rem;
+        font-size:0.94rem;
+        color:#939393;
+        margin-bottom:2rem;
+    }
+    #attributes{
+        padding:0 3rem;
+    }
+    .attribute:first-child{
+        border-top:solid 1px #eeeeee;
+    }
+    .attribute{
+        padding:1rem 0;
+        text-align: center;
+        border-bottom:solid 1px #eeeeee;
+        font-size:0.95rem;
+        color:#707070;
+    }
+
+
+
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+
+    #container{
+        width:100%;
+    }
+}
+
+@media only screen and (min-width: 1100px){
+
+}
+
+@media only screen and (min-width: 1350px){
+
+}
+

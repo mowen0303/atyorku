@@ -1,0 +1,28 @@
+<div id="container" *ngIf="info">
+    <div id="profile_container">
+        <img [attr.src]="info.img" height="85" width="85" id="profile_picture"/>
+        <div style="text-align:center;margin-bottom:1.5rem">
+            <span id="alias">
+                {{info.alias}}
+            </span>
+            <img [attr.src]="info.gender" height="16" width="16" style="position:relative;bottom:3.5px" *ngIf="info.gender">
+        </div>
+
+        <p id="memo">{{info.description}}</p>
+        <ul id="attributes">
+            <li class="attribute">
+                专业:&nbsp;{{info.major}}
+            </li>
+            <li class="attribute">
+                年级:&nbsp;{{info.enrollYearTranslate}}
+            </li>
+            <li class="attribute">
+                微信号:&nbsp;{{info.wechat}}
+            </li>
+
+            <li class="attribute">
+                用户组:&nbsp;
+            </li>
+        </ul>
+    </div>
+</div>

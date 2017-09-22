@@ -1,0 +1,35 @@
+/* CSS Document */
+* { margin:0; padding:0;}
+ul,dl,ol { list-style:none;}
+a { text-decoration:none; color:#666;  blr:expression(this.onFocus=this.blur());outline:0; zoom:1; cursor:pointer}
+img { border:0;}
+div { cursor:default}
+.fl { float:left}
+.fr { float:right}
+input {border-radius:4px}
+body { line-height:22px; font-size:13px; color:#666666; font-family:Verdana,"宋体",Geneva,sans-serif; background:#222222 url(../img/bg_index1.gif) top left}
+
+
+/*container*/
+.bg1 { background:url(../img/bg_index2.png) top left repeat-x}
+#container { width:1000px; margin:0 auto}
+.logo { background:url(../img/logo_index.png) no-repeat 50% 80px; height:205px}
+
+
+/*index*/
+.news { margin:40px 280px; color:#aaa; border:1px solid #333; background:#181818 url(../img/bg_index3.png); padding:20px 30px 20px 40px; color:#666; line-height:26px; border-radius:6px}
+.news p { text-indent:2em}
+.news  span { color:#fff}
+.news a { color:#CCC; text-decoration:underline}
+.newsTit { font-size:16px; margin-bottom:10px; padding-left:140px;font-weight:bold; color:#aaa}
+.newsConTit { color:#CCC; text-indent:-1em; padding-top:10px; font-weight:bold}
+.author { text-align:right; margin:20px 10px 0 0}
+
+
+/*test-pup*/
+#bgC { background:#000; position:absolute;}
+.pup {overflow:hidden;  position:absolute; left:0; top:0; display:none; width:200px;border:1px solid #333; background:#171717;  color:#fff; padding:10px 40px 20px 40px; border-radius:10px;}
+.close { text-align:right; color:#fff; padding-bottom:20px}
+.lb {text-align:center; font-size:13px}
+.pup a{ color:#fff; text-decoration:underline}
+.num { display:none}

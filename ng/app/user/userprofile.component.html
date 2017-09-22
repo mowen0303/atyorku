@@ -1,0 +1,108 @@
+<div id="container" *ngIf="info">
+    <h6  id="edit_password_message" [hidden]="!edit_password_msg">{{edit_password_msg}}</h6>
+    <div id="profile_container" [hidden]="profile_hidden">
+        <div [attr.src]="info.img" height="85" width="85" [style.background-image]="sanitizeStyle(info.img)" id="profile_picture">
+
+        </div>
+        <div style="text-align:center;margin-bottom:1.5rem">
+            <span  id="alias">
+                {{info.alias}}
+            </span>
+            <img [attr.src]="info.gender" height="16" width="16" style="position:relative;bottom:3.5px"*ngIf="info.gender">
+        </div>
+        <p id="memo">{{info.description}}</p>
+        <ul id="attributes">
+            <li class="attribute">
+                专业:&nbsp;{{info.major}}
+            </li>
+            <li class="attribute">
+               年级:&nbsp;{{info.enrollYearTranslate}}
+            </li>
+            <li class="attribute">
+                微信号:&nbsp;{{info.wechat}}
+            </li>
+            <li class="attribute">
+               账号:&nbsp;{{info.name}}
+            </li>
+            <li class="attribute">
+                用户组:&nbsp;
+            </li>
+            <li class="attribute">
+                点券:&nbsp;0
+            </li>
+            <li class="attribute">
+                注册时间:&nbsp;{{info.registertime}}
+            </li>
+            <li id="change" style="text-align: center" class="m-t-2">
+                <span (click)="showEditProfile()">编辑个人信息</span>
+                <span (click)="showEditPassword()">更改密码</span>
+            </li>
+
+        </ul>
+    </div>
+    <div id="profile_change_container" [hidden]="edit_profile_hidden">
+        <ul id="attributes_change">
+            <li class="attribute_change">
+                <label class="change_tag" [hidden]="editAlias" id="image_upload_label" for="file">修改头像</label>
+                <div id="head" #image [style.background-image]="sanitizeStyle(info.img)"></div>
+                <input type="file" #file id="file" name="img1" (change)="imageChangeListener($event,image)" accept="image/*"/>
+            </li>
+            <li class="b attribute_change">
+                <span class="change_tag" [hidden]="editAlias" (click)="edit_alias()" >修改</span>
+                <span class="finish_change_tag" [hidden]="!editAlias" (click)="edit_alias_done()">完成</span>
+                <span [hidden]="editAlias">昵称:&nbsp;{{info.alias}}</span>
+                <input class="form-control" [hidden]="!editAlias" [(ngModel)]="editInfo.alias"/>
+            </li>
+            <li class="attribute_change">
+                <span class="change_tag" [hidden]="editGender" (click)="edit_gender(gender)">修改</span>
+                <span class="finish_change_tag" id="finish_change_tag_gender" [hidden]="!editGender" (click)="edit_gender_done(gender)">完成</span>
+                <span [hidden]="editGender">性别:&nbsp;<img [attr.src]="info.gender" height="16" width="16" style="position:relative;bottom:2.5px"*ngIf="info.gender"></span>
+                <select [hidden]="!editGender" [(ngModel)]="editInfo.gender" #gender>
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </li>
+            <li class="attribute_change">
+                <span class="change_tag" [hidden]="editDescription" (click)="edit_description()">修改</span>
+                <span class="finish_change_tag" [hidden]="!editDescription" (click)="edit_description_done()">完成</span>
+                <span [hidden]="editDescription">个性签名:&nbsp;</span>
+                <span [hidden]="editDescription">{{info.description}}</span>
+                <input class="form-control" [hidden]="!editDescription" [(ngModel)]="editInfo.description"/>
+            </li>
+            <li class="attribute_change">
+                <span class="change_tag" [hidden]="editMajor" (click)="edit_major()">修改</span>
+                <span class="finish_change_tag" [hidden]="!editMajor" (click)="edit_major_done()">完成</span>
+                <span [hidden]="editMajor">专业:&nbsp;{{info.major}}</span>
+                <input class="form-control" [hidden]="!editMajor" [(ngModel)]="editInfo.major"/>
+            </li>
+            <li class="attribute_change">
+                <span class="change_tag" [hidden]="editYear">修改</span>
+                <span class="finish_change_tag" [hidden]="!editYear">完成</span>
+                <span [hidden]="editYear">年级:&nbsp;{{info.enrollYearTranslate}}</span>
+                <input class="form-control" [hidden]="!editYear" [(ngModel)]="editInfo.year"/>
+            </li>
+            <li class="attribute_change">
+                <span class="change_tag" [hidden]="editWechat" (click)="edit_wechat()">修改</span>
+                <span class="finish_change_tag" [hidden]="!editWechat" (click)="edit_wechat_done()">完成</span>
+                <span [hidden]="editWechat">微信号:&nbsp;{{info.wechat}}</span>
+                <input class="form-control" [hidden]="!editWechat" [(ngModel)]="editInfo.wechat"/>
+            </li>
+        </ul>
+    </div>
+    <form id="password_change_container" *ngIf="!edit_password_hidden" #form="ngForm">
+        <h5>修改密码</h5>
+        <hr>
+        <h6 id="edit_password_error_message" [hidden]="!edit_password_error_message">{{edit_password_error_message}}</h6>
+        <span>原密码:</span>
+        <input type="password" required class="form-control" name="original_password" ngModel/>
+        <br/>
+        <span>新密码:</span>
+        <input type="password" required class="form-control" name="new_password" ngModel/>
+        <br/>
+        <span class="c">确认新密码:</span>
+        <input type="password" required class="form-control" name="check_password" ngModel/>
+        <br/>
+        <button class="btn btns" (click)="updatePassword(form)" >修改</button>
+        <button type="button" class="btn btns" (click)="showProfile()">取消</button>
+    </form>
+</div>

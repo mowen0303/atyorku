@@ -1,0 +1,252 @@
+
+@media only screen and (min-width : 40px) {
+
+
+        #rate_button{
+            color:white;
+        }
+
+        #comment_button{
+            color:white;
+            background-color:#DB2D34;
+
+        }
+    #container {
+        padding-top: 3rem;
+        padding-left: 3rem;
+        padding-bottom: 3rem;
+        position: relative;
+        padding-right: 6rem;
+        width:800px;
+        left:60px;
+    }
+
+    #credit{
+        font-size:0.8rem;
+        color:#666666;
+    }
+    #course_name{
+        font-size:0.8rem;
+        color:#999999;
+    }
+    #rectangles{
+        height:130px;
+    }
+    #rectangles>div{
+        float:left;
+        border-radius:5px;
+    }
+
+    #diff{
+        width:300px;
+        height:130px;
+        background-color:#FFF3CD;
+    }
+    #diff > img{
+        position:relative;
+        top:60px;
+        transform:translate3d(-50%,-105%,0);
+        left:50%
+    }
+    #diff > h6{
+        color:#666666;
+        text-align:center;
+        position:relative;
+        top:55.6%;
+        transform:translateY(-105%)
+    }
+
+    #average{
+        width:120px;
+        height:130px;
+        background-color:#CDF5C0;
+    }
+    #average >h5{
+        color:#63BE43;
+        text-align:center;
+        position:relative;
+        top:50%;
+        transform:translateY(-105%)
+    }
+    #average > h6{
+        color:#63BF43;
+        text-align:center;
+        position:relative;
+        top:50%;
+        transform:translateY(-105%);
+    }
+    #pass_rate{
+        height:130px;
+        width:120px;
+        background-color:#BEE2FB;
+    }
+    #pass_rate> h5{
+        color:#4990E2;
+        text-align:center;
+        position:relative;
+        top:50%;
+        transform:translateY(-105%);
+    }
+    #pass_rate> h6{
+        color:#4A90E2;
+        text-align:center;
+        position:relative;
+        top:50%;
+        transform:translateY(-105%);
+    }
+
+    #rate_button{
+        font-size:16px;
+        padding:20px 120px;
+    }
+    #options{
+        margin-top:2rem;
+        margin-bottom: 1rem;
+        border-bottom: solid 1px lightgrey;
+    }
+    .option_button{
+        width:100px;
+        color:#999999;
+        border:1px solid lightgrey;
+        border-bottom: none;
+        margin-right:0.38rem;
+        cursor:pointer;
+        border-radius:2px;
+        font-size:0.88rem;
+    }
+    .option_button:hover{
+        background-color:#F4F4F4;
+    }
+    .option_button_clicked{
+        background-color:#F4F4F4;
+    }
+    .option_button_not_clicked{
+        background-color:white;
+    }
+
+    #course_detail > h6{
+        font-size:15px;
+        padding-left:1rem;
+        color:#333333;
+        border-left:solid #999999 3px;
+        margin-top:3rem;
+    }
+
+    #course_detail >pre{
+        font-size:13.5px;
+        color:#999999;white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+    #author{
+        margin-top:3rem;
+    }
+
+    #author >div{
+        border-radius:30px;
+        height:50px;
+        width:50px;
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position:center center;
+        position:relative;
+        bottom:5px;
+        left:50%;
+        transform:translate3d(-50%,0,0);
+
+    }
+
+    #author > h6{
+        color:#be2222;
+        font-size:0.95rem;
+        text-align: center;
+    }
+
+    #author > pre{
+        font-size:0.88rem;
+        color:#727272;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+
+
+    #comment_button{
+        font-size:14px;
+        padding:8.5px 36px;
+        float:right;
+        margin-top:1rem;
+    }
+    #comment{
+        margin-bottom: 4rem;
+    }
+
+    #comments{
+        margin-top:2rem;
+    }
+
+    .comment_container{
+        padding-left:5rem;
+    }
+    .comment_img{
+        border-radius: 25px;
+        float:left;
+        cursor:pointer;
+        display:inline-block;
+        height:50px;
+        width:50px;
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position:center center;
+    }
+
+    .name{
+        color:#333333;
+    }
+    .gender{
+        margin-left:1rem;
+    }
+    .comment{
+        margin-top:0.5rem;
+        margin-bottom:0.4rem;
+        font-size:0.95rem;
+        color:#848484;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+    .time{
+        margin-right:0.4rem;
+        font-size:0.87rem;
+        color:#b7b7b7;
+    }
+    .delete{
+        font-size:0.87rem;
+        cursor:pointer;
+        color:#b7b7b7;
+    }
+    #loading_image{
+        position:relative;
+        left:50%;
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+
+    #container{
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+
+}
+
+

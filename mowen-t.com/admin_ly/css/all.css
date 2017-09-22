@@ -1,0 +1,69 @@
+/* CSS Document */
+* { margin:0; padding:0;}
+ul,dl,ol { list-style:none;}
+a { text-decoration:none; color:#666; blr:expression(this.onFocus=this.blur());outline:none;}
+:focus {outline: 0;}
+img { border:0;}
+div { cursor:default}
+.fl { float:left}
+.fr { float:right}
+input {border-radius:4px}
+body { line-height:22px; font-size:13px; color:#666666; font-family:"微软雅黑",Verdana,"宋体",Geneva,sans-serif; background:#222222 url(../img/bg_login.gif) top left}
+
+/*fm*/
+.fmBoxTit { background:url(../img/bg_ConBoxTit.png) repeat-x; padding-left:15px; line-height:41px; height:41px; border:1px solid #cccccc; font-family:"微软雅黑"; font-weight:bold; color:#222; font-size:16px; border-radius:6px 6px 0 0}
+.fmBoxCon { border:1px solid #cccccc; border-top:none; overflow:hidden; zoom:1; border-radius:0 0 6px 6px; padding:40px}
+.fm dl { overflow:hidden; zoom:1; margin-bottom:10px}
+    .fm .code a { vertical-align:bottom; line-height:13px}
+    .fm dt,.fm dd { float:left}
+	.fm dt { font-size:14px; line-height:30px}
+    .fm dd input {font-family:Verdana, Geneva, sans-serif;height:18px; line-height:18px; padding:6px; border:1px solid #333; font-size:14px}
+    .fm dd .code { width:50px}
+	.fm .codeimg { border-radius:4px; cursor:pointer}
+.fmBtn { text-align:center; margin:12px 0; overflow:hidden; zoom:1}
+    .fmBtn * { margin:0 5px}
+    .resBtn {  display:inline-block; background:url(../img/bg_btn_green.gif) repeat-x #66ab00 left top;border:0px solid #346d00; line-height:30px; height:30px; padding:0 15px; cursor:pointer; color:#fff; border-radius:4px}
+.fm dl *,.fmBtn * { vertical-align:middle}
+
+.fmnone { display:none}
+
+
+.fm2 {}
+	.fm2 dl { margin-bottom:10px}
+	.fm2 dt {font-weight:bold; padding:10px 5px; color:#444; font-size:15px; color:#555}
+	.fm2 dd select { padding:4px; border-radius:4px; border:1px solid #d5d5d5; width:30%}
+	.fm2 dd { padding-left:5px}
+	.fm2 dd input { padding:8px; width:50%; border:1px solid #d5d5d5; background:#fbfbfb; line-height:20px; height:18px; font-family:Verdana, Geneva, sans-serif}
+	.fm2 dd .w1 { width:25%}
+	.fm2 dd .w2 { width:50%}
+	.fm2 dd .w3 { width:98%}
+	.fm2 dd option { padding:0px 5px}
+	
+.radioBox input { margin-left:10px}
+.radioBox * { cursor:pointer}
+
+/*container*/
+.loginBg { background:url(../img/bg_login2.png) top left repeat-x}
+#container { width:1000px; margin:0 auto}
+
+
+
+/*act*/
+#act { border-radius:6px}
+#act a {margin:0 20px; color:#333; text-decoration:underline}
+#act span { color:#F00; padding:0 5px}
+
+/*成功*/
+.act0 {border:1px solid #9ADF8F;padding:8px; padding-left:40px; background:url(../img/act_0.png) 10px 50% no-repeat #D5FFCE; margin:10px 0; color:#726652}
+   
+/*提示*/
+.act1 { border:1px solid #A2B4EE;padding:8px; padding-left:40px; background:url(../img/act_1.png) 10px 50% no-repeat #DBE3FF; margin:10px 0; color:#666452}
+    
+/*警告*/
+.act2 { border:1px solid #e6db55;padding:8px; padding-left:40px; background:url(../img/act_2.png) 10px 50% no-repeat #fffbcc; margin:10px 0; color:#666452}	
+	
+/*错误*/
+.act3 { border:1px solid #DF8F8F;padding:8px; padding-left:40px; background:url(../img/act_3.png) 10px 50% no-repeat #FFCECE; margin:10px 0; color:#666452}
+
+/*默认*/
+.errorTxt { border:1px solid #141414;  line-height:24px; padding:6px; margin-bottom:15px;border-radius:6px; background:url(../img/act_1.png) no-repeat 8px 50% #141414; padding-left:33px; color:#eee}

@@ -1,0 +1,52 @@
+* { margin:0; padding:0;}
+ul,dl,ol,li,dd,dt { list-style:none;}
+a { text-decoration:none;   color:#CCC;  blr:expression(this.onFocus=this.blur()); cursor:pointer;outline:0; zoom:1;}
+img { border:0;}
+body { line-height:22px; font-size:13px; color:#fff; background:#212121}
+
+#bodyloading { background-color:#fff; height:100%; width:100%; position:absolute; z-index:999}
+.loading { background:url(../img/loading.gif) no-repeat center center;}
+#loadingtxt { display:block; padding:5px 10px; position:absolute; left:50%; top:90%; width:220px; margin-left:-120px; color:#aaa; text-align:center; text-decoration:underline}
+
+
+
+
+#container { position:relative; overflow:hidden; width:100%;min-width:1100px;}
+	
+	#bgimg_box { width:100%; height:100%; position:absolute;}
+		#bgimg { width:100%}
+   /* #bgimg_line {  width:100%; height:100%;background:url(../img/bg2.png);position:fixed; left:0; top:0;}*/
+    #bgimg_line {  width:100%; height:100%;position:absolute; left:0; top:0;}
+.ui_lefttop { width:196px; height:150px; position:absolute; left:5%;top:0px; background:url(../img/bg3.png) no-repeat; z-index:101;}
+
+.loading { background:url(../img/loading.gif) no-repeat 50% 50%}
+
+
+/*menu*/
+#menuBg {background:url(../img/menubg.png); position:absolute; top:0; width:0; height:80px; z-index:100}
+#menuBox {  width:750px; height:80px;position:absolute; top:-80px; left:50%; margin-left:-375px; text-align:center;font-family:"微软雅黑";  font-size:14px; letter-spacing:2px; z-index:101}
+.menu { position:absolute;width:150px; height:100%; background:url(../img/menu.png) no-repeat; text-indent:-9999px; cursor:pointer;}
+
+	.m1 { left:0px; background-position:-25px -15px}
+	.m2 { left:150px; background-position:-25px -115px}
+	.m3 { left:300px; background-position:-25px -215px}
+	.m4 { left:450px; background-position:-25px -315px}
+	.m5 { left:600px; background-position:-25px -415px}
+	.m1:hover,.m1.hover { background-position:-225px -15px}
+	.m2:hover,.m2.hover { background-position:-225px -115px}
+	.m3:hover,.m3.hover { background-position:-225px -215px}
+	.m4:hover,.m4.hover { background-position:-225px -315px}
+	.m5:hover,.m5.hover { background-position:-225px -415px}
+	#menucur {width:150px; height:40px;  background:url(../img/menu_cur3.png) no-repeat top center; line-height:36px; color:#c4c4c4; position:absolute; bottom:-42px; display:none; cursor:default; z-index:101; overflow:hidden;}
+	
+	.menu a { display:block; color:#ccc; width:100%; height:100%}
+	
+	
+	
+
+	
+#say { position:fixed;z-index:999; top:0;}
+
+
+
+	

@@ -1,0 +1,113 @@
+@media only screen and (min-width : 320px) {
+    *{
+        padding:0;
+        margin:0;
+        font-family:"Heiti SC","Microsoft YaHei", "WenQuanYi Micro Hei", SimHei, tahoma, sans-serif;
+
+
+    }
+    a{
+        text-decoration:none;
+    }
+    ul{
+        list-style-type:none;
+    }
+    a:hover{
+        text-decoration:none;
+    }
+    body,html{
+        width:998px;
+    }
+    html{
+        overflow-x:scroll;
+    }
+    body {
+        overflow:visible;
+        min-height:100vh;
+    }
+    #content{
+        width:100vw !important;
+    }
+    #navbar{
+        height:56px;
+        background-color:#D0021B;
+        position:fixed;
+        width:998px;
+        z-index:9999;
+
+    }
+
+    #navbar>ul>li{
+        float:left;
+        position:relative;
+        top:50%;
+        transform:translate3d(0,-50%,0);
+        margin-left:1.5rem;
+        margin-right:3rem;
+
+    }
+    #navbar>ul{
+        position:relative;
+        height:56px;
+    }
+    .nav_icons{
+        display:inline-block;
+        width:22px;
+        height:22px;
+    }
+    #navbar>ul>li>a{
+        padding-top:0.46rem;
+        padding-bottom:0.46rem;
+    }
+    #navbar>ul>li>a>span{
+        position:relative;
+        margin-left:0.78rem;
+        top:1.5px;
+        color:white;
+    }
+
+    #navbar>ul>li>a:hover{
+        border-bottom: #ffed13 solid 2.5px;
+    }
+
+    .navlink{
+        cursor:pointer;
+    }
+
+    .link_active{
+        border-bottom: #ffed13 solid 2.5px;
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+}
+
+@media only screen and (min-width : 992px) {
+
+    body,html{
+        width:100vw;
+        overflow-x:hidden;
+    }
+    #navbar{
+        width:100vw;
+
+
+    }
+
+}
+
+
+@media only screen and (min-width : 1200px) {
+
+}
+
+@media only screen and (min-width : 1450px) {
+
+}

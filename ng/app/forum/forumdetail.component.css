@@ -1,0 +1,195 @@
+
+@media only screen and (min-width : 40px) {
+
+    #container{
+        padding-top:3.5rem;
+        padding-left:3.5rem;
+        position:relative;
+        padding-right:6rem;
+        width:800px;
+        left:60px;
+    }
+    #pyq_img{
+        float:left;
+        height:50px;
+        width:50px;
+        margin-right:2rem;
+        cursor:pointer;
+        border-radius: 25px;
+        display:inline-block;
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position:center center;
+    }
+    #pyq_container{
+        position:relative;
+        overflow:hidden;
+        margin-bottom:2rem;
+    }
+    #name{
+        color:#333333;
+    }
+    #gender{
+        margin-left:1rem;
+    }
+    #descript{
+        font-size:0.05rem;
+        color:#666666;
+        margin-top:0.5rem;
+    }
+    #content{
+        color:#666666;
+        margin-top:0.5rem;
+        margin-bottom:0.4rem;
+        font-size:0.95rem; white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+    #pyq_img1{
+        display:inline-block;
+        margin-top:0.75rem;
+        margin-bottom:0.75rem;
+        max-height:670px;
+        max-width:100%;
+    }
+    #time,#read_count{
+        margin-right:0.4rem;
+        font-size:0.87rem;
+        color:#b7b7b7;
+    }
+
+    #delete{
+        font-size:0.87rem;
+        cursor:pointer;
+        color:#b7b7b7;
+    }
+    #forum_class_tag{
+        float:right;
+        border-radius:14px;
+        padding:3px 17px;
+        font-size:14px;
+        color:#6cbee4;
+        background-color:white;
+        border:solid 1px #6cbee4;
+    }
+
+    #buy_tag{
+        float:right;
+        background-color:white;
+        color:#f38d9e;
+        border-radius:14px;
+        padding:3px 17px;
+        font-size:14px;
+        margin-right:1rem;
+        border:solid 1px #f38d9e;
+    }
+    #sell_tag{
+        background-color:white;
+        border:solid 1px #51df9e;
+        color:#51df9e;
+        float:right;
+        border-radius:14px;
+        padding:3px 17px;
+        font-size:14px;
+        margin-right:1rem;
+    }
+    #price_tag{
+        font-size:20px;
+        float:right;
+        color:black;
+        margin-right:1rem;
+    }
+
+    #add_comment{
+        margin-top:2rem;
+    }
+
+    #add_comment>p{
+        color:#666666;
+        font-size:14px;
+        margin-bottom:0;
+    }
+
+    #comment_button{
+        float:right;
+        background-color:#DB2D34;
+        font-size:14px;
+        padding:5px 35px;
+        margin-top:1.5rem;
+    }
+
+    .comments_z{
+        margin-bottom:2rem;
+        padding-left:82px;
+    }
+
+    .comment_container_z{
+        padding-left:4.5rem;
+    }
+    .comment_img_z{
+        border-radius: 25px;
+        float:left;
+        cursor:pointer;
+        display:inline-block;
+        height:50px;
+        width:50px;
+        background-repeat: no-repeat;
+        background-size:cover;
+        background-position:center center;
+    }
+
+    .name_z{
+        color:#333333;
+    }
+    .gender_z{
+        margin-left:1rem;
+    }
+    .comment_z{
+        margin-top:0.5rem;
+        margin-bottom:0.4rem;
+        font-size:0.95rem;
+        color:#848484;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+    .time_z{
+        margin-right:0.4rem;
+        font-size:0.87rem;
+        color:#b7b7b7;
+    }
+    .delete_z{
+        font-size:0.87rem;
+        cursor:pointer;
+        color:#b7b7b7;
+    }
+    #loading_image{
+        position:relative;
+        left:65%;
+    }
+}
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+
+
+}
+
+@media only screen and (min-width : 992px) {
+    #container{
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+}
+
+@media only screen and (min-width: 1100px){
+
+}
+
+@media only screen and (min-width: 1350px){
+
+}

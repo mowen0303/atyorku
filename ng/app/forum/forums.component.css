@@ -1,0 +1,248 @@
+
+@media only screen and (min-width : 40px) {
+
+    #container {
+        padding-top: 2rem;
+        padding-left: 2rem;
+        position: relative;
+        padding-right: 6rem;
+        width: 925px;
+        left:50px;
+    }
+
+    .pyqs {
+        margin-bottom: 3.4rem;
+    }
+
+    .pyq_container {
+        overflow: hidden;
+        margin-left: 5rem;
+        padding: 1rem 1rem;
+        box-shadow: 0 0 6px lightgrey;
+        cursor:pointer;
+    }
+
+    .pyq_img {
+        border-radius: 25px;
+        float: left;
+        height:50px;
+        width:50px;
+        cursor:pointer;
+        display:inline-block;;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size:cover;
+    }
+
+    .name {
+        color: #333333;
+    }
+
+    .gender {
+        margin-left: 1rem;
+    }
+
+    .descript {
+        font-size: 0.05rem;
+        color: #666666;
+        margin-top: 0.5rem;
+    }
+
+    .content {
+        color: #666666;
+        margin-top: 0.5rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+        max-height: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+    }
+
+    .pyq_img1 {
+        display: inline-block;
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+        max-height: 150px;
+        max-width: 700px;
+        cursor: pointer;
+    }
+
+    .time, .comment_count, .read_count {
+        margin-right: 0.4rem;
+        font-size: 0.87rem;
+        color: #b7b7b7;
+    }
+    .delete {
+        font-size: 0.87rem;
+        cursor: pointer;
+        color: #b7b7b7;
+    }
+
+    /*upload box*/
+    #file {
+        width: 0.1px;
+        height: 0.1px;
+        position: absolute;
+        z-index: -9999;
+        opacity: 0;
+    }
+
+    #form_container {
+        overflow: hidden;
+    }
+
+    label {
+        background-image: URL("resource/img/forum_icon/photo.png");
+        background-size: 40%;
+        background-position: center center;
+        height: 120px;
+        width: 120px;
+        background-color: #F4F4F4;
+        cursor: pointer;
+        float: right;
+        margin-left: 2rem;
+        border: dashed 1px lightgrey;
+        background-repeat: no-repeat;
+    }
+
+    textarea {
+        height: 120px;
+        margin-bottom: 1.5rem;
+    }
+
+    #form {
+        background-color: #FAFAFA;
+        position: relative;
+        padding: 1.5rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    select {
+        display: inline-block;
+        height: 34px;
+        width: 140px;
+        vertical-align: top;
+    }
+
+    #price {
+        display: inline-block;
+        height: 34px;
+        width: 140px;
+        vertical-align: top;
+    }
+
+    #button_container {
+        display: inline-block;
+        vertical-align: top;
+        font-size: 0;
+    }
+
+    .buttons {
+        font-size: 14px;
+        width: 60px;
+        height: 34px;
+    }
+
+    #buy {
+        border-radius: 4px 0 0 4px !important;
+    }
+
+    #sell {
+        border-radius: 0 4px 4px 0 !important;
+    }
+
+    #submit {
+        width: 75px;
+        height: 34px;
+        float: right;
+        font-size: 14px;
+        color: white;
+    }
+
+    #clear {
+        float: right;
+        width: 75px;
+        height: 34px;
+        font-size: 14px;
+        color: white;
+        margin-right: 1rem;
+    }
+
+    /*upload box*/
+    .forum_class_tag {
+        float: right;
+        color: white;
+        border-radius: 14px;
+        padding: 0 17px;
+        font-size: 14px;
+        position: relative;
+        background-color: #6cbee4;
+    }
+
+    .buy_tag {
+        float: right;
+        color: white;
+        border-radius: 14px;
+        background-color: #f38d9e;
+        padding: 0 17px;
+        font-size: 14px;
+        margin-right: 1rem;
+        position: relative;
+
+    }
+
+    .sell_tag {
+        background-color: #51df9e;
+        float: right;
+        color: white;
+        border-radius: 14px;
+        padding: 0 17px;
+        font-size: 14px;
+        margin-right: 1rem;
+        position: relative;
+    }
+
+    .price_tag {
+        font-size: 18.2px;
+        float: right;
+        color: black;
+        margin-right: 1rem;
+    }
+    #loading_image{
+        position:relative;
+        left:50%;
+    }
+}
+
+
+
+@media only screen and (min-width : 480px) {
+
+}
+
+
+@media only screen and (min-width : 768px) {
+
+}
+
+@media only screen and (min-width : 992px) {
+
+    #container{
+        left:50%;
+        transform:translate3d(-50%,0,0);
+    }
+}
+
+@media only screen and (min-width: 1100px){
+
+}
+
+@media only screen and (min-width: 1350px){
+
+}
+
+
+
+
