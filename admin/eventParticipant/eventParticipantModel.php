@@ -10,122 +10,76 @@ class EventParticipant extends Model
 {
 
     /**
-     * 添加一则活动
+     * 添加一个活动参与人
+     * need to check if max_pariticipant< count_participant
      * @return $bool
      */
-    public function addEvent($event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sponsor_profile_img_url)
+    public function addEvent($event_id,$user_id)
     {
         $arr = [];
-        $arr["event_category_id"] = $event_category_id;
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["intro"] = $intro;
-        $arr["expiration_time"] = $expiration_time;
-        $arr["publish_time"] = time();
-        $arr["event_time"] = $event_time;
-        $arr["poster_url"] = $poster_url;
-        $arr["location_link"] = $location_link;
-        $arr["qr_code_url"] = $qr_code_url;
-        $arr["registration_fee"] = $registration_fee;
-        $arr["max_particippants"]=$max_participants;
-        $arr["count_participants"] = 0;
-        $arr["count_views"] = 0;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["sponsor_telephone"] = $sponsor_telephone;
-        $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_profile_img_url"] = $sponsor_profile_img_url;
-        $arr["sponsor_email"] = $sponsor_email;
-        $bool = $this->addRow("event", $arr);
+        $arr["event_id"] = $event_id;
+        $arr["user_id"] = $user_id;
+        $arr["register_time"] = time();
+        $bool = $this->addRow("event_participant", $arr);
         if ($bool) {
-            $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
+            $sql = "UPDATE event SET count_participants = (SELECT COUNT(*) from event_participant WHERE event_id = {$event_id}) WHERE id = {$event_id}";
             $this->sqltool->query($sql);
         }
         return $bool;
     }
 
     /**
-     * 查询一则活动，返回一维键值数组
+     *
      */
-    public function getEvent($id)
+    public function getEventParticipant($id)
     {
-        $sql = "SELECT * from event WHERE id = {$id}";
+        $sql = "SELECT * from event_participant WHERE id = {$id}";
         $result = $this->sqltool->getRowBySql($sql);
         return $result;
     }
 
-    /*调出一页广告
-     * 返回二维数组
+    /*调出指定活动下的所有参与者
+     *
      */
-    public function getEventsByCategory($event_category_id,$flag = "effective"){
-        $currentTime = time();
+    public function getParticipantsByEvent($event_id){
 
-        if ($flag == "effective") {
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ";
-            $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time";
+            $sql = "SELECT * FROM event_participant WHERE event_id = {$event_id} ";
+            $countSql = "SELECT * FROM event_participant WHERE event_id = {$event_id}";
             return $this->getListWithPage("event", $sql, $countSql, 20);
-        }
-        else{
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time)";
-            $countSql = "SELECT count(*) FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time)";
-            return $this->getListWithPage("event", $sql, $countSql, 20);
-        }
+
     }
 
     /**
-     * 更改一则活动
-     * @return bool
+     *
+     *
      */
-    public function updateEvent($id,$event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                                $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sponsor_profile_img_url)
+    public function updateEventParticipant($id,$event_id,$user_id)
     {
         $arr = [];
-        $arr["id"] = $id;
-        $arr["event_category_id"] = $event_category_id;
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["intro"] = $intro;
-        $arr["expiration_time"] = $expiration_time;
-        $arr["event_time"] = $event_time;
-        $arr["poster_url"] = $poster_url;
-        $arr["location_link"] = $location_link;
-        $arr["qr_code_url"] = $qr_code_url;
-        $arr["registration_fee"] = $registration_fee;
-        $arr["max_particippants"]=$max_participants;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["sponsor_telephone"] = $sponsor_telephone;
-        $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_profile_img_url"] = $sponsor_profile_img_url;
-        $arr["sponsor_email"] = $sponsor_email;
-        $bool = $this->updateRowById("event", $id, $arr);
+        $arr["user_id"] = $user_id;
+        $arr["event_id"] = $event_id;
+        $bool = $this->updateRowById("event_participant", $id, $arr);
         return $bool;
     }
 
     /**
-     * 删除一则活动
+     * 删除一个活动参与人
      * @return bool
      */
-    public function deleteEvent($id)
+    public function deleteEventParticipant($id)
     {
-        $sql = "SELECT * FROM event WHERE id = {$id}";
-        $event_category_id = $this->sqltool->getRowBySql($sql)["event_category_id"];
-        $sql = "DELETE FROM ad WHERE id = {$id}";
+        $sql = "SELECT * FROM event_participant WHERE id = {$id}";
+        $event_id = $this->sqltool->getRowBySql($sql)["event_id"];
+        $sql = "DELETE FROM event_participant WHERE id = {$id}";
         $bool = $this->sqltool->query($sql);
         if ($bool) {
-            $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
+            $sql = "UPDATE event SET count_participants = (SELECT COUNT(*) from event_participant WHERE event_id = {$event_id}) WHERE id = {$event_id}";
             $this->sqltool->query($sql);
         }
         return $bool;
     }
 
-    /**
-     * @更新阅读量
-     */
-    public function addAmountOfRead($id)
-    {
-        $sql = "UPDATE event SET count_views = count_views + 1 WHERE id = " . $id;
-        $this->sqltool->query($sql);
-    }
+
 }
 
 

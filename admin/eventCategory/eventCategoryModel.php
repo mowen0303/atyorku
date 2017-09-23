@@ -49,7 +49,7 @@ class EventCategoryModel extends Model {
         return $this->updateRowById("event_category",$id,$arr);
     }
 
-    /*删除一个分类，确保该分类下没有任何广告
+    /*删除一个分类，确保该分类下没有任何活动
      * @return $bool
      */
     public function deleteEventCategory($id){
@@ -60,7 +60,7 @@ class EventCategoryModel extends Model {
             return $this->sqltool->query($sql);
         }
         else{
-            BasicTool::throwException("请删除分类下的所有广告");
+            BasicTool::throwException("请删除分类下的所有活动");
         }
     }
 }

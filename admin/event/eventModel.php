@@ -80,7 +80,6 @@ class EventModel extends Model
                                 $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sponsor_profile_img_url)
     {
         $arr = [];
-        $arr["id"] = $id;
         $arr["event_category_id"] = $event_category_id;
         $arr["title"] = $title;
         $arr["description"] = $description;
@@ -109,7 +108,7 @@ class EventModel extends Model
     {
         $sql = "SELECT * FROM event WHERE id = {$id}";
         $event_category_id = $this->sqltool->getRowBySql($sql)["event_category_id"];
-        $sql = "DELETE FROM ad WHERE id = {$id}";
+        $sql = "DELETE FROM event WHERE id = {$id}";
         $bool = $this->sqltool->query($sql);
         if ($bool) {
             $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
