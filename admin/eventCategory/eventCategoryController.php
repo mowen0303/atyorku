@@ -1,24 +1,22 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$adCategoryModel = new admin\adCategory\AdCategoryModel();
+$eventCategoryModel = new admin\eventCategory\EventCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get("action"));
 
 /**
- * 添加一则广告分类
- * @param $size
+ * 添加一则活动分类
  * @param $title
  * @param $description
  */
-function addAdCategory(){
-    global $adCategoryModel;
+function addEventCategory(){
+    global $eventCategoryModel;
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
-        $size = BasicTool::post("size");
         $title = BasicTool::post("title");
         $description = BasicTool::post("description");
-        $adCategoryModel->addAdCategory($size,$title,$description);
+        $eventCategoryModel->addEventCategory($title,$description);
         BasicTool::echoMessage("添加成功");
     }
     catch (Exception $e){
@@ -28,16 +26,16 @@ function addAdCategory(){
 }
 
 /**
- * 添加一则广告分类
+ * 删除一则活动分类
  * @param $id
  */
-function deleteAdCategory(){
-    global $adCategoryModel;
+function deleteEventCategory(){
+    global $eventCategoryModel;
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
         $id = BasicTool::post("id","请指定将被删除的分类id");
-        $adCategoryModel->deleteAdCategory($id[0]);
+        $eventCategoryModel->deleteEventCategory($id[0]);
         BasicTool::echoMessage("删除成功");
     }
     catch (Exception $e){
@@ -46,34 +44,33 @@ function deleteAdCategory(){
 }
 
 /**
- * 查询一则广告分类
+ * 查询一则活动分类
  * @param $id
  */
-function getAdCategory(){
-    global $adCategoryModel;
+function getEventCategory(){
+    global $eventCategoryModel;
     $id = BasicTool::get("id","请指定分类id");
-    BasicTool::echoJson(1,"成功",$adCategoryModel->getAdCategory($id));
+    BasicTool::echoJson(1,"成功",$eventCategoryModel->getEventCategory($id));
 }
 
-function getAdCategories(){
-    global $adCategoryModel;
-    BasicTool::echoJson(1,"成功",$adCategoryModel->getAdCategories());
+function getEventCategories(){
+    global $eventCategoryModel;
+    BasicTool::echoJson(1,"成功",$eventCategoryModel->getEventCategories());
 }
 
 /**
  * 更改一则广告分类
  * @param $id,$title,$description,$size
  */
-function updateAdCategory(){
-    global $adCategoryModel;
+function updateEventCategory(){
+    global $eventCategoryModel;
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
         $id = BasicTool::post("id","请指定分类ID");
-        $size = BasicTool::post("size");
         $title = BasicTool::post("title");
         $description = BasicTool::post("description");
-        $adCategoryModel->updateAdCategory($id,$size,$title,$description);
+        $eventCategoryModel->updateEventCategory($id,$title,$description);
         BasicTool::echoMessage("修改成功");
     }
     catch (Exception $e){

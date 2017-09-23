@@ -25,7 +25,7 @@ class EventCategoryModel extends Model {
      * 查询一则活动分类
      * @return 一维键值数组
      */
-    public function getAdCategory($id){
+    public function getEventCategory($id){
         $sql = "SELECT * from event_category WHERE id = {$id}";
         $result = $this->sqltool->getRowBySql($sql);
         return $result;
@@ -34,7 +34,7 @@ class EventCategoryModel extends Model {
     /*调出所有活动分类
      * 二维数组返回
      */
-    public function getAdCategories(){
+    public function getEventCategories(){
         $sql = "SELECT * FROM event_category";
         return $this->sqltool->getListBySql($sql);
     }
@@ -42,7 +42,7 @@ class EventCategoryModel extends Model {
     /*更改一个分类
      * @return $bool
      */
-    public function updateAdCategory($id,$title,$description){
+    public function updateEventCategory($id,$title,$description){
         $arr = [];
         $arr["title"] = $title;
         $arr["description"] = $description;
@@ -52,7 +52,7 @@ class EventCategoryModel extends Model {
     /*删除一个分类，确保该分类下没有任何广告
      * @return $bool
      */
-    public function deleteAdCategory($id){
+    public function deleteEventCategory($id){
         $sql = "SELECT count_events FROM event_category WHERE id = {$id}";
         $count_events = $this->sqltool->getRowBySql($sql)["count_events"];
         if($count_events == 0){
