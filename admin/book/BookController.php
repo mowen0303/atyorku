@@ -13,11 +13,13 @@ function modifyBook() {
     global $currentUser;
     try{
         $isUpdate = (BasicTool::post('flag') == 'update');
+        $bookUserId = false;    // 二手书卖家ID
         // 验证权限
         if ($isUpdate) {
             $arr['id'] = BasicTool::post('f_id',"二手书ID不能为空");
+            $bookUserId = $bookModel->getUserIdFromBookId($arr['id']) or BasicTool::throwException("无法找到二手书卖家ID");
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                $currentUser->userId == $bookModel->getUserIdFromBookId($arr['id']) or BasicTool::throwException("无权修改其他人的二手书");
+                $currentUser->userId == $bookUserId or BasicTool::throwException("无权修改其他人的二手书");
             }
         } else {
             $currentUser->isUserHasAuthority('BOOK') or BasicTool::throwException("权限不足");
@@ -31,15 +33,16 @@ function modifyBook() {
         // validate and format price
         !($price < 0) or BasicTool::throwException("价钱必须大于或等于0");
         $price = number_format($price, 2, '.', '');
-        // check user_id
-        $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
+        var_dump($userId);
         $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("此二手书所属分类不存在");
 
         // 执行
         if ($isUpdate) {
+            $userId = $bookUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
             $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $userId) or BasicTool::throwException($bookModel->errorMsg);
             BasicTool::echoMessage("修改成功","/admin/book/");
         } else {
+            $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
             $bookModel->addBook($name, $price, $description, $bookCategoryId, $userId) or BasicTool::throwException($bookModel->errorMsg);
             BasicTool::echoMessage("添加成功","/admin/book/");
         }
