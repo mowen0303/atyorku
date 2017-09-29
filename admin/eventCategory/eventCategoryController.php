@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $eventCategoryModel = new admin\eventCategory\EventCategoryModel();
+$test = new \admin\eventCategory\EventCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get("action"));
 
@@ -14,8 +15,8 @@ function addEventCategory(){
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
-        $title = BasicTool::post("title");
-        $description = BasicTool::post("description");
+        $title = BasicTool::post("title","specify title");
+        $description = BasicTool::post("description","specify description");
         $eventCategoryModel->addEventCategory($title,$description);
         BasicTool::echoMessage("添加成功");
     }

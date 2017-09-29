@@ -6,20 +6,26 @@ use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
-class EventParticipant extends Model
+class EventParticipantModel extends Model
 {
 
     /**
      * 添加一个活动参与人
-     * need to check if max_pariticipant< count_participant
      * @return $bool
      */
-    public function addEvent($event_id,$user_id)
+    public function addEventParticipant($event_id,$user_id)
     {
         $arr = [];
         $arr["event_id"] = $event_id;
         $arr["user_id"] = $user_id;
         $arr["register_time"] = time();
+        $sql = "SELECT max_participants,count_participants FROM event WHERE id={$event_id}";
+        $result = $this->sqltool->getRowBySql($sql);
+        $count_participants = $result["count_participants"];
+        $max_participants = $result["max_participants"];
+        echo $count_participants;
+        $count_participants < $max_participants or BasicTool::throwException("参与人数已满");
+
         $bool = $this->addRow("event_participant", $arr);
         if ($bool) {
             $sql = "UPDATE event SET count_participants = (SELECT COUNT(*) from event_participant WHERE event_id = {$event_id}) WHERE id = {$event_id}";
@@ -41,7 +47,7 @@ class EventParticipant extends Model
     /*调出指定活动下的所有参与者
      *
      */
-    public function getParticipantsByEvent($event_id){
+    public function getEventParticipantsByEvent($event_id){
 
             $sql = "SELECT * FROM event_participant WHERE event_id = {$event_id} ";
             $countSql = "SELECT * FROM event_participant WHERE event_id = {$event_id}";

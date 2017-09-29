@@ -26,7 +26,7 @@ function addEvent(){
 
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
-        $sponsor_email = BasicTool::post("spnsor_email");
+        $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
         $sponsor_profile_img_url = BasicTool::post("sponsor_profile_img_url");
 
@@ -45,13 +45,16 @@ function getEvent(){
     BasicTool::echoJson(1,"获取广告成功",$eventModel->getEvent($id));
 }
 
+/*
+ * @flag
+ */
 function getEventsByCategory(){
     global $eventModel;
     global $currentUser;
     try{
-        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
         $event_category_id = BasicTool::get("event_category_id","请指定广告分类id");
-        $result = $eventModel->getEventsByCategory($event_category_id);
+        $flag = BasicTool::get("flag");
+        $result = $eventModel->getEventsByCategory($event_category_id,$flag);
         BasicTool::echoJson(1,"查询成功",$result);
     }
     catch (Exception $e){
@@ -79,7 +82,7 @@ function updateEvent(){
     try{
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
 
-        $id = BasicTool::post("id");
+        $id = BasicTool::post("id","必须填写id");
         $event_category_id = BasicTool::post("event_category_id");
         $title = BasicTool::post("title");
         $description = BasicTool::post("description");
@@ -96,7 +99,7 @@ function updateEvent(){
 
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
-        $sponsor_email = BasicTool::post("spnsor_email");
+        $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
         $sponsor_profile_img_url = BasicTool::post("sponsor_profile_img_url");
 

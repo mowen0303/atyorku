@@ -28,7 +28,7 @@ class EventModel extends Model
         $arr["location_link"] = $location_link;
         $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;
-        $arr["max_particippants"]=$max_participants;
+        $arr["max_participants"]=$max_participants;
         $arr["count_participants"] = 0;
         $arr["count_views"] = 0;
         $arr["sponsor_name"] = $sponsor_name;
@@ -73,7 +73,8 @@ class EventModel extends Model
     }
 
     /**
-     * 更改一则活动
+     * 更改一则活动-----------update count on switching event_category_id---requires further implementation
+     *
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
@@ -90,13 +91,17 @@ class EventModel extends Model
         $arr["location_link"] = $location_link;
         $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;
-        $arr["max_particippants"]=$max_participants;
+        $arr["max_participants"]=$max_participants;
         $arr["sponsor_name"] = $sponsor_name;
         $arr["sponsor_telephone"] = $sponsor_telephone;
         $arr["sponsor_wechat"] = $sponsor_wechat;
         $arr["sponsor_profile_img_url"] = $sponsor_profile_img_url;
         $arr["sponsor_email"] = $sponsor_email;
         $bool = $this->updateRowById("event", $id, $arr);
+        if ($bool) {
+            $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
+            $this->sqltool->query($sql);
+        }
         return $bool;
     }
 
