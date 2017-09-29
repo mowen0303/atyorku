@@ -1,5 +1,5 @@
 <?php
-namespace admin\location;
+namespace admin\map;
 use \Model as Model;
 
 class LocationModel extends Model
@@ -10,7 +10,7 @@ class LocationModel extends Model
     public function __construct()
     {
         parent::__construct();
-        $this->table = "building_location";
+        $this->table = "map";
     }
 
     /**
@@ -75,6 +75,13 @@ class LocationModel extends Model
 
         $bool = $this->updateRowById($this->table, $id, $arr);
         return $bool;
+    }
+
+    public function getListOfLocation()
+    {
+        $sql = "SELECT * FROM {$this->table}";  // Add split page function in the future
+        $result = $this->sqltool->query($sql);
+        return $result;
     }
 
     /**
