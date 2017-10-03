@@ -231,10 +231,7 @@ class BasicTool
 
     public static function throwException($message, $code = 0)
     {
-
         throw new Exception($message, $code);
-
-
     }
 
     /**
@@ -338,7 +335,6 @@ class BasicTool
 
     public static function translateEnrollYear($timeStaple)
     {
-
         if ($timeStaple == 0) {
             return " ";
         }
