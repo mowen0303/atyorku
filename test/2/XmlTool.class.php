@@ -19,6 +19,7 @@ class XmlTool
      */
     public function extractLocalXml($xmlData, $targetTag)
     {
+
         static $arr = [];
 
         foreach ($xmlData->children() as $child) {
