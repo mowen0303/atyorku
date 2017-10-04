@@ -6,6 +6,13 @@ $startTime = time();
 //---------------------------------
 require_once 'XmlTool.class.php';
 
+
+a();
+
+function a (){
+    echo __FUNCTION__.":".basename(__FILE__);
+}
+
 //$xmlTool = new XmlTool();
 //@unlink("group3_result.xml");
 //$localXmlData = simplexml_load_file("data.xml");
