@@ -553,14 +553,20 @@ class UserModel extends Model
         $i = 0;
         while ($deviceArr = self::getListOfDevice($start, $size)) {
 
-            foreach ($deviceArr as $row) {
-                echo $i++ . "------UID:" . $row['id'] . "------" . $row['device'] . "<br>";
-                if (self::applePush($row['device'], "", $type, $typeId, $content, 1, $silent)) {
-                    echo "------成功<br>";
-                } else {
-                    echo "------失败<br>";
+
+                foreach ($deviceArr as $row) {
+                    if($row['id']>=742){
+                        echo $i++ . "------UID:" . $row['id'] . "------" . $row['device'] . "<br>";
+                        if (self::applePush($row['device'], "", $type, $typeId, $content, 1, $silent)) {
+                            echo "------成功<br>";
+                        } else {
+                            echo "------失败<br>";
+                        }
+                    }
+
                 }
-            }
+
+
             $start += $size;
 
         }

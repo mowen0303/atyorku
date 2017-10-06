@@ -12,10 +12,7 @@ if(BasicTool::get(share) != 1) {
     ?>
 
     <script>
-
         $(function () {
-
-
             $("title").text("<?php echo $arr['title']?> - AtYorkU");
             $(".clickAuthor").click(function () {
                 var url = 'jsbridge://doAction?<?php echo $arr['uid']?>';
@@ -64,7 +61,6 @@ if(BasicTool::get(share) != 1) {
     <address>文章作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span><br>发表日期：<data><?php echo BasicTool::translateTime($arr['time'])?></data></address>
     </div>
     <hr>
-    <br>
     <section>
         <?php echo $arr['content'];?>
     </section>

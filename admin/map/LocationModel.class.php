@@ -1,8 +1,6 @@
 <?php
-namespace admin\location;
+namespace admin\map;
 use \Model as Model;
-use \BasicTool as BasicTool;
-use \Exception as Exception;
 
 class LocationModel extends Model
 {
@@ -12,30 +10,31 @@ class LocationModel extends Model
     public function __construct()
     {
         parent::__construct();
-        $this->table = "building_location";
+        $this->table = "map";
     }
 
     /**
      * 添加一条大楼信息
      * @param $id int 两位数大楼ID
-     * @param $init char 大楼名称缩写（两个或三个大写字母）
-     * @param $fullName String 大楼全称
-     * @param $coordinate String 大楼地图坐标
-     * @param $info String 大楼简介
+     * @param $init varchar 大楼名称缩写（两个或三个大写字母）
+     * @param $fullName varchar 大楼全称
+     * @param $info varchar 大楼简介
+     * @param $lat double 纬度
+     * @param $lng double 经度
      * @return bool
      */
-    public function addLocation($id, $init, $fullName, $coordinate, $info)
+    public function addLocation($id, $init, $fullName, $info, $lat, $lng)
     {
         $arr = [];
         $arr["id"] = $id;
         $arr["init"] = $init;
         $arr["full_name"] = $fullName;
-        $arr["coordinate"] = $coordinate;
         $arr["info"] = $info;
+        $arr["lat"] = $lat;
+        $arr["lng"] = $lng;
 
         $bool = $this->addRow($this->table, $arr);
         if ($bool) {
-            // TODO - What is this???
             $sql = "TODO";
             $this->sqltool->query($sql);
         }
@@ -57,9 +56,9 @@ class LocationModel extends Model
     /**
      * 更改大楼信息
      * @param $id int *需要更改的大楼的ID
-     * @param $init char 大楼名称缩写（两个或三个大写字母）
-     * @param $fullName String 大楼全称
-     * @param $info String 大楼简介
+     * @param $init varchar 大楼名称缩写（两个或三个大写字母）
+     * @param $fullName varchar 大楼全称
+     * @param $info varchar 大楼简介
      * @param $lat double 纬度
      * @param $lng double 经度
      * @return bool
@@ -78,9 +77,16 @@ class LocationModel extends Model
         return $bool;
     }
 
+    public function getListOfLocation()
+    {
+        $sql = "SELECT * FROM {$this->table}";  // Add split page function in the future
+        $result = $this->sqltool->query($sql);
+        return $result;
+    }
+
     /**
-     * 用ID查询大楼信息
-     * @param $id 大楼ID
+     * 返回大楼信息
+     * @param $id int 大楼id
      * @return 大楼条目
      */
     public function getLocationById($id)
@@ -91,7 +97,7 @@ class LocationModel extends Model
 
     /**
      * 用大楼缩写查询大楼信息
-     * @param $init 大楼缩写
+     * @param $init varchar 大楼缩写
      * @return 大楼条目
      */
     public function getLocationByInit($init)

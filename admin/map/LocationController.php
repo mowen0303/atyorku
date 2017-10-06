@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$locationModel = new admin\map\LocationModel(); // TODO - namespace not found?
+$locationModel = new admin\map\LocationModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
@@ -35,7 +35,7 @@ function updateLocation() {
 
         // Validate id format
         ($id >= 0 && $id < 100) or BasicTool::throwException("请输入正确的id");
-        // TODO - Validate coordinate format
+        // In the future, validate coordinate format
 
         $locationModel->updateLocation($id, $init, $fullName, $info, $lat, $lng);
         BasicTool::echoMessage("大楼信息更新成功");
