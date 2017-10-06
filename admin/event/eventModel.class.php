@@ -31,6 +31,7 @@ class EventModel extends Model
         $arr["max_participants"]=$max_participants;
         $arr["count_participants"] = 0;
         $arr["count_views"] = 0;
+        $arr["count_comments"] = 0;
         $arr["sponsor_name"] = $sponsor_name;
         $arr["sponsor_telephone"] = $sponsor_telephone;
         $arr["sponsor_wechat"] = $sponsor_wechat;
