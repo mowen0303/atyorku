@@ -152,8 +152,9 @@ function deleteBookWithJson() {
 function uploadImgWithJson() {
     global $bookModel;
     global $imageModel;
+    global $currentUser;
     try {
-        $uploadArr = $imageModel->uploadImg("imgFile", "book/images") or BasicTool::throwException($imageModel->errorMsg);
+        $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId) or BasicTool::throwException($imageModel->errorMsg);
         BasicTool::echoJson(1, "上传成功", $uploadArr);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
@@ -174,8 +175,9 @@ function uploadImgWithJson() {
 */
 function uploadImages() {
     global $imageModel;
+    global $currentUser;
     if ($_FILES["imgFile"]["size"] != 0) {
-        $uploadArr = $imageModel->uploadImg("imgFile", "book/images") or BasicTool::throwException($imageModel->errorMsg);
+        $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId) or BasicTool::throwException($imageModel->errorMsg);
         $_POST["image_url"] = $uploadArr["image_url"];
         $_POST["thumbnail_url"] = $uploadArr["thumbnail_url"];
         $_POST["size"] = $uploadArr["size"];

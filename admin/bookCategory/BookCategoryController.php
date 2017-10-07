@@ -66,15 +66,5 @@ function deleteBookCategory() {
     BasicTool::echoMessage("删除成功");
 }
 
-function uploadImgWithJson(){
-
-    global $bookCategoryModel;
-    try {
-        $uploadDir =  $bookCategoryModel->uploadImg("imgFile","ad/images") or BasicTool::throwException($bookCategoryModel->errorMsg);
-        BasicTool::echoJson(1, "上传成功", $uploadDir);
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
-}
 
 ?>

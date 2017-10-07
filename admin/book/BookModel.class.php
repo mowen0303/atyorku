@@ -63,11 +63,39 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getListOfBooks($pageSize=20, $query=false) {
-        $sql = "SELECT b.id, b.name, b.price, b.description, b.image_id_one, b.image_id_two, b.image_id_three, b.publish_time, user.id as user_id, user.name as user_name, bc.id as book_category_id, bc.name as book_category_name, image.thumbnail_url as thumbnail_url FROM {$this->table} b INNER JOIN book_category bc ON b.book_category_id = bc.id INNER JOIN user ON b.user_id = user.id INNER JOIN image ON b.image_id_one = image.id";
-        $countSql = "SELECT COUNT(*) FROM {$this->table} b INNER JOIN book_category bc ON b.book_category_id = bc.id INNER JOIN user ON b.user_id = user.id INNER JOIN image ON b.image_id_one = image.id";
+        $sql = "SELECT
+                    b.id,
+                    b.name,
+                    b.price,
+                    b.description,
+                    b.image_id_one,
+                    b.image_id_two,
+                    b.image_id_three,
+                    b.publish_time,
+                    b.user_id,
+                    u.name AS user_name,
+                    bc.id AS book_category_id,
+                    bc.name AS book_category_name,
+                    img.thumbnail_url AS thumbnail_url
+                FROM
+                    `{$this->table}` b
+                LEFT JOIN `book_category` bc ON
+                    b.book_category_id = bc.id
+                LEFT JOIN `user` u ON
+                    b.user_id = u.id
+                LEFT JOIN `image` img ON
+                    b.image_id_one = img.id";
+        $countSql = "SELECT COUNT(*) FROM
+                            `{$this->table}` b
+                        LEFT JOIN `book_category` bc ON
+                            b.book_category_id = bc.id
+                        LEFT JOIN `user` u ON
+                            b.user_id = u.id
+                        LEFT JOIN `image` img ON
+                            b.image_id_one = img.id";
         if ($query) {
-            $sql = "{$sql} AND {$query}";
-            $countSql = "{$countSql} AND {$query}";
+            $sql = "{$sql} WHERE ({$query})";
+            $countSql = "{$countSql} WHERE ({$query})";
         }
 
         return parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
@@ -90,7 +118,7 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getBooksByUserId($userId, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "user.id={$userId}");
+        return $this->getListOfBooks($pageSize, "b.user_id={$userId}");
     }
 
     /**
@@ -100,7 +128,7 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getBooksByUsername($username, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "user.name='{$username}'");
+        return $this->getListOfBooks($pageSize, "u.name='{$username}'");
     }
 
     /**
@@ -110,7 +138,7 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getBooksByKeywords($keywords, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "(b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%')");
+        return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%'");
     }
 
 
