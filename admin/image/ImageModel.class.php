@@ -71,8 +71,8 @@ class ImageModel extends Model
 
     /**
      * 上传,所有的文件都在/uploads/的子目录里
-     * @param $inputName
-     * @param $path
+     * @param string $inputName 图片输入名称
+     * @param int $userId 用户ID
      * @param int $maxFileSize 最大文件大小
      * @param int $maxLength 最大边长
      * @param boolean $generateThumbnail 是否生成缩略图
@@ -81,7 +81,7 @@ class ImageModel extends Model
      *
      * @return bool|array[ "url" => 原图URL, "size" => 原图尺寸, "width" => 原图宽, "height" => 原图高, "thumbnail_url" => 缩略图URL]
      */
-    function uploadImg($inputName, $path, $maxFileSize = 1000000, $maxLength = 1000, $generateThumbnail = true, $maxThumbnailFileSize = 10000, $maxThumbnailLength = 200) {
+    function uploadImg($inputName, $userId, $maxFileSize = 1000000, $maxLength = 1000, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200) {
 
         try {
             $file = $_FILES[$inputName];
@@ -94,8 +94,8 @@ class ImageModel extends Model
                 $fileError = $file["error"];        //错误信息
                 $root = $_SERVER["DOCUMENT_ROOT"];
                 $uploadsFolder = "/uploads/";
-                $uploadsDir = $uploadsFolder . $path . "/";
-                $thumbnailUploadsDir = "{$uploadsDir}thumbnails/";
+                $uploadsDir = $uploadsFolder . "images/";
+                $thumbnailUploadsDir = "{$uploadsFolder}{$userId}/";
 
                 //检测文件是否成功获取
                 !$file["error"] > 0 or BasicTool::throwException("上传出错,状态码:" . $file["error"]);
