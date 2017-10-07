@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 25, 2017 at 06:55 AM
+-- Generation Time: Oct 07, 2017 at 02:57 AM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -35,6 +35,9 @@ CREATE TABLE `book` (
   `description` text CHARACTER SET utf8,
   `user_id` int(11) NOT NULL,
   `book_category_id` int(11) DEFAULT NULL,
+  `image_id_one` int(11) DEFAULT NULL,
+  `image_id_two` int(11) DEFAULT NULL,
+  `image_id_three` int(11) DEFAULT NULL,
   `publish_time` int(11) NOT NULL,
   `last_modified_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -51,6 +54,24 @@ CREATE TABLE `book_category` (
   `books_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `image`
+--
+
+CREATE TABLE `image` (
+  `id` int(11) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `thumbnail_url` varchar(255) NOT NULL,
+  `size` int(11) DEFAULT NULL,
+  `height` int(11) DEFAULT NULL,
+  `width` int(11) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `applied_table` enum('book','user','event','course','forum','guide','guide_class') DEFAULT NULL,
+  `publish_time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Indexes for dumped tables
 --
@@ -62,7 +83,10 @@ ALTER TABLE `book`
   ADD PRIMARY KEY (`id`),
   ADD KEY `name` (`name`(191)),
   ADD KEY `book_category_id_fk` (`book_category_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `image_id_one_fk` (`image_id_one`),
+  ADD KEY `image_id_three_fk` (`image_id_three`),
+  ADD KEY `image_id_two_fk` (`image_id_two`);
 
 --
 -- Indexes for table `book_category`
@@ -72,6 +96,15 @@ ALTER TABLE `book_category`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- Indexes for table `image`
+--
+ALTER TABLE `image`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `url` (`url`),
+  ADD UNIQUE KEY `thumbnail_url` (`thumbnail_url`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -79,13 +112,19 @@ ALTER TABLE `book_category`
 -- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `book_category`
 --
 ALTER TABLE `book_category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+--
+-- AUTO_INCREMENT for table `image`
+--
+ALTER TABLE `image`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- Constraints for dumped tables
@@ -95,7 +134,10 @@ ALTER TABLE `book_category`
 -- Constraints for table `book`
 --
 ALTER TABLE `book`
-  ADD CONSTRAINT `book_category_id_fk` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`);
+  ADD CONSTRAINT `book_category_id_fk` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`),
+  ADD CONSTRAINT `image_id_one_fk` FOREIGN KEY (`image_id_one`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `image_id_three_fk` FOREIGN KEY (`image_id_three`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+  ADD CONSTRAINT `image_id_two_fk` FOREIGN KEY (`image_id_two`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

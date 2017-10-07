@@ -7,35 +7,10 @@ $userModel = new \admin\user\UserModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="\admin\bookCategory\index.php?s=listBookCategory">二手书分类</a>
-    <a class="btn" href="index.php?s=formBook&flag=add">添加新二手书</a>
+    <a class="btn" href="index.php?s=listBook">返回</a>
 </nav>
 <article class="mainBox">
-    <form action="\admin\book\index.php?s=searchBook" method="post">
-        <section>
-            <table width="100%">
-                <tbody>
-                    <tr>
-                        <td width="180px">
-                            <select class="input input-select input-50 selectDefault" name="search_type" defvalue="keywords">
-                                <option value="keywords">二手书信息</option>
-                                <option value="user_id">用户ID</option>
-                                <option value="username">用户名</option>
-                                <option value="book_category_id">二手书分类ID</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input class="input" type="text" name="search_value" placeholder="输入对应搜索信息" style="margin-left:16px;" />
-                        </td>
-                        <td width="100px">
-                            <a><input type="submit" value="搜索" class="btn" style="float:right;"></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </form>
-    <header><h2>二手书列表</h2></header>
+    <header><h2>二手书搜索结果</h2></header>
     <form action="bookController.php?action=deleteBook" method="post">
         <section>
             <table class="tab">
@@ -55,8 +30,10 @@ $userModel = new \admin\user\UserModel();
                 </thead>
                 <tbody>
                 <?php
+                include 'bookController.php';
 
-                $arr = $bookModel->getListOfBooks();
+                $arr = searchBooks($bookModel);
+
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

@@ -1,8 +1,10 @@
 <?php
-//$bookModel = new \admin\book\BookModel();
+$bookModel = new \admin\book\BookModel();
+$imageModel = new \admin\image\ImageModel();
 $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $flag = BasicTool::get("flag");
 ?>
+
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>
@@ -10,7 +12,7 @@ $flag = BasicTool::get("flag");
     <a class="btn" href="index.php?listBook">返回</a>
 </nav>
 <article class="mainBox">
-    <form action="bookController.php?action=modifyBook" method="post">
+    <form action="bookController.php?action=modifyBook" method="post" enctype="multipart/form-data">
         <input name="flag" value="<?php echo $flag?>" type="hidden">
         <input name="f_id" value="<?php echo BasicTool::get('f_id')?>" type="hidden">
         <header>
@@ -40,9 +42,64 @@ $flag = BasicTool::get("flag");
                 <label>描述</label>
                 <textarea class="input input-textarea" name="description"><?php echo BasicTool::get('f_description') ?></textarea>
             </div>
+            <div>
+                <label>二手书图片:</label>
+                <div id="currentImages">
+                    <?php
+                        $bookId = BasicTool::get('f_id');
+                        $img1 = BasicTool::get('f_image_id_one');
+                        $img2 = BasicTool::get('f_image_id_two');
+                        $img3 = BasicTool::get('f_image_id_three');
+                        if ($img1) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["thumbnail_url"]}' style='width: 100px; height: auto;'><input id='img1' name='image_id_one' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
+                        }
+                        if ($img2) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic2' src='{$imageModel->getImageById($img2)["thumbnail_url"]}' style='width: 100px; height: auto;'><input id='img2' name='image_id_two' value='{$img2}' style='display: none'></div><div><input type='button' id='imgbtn2' value='删除' onclick='removeImg(2);'></div></div>";
+                        }
+                        if ($img3) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic3' src='{$imageModel->getImageById($img3)["thumbnail_url"]}' style='width: 100px; height: auto;'><input id='img3' name='image_id_three' value='{$img3}' style='display: none'></div><div><input type='button' id='imgbtn3' value='删除' onclick='removeImg(3);'></div></div>";
+                        }
+                    ?>
+                </div>
+
+                <!-- <input class="input input-size50" type="hidden" name="cover" id="cover" value="<?php echo $row['cover'] ?>"> -->
+                <p><img  id="imgOfUpload" src="<?php echo $row['cover'] ?>" style="width: 100px; height: auto; display: none"></p>
+                <input type="file" name="imgFile" id="imgFile" />
+            </div>
         </section>
         <footer class="submitBox">
             <input type="submit" value="提交" class="btn">
         </footer>
     </form>
+
+    <script>
+        //删除已上传图片 (点击更新后生效)
+        function removeImg(i) {
+            var v = $('#img'+i).val();
+            if (v) {
+                $('#img'+i).attr('value', '');
+                $('#pic'+i).attr('src', '').show();
+                $('#imgbtn'+i).hide();
+            }
+        }
+
+        $(function() {
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#imgOfUpload').attr('src', e.target.result).show();
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#imgFile").change(function(){
+                readURL(this);
+            });
+        })
+    </script>
+
+
 </article>
