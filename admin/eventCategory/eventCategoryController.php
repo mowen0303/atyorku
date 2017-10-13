@@ -34,9 +34,9 @@ function deleteEventCategory(){
     $id = BasicTool::post("id","请指定将被删除的分类id");
     $bool = $eventCategoryModel->deleteEventCategory($id[0]);
     if ($bool)
-        BasicTool::echoMessage("添加成功");
+        BasicTool::echoMessage("删除成功");
     else
-        BasicTool::echoMessage("添加失败");
+        BasicTool::echoMessage("删除失败");
 }
 
 /**
@@ -63,12 +63,12 @@ function updateEventCategory(){
     global $currentUser;
     $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
     $id = BasicTool::post("id","请指定分类ID");
-    $title = BasicTool::post("title");
-    $description = BasicTool::post("description");
+    $title = BasicTool::post("title","missing title");
+    $description = BasicTool::post("description","missing description");
     $bool = $eventCategoryModel->updateEventCategory($id,$title,$description);
     if ($bool)
-        BasicTool::echoMessage("添加成功");
+        BasicTool::echoMessage("更改成功");
     else
-        BasicTool::echoMessage("添加失败");
+        BasicTool::echoMessage("更改失败");
 
 }

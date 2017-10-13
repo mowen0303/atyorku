@@ -36,6 +36,7 @@ if(!$userModel->isAdminLogin()){
 				<li><a href="/admin/course/" target="mainFrame">课评</a></li>
 				<li><a href="/admin/user/index.php?s=listUser&isAdmin=0" target="mainFrame">用户</a></li>
 				<li><a href="/admin/adCategory/" target="mainFrame">广告</a></li>
+                <li><a href ="/admin/eventCategory/" target="mainFrame">活动</a></li>
 				<li><a href="/admin/book/ " target="mainFrame">二手书</a ></li>
 				<li><a href="/admin/map/" target="mainFrame">地图</a ></li>
 			</ul>
