@@ -1,20 +1,21 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $locationModel = new admin\map\LocationModel();
-$currentUser = new \admin\user\UserModel();
+$currentUser = new admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
 function addLocation() {
     global $locationModel;
     try {
-        $id = BasicTool::post("id", "id不能为空", 3);
+//        $id = BasicTool::post("id", "id不能为空", 3);
         $init = BasicTool::post("init", "缩写不能为空", 3);
         $fullName = BasicTool::post("full_name", "大楼全名不能为空");
         $lat = BasicTool::post("lat");
         $lng = BasicTool::post("lng");
         $info = BasicTool::post("info");
+        $shape = BasicTool::post("shape");
 
-        $locationModel->addLocation($id, $init, $fullName, $info, $lat, $lng);
+        $locationModel->addLocation($init, $fullName, $info, $lat, $lng, $shape);
         BasicTool::echoMessage("大楼添加成功");
     } catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),-1);
@@ -32,12 +33,13 @@ function updateLocation() {
         $lat = BasicTool::post("lat");
         $lng = BasicTool::post("lng");
         $info = BasicTool::post("info");
+        $shape = BasicTool::post("shape");
 
         // Validate id format
-        ($id >= 0 && $id < 100) or BasicTool::throwException("请输入正确的id");
-        // In the future, validate coordinate format
+//        ($id >= 0 && $id < 100) or BasicTool::throwException("请输入正确的id");
+        // TODO - In the future, validate coordinate format
 
-        $locationModel->updateLocation($id, $init, $fullName, $info, $lat, $lng);
+        $locationModel->updateLocation($id, $init, $fullName, $info, $lat, $lng, $shape);
         BasicTool::echoMessage("大楼信息更新成功");
     }
     catch (Exception $e){
@@ -57,7 +59,7 @@ function getLocationByInit() {
     BasicTool::echoJson(1, "获取大楼信息成功", $locationModel->getLocationByInit($init));
 }
 
-// Do we get coordinate on the app from this controller???
+// Search function is implemented on client side
 //function getLocationCoordById() { }
 
 //function getLocationCoordByInit() { }
@@ -69,9 +71,13 @@ function getLocationByInit() {
 function deleteLocationById() {
     global $locationModel;
     try {
-        $id = BasicTool::post("id", "请输入要删除的大楼id");
-        $locationModel->deleteLocationById($id[0]);
-        BasicTool::echoMessage("大楼id {$id[0]}删除成功");
+        $ids = BasicTool::post("id", "请选择要删除的ID");
+        $idCount = '';
+        foreach ($ids as $id) {
+            $locationModel->deleteLocationById($id);
+            $idCount = $idCount . " " . $id;
+        }
+        BasicTool::echoMessage("大楼ID {$idCount} 删除成功");
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage(),-1);
     }
