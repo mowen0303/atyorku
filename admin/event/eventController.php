@@ -23,13 +23,13 @@ function addEvent(){
     $location_link = BasicTool::post("location_link","活动地点不能为空");
     $qr_code_url = BasicTool::post("qr_code_url");
     $registration_fee = BasicTool::post("registration_fee","活动费用不能为空");
-    $max_participants = BasicTool::post("max_participants","活动人数上限");
+    $max_participants = BasicTool::post("max_participants","活动名额");
 
     $sponsor_user_id = BasicTool::post("sponsor_user_id");
-    $sponsor_name = BasicTool::post("sponsor_name","活动发起人");
+    $sponsor_name = BasicTool::post("sponsor_name");
     $sponsor_wechat = BasicTool::post("sponsor_wechat");
     $sponsor_email = BasicTool::post("sponsor_email");
-    $sponsor_telephone = BasicTool::post("sponsor_telephone","sponsor_telephone");
+    $sponsor_telephone = BasicTool::post("sponsor_telephone");
 
     $bool = $eventModel->addEvent($event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
         $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone);
@@ -54,7 +54,7 @@ function addEventWithJson(){
     $location_link = BasicTool::post("location_link","活动地点不能为空");
     $qr_code_url = BasicTool::post("qr_code_url");
     $registration_fee = BasicTool::post("registration_fee","活动费用不能为空");
-    $max_participants = BasicTool::post("max_participants","活动人数上限");
+    $max_participants = BasicTool::post("max_participants","活动名额");
 
     $sponsor_user_id = $currentUser->userId;
 
