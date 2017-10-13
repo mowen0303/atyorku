@@ -22,18 +22,16 @@ class ImageModel extends Model
     * 添加一张图片
     * @param imageUrl 大图片URL
     * @param thumbnailUrl 缩略图URL
-    * @param userId 发图的用户ID
     * @param appliedTable 图片应用的db表名
     * @param size 大图大小
     * @param width 大图宽
     * @param height 大图高
     * @return boolean
     */
-    public function addImage($imageUrl, $thumbnailUrl, $userId, $appliedTable, $size, $width, $height) {
+    public function addImage($imageUrl, $thumbnailUrl, $appliedTable, $size, $width, $height) {
         $arr = [];
         $arr["url"] = $imageUrl;
         $arr["thumbnail_url"] = $thumbnailUrl;
-        $arr["user_id"] = $userId;
         $arr["height"] = $height;
         $arr["width"] = $width;
         $arr["size"] = $size;
@@ -70,22 +68,30 @@ class ImageModel extends Model
 
     /**
      * 上传,所有的文件都在/uploads/的子目录里
+     * 原图默认保存在 /uploads/rawimage/
+     * 缩略图默认开启，默认保存路径为 /uploads/[user ID]/
      * @param string $inputName 图片输入名称
-     * @param int $userId 用户ID
-     * @param int $maxFileSize 最大文件大小
-     * @param int $maxLength 最大边长
+     * @param int $path 缩略图路径, 默认需要传user_id, 缩略图如果关闭，原图路径改为$path, 如果开启，原图路径不变，缩略图存在$path
      * @param boolean $generateThumbnail 是否生成缩略图
      * @param int $maxThumbnailFileSize 最大缩略图文件大小
      * @param int $maxThumbnailLength 最大缩略图边长
+     * @param int $maxFileSize 最大文件大小
+     * @param int $maxLength 最大边长
      *
      * @return int[] array of new image id
      */
-    function uploadImg($inputName, $userId, $appliedTable, $maxFileSize = 1000000, $maxLength = 1000, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200) {
+    function uploadImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200, $maxFileSize = 1000000, $maxLength = 1000) {
 
         try {
             $file = $_FILES[$inputName];
             if ($file != null) {
                 $count = count($file['name']);
+
+                $root = $_SERVER["DOCUMENT_ROOT"];
+                $uploadsFolder = "/uploads/";
+                $uploadsDir = $generateThumbnail ? ("{$uploadsFolder}rawimage/") : ("{$uploadsFolder}{$path}/");
+                $thumbnailUploadsDir = "{$uploadsFolder}{$path}/";
+
                 $result = [];
                 for ($i=0; $i<$count; $i++) {
                     //初始化参数
@@ -94,10 +100,6 @@ class ImageModel extends Model
                     $fileType = $file["type"][$i];          //文件类型
                     $fileSize = $file["size"][$i];          //文件大小
                     $fileError = $file["error"][$i];        //错误信息
-                    $root = $_SERVER["DOCUMENT_ROOT"];
-                    $uploadsFolder = "/uploads/";
-                    $uploadsDir = $uploadsFolder . "images/";
-                    $thumbnailUploadsDir = "{$uploadsFolder}{$userId}/";
 
                     //检测文件是否成功获取
                     !$fileError > 0 or BasicTool::throwException("上传出错,状态码:" . $fileError);
@@ -245,8 +247,7 @@ class ImageModel extends Model
                     //添加图片到数据库
                     if ($this->addImage(
                         $uploadsDir . $newFileName,
-                        $thumbnailUploadsDir . $newFileName,
-                        $userId,
+                        ($generateThumbnail) ? ($thumbnailUploadsDir . $newFileName) : ($uploadsDir . $newFileName),
                         $appliedTable,
                         filesize($root . $uploadsDir . $newFileName),
                         $newWidth,

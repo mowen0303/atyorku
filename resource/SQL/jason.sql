@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 07, 2017 at 02:57 AM
+-- Generation Time: Oct 14, 2017 at 01:01 AM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -67,7 +67,6 @@ CREATE TABLE `image` (
   `size` int(11) DEFAULT NULL,
   `height` int(11) DEFAULT NULL,
   `width` int(11) DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
   `applied_table` enum('book','user','event','course','forum','guide','guide_class') DEFAULT NULL,
   `publish_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -101,8 +100,7 @@ ALTER TABLE `book_category`
 ALTER TABLE `image`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `url` (`url`),
-  ADD UNIQUE KEY `thumbnail_url` (`thumbnail_url`),
-  ADD KEY `user_id` (`user_id`);
+  ADD UNIQUE KEY `thumbnail_url` (`thumbnail_url`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -112,7 +110,7 @@ ALTER TABLE `image`
 -- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `book_category`
@@ -124,7 +122,7 @@ ALTER TABLE `book_category`
 -- AUTO_INCREMENT for table `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- Constraints for dumped tables
@@ -135,9 +133,9 @@ ALTER TABLE `image`
 --
 ALTER TABLE `book`
   ADD CONSTRAINT `book_category_id_fk` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`),
-  ADD CONSTRAINT `image_id_one_fk` FOREIGN KEY (`image_id_one`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
-  ADD CONSTRAINT `image_id_three_fk` FOREIGN KEY (`image_id_three`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
-  ADD CONSTRAINT `image_id_two_fk` FOREIGN KEY (`image_id_two`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+  ADD CONSTRAINT `image_id_one_fk` FOREIGN KEY (`image_id_one`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  ADD CONSTRAINT `image_id_three_fk` FOREIGN KEY (`image_id_three`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  ADD CONSTRAINT `image_id_two_fk` FOREIGN KEY (`image_id_two`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
