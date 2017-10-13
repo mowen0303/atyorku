@@ -173,6 +173,16 @@ class BookModel extends Model
     }
 
     /**
+    * 仅获得指定二手书关联图片ID
+    * @param id 二手书ID
+    * @return 返回一维数组
+    */
+    public function getImagesIdByBookId($id) {
+        $sql = "SELECT `image_id_one`, `image_id_two`, `image_id_three` FROM `{$this->table}` WHERE `id`={$id}";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
      * 更改一本书
      * @return bool
      */
@@ -184,15 +194,9 @@ class BookModel extends Model
         $arr["description"] = $description;
         $arr["book_category_id"] = $bookCategoryId;
         $arr["user_id"] = $userId;
-        if ($img1) {
-            $arr["image_id_one"] = $img1;
-        }
-        if ($img2) {
-            $arr["image_id_two"] = $img2;
-        }
-        if ($img3) {
-            $arr["image_id_three"] = $img3;
-        }
+        $arr["image_id_one"] = $img1 ? $img1 : "NULL";
+        $arr["image_id_two"] = $img2 ? $img2 : "NULL";
+        $arr["image_id_three"] = $img3 ? $img3 : "NULL";
         $arr["last_modified_time"] = time();
 
         // check if book category is changed
@@ -200,6 +204,7 @@ class BookModel extends Model
         $result = $this->sqltool->getRowBySql($sql);
         if ($result) {
             $oldBookCategoryId = $result["book_category_id"];
+
             $bool = $this->updateRowById($this->table, $id, $arr);
             if ($bool) {
                 $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
@@ -216,6 +221,38 @@ class BookModel extends Model
     }
 
     /**
+    * Override updateRowById
+    * enable to set null to specified field, pass "NULL" as value to that key
+    *
+    * 通过主键id修改一条数据
+    * @param $table 表名
+    * @param $id id的值
+    * @param $arrKV 把字段和值封装到键值对数组中
+    * @param bool $debug
+    * @return bool
+    */
+    public function updateRowById($table, $id, $arrKV, $debug = false)
+    {
+        $str = "";
+        foreach ($arrKV as $k => $v) {
+            if ($v == "NULL") {
+                $str .= "{$k}=NULL,";
+            } else {
+                $str .= "{$k}='{$v}',";
+            }
+        }
+        $str = substr($str, 0, -1);
+        $sql = "update $table set {$str} where id in ('{$id}')";
+        echo $debug ? $sql : null;
+        $this->sqltool->query($sql);
+        if ($this->sqltool->getAffectedRows() > 0) {
+            return true;
+        }
+        $this->errorMsg = "没有数据受到影响";
+        return false;
+    }
+
+    /**
     * 删除二手书 by ID
     * @param id book id
     * @return 成功返回删除数据一维数组，失败返回false
@@ -224,13 +261,15 @@ class BookModel extends Model
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
         $result = $this->sqltool->getRowBySql($sql);
-        $bookCategoryId = $result["book_category_id"];
-        $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
-        $bool = $this->sqltool->query($sql);
-        if ($bool) {
-            $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-            $this->sqltool->query($sql);
-            return $result;
+        if ($result) {
+            $bookCategoryId = $result["book_category_id"];
+            $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
+            $bool = $this->sqltool->query($sql);
+            if ($bool) {
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+                $this->sqltool->query($sql);
+                return $result;
+            }
         }
         return false;
     }
