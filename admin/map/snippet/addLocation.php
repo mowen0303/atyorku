@@ -1,7 +1,7 @@
 <?php
 $locationModel = new \admin\map\LocationModel();
 $id = BasicTool::get('id');
-$flag = $id ? 'update' : 'add';  // How does it get its value???
+$flag = $id ? 'update' : 'add';
 if ($flag=='update') {
     $row = $locationModel->getLocationById($id);
     $form_action = "/admin/map/LocationController.php?action=updateLocation";

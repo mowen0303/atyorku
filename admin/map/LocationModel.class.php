@@ -77,6 +77,9 @@ class LocationModel extends Model
         return $bool;
     }
 
+    /**
+     * @return bool|\mysqli_result
+     */
     public function getListOfLocation()
     {
         $sql = "SELECT * FROM {$this->table}";
@@ -102,14 +105,38 @@ class LocationModel extends Model
      */
     public function getLocationByInit($init)
     {
-        $sql = "SELECT * from {$this->table} WHERE init = {$init}";
+        $sql = "SELECT * FROM {$this->table} WHERE init = {$init}";
         return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+     * 返回所有*全名*以$str开头的大楼
+     * @param $str
+     * @return \一维关联数组
+     */
+    public function getLocationsByFullNameKeyword($str) {
+        $sql = "SELECT * FROM {$this->table} WHERE full_name LIKE '{$str}%'";
+        return $this->sqltool->query($sql);
+    }
+
+    /**
+     * 返回所有*缩写*以$str开头的大楼
+     * @param $str
+     * @return \一维关联数组
+     */
+    public function getLocationsByInitKeyword($str) {
+        $sql = "SELECT * FROM {$this->table} WHERE init LIKE '{$str}%'";
+        return $this->sqltool->query();
     }
 
 //    public function getLocationPolygonById($id) { /* TODO */ }
 
 //    public function getLocationPolygonByInit($init) { /* TODO */ }
 
+    /**
+     *
+     * @param $id
+     */
     public function deleteLocationById($id) {
         $this->realDeleteByFieldIn($this->table, 'id', $id) or \BasicTool::throwException("删除大楼失败");
     }
