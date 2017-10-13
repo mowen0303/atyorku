@@ -6,10 +6,10 @@ $userModel = new \admin\user\UserModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=formGuide&guide_class_id=<?php echo BasicTool::get('guide_class_id') ?>">添加大楼位置</a>
+    <a class="btn" href="index.php?s=addLocation">添加大楼位置</a>
 </nav>
 <article class="mainBox">
-    <form action="" method="post">
+    <form action="LocationController.php?action=deleteLocationById" method="post">
         <header>
             <h2>大楼位置</h2>
         </header>
@@ -18,13 +18,11 @@ $userModel = new \admin\user\UserModel();
                 <thead>
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>缩写</th>
+                    <th>图片</th>
                     <th>全称</th>
                     <th>简介</th>
-                    <th>纬度</th>
-                    <th>经度</th>
-                    <th>形状坐标</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,11 +34,9 @@ $userModel = new \admin\user\UserModel();
                     <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                     <td><?php echo $row['id']?></td>
                     <td><?php echo $row['init']?></td>
-                    <td><?php echo $row['full_name']?></td>
+                    <td><img height="36" height="36" src="<?php echo $row['pic']?>"></td>
+                    <td><a href="index.php?s=addLocation&id=<?php echo $row['id']?>"><?php echo $row['full_name']?></a></td>
                     <td><?php echo $row['info']?></td>
-                    <td><?php echo $row['lat']?></td>
-                    <td><?php echo $row['lng']?></td>
-                    <td><?php echo $row['shape']?></td>
                 </tr>
                     <?php
                 }
@@ -49,7 +45,7 @@ $userModel = new \admin\user\UserModel();
             </table>
         </section>
         <footer class="buttonBox">
-            <input type="submit" value="删除" class="btn"><a class="btn" href="index.php?action=showFormAdd">添加</a>
+            <input type="submit" value="删除" class="btn">
         </footer>
     </form>
 </article>

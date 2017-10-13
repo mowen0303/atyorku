@@ -21,15 +21,15 @@
 <body>
 <div id="map"></div>
 <script>
-    //
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 18,
+            zoom: 16,
             center: {lat: 43.773613, lng: -79.505424},
             mapTypeId: 'roadmap'
         });
 
-        // Draw a polygon surrounding the library
+        // Draw a polygon surrounding the Steacie library
+        // TODO - How to store shape coordinate in database and how to convert them back to JSON??? -->
         var buildingShapeCoordinates = [
             {lat: 43.773944, lng: -79.506611},
             {lat: 43.773777, lng: -79.506524},
@@ -55,14 +55,14 @@
         });
         buildingPath.setMap(map);
 
-        // Create a marker on the library
-        var buildingPositionCoordinate = {lat: 43.773747, lng: -79.50603};
-        var buildingMarker = new google.maps.Marker({
-            map: map,
-            draggable: false,
-            animation: google.maps.Animation.DROP,
-            position: buildingPositionCoordinate
-        })
+        // Create a marker on Steacie library
+//        var buildingPositionCoordinate = {lat: 43.773747, lng: -79.50603};
+//        var buildingMarker = new google.maps.Marker({
+//            map: map,
+//            draggable: false,
+//            animation: google.maps.Animation.DROP,
+//            position: buildingPositionCoordinate
+//        })
     }
 </script>
 <script async defer

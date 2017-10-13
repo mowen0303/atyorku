@@ -21,23 +21,21 @@ class LocationModel extends Model
      * @param $info varchar 大楼简介
      * @param $lat double 纬度
      * @param $lng double 经度
+     * @param $shape varchar TODO
      * @return bool
      */
-    public function addLocation($id, $init, $fullName, $info, $lat, $lng)
+    public function addLocation($init, $fullName, $info, $lat, $lng, $shape)
     {
         $arr = [];
-        $arr["id"] = $id;
+//        $arr["id"] = $id;  //
         $arr["init"] = $init;
         $arr["full_name"] = $fullName;
         $arr["info"] = $info;
         $arr["lat"] = $lat;
         $arr["lng"] = $lng;
+        $arr["shape"] = $shape;
 
         $bool = $this->addRow($this->table, $arr);
-        if ($bool) {
-            $sql = "TODO";
-            $this->sqltool->query($sql);
-        }
         return $bool;
     }
 
@@ -61,9 +59,10 @@ class LocationModel extends Model
      * @param $info varchar 大楼简介
      * @param $lat double 纬度
      * @param $lng double 经度
+     * @param $shape varchar TODO
      * @return bool
      */
-    public function updateLocation($id, $init, $fullName, $info, $lat, $lng)
+    public function updateLocation($id, $init, $fullName, $info, $lat, $lng, $shape)
     {
         $arr = [];
         $arr["id"] = $id;
@@ -72,14 +71,18 @@ class LocationModel extends Model
         $arr["info"] = $info;
         $arr["lat"] = $lat;
         $arr["lng"] = $lng;
+        $arr["shape"] = $shape;
 
         $bool = $this->updateRowById($this->table, $id, $arr);
         return $bool;
     }
 
+    /**
+     * @return bool|\mysqli_result
+     */
     public function getListOfLocation()
     {
-        $sql = "SELECT * FROM {$this->table}";  // Add split page function in the future
+        $sql = "SELECT * FROM {$this->table}";
         $result = $this->sqltool->query($sql);
         return $result;
     }
@@ -102,11 +105,39 @@ class LocationModel extends Model
      */
     public function getLocationByInit($init)
     {
-        $sql = "SELECT * from {$this->table} WHERE init = {$init}";
+        $sql = "SELECT * FROM {$this->table} WHERE init = {$init}";
         return $this->sqltool->getRowBySql($sql);
     }
 
-    public function getLocationPolygonById($id) { /* TODO */ }
+    /**
+     * 返回所有*全名*以$str开头的大楼
+     * @param $str
+     * @return \一维关联数组
+     */
+    public function getLocationsByFullNameKeyword($str) {
+        $sql = "SELECT * FROM {$this->table} WHERE full_name LIKE '{$str}%'";
+        return $this->sqltool->query($sql);
+    }
 
-    public function getLocationPolygonByInit($init) { /* TODO */ }
+    /**
+     * 返回所有*缩写*以$str开头的大楼
+     * @param $str
+     * @return \一维关联数组
+     */
+    public function getLocationsByInitKeyword($str) {
+        $sql = "SELECT * FROM {$this->table} WHERE init LIKE '{$str}%'";
+        return $this->sqltool->query();
+    }
+
+//    public function getLocationPolygonById($id) { /* TODO */ }
+
+//    public function getLocationPolygonByInit($init) { /* TODO */ }
+
+    /**
+     *
+     * @param $id
+     */
+    public function deleteLocationById($id) {
+        $this->realDeleteByFieldIn($this->table, 'id', $id) or \BasicTool::throwException("删除大楼失败");
+    }
 }
