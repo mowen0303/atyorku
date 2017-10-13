@@ -23,8 +23,9 @@ class EventParticipantModel extends Model
         $result = $this->sqltool->getRowBySql($sql);
         $count_participants = $result["count_participants"];
         $max_participants = $result["max_participants"];
-        echo $count_participants;
-        $count_participants < $max_participants or BasicTool::throwException("参与人数已满");
+
+        if ($count_participants < $max_participants)
+            {return false;}
 
         $bool = $this->addRow("event_participant", $arr);
         if ($bool) {
@@ -55,18 +56,7 @@ class EventParticipantModel extends Model
 
     }
 
-    /**
-     *
-     *
-     */
-    public function updateEventParticipant($id,$event_id,$user_id)
-    {
-        $arr = [];
-        $arr["user_id"] = $user_id;
-        $arr["event_id"] = $event_id;
-        $bool = $this->updateRowById("event_participant", $id, $arr);
-        return $bool;
-    }
+
 
     /**
      * 删除一个活动参与人

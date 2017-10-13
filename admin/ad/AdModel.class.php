@@ -33,15 +33,6 @@ class AdModel extends Model
         return $bool;
     }
 
-    /**
-     * 查询一则广告,返回一维键值数组
-     */
-    public function getAd($id)
-    {
-        $sql = "SELECT * from ad WHERE id = {$id}";
-        $result = $this->sqltool->getRowBySql($sql);
-        return $result;
-    }
 
     /*调出一页广告
      * 返回二维数组
@@ -82,10 +73,9 @@ class AdModel extends Model
 
     public function deleteAd($id)
     {
-        $sql = "SELECT * FROM ad WHERE id = {$id}";
+        $sql = "SELECT * FROM ad WHERE id = {$id[0]}";
         $ad_category_id = $this->sqltool->getRowBySql($sql)["ad_category_id"];
-        $sql = "DELETE FROM ad WHERE id = {$id}";
-        $bool = $this->sqltool->query($sql);
+        $bool = $this->realDeleteByFieldIn("ad","id",$id,true);
         if ($bool) {
             $sql = "UPDATE ad_category SET ads_count = (SELECT COUNT(*) from ad WHERE ad_category_id = {$ad_category_id}) WHERE id = {$ad_category_id}";
             $this->sqltool->query($sql);

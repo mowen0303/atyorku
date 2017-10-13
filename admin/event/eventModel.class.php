@@ -14,7 +14,7 @@ class EventModel extends Model
      * @return $bool
      */
     public function addEvent($event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sponsor_profile_img_url)
+                             $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -32,10 +32,10 @@ class EventModel extends Model
         $arr["count_participants"] = 0;
         $arr["count_views"] = 0;
         $arr["count_comments"] = 0;
+        $arr["sponsor_user_id"] = $sponsor_user_id;
         $arr["sponsor_name"] = $sponsor_name;
         $arr["sponsor_telephone"] = $sponsor_telephone;
         $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_profile_img_url"] = $sponsor_profile_img_url;
         $arr["sponsor_email"] = $sponsor_email;
         $bool = $this->addRow("event", $arr);
         if ($bool) {
@@ -79,7 +79,7 @@ class EventModel extends Model
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                                $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sponsor_profile_img_url)
+                                $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -93,10 +93,10 @@ class EventModel extends Model
         $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;
         $arr["max_participants"]=$max_participants;
+        $arr["sponsor_user_id"] = $sponsor_user_id;
         $arr["sponsor_name"] = $sponsor_name;
         $arr["sponsor_telephone"] = $sponsor_telephone;
         $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_profile_img_url"] = $sponsor_profile_img_url;
         $arr["sponsor_email"] = $sponsor_email;
         $bool = $this->updateRowById("event", $id, $arr);
         if ($bool) {

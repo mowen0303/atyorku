@@ -1,8 +1,6 @@
 <?php
 $adModel = new \admin\ad\AdModel();
 $currentUser = new \admin\user\UserModel();
-unset($id);
-unset($ad_category_id);
 $id = BasicTool::get('id');
 $ad_category_id = BasicTool::get('ad_category_id');
 $ad_category_title = BasicTool::get("ad_category_title");
