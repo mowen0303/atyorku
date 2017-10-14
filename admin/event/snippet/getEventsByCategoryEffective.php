@@ -10,7 +10,7 @@ $event_category_title = BasicTool::get("event_category_title");
     <nav class="mainNav">
         <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
         <a class="btn" href="/admin/event/index.php?s=getEventsByCategoryIneffective&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>">未生效或过期的活动</a>
-        <a class="btn" href="index.php?s=addEvent&ad_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>">发布新活动</a>
+        <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>">发布新活动</a>
     </nav>
     <article class="mainBox">
         <header><h2><?php echo $event_category_title?></h2></header>
