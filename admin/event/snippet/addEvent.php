@@ -1,22 +1,29 @@
 <?php
-$adModel = new \admin\ad\AdModel();
+$eventModel = new \admin\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-$id = BasicTool::get('id');
+
+$user_id = BasicTool::get('uid');
 $event_category_id = BasicTool::get('event_category_id');
 $event_category_title = BasicTool::get("event_category_title");
-$user_id = BasicTool::get('uid');
+
+$id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 
 if($flag=='add'){
     $row = null;
+    $img_url_1 = null;
+    $img_url_2 = null;
+    $img_url_3 = null;
     $form_action = "/admin/event/eventController.php?action=addEvent";
 }
 
  else {
     $row = $eventModel->getEvent($id);
-    $event_category_id = $row["event_category_id"];
-     $form_action = "/admin/event/eventController.php?action=updateEvent";
+    $img_url_1 = $imageModel->getImageById($row["img_id_1"]);
+    $img_url_2 = $imageModel->getImageById($row["img_id_2"]);
+    $img_url_3 = $imageModel->getImageById($row["img_id_3"]);
+    $form_action = "/admin/event/eventController.php?action=updateEvent";
 }
 
 ?>
@@ -40,7 +47,7 @@ if($flag=='add'){
 </header>
 
 <article class="mainBox">
-    <form action="<?php echo $form_action ?>" method="post">
+    <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
         <input name="id" value="<?php echo $id ?>" type="hidden">
         <input name="event_category_id" value="<?php echo $event_category_id?>" type="hidden"/>
         <section class="formBox">
@@ -60,7 +67,7 @@ if($flag=='add'){
                 <label>活动图片:</label>
                 <div id="currentImages">
 
-                    <p><img  id="imgOfUpload" src="" style="width: 100px; height: auto; display: none"></p>
+                    <p><img  id="imgOfUpload" src="<?php echo $img_url_1 ?>" style="width: 100px; height: auto; display: none"></p>
                     <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
 
@@ -77,16 +84,13 @@ if($flag=='add'){
                     <input type="text" class="input input-size30" name="location_link"><?php echo $row['location_link'] ?></input>
                 </div>
                 <div>
-                    <label>活动发起人</label>
+                    <label>活动发起人姓名</label>
                     <input  type="text" class="input input-size30" name="sponsor_name"><?php echo $row['sponsor_user_id'] ?></input>
                 </div>
 
                 <div>
-                    <input type="number" class="input input-size30" type="text" name="sponsor_user_id" value="<?php echo $row['sponsor_name'] ?>" hidden/>
-                </div>
-                <div>
                     <label>联系电话</label>
-                    <input type="text" class="input input-size30" type="text" name="sponsor_telephone" value="<?php echo $row['sponsor_telephone'] ?>">
+                    <input type="tel" class="input input-size30" name="sponsor_telephone" value="<?php echo $row['sponsor_telephone'] ?>">
                 </div>
                 <div>
                     <label>微信</label>
@@ -94,7 +98,7 @@ if($flag=='add'){
                 </div>
                 <div>
                     <label>邮箱</label>
-                    <input type="text" class="input input-size30" type="text" name="sponsor_email" value="<?php echo $row['sponsor_email'] ?>">
+                    <input type="email" name="sponsor_email" class="input input-size30" value="<?php echo $row['sponsor_email'] ?>">
                 </div>
 
 

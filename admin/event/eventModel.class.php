@@ -13,22 +13,20 @@ class EventModel extends Model
      * 添加一则活动
      * @return $bool
      */
-    public function addEvent($event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$poster_id_1,$poster_id_2,$poster_id_3,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
+    public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
+                             $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
         $arr["title"] = $title;
         $arr["description"] = $description;
-        $arr["intro"] = $intro;
         $arr["expiration_time"] = $expiration_time;
         $arr["publish_time"] = time();
         $arr["event_time"] = $event_time;
-        $arr["poster_id_1"]= $poster_id_1;
-        $arr["poster_id_2"]= $poster_id_2;
-        $arr["poster_id_3"]= $poster_id_3;
+        $arr["img_id_1"]= $img_id_1;
+        $arr["img_id_2"]= $img_id_2;
+        $arr["img_id_3"]= $img_id_3;
         $arr["location_link"] = $location_link;
-        $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;
         $arr["max_participants"]=$max_participants;
         $arr["count_participants"] = 0;
@@ -60,10 +58,10 @@ class EventModel extends Model
     /*调出一页广告
      * 返回二维数组
      */
-    public function getEventsByCategory($event_category_id,$flag = "effective"){
+    public function getEventsByCategory($event_category_id,$flag = 1){
         $currentTime = time();
 
-        if ($flag == "effective") {
+        if ($flag == 1) {
             $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ";
             $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time";
             return $this->getListWithPage("event", $sql, $countSql, 20);
@@ -80,19 +78,19 @@ class EventModel extends Model
      *
      * @return bool
      */
-    public function updateEvent($id,$event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                                $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
+    public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
+                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
         $arr["title"] = $title;
         $arr["description"] = $description;
-        $arr["intro"] = $intro;
         $arr["expiration_time"] = $expiration_time;
         $arr["event_time"] = $event_time;
-        $arr["poster_url"] = $poster_url;
+        $arr["img_id_1"]= $img_id_1;
+        $arr["img_id_2"]= $img_id_2;
+        $arr["img_id_3"]= $img_id_3;
         $arr["location_link"] = $location_link;
-        $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;
         $arr["max_participants"]=$max_participants;
         $arr["sponsor_user_id"] = $sponsor_user_id;
