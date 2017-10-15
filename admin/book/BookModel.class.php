@@ -63,36 +63,8 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getListOfBooks($pageSize=20, $query=false) {
-        $sql = "SELECT
-                    b.id,
-                    b.name,
-                    b.price,
-                    b.description,
-                    b.image_id_one,
-                    b.image_id_two,
-                    b.image_id_three,
-                    b.publish_time,
-                    b.user_id,
-                    u.name AS user_name,
-                    bc.id AS book_category_id,
-                    bc.name AS book_category_name,
-                    img.thumbnail_url AS thumbnail_url
-                FROM
-                    `{$this->table}` b
-                LEFT JOIN `book_category` bc ON
-                    b.book_category_id = bc.id
-                LEFT JOIN `user` u ON
-                    b.user_id = u.id
-                LEFT JOIN `image` img ON
-                    b.image_id_one = img.id";
-        $countSql = "SELECT COUNT(*) FROM
-                            `{$this->table}` b
-                        LEFT JOIN `book_category` bc ON
-                            b.book_category_id = bc.id
-                        LEFT JOIN `user` u ON
-                            b.user_id = u.id
-                        LEFT JOIN `image` img ON
-                            b.image_id_one = img.id";
+        $sql = "SELECT b.*, u.name AS user_name, bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id) ORDER BY `sort` DESC,`last_modified_time` DESC";
+        $countSql = "SELECT COUNT(*) FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id)";
         if ($query) {
             $sql = "{$sql} WHERE ({$query})";
             $countSql = "{$countSql} WHERE ({$query})";
@@ -180,6 +152,16 @@ class BookModel extends Model
     public function getImagesIdByBookId($id) {
         $sql = "SELECT `image_id_one`, `image_id_two`, `image_id_three` FROM `{$this->table}` WHERE `id`={$id}";
         return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 浏览数 +1
+    * @param id 二手书ID
+    */
+    public function incrementCountViewByBookId($id)
+    {
+        $sql = "UPDATE book SET count_view = count_view+1 WHERE id in ($id)";
+        $this->sqltool->query($sql);
     }
 
     /**

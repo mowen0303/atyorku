@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 14, 2017 at 01:01 AM
+-- Generation Time: Oct 15, 2017 at 03:59 AM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -31,13 +31,17 @@ SET time_zone = "+00:00";
 CREATE TABLE `book` (
   `id` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `name` varchar(225) CHARACTER SET utf8 NOT NULL,
-  `description` text CHARACTER SET utf8,
+  `name` char(255) CHARACTER SET utf8 NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `book_category_id` int(11) DEFAULT NULL,
   `image_id_one` int(11) DEFAULT NULL,
   `image_id_two` int(11) DEFAULT NULL,
   `image_id_three` int(11) DEFAULT NULL,
+  `comment_num` tinyint(6) UNSIGNED NOT NULL,
+  `count_view` tinyint(6) UNSIGNED NOT NULL,
+  `report` tinyint(6) UNSIGNED NOT NULL,
+  `sort` tinyint(3) UNSIGNED NOT NULL,
   `publish_time` int(11) NOT NULL,
   `last_modified_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -50,7 +54,7 @@ CREATE TABLE `book` (
 
 CREATE TABLE `book_category` (
   `id` int(11) NOT NULL,
-  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `books_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -62,12 +66,12 @@ CREATE TABLE `book_category` (
 
 CREATE TABLE `image` (
   `id` int(11) NOT NULL,
-  `url` varchar(255) NOT NULL,
-  `thumbnail_url` varchar(255) NOT NULL,
+  `url` char(255) NOT NULL,
+  `thumbnail_url` char(255) NOT NULL,
   `size` int(11) DEFAULT NULL,
   `height` int(11) DEFAULT NULL,
   `width` int(11) DEFAULT NULL,
-  `applied_table` enum('book','user','event','course','forum','guide','guide_class') DEFAULT NULL,
+  `applied_table` char(25) NOT NULL COMMENT '''book'',''user'',''event'',''course'',''forum'',''guide'',''guide_class''',
   `publish_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -85,7 +89,8 @@ ALTER TABLE `book`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `image_id_one_fk` (`image_id_one`),
   ADD KEY `image_id_three_fk` (`image_id_three`),
-  ADD KEY `image_id_two_fk` (`image_id_two`);
+  ADD KEY `image_id_two_fk` (`image_id_two`),
+  ADD KEY `count_view_index` (`count_view`);
 
 --
 -- Indexes for table `book_category`
@@ -122,7 +127,7 @@ ALTER TABLE `book_category`
 -- AUTO_INCREMENT for table `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- Constraints for dumped tables

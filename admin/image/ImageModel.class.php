@@ -242,6 +242,44 @@ class ImageModel extends Model
                         if ($fileSize > $maxFileSize) {
                             BasicTool::throwException("只支持上传小于" . ($maxFileSize / 1000000) . "MB的GIF图片");
                         }
+                        //压缩JPG
+                        $src_im = imagecreatefromgif($fileTmpName);
+                        $dst_im = imagecreatetruecolor($newWidth, $newHeight);
+
+                        // Imagick 保存动态GIF
+                        // $src_im = new Imagick($fileTmpName);
+                        //
+                        // $image = $src_im->coalesceImages();
+                        //
+                        // foreach ($image as $frame) {
+                        //   $frame->thumbnailImage($newWidth, $newHeight);
+                        //   $frame->setImagePage($newWidth, $newHeight, 0, 0);
+                        // }
+                        //
+                        // $image = $image->deconstructImages();
+                        // $image->writeImages($root . $uploadsDir . $newFileName, true) or BasicTool::throwException("图片存储失败" . $root . $uploadsDir);
+
+                        imagealphablending($dst_im, false);
+                        imagesavealpha($dst_im,true);
+                        $transparent = imagecolorallocatealpha($dst_im, 255, 255, 255, 127);
+                        imagefilledrectangle($dst_im, 0, 0, $newWidth, $newHeight, $transparent);
+
+                        imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        imagegif($dst_im, $root . $uploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $uploadsDir);     //输出压缩后的图片
+
+                        //压缩缩略图
+                        if ($generateThumbnail) {
+                            imagedestroy($dst_im);  //销毁缓存
+                            $dst_im = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+                            imagealphablending($dst_im, false);
+                            imagesavealpha($dst_im,true);
+                            $transparent = imagecolorallocatealpha($dst_im, 255, 255, 255, 127);
+                            imagefilledrectangle($dst_im, 0, 0, $newWidth, $newHeight, $transparent);
+                            imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
+                            imagepng($dst_im, $root . $thumbnailUploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $thumbnailUploadsDir);     //输出压缩后的缩略图
+                        }
+                        imagedestroy($dst_im);  //销毁缓存
+                        imagedestroy($src_im);  //销毁缓存
                     }
 
                     //添加图片到数据库
