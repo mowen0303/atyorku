@@ -14,7 +14,7 @@ class EventModel extends Model
      * @return $bool
      */
     public function addEvent($event_category_id,$title,$intro,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$poster_url,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
+                             $registration_fee,$poster_id_1,$poster_id_2,$poster_id_3,$qr_code_url,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -24,7 +24,9 @@ class EventModel extends Model
         $arr["expiration_time"] = $expiration_time;
         $arr["publish_time"] = time();
         $arr["event_time"] = $event_time;
-        $arr["poster_url"] = $poster_url;
+        $arr["poster_id_1"]= $poster_id_1;
+        $arr["poster_id_2"]= $poster_id_2;
+        $arr["poster_id_3"]= $poster_id_3;
         $arr["location_link"] = $location_link;
         $arr["qr_code_url"] = $qr_code_url;
         $arr["registration_fee"] = $registration_fee;

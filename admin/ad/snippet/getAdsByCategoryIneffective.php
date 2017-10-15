@@ -1,14 +1,14 @@
 <?php
 $adModel = new \admin\ad\AdModel();
 $userModel = new \admin\user\UserModel();
-$ad_category_id = BasicTool::get('ad_category_id');
-$ad_category_title = BasicTool::get("ad_category_title");
+$event_category_id = BasicTool::get('event_category_id');
+$event_category_title = BasicTool::get("event_category_title");
 ?>
     <header class="topBox">
-        <h1><?php echo $pageTitle?>-<?php echo $ad_category_title ?></h1>
+        <h1><?php echo $pageTitle?>-<?php echo $event_category_title ?></h1>
     </header>
     <nav class="mainNav">
-        <a class="btn" href="/admin/adCategory/index.php?s=getAdCategories">返回</a>
+        <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
         <a class="btn" href="/admin/ad/index.php?s=getAdsByCategoryEffective&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">生效的广告</a>
         <a class="btn" href="index.php?s=addAd&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">发布新广告</a>
     </nav>
