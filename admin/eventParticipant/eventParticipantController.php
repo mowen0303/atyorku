@@ -13,9 +13,9 @@ function addEventParticipant(){
     $event_id = BasicTool::post("event_id","specify event_id");
     $bool = $eventParticipantModel->addEventParticipant($event_id,$user_id);
     if ($bool)
-        BasicTool::echoMessage("参与成功");
+        BasicTool::echoMessage("添加成功");
     else
-        BasicTool::echoMessage("参与失败");
+        BasicTool::echoMessage("添加失败");
 }
 
 function addEventParticipantWithJson(){
@@ -42,24 +42,29 @@ function getEventParticipantsByEventWithJson(){
         BasicTool::echoJson(0,"空");
 }
 
-function deleteEventParticipant(){
+function deleteEventParticipant($echoType="normal"){
     global $eventParticipantModel;
     $id = BasicTool::post("id","specify id");
     $bool = $eventParticipantModel->deleteEventParticipant($id[0]);
-    if ($bool)
-        BasicTool::echoMessage("删除成功");
+
+    if ($echoType == "normal")
+    {
+        if ($bool)
+            BasicTool::echoMessage("删除成功");
+        else
+            BasicTool::echoMessage("删除失败");
+    }
     else
-        BasicTool::echoMessage("删除失败");
+    {
+        if ($bool)
+            BasicTool::echoJson(1,"删除成功");
+        else
+            BasicTool::echoJson(0,"删除失败");
+    }
 }
 
 function deleteEventParticipantWithJson(){
-    global $eventParticipantModel;
-    $id = BasicTool::post("id","specify id");
-    $bool = $eventParticipantModel->deleteEventParticipant($id);
-    if ($bool)
-        BasicTool::echoJson(1,"删除成功",$id);
-    else
-        BasicTool::echoJson(0,"删除失败");
+    deleteEventParticipant("json");
 }
 
 

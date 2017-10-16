@@ -9,7 +9,7 @@ $isAdmin = BasicTool::get('isAdmin');
     <a class="btn" href="index.php?s=addEventCategory">添加活动分类</a>
 </nav>
 <article class="mainBox">
-    <header><h2>活动分类列表</h2></header>
+    <header><h2>活动分类</h2></header>
     <form action="EventCategoryController.php?action=deleteEventCategory" method="post">
         <section>
             <table class="tab">

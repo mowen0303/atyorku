@@ -23,8 +23,7 @@ class EventParticipantModel extends Model
         $result = $this->sqltool->getRowBySql($sql);
         $count_participants = $result["count_participants"];
         $max_participants = $result["max_participants"];
-
-        if ($count_participants < $max_participants)
+        if ($count_participants > $max_participants)
             {return false;}
 
         $bool = $this->addRow("event_participant", $arr);

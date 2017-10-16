@@ -9,7 +9,7 @@ $isAdmin = BasicTool::get('isAdmin');
     <a class="btn" href="index.php?s=addAdCategory">添加新广告分类</a>
 </nav>
 <article class="mainBox">
-    <header><h2>板块列表</h2></header>
+    <header><h2>广告分类</h2></header>
     <form action="AdCategoryController.php?action=deleteAdCategory" method="post">
         <section>
             <table class="tab">

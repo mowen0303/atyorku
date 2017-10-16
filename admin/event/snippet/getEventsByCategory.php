@@ -23,11 +23,11 @@ else{
     </header>
     <nav class="mainNav">
         <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
-        <a class="btn" <?php echo $display_option_0 ?> href="/admin/event/index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=0">未生效或过期的活动</a>
-        <a class="btn" <?php echo $display_option_1 ?> href="/admin/event/index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=1">生效的活动</a>
-        <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>">发布新活动</a>
+        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=0">未生效或过期的活动</a>
+        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=1">生效的活动</a>
+        <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>">发布新活动</a>
     </nav>
-    <article class="mainBox">>
+    <article class="mainBox">
         <header><h2><?php echo $event_category_title?></h2></header>
         <form action="eventController.php?action=deleteEvent" method="post">
             <section>
@@ -58,7 +58,7 @@ else{
                         <tr>
                             <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                             <td><?php echo $row['id']?></td>
-                            <td><img width="200" height="100" src="<?php echo $banner_url?>"></td>
+                            <td><a href="index.php?s=getEvent&event_id=<?php echo $row["id"] ?>"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
                             <td><?php echo $row['title']?></td>
                             <td><?php echo $row['sponsor_user_id']?></a></td>
                             <td><?php echo $row['registration_fee'] ?></td>
@@ -69,7 +69,7 @@ else{
                             <td><?php echo $row['event_time']?></td>
                             <td><?php echo $row['count_comments']?></td>
                             <td><?php echo $row['count_views']?></td>
-                            <td><a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>"">修改</a></td>
+                            <td><a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
                         </tr>
                         <?php
                     }
