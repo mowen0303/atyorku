@@ -92,7 +92,7 @@ function deleteEvent($echoType="normal"){
     global $eventModel;
     global $currentUser;
     $id = BasicTool::post("id", "请指定要删除的广告的id");
-    $bool = $eventModel->deleteEvent($id[0]);
+    $bool = $eventModel->deleteEvent($id);
 
     if ($echoType == "normal")
     {

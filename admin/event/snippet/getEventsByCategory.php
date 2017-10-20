@@ -58,7 +58,7 @@ else{
                         <tr>
                             <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                             <td><?php echo $row['id']?></td>
-                            <td><a href="index.php?s=getEvent&event_id=<?php echo $row["id"] ?>"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
+                            <td><a href="index.php?s=getEventWithParticipants&event_id=<?php echo $row["id"] ?>"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
                             <td><?php echo $row['title']?></td>
                             <td><?php echo $row['sponsor_user_id']?></a></td>
                             <td><?php echo $row['registration_fee'] ?></td>

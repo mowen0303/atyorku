@@ -58,15 +58,20 @@ class EventParticipantModel extends Model
 
 
     /**
-     * 删除一个活动参与人
+     * 删除活动参与人
      * @return bool
      */
     public function deleteEventParticipant($id)
     {
-        $sql = "SELECT * FROM event_participant WHERE id = {$id}";
+        if (is_array($id)){
+            $sql = "SELECT * FROM event_participant WHERE id = {$id[0]}";
+        }
+        else{
+            $sql = "SELECT * FROM event_participant WHERE id = {$id}";
+        }
         $event_id = $this->sqltool->getRowBySql($sql)["event_id"];
-        $sql = "DELETE FROM event_participant WHERE id = {$id}";
-        $bool = $this->sqltool->query($sql);
+
+        $bool = $this->realDeleteByFieldIn("event_participant","id",$id);
         if ($bool) {
             $sql = "UPDATE event SET count_participants = (SELECT COUNT(*) from event_participant WHERE event_id = {$event_id}) WHERE id = {$event_id}";
             $this->sqltool->query($sql);

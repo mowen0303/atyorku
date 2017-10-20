@@ -45,7 +45,7 @@ function getEventParticipantsByEventWithJson(){
 function deleteEventParticipant($echoType="normal"){
     global $eventParticipantModel;
     $id = BasicTool::post("id","specify id");
-    $bool = $eventParticipantModel->deleteEventParticipant($id[0]);
+    $bool = $eventParticipantModel->deleteEventParticipant($id);
 
     if ($echoType == "normal")
     {

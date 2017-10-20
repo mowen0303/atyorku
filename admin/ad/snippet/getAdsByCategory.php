@@ -1,15 +1,27 @@
 <?php
 $adModel = new \admin\ad\AdModel();
 $userModel = new \admin\user\UserModel();
-$event_category_id = BasicTool::get('event_category_id');
-$event_category_title = BasicTool::get("event_category_title");
+$ad_category_id = BasicTool::get('ad_category_id');
+$ad_category_title = BasicTool::get("ad_category_title");
+
+$flag = BasicTool::get("flag");
+$arr = $adModel->getAdsByCategory($ad_category_id,$flag);
+if($flag == 0){
+    $display_option_0 = "style='display:none'";
+    $display_option_1 = "";
+}
+else{
+    $display_option_0="";
+    $display_option_1 = "style='display:none'";
+}
 ?>
     <header class="topBox">
-        <h1><?php echo $pageTitle?>-<?php echo $event_category_title ?></h1>
+        <h1><?php echo $pageTitle?>-<?php echo $ad_category_title ?></h1>
     </header>
     <nav class="mainNav">
-        <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
-        <a class="btn" href="/admin/ad/index.php?s=getAdsByCategoryEffective&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">生效的广告</a>
+        <a class="btn" href="/admin/adCategory/index.php?s=getAdCategories">返回</a>
+        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>&flag=0">未生效或过期的广告</a>
+        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>&flag=1">生效的广告</a>
         <a class="btn" href="index.php?s=addAd&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">发布新广告</a>
     </nav>
     <article class="mainBox">
@@ -33,7 +45,6 @@ $event_category_title = BasicTool::get("event_category_title");
                     </thead>
                     <tbody>
                     <?php
-                    $arr = $adModel->getAdsByCategory($ad_category_id,"ineffective");
                     foreach ($arr as $row) {
                         ?>
                         <tr>
