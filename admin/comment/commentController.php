@@ -9,7 +9,7 @@ function addComment($echoType="normal"){
     global $commentModel;
     $parent_id = BasicTool::post("parent_id");
     $sender_id = BasicTool::post("sender_id","sender_id不能为空");
-    $receiver_id = BasicTool::post("user_id","receiver_Id不能为空");
+    $receiver_id = BasicTool::post("receiver_id","receiver_Id不能为空");
     $section_name = BasicTool::post("section_name","section_name不能为空");
     $section_id = BasicTool::post("section_id","section_id不能为空");
     $comment = BasicTool::post("comment","评论不能为空");

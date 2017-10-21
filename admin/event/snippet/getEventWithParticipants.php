@@ -65,6 +65,13 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 
 <article class="mainBox">
     <header>
+        <h2>活动详情</h2>
+    </header>
+    <?php echo $event["description"] ?>
+</article>
+
+<article class="mainBox">
+    <header>
         <h2>已参与的用户</h2>
     </header>
     <form action="/admin/eventParticipant/eventParticipantController.php?action=deleteEventParticipant" method="post">

@@ -62,3 +62,123 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
         </table>
     </section>
 </article>
+
+<article class="mainBox">
+    <header><h2>用户评论</h2></header>
+    <form action="/admin/comment/commentController.php?action=deleteComment" method="post">
+        <section>
+            <table class="tab">
+                <thead>
+                <tr>
+                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
+                    <th>ID</th>
+                    <th>父ID</th>
+                    <th>头像</th>
+                    <th>用户名</th>
+                    <th>性别</th>
+                    <th>内容</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $comments = $commentModel->getCommentsBySection("event",$event_id);
+                $parent = 0;
+                foreach ($comments as $comment) {
+
+                    if ($comment["r_id"]==null){
+                        $parent = 0;
+                        $sender=$userModel->getProfileOfUserById($comment["l_sender_id"]);
+                        ?>
+                        <tr>
+                            <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['l_id']?>"></td>
+                            <td><?php echo $comment['l_id']?></td>
+                            <td><?php echo $comment['l_parent_id']?></td>
+                            <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                            <td><?php echo $sender['name']?></td>
+                            <td><?php echo $sender['gender']?></a></td>
+                            <td><?php echo $comment['l_comment'] ?></td>
+                            <td><?php echo $comment['l_time'] ?></td>
+                            <td></td>
+                        </tr>
+                    <?php }
+                    else if ($parent == 0 && $comment["r_id"] != null ){
+
+                        $parent = 1;
+                        $sender = $userModel->getProfileOfUserById($comment["l_sender_id"]);
+
+
+                     ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['l_id']?>"></td>
+                        <td><?php echo $comment['l_id']?></td>
+                        <td><?php echo $comment['l_parent_id']?></td>
+                        <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                        <td><?php echo $sender['name']?></td>
+                        <td><?php echo $sender['gender']?></a></td>
+                        <td><?php echo $comment['l_comment'] ?></td>
+                        <td><?php echo $comment['l_time'] ?></td>
+                        <td></td>
+                    </tr>
+                        <?php
+
+                            $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
+                        ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                        <td><?php echo $comment['r_id']?></td>
+                        <td><?php echo $comment['r_parent_id']?></td>
+                        <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                        <td><?php echo $sender['name']?></td>
+                        <td><?php echo $sender['gender']?></a></td>
+                        <td><?php echo $comment['r_comment'] ?></td>
+                        <td><?php echo $comment['r_time'] ?></td>
+                        <td>回复</td>
+
+                    </tr>
+                <?php
+                }
+                else if ($parent == 1 && $comment["r_id"] != null){
+                        $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
+                ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                        <td><?php echo $comment['r_id']?></td>
+                        <td><?php echo $comment['r_parent_id']?></td>
+                        <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                        <td><?php echo $sender['name']?></td>
+                        <td><?php echo $sender['gender']?></a></td>
+                        <td><?php echo $comment['r_comment'] ?></td>
+                        <td><?php echo $comment['r_time'] ?></td>
+                        <td>回复</td>
+
+                    </tr>
+                <?php } }?>
+                </tbody>
+            </table>
+            <?php echo $commentModel->echoPageList()?>
+        </section>
+        <footer class="buttonBox">
+            <input type="submit" value="删除" class="btn" onclick="return confirm('确认删除吗?')">
+        </footer>
+    </form>
+</article>
+<article class="mainBox">
+    <header><h2>添加评论</h2></header>
+    <section class="formBox">
+        <form action="/admin/comment/commentController.php?action=addComment" method="post">
+            <div>
+                <input type="hidden" name="parent_id" value="0"/>
+                <input type="hidden" name="sender_id" value="<?php echo $userModel->userId?>"/>
+                <input type="hidden" name="receiver_id" value="<?php echo $event["sponsor_user_id"]?>"/>
+                <input type="hidden" name="section_name" value="event"/>
+                <input type="hidden" name="section_id" value="<?php echo $event["id"]?>"/>
+                <textarea value="" name="comment" placeholder="输入留言" class="input input-textarea"></textarea>
+            </div>
+            <div>
+                <input type="submit" value="提交" title="提交" class="btn btn-center">
+            </div>
+        </form>
+    </section>
+</article>
