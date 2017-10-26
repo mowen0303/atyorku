@@ -85,7 +85,7 @@ class ImageModel extends Model
         try {
             $file = $_FILES[$inputName];
             if ($file != null) {
-                $count = count($file['name']);
+                $count = $this->getNumOfUploadImages($inputName);   //获取文件上传数量
 
                 $root = $_SERVER["DOCUMENT_ROOT"];
                 $uploadsFolder = "/uploads/";
@@ -311,6 +311,20 @@ class ImageModel extends Model
 
     }
 
+    // 获取上传图片数量
+    function getNumOfUploadImages($inputName) {
+        $count = 0;
+        $total = count($_FILES[$inputName]['name']);
+        for($i=0; $i<$total; $i++) {
+          $tmpFilePath = $_FILES[$inputName]['tmp_name'][$i];
+          $size = $_FILES[$inputName]['size'][$i];
+          //Make sure we have a filepath and size
+          if ($tmpFilePath != "" and $size > 0){
+              $count++;
+          }
+        }
+        return $count;
+    }
 
 
 }
