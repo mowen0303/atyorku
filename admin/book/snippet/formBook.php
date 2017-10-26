@@ -64,7 +64,7 @@ $flag = BasicTool::get("flag");
 
                 <!-- <input class="input input-size50" type="hidden" name="cover" id="cover" value="<?php echo $row['cover'] ?>"> -->
                 <p><img  id="imgOfUpload" src="<?php echo $row['cover'] ?>" style="width: 100px; height: auto; display: none"></p>
-                <input type="file" name="imgFile" id="imgFile" />
+                <input type="file" name="imgFile[]" id="imgFile" multiple/>
             </div>
         </section>
         <footer class="submitBox">
@@ -84,6 +84,7 @@ $flag = BasicTool::get("flag");
         }
 
         $(function() {
+
             function readURL(input) {
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();

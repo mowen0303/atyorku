@@ -40,7 +40,7 @@ class AdModel extends Model
     public function getAdsByCategory($ad_category_id,$flag){
         $currentTime = time();
 
-        if ($flag == "effective") {
+        if ($flag == 1) {
             $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ";
             $countSql = "SELECT COUNT(*) FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
@@ -50,6 +50,12 @@ class AdModel extends Model
             $countSql = "SELECT count(*) FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time)";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
         }
+    }
+
+    public function getAd($id){
+        $sql = "SELECT * from ad WHERE id = {$id}";
+        $result = $this->sqltool->getRowBySql($sql);
+        return $result;
     }
 
     /**
@@ -73,8 +79,12 @@ class AdModel extends Model
 
     public function deleteAd($id)
     {
-        $sql = "SELECT * FROM ad WHERE id = {$id[0]}";
+        if (is_array($id))
+            $sql = "SELECT * FROM ad WHERE id = {$id[0]}";
+        else
+            $sql = "SELECT * FROM ad WHERE id = {$id}";
         $ad_category_id = $this->sqltool->getRowBySql($sql)["ad_category_id"];
+
         $bool = $this->realDeleteByFieldIn("ad","id",$id,true);
         if ($bool) {
             $sql = "UPDATE ad_category SET ads_count = (SELECT COUNT(*) from ad WHERE ad_category_id = {$ad_category_id}) WHERE id = {$ad_category_id}";

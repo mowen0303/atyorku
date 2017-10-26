@@ -1,7 +1,6 @@
 <?php
 $userModel = new \admin\user\UserModel();
 $adCategoryModel = new \admin\adCategory\AdCategoryModel();
-unset($id);
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 

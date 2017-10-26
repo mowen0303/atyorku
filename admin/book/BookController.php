@@ -16,12 +16,15 @@ call_user_func(BasicTool::get('action'));
 function getBookByIdWithJson() {
     global $bookModel;
     $id = BasicTool::get("book_id","请指定二手书Id");
-    $id = validateId($id);
-    $result = $bookModel->getBookById($id);
-    if ($result) {
-        BasicTool::echoJson(1, "成功", $result);
+    if (validateId($id)) {
+        $result = $bookModel->getBookById((int)$id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的二手书");
+        }
     } else {
-        BasicTool::echoJson(0, "未找到该ID对应的二手书");
+        BasicTool::echoJson("二手书ID无效");
     }
 }
 
@@ -33,8 +36,9 @@ function getBookByIdWithJson() {
  */
 function getListOfBooksByCategoryIdWithJson() {
     $id = BasicTool::get("book_category_id","请指定二手书类别Id");
-    $id = validateId($id);
-    getListOfBooksWithJson("book_category_id", $id);
+    if (validateId($id)) {
+        getListOfBooksWithJson("book_category_id", (int)$id);
+    }
 }
 
 /**
@@ -45,8 +49,9 @@ function getListOfBooksByCategoryIdWithJson() {
  */
 function getListOfBooksByUserIdWithJson() {
     $id = BasicTool::get("user_id","请指定用户ID");
-    $id = validateId($id);
-    getListOfBooksWithJson("user_id", $id);
+    if (validateId($id)) {
+        getListOfBooksWithJson("user_id", (int)$id);
+    }
 }
 
 /**
@@ -56,7 +61,7 @@ function getListOfBooksByUserIdWithJson() {
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByUsernameWithJson&username=abc@gmail.com&pageSize=20
  */
 function getListOfBooksByUsernameWithJson() {
-    $username = BasicTool::get("username","请指定二手书类别Id");
+    $username = BasicTool::get("username","请指定用户名");
     getListOfBooksWithJson("username", $username);
 }
 
@@ -147,14 +152,12 @@ function deleteBookWithJson() {
 /**
  * http://www.atyorku.ca/admin/book/bookController.php?action=uploadImgWithJson
  * 上传图片,成功返回图片路径
- * @return bool|path
+ * $_FILES的inputname 为 imgFile
+ * @return JSON 新图片ID一维数组
  */
 function uploadImgWithJson() {
-    global $bookModel;
-    global $imageModel;
-    global $currentUser;
     try {
-        $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId) or BasicTool::throwException($imageModel->errorMsg);
+        $uploadArr = uploadImages();
         BasicTool::echoJson(1, "上传成功", $uploadArr);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
@@ -164,28 +167,32 @@ function uploadImgWithJson() {
 //=========== END Function with JSON ============//
 
 /**
-* Upload image to /uploads/book/images/ when user select an image. The file <input>'s name attribute must be "imgFile"
-* A thumbnail image will also be created and store at /uploads/book/images/thumbnail/
-* ====== Following params are added to $_POST
-* @param image_url  re-rendered image url
-* @param thumbnail_url  thumbnail url
-* @param size   re-rendered image size
-* @param width  re-rendered image width
-* @param height re-rendered image height
+* Upload image to /uploads/images/ when user select image(s). The file <input>'s name attribute must be "imgFile"
+* A thumbnail image will also be created and save in /uploads/[user id]/
+* @return int[] array of new image id(s)
+* @throws
 */
 function uploadImages() {
+    global $bookModel;
     global $imageModel;
     global $currentUser;
-    if ($_FILES["imgFile"]["size"] != 0) {
-        $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId) or BasicTool::throwException($imageModel->errorMsg);
-        $_POST["image_url"] = $uploadArr["image_url"];
-        $_POST["thumbnail_url"] = $uploadArr["thumbnail_url"];
-        $_POST["size"] = $uploadArr["size"];
-        $_POST["width"] = $uploadArr["width"];
-        $_POST["height"] = $uploadArr["height"];
-        return true;
+    $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId, "book") or BasicTool::throwException($imageModel->errorMsg);
+    return $uploadArr;
+}
+
+// 获取上传图片数量
+function getNumOfUploadImages() {
+    $count = 0;
+    $total = count($_FILES['imgFile']['name']);
+    for($i=0; $i<$total; $i++) {
+      $tmpFilePath = $_FILES['imgFile']['tmp_name'][$i];
+      $size = $_FILES['imgFile']['size'][$i];
+      //Make sure we have a filepath and size
+      if ($tmpFilePath != "" and $size > 0){
+          $count++;
+      }
     }
-    return false;
+    return $count;
 }
 
 
@@ -196,13 +203,6 @@ function modifyBook($echoType = "normal") {
     global $bookCategoryModel;
     global $currentUser;
     try{
-        // upload new images to server if any
-        $newImageId = null;
-        if (uploadImages()) {
-            addNewImage() or BasicTool::throwException("服务器添加图片失败");
-            $newImageId = $imageModel->idOfInsert;
-        }
-
         $flag = BasicTool::post('flag');
         $bookUserId = false;    // 二手书卖家ID
         $currentBook = null;
@@ -228,19 +228,25 @@ function modifyBook($echoType = "normal") {
         $price = number_format($price, 2, '.', '');
 
         $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("此二手书所属分类不存在");
+        // 提交的新图片ID
         $img1 = BasicTool::post("image_id_one");
         $img2 = BasicTool::post("image_id_two");
         $img3 = BasicTool::post("image_id_three");
+        $imgArr = array_values(array_filter([$img1, $img2, $img3]));
 
-        if ($newImageId) {
-            if ($img1 == null) {
-                $img1 = $newImageId;
-            } else if ($img2 == null) {
-                $img2 = $newImageId;
-            } else if ($img3 == null) {
-                $img3 = $newImageId;
-            } else {
-                BasicTool::throwException("二手书图片已满，先删除已有图片");
+        $numOfNewImages = getNumOfUploadImages();
+        if ($numOfNewImages > 0) {
+            // 如果有新图片，上传添加新图片ID到 $imgArr
+            if ($numOfNewImages > 3) {
+                BasicTool::throwException("图片上传最多3张");
+            }
+            if ((3-sizeof($imgArr))<$numOfNewImages) {
+                BasicTool::throwException("上传图片数量过多，请先删除当前图片");
+            }
+            $newImageIds = uploadImages() or BasicTool::throwException($imageModel->errorMsg);
+            $imgArr = array_merge($imgArr, $newImageIds);
+            if (sizeof($imgArr)>3) {
+                BasicTool::throwException("Unexpected Error: imgArr size over 3.");
             }
         }
 
@@ -248,16 +254,19 @@ function modifyBook($echoType = "normal") {
         if ($flag=='update') {
             $userId = $bookUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
             // 删除旧图片
-            if ($currentBook['image_id_one'] != null and $currentBook['image_id_one'] != $img1) {
+            $cimg1 = $currentBook['image_id_one'];
+            $cimg2 = $currentBook['image_id_two'];
+            $cimg3 = $currentBook['image_id_three'];
+            if ($cimg1 != null and !in_array($cimg1, $imgArr)) {
                 $imageModel->deleteImageById($currentBook['image_id_one']);
             }
-            if ($currentBook['image_id_two'] != null and $currentBook['image_id_two'] != $img2) {
+            if ($cimg2 != null and !in_array($cimg2, $imgArr)) {
                 $imageModel->deleteImageById($currentBook['image_id_two']);
             }
-            if ($currentBook['image_id_three'] != null and $currentBook['image_id_three'] != $img3) {
+            if ($cimg3 != null and !in_array($cimg3, $imgArr)) {
                 $imageModel->deleteImageById($currentBook['image_id_three']);
             }
-            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $userId, $img1, $img2, $img3) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $userId, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/book/index.php?listBook");
             } else {
@@ -265,7 +274,7 @@ function modifyBook($echoType = "normal") {
             }
         } else if ($flag=='add') {
             $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
-            $bookModel->addBook($name, $price, $description, $bookCategoryId, $userId, $img1, $img2, $img3) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->addBook($name, $price, $description, $bookCategoryId, $userId, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/book/index.php?listBook");
             } else {
@@ -280,6 +289,30 @@ function modifyBook($echoType = "normal") {
             BasicTool::echoJson(0, $e->getMessage());
         }
     }
+}
+
+
+// // upload new images to server if any
+// if (hasImages()) {
+//     if ($img1 != null and $img2 != null and $img3 != null) {
+//         BasicTool::throwException("二手书图片已满，先删除已有图片");
+//     } else {
+//         uploadImages();
+//         addNewImage() or BasicTool::throwException("服务器添加图片失败");
+//         $newImageId = $imageModel->idOfInsert;
+//         if ($img1 == null) {
+//             $img1 = $newImageId;
+//         } else if ($img2 == null) {
+//             $img2 = $newImageId;
+//         } else if ($img3 == null) {
+//             $img3 = $newImageId;
+//         }
+//
+//     }
+// }
+
+function updateImages($currentImageIds, $newImageIds, $newImage) {
+
 }
 
 /**
@@ -302,7 +335,6 @@ function addNewImage() {
     return false;
 }
 
-
 /**
 * 删除1个或多本二手书
 * @param $id 要删除的二手书id或id array
@@ -312,41 +344,24 @@ function deleteBook($echoType = "normal") {
     global $currentUser;
     global $imageModel;
     try {
-        $id = BasicTool::post('id');
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除二手书ID");
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
                 $i++;
                 if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                    $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的二手书");
+                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的二手书");
                 }
-                $data = $bookModel->deleteBookById($v) or BasicTool::throwException("删除多本失败");
-                if ($data["image_id_one"]) {
-                    $imageModel->deleteImageById('book', $data["image_id_one"]);
-                }
-                if ($data["image_id_two"]) {
-                    $imageModel->deleteImageById('book', $data["image_id_two"]);
-                }
-                if ($data["image_id_three"]) {
-                    $imageModel->deleteImageById('book', $data["image_id_three"]);
-                }
+                deleteBookImagesByBookId($v);
+                $bookModel->deleteBookById($v) or BasicTool::throwException("删除多本失败");
             }
         } else {
             $i++;
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
                 $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的二手书");
             }
+            deleteBookImagesByBookId($id);
             $bookModel->deleteBookById($id) or BasicTool::throwException("删除1本失败");
-            $data = $bookModel->deleteBookById($v) or BasicTool::throwException("删除多本失败");
-            if ($data["image_id_one"]) {
-                $imageModel->deleteImageById('book', $data["image_id_one"]);
-            }
-            if ($data["image_id_two"]) {
-                $imageModel->deleteImageById('book', $data["image_id_two"]);
-            }
-            if ($data["image_id_three"]) {
-                $imageModel->deleteImageById('book', $data["image_id_three"]);
-            }
         }
         if ($echoType == "normal") {
             BasicTool::echoMessage("成功删除{$i}本二手书", $_SERVER['HTTP_REFERER']);
@@ -396,14 +411,29 @@ function searchBooks($bookModel, $pageSize=40) {
 
 /**
 * 验证ID
-* ID必须为数字且大于0，Float数字会自动转换为 integer
-* @return integer ID
+* ID必须为数字且大于0
+* @return boolean
 */
 function validateId($id) {
-    is_numeric($id) or BasicTool::echoJson(0, "ID must be integer");
-    $id = (int)$id;
-    ($id>0) or BasicTool::echoJson(0, "ID must be non-negative integer");
-    return $id;
+    return (is_numeric($id) and ((int)$id > 0));
 }
 
+/**
+* 删除指定二手书ID相关联的图片
+* @param id 二手书ID
+*/
+function deleteBookImagesByBookId($id) {
+    global $bookModel;
+    global $imageModel;
+    $data = $bookModel->getImagesIdByBookId($id) or BasicTool::throwException("没找到二手书");
+    if ($data["image_id_one"]) {
+        $imageModel->deleteImageById($data["image_id_one"]) or BasicTool::throwException("删除失败");
+    }
+    if ($data["image_id_two"]) {
+        $imageModel->deleteImageById($data["image_id_two"]) or BasicTool::throwException("删除失败");
+    }
+    if ($data["image_id_three"]) {
+        $imageModel->deleteImageById($data["image_id_three"]) or BasicTool::throwException("删除失败");
+    }
+}
 ?>
