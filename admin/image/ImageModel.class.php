@@ -13,9 +13,20 @@ class ImageModel extends Model
         $this->table = "image";
     }
 
+    /**
+    * 获取1或多个图片
+    * @param id 图片ID
+    * @return 一维数组，如果是多个id，返回二维数组
+    */
     public function getImageById($id) {
-        $sql = "SELECT * FROM `{$this->table}` WHERE id in ({$id})";
-        return $this->sqltool->getRowBySql($sql);
+        if(is_array($id)) {
+            $arrId=implode($id,",");
+            $sql = "SELECT * FROM `{$this->table}` WHERE id in ({$arrId})";
+            return $this->sqltool->getListBySql($sql);
+        } else {
+            $sql = "SELECT * FROM `{$this->table}` WHERE id in ({$id})";
+            return $this->sqltool->getRowBySql($sql);
+        }
     }
 
     /**
@@ -42,19 +53,26 @@ class ImageModel extends Model
     }
 
     /**
-    * 根据图片ID删除此图片
-    * @param id 要删除的图片ID
+    * 根据1或多张图片ID删除1或多张图片
+    * @param id 要删除的图片ID或ID array
     * @return boolean
     */
     public function deleteImageById($id) {
-        $img = $this->getImageById($id);
-        if ($img) {
+        $sql="";
+        if (is_array($id)) {
+            $img = $this->getImageById($id);
+            $foundIdStr = implode(array_column($img, "id"), ",");
+            foreach ($img as $v) {
+                $this->deleteImg($v["url"]);
+                $this->deleteImg($v["thumbnail_url"]);
+            }
+            $sql = "DELETE FROM {$this->table} WHERE id in ({$foundIdStr})";
+        } else {
             $this->deleteImg($img["url"]);
             $this->deleteImg($img["thumbnail_url"]);
             $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
-            return $this->sqltool->query($sql);
         }
-        return false;
+        return $this->sqltool->query($sql);
     }
 
     /**
@@ -324,6 +342,60 @@ class ImageModel extends Model
           }
         }
         return $count;
+    }
+
+
+    /**
+    * 更新某Row多张图片排序或/和添加新图，自动删除不相关联图片,如果有上传文件需要提供 $uploadInputName, $path, $tableName
+    * @param modifiedImageIds 修改后的所有图片Id array 顺序需要与数据库图片Fields顺序一致
+    * @param currentImageIds 当前Row的图片Fields所关联的图片ID array 顺序需要与数据库图片Fields顺序一致
+    * @param maxNum 最大容许图片数量
+    * @param uploadInputName 上传文件输入名称
+    * @param path 新图片上传路径
+    * @param tableName 数据库表名
+    * @return 返回需要上传的图片Fields的Id array
+    * -----------------------------------------
+    * 举例： 修改当前一本book的图片, book 容许 3张图片
+    *       // 获取POST的所有图片Fields并做成array
+    *       $modifiedImageIds = array(BasicTool::post("image_id_one"),BasicTool::post("image_id_two"),BasicTool::post("image_id_three"));
+    *       $result = $bookModel->getBookById($arr['id']);  // 从数据库获取当前书信息
+    *       $currentImageIds = array($result["image_id_one"],$result["image_id_two"],$result["image_id_three"]);
+    *       $imageModel->uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds,3,"imgFile",$currentUser->userId,"table");
+    */
+    function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false) {
+        $imgArr = array_values(array_filter($modifiedImageIds));
+        if(!$maxNum) {
+            $maxNum = count($modifiedImageIds);
+        }
+        $numOfNewImages=0;
+        // 上传新图片并添加新图id到$imgArr
+        if($uploadInputName) {
+            $numOfNewImages = $this->getNumOfUploadImages($uploadInputName);
+            if ($numOfNewImages > 0) {
+                $path or BasicTool::throwException("上传新图片需要提供上传路径");
+                $tableName or BasicTool::throwException("上传新图片需要提供表名");
+                ($numOfNewImages <= $maxNum) or BasicTool::throwException("图片上传最多3张");
+                ($numOfNewImages+count($imgArr)<=$maxNum) or BasicTool::throwException("上传图片数量过多，请先删除当前图片");
+                $newImageIds = $this->uploadImg($uploadInputName, $path, $tableName) or BasicTool::throwException($this->errorMsg);
+                $imgArr = array_merge($imgArr, $newImageIds);
+                (count($imgArr)<=$maxNum) or BasicTool::throwException("Unexpected Error: imgArr size over {$maxNum}.");
+            }
+        }
+
+        // 检查并删除替代掉的图片
+        if($currentImageIds) {
+            $needDeletedIds=array();
+            foreach($currentImageIds as $v) {
+                if($v != null and !in_array($v,$imgArr)) {
+                    array_push($needDeletedIds,$v);
+                }
+            }
+            if(count($needDeletedIds)>0) {
+                $this->deleteImageById($needDeletedIds);
+            }
+        }
+
+        return $imgArr;
     }
 
 

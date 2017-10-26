@@ -35,6 +35,17 @@ $flag = BasicTool::get("flag");
                 </select>
             </div>
             <div>
+                <label>科目<i>*</i></label>
+                <select class="input input-select input-size50 selectDefault" name="course_id" defvalue="<?php echo BasicTool::get('f_course_id') ?>">
+                    <?php
+                        $arrOfCourses = $bookModel->getListOfCourses();
+                        foreach($arrOfCourses as $rowOfCourses){
+                            echo '<option value="'.$rowOfCourses['id'].'}">' . ($rowOfCourses['parent_title'] .'-'. $rowOfCourses['title']) .'</option>';
+                        }
+                    ?>
+                </select>
+            </div>
+            <div>
                 <label>价格<i>*</i></label>
                 <input class="input" type="number" name="price" min="0.0" step="0.01" value="<?php echo (float)BasicTool::get('f_price') ?>">
             </div>

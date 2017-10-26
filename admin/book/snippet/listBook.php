@@ -48,6 +48,7 @@ $userModel = new \admin\user\UserModel();
                     <th width="60px">价钱</th>
                     <th>描述</th>
                     <th width="80px">类别</th>
+                    <th width="100px">科目</th>
                     <th width="80px">卖家</th>
                     <th width="80px">发布时间</th>
                     <th width="80px">操作</th>
@@ -55,7 +56,6 @@ $userModel = new \admin\user\UserModel();
                 </thead>
                 <tbody>
                 <?php
-
                 $arr = $bookModel->getListOfBooks();
                 foreach ($arr as $row) {
                     $argument = "";
@@ -71,8 +71,9 @@ $userModel = new \admin\user\UserModel();
                         <td><?php echo "$" . $row['price'] ?></td>
                         <td><?php echo $row['description'] ?></td>
                         <td><?php echo $row['book_category_name'] ?></td>
-                        <td><?php echo $row['user_name'] ?></td>
-                        <td><?php echo BasicTool::translateTime($row['publish_time']) ?></td>
+                        <td><?php echo $row['course_parent_title'] . $row['course_child_title'] ?></td>
+                        <td><?php echo $row['alias'] ?></td>
+                        <td><?php echo $row['publish_time'] ?></td>
                         <td><a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a></td>
                     </tr>
                 <?php
