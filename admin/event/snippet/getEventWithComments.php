@@ -65,13 +65,13 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 
 <article class="mainBox">
     <header><h2>用户评论</h2></header>
-    <form action="/admin/comment/commentController.php?action=deleteComment" method="post">
+    <form action="/admin/comment/commentController.php?action=deleteParentComment" method="post">
         <section>
             <table class="tab">
                 <thead>
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th>ID</th>
+                    <th>评论ID</th>
                     <th>父ID</th>
                     <th>头像</th>
                     <th>用户名</th>
@@ -88,6 +88,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 foreach ($comments as $comment) {
 
                     if ($comment["r_id"]==null){
+                        unset($l_id);
                         $parent = 0;
                         $sender=$userModel->getProfileOfUserById($comment["l_sender_id"]);
                         ?>
@@ -100,14 +101,14 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                             <td><?php echo $sender['gender']?></a></td>
                             <td><?php echo $comment['l_comment'] ?></td>
                             <td><?php echo $comment['l_time'] ?></td>
-                            <td></td>
+                            <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
                         </tr>
                     <?php }
                     else if ($parent == 0 && $comment["r_id"] != null ){
 
                         $parent = 1;
                         $sender = $userModel->getProfileOfUserById($comment["l_sender_id"]);
-
+                        $l_id = $comment["l_id"];
 
                      ?>
                     <tr>
@@ -119,7 +120,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['l_comment'] ?></td>
                         <td><?php echo $comment['l_time'] ?></td>
-                        <td></td>
+                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
                     </tr>
                         <?php
 
@@ -134,12 +135,11 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
                         <td><?php echo $comment['r_time'] ?></td>
-                        <td>回复</td>
 
                     </tr>
                 <?php
                 }
-                else if ($parent == 1 && $comment["r_id"] != null){
+                else if ($parent == 1 && $comment["r_id"] != null && $comment["l_id"] == $l_id){
                         $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
                 ?>
                     <tr>
@@ -151,10 +151,47 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
                         <td><?php echo $comment['r_time'] ?></td>
-                        <td>回复</td>
+
 
                     </tr>
-                <?php } }?>
+                <?php }
+                else if ($parent == 1 && $comment["r_id"] != null && $comment["l_id"] != $l_id){
+                    $l_id = $comment["l_id"];
+                    $parent = 1;
+                    $sender = $userModel->getProfileOfUserById($comment["l_sender_id"]);
+                    $l_id = $comment["l_id"];
+
+                    ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['l_id']?>"></td>
+                        <td><?php echo $comment['l_id']?></td>
+                        <td><?php echo $comment['l_parent_id']?></td>
+                        <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                        <td><?php echo $sender['name']?></td>
+                        <td><?php echo $sender['gender']?></a></td>
+                        <td><?php echo $comment['l_comment'] ?></td>
+                        <td><?php echo $comment['l_time'] ?></td>
+                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
+                    </tr>
+                    <?php
+
+                    $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
+                    ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                        <td><?php echo $comment['r_id']?></td>
+                        <td><?php echo $comment['r_parent_id']?></td>
+                        <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
+                        <td><?php echo $sender['name']?></td>
+                        <td><?php echo $sender['gender']?></a></td>
+                        <td><?php echo $comment['r_comment'] ?></td>
+                        <td><?php echo $comment['r_time'] ?></td>
+
+                    </tr>
+                    <?php
+                }
+                }
+                ?>
                 </tbody>
             </table>
             <?php echo $commentModel->echoPageList()?>

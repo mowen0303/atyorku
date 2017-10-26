@@ -54,7 +54,7 @@ class CommentModel extends Model
     }
 
     /**
-     *id 可以个integer也可以是个array但是必须是子级评论的ID
+     *id 可以是个integer也可以是个integer array但是必须是子级评论的ID
      */
 
     public function deleteChildComment($id)
@@ -80,6 +80,73 @@ class CommentModel extends Model
         $bool = $this->sqltool->query($sql);
         return $bool;
     }
+
+    /*
+     * @param id可以是integer或者integer array,但是必须是父级评论的id
+     * @return $bool
+     */
+    public function deleteParentComment($id){
+        if (is_array($id)){
+            /*抓section_name跟section_id，用于最后更新评论量*/
+            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id[0]}";
+            $result = $this->sqltool->getRowBySql($sql);
+            $section_name = $result["section_name"];
+            $section_id = $result["section_id"];
+
+            $concat = null;
+            foreach($id as $i){
+                $i = $i+0;
+                $i = $i.",";
+                $concat = $concat.$i;
+            }
+            $concat = substr($concat,0,-1);
+
+            /*删除子级评论*/
+            $sql = "DELETE from comment WHERE parent_id IN ({$concat})";
+            $bool = $this->sqltool->query($sql);
+            if ($bool) {
+                /*删除父级评论*/
+                $sql = "DELETE FROM comment WHERE id IN ({$concat})";
+                $bool = $this->sqltool->query($sql);
+            }
+            else{
+                /*删除子级评论失败，返回false*/
+                $this->errorMsg = "子评论删除失败";
+                return false;
+            }
+        }
+
+        else{
+            /*抓section_name跟section_id,用于最后更新评论量*/
+            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id}";
+            $result = $this->sqltool->getRowBySql($sql);
+            $section_name = $result["section_name"];
+            $section_id = $result["section_id"];
+
+            /*删除子评论*/
+            $sql = "DELETE FROM comment WHERE parent_id = {$id}";
+            $bool = $this->sqltool->query($sql);
+            if ($bool){
+                /*删除父级评论*/
+                $sql = "DELETE FROM comment WHERE id = {$id}";
+                $bool = $this->sqltool->query($sql);
+            }
+            else{
+                /*删除子评论失败，结束并返回false*/
+                $this->errorMsg = "子评论删除失败";
+                return false;
+            }
+        }
+
+        /*更新评论量*/
+        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
+        $this->sqltool->query($sql);
+        if ($bool == false)
+            $this->errorMsg = "子评论删除成功,父级评论删除失败";
+        return $bool;
+    }
+
+
 }
 
 

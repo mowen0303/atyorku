@@ -33,15 +33,7 @@ function addCommentWithJson(){
     addComment("json");
 }
 
-
-function getCommentsByEvent(){
-    global $eventCommentModel;
-    $event_id = BasicTool::get("event_id","请指定活动id");
-    BasicTool::echoJson(1,"获取成功",$eventCommentModel->getCommentsByEvent($event_id));
-}
-
-
-function deleteCommentBySection($echoType = "normal"){
+function deleteCommentsBySection($echoType = "normal"){
     global $commentModel;
     $section_name = BasicTool::post("section_name");
     $section_id = BasicTool::post("section_id");
@@ -61,15 +53,15 @@ function deleteCommentBySection($echoType = "normal"){
             BasicTool::echoJson(0,"删除失败");
     }
 }
-function deleteCommentBySectionWithJson(){
-    deleteCommentBySection("json");
+function deleteCommentsBySectionWithJson(){
+    deleteCommentsBySection("json");
 }
 
-//*further implmentation
-function deleteComment($echoType="normal"){
+
+function deleteChildComment($echoType="normal"){
     global $commentModel;
     $id = BasicTool::post("id","id不能为空");
-    $bool = $commentModel->deleteComment($id);
+    $bool = $commentModel->deleteChildComment($id);
     if ($echoType == "normal")
     {
         if ($bool)
@@ -86,7 +78,32 @@ function deleteComment($echoType="normal"){
     }
 
 }
+function deleteChildCommentWithJson(){
+    deleteChildComment("json");
+}
+function deleteParentComment($echoType="normal"){
+    global $commentModel;
+    $id = BasicTool::post("id","id不能为空");
+    $bool = $commentModel->deleteParentComment($id);
+    if ($echoType == "normal")
+    {
+        if ($bool)
+            BasicTool::echoMessage("删除成功");
+        else
+            BasicTool::echoMessage("删除失败");
+    }
+    else
+    {
+        if ($bool)
+            BasicTool::echoJson(1,"删除成功");
+        else
+            BasicTool::echoJson(0,"删除失败");
+    }
 
+}
+function deleteParentCommentWithJson(){
+    deleteParentComment("json");
+}
 function getCommentsBySectionWithJson(){
     global $commentModel;
     $section_name = BasicTool::post("section_name");
