@@ -69,6 +69,29 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
     </header>
     <?php echo $event["description"] ?>
 </article>
+<article class="mainBox">
+    <header>
+        <h2>图片</h2>
+    </header>
+    <?php
+        if($event["img_id_1"]){
+            $img_link_1 = $imageModel->getImageById($event["img_id_1"])["url"];
+            echo "<img src='{$img_link_1}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+    <?php
+        if($event["img_id_2"]){
+            $img_link_2 = $imageModel->getImageById($event["img_id_2"])["url"];
+            echo "<img src='{$img_link_2}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+    <?php
+        if($event["img_id_3"]){
+            $img_link_3 = $imageModel->getImageById($event["img_id_3"])["url"];
+            echo "<img src='{$img_link_3}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+</article>
 
 <article class="mainBox">
     <header>

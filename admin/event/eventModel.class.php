@@ -5,7 +5,6 @@ use admin\user\UserModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
-
 class EventModel extends Model
 {
 
@@ -107,19 +106,39 @@ class EventModel extends Model
     }
 
     /**
-     * 删除一则活动
+     * 删除活动
+     * @id can be an integer or an array of integers
      * @return bool
      */
     public function deleteEvent($id)
     {
-        $sql = "SELECT * FROM event WHERE id = {$id}";
-        $event_category_id = $this->sqltool->getRowBySql($sql)["event_category_id"];
-        $sql = "DELETE FROM event WHERE id = {$id}";
-        $bool = $this->sqltool->query($sql);
+        if (is_array($id)){
+            $sql = "SELECT * FROM event WHERE id = {$id[0]}";
+            $event_category_id = $this->sqltool->getRowBySql($sql)["event_category_id"];
+            $concat = null;
+            foreach($id as $i){
+                $i = $i+0;
+                $i = $i.",";
+                $concat = $concat.$i;
+            }
+            $concat = substr($concat,0,-1);
+            $sql = "DELETE FROM event WHERE id in ({$concat})";
+            $bool = $this->sqltool->query($sql);
+        }
+
+        else {
+            $sql = "SELECT * FROM event WHERE id = {$id}";
+            $event_category_id = $this->sqltool->getRowBySql($sql)["event_category_id"];
+            $sql = "DELETE FROM event WHERE id = {$id}";
+            $bool = $this->sqltool->query($sql);
+        }
+
+        //更新活动数
         if ($bool) {
             $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
             $this->sqltool->query($sql);
         }
+
         return $bool;
     }
 

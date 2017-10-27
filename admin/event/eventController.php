@@ -92,8 +92,18 @@ function getEventsByCategoryWithJson(){
 function deleteEvent($echoType="normal"){
     global $eventModel;
     global $currentUser;
+    global $commentModel;
+    global $imageModel;
     $id = BasicTool::post("id", "请指定要删除的广告的id");
-    $bool = $eventModel->deleteEvent($id);
+
+    //删除图片
+
+    //删除评论
+    $bool = $commentModel->deleteCommentsBySectionId("event",$id);
+    //删除活动
+    if ($bool){
+        $bool = $eventModel->deleteEvent($id);
+    }
 
     if ($echoType == "normal")
     {

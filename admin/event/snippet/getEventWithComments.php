@@ -10,6 +10,26 @@ $event_category_id = $event["event_category_id"];
 $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 ?>
 
+<script>
+    function removeComment(id){
+        $.ajax(
+            {url:"/admin/comment/commentController.php?action=deleteChildCommentWithJson",
+                type:"POST",
+                contentType:"application/x-www-form-urlencoded",
+                data:{
+                    id:id
+                },
+                success:function(res){
+                    if (res){
+                        var dom_id = "comment_"+id;
+                        $("#"+dom_id).remove();
+                    }
+                }
+            }
+    );
+    }
+</script>
+
 <header class="topBox" xmlns="http://www.w3.org/1999/html">
     <h1>活动</h1>
 </header>
@@ -62,7 +82,35 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
         </table>
     </section>
 </article>
-
+<article class="mainBox">
+    <header>
+        <h2>活动详情</h2>
+    </header>
+    <?php echo $event["description"] ?>
+</article>
+<article class="mainBox">
+    <header>
+        <h2>图片</h2>
+    </header>
+    <?php
+    if($event["img_id_1"]){
+        $img_link_1 = $imageModel->getImageById($event["img_id_1"])["url"];
+        echo "<img src='{$img_link_1}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+    <?php
+    if($event["img_id_2"]){
+        $img_link_2 = $imageModel->getImageById($event["img_id_2"])["url"];
+        echo "<img src='{$img_link_2}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+    <?php
+    if($event["img_id_3"]){
+        $img_link_3 = $imageModel->getImageById($event["img_id_3"])["url"];
+        echo "<img src='{$img_link_3}' height='260' width='390'/>"
+        ?>
+    <?php }?>
+</article>
 <article class="mainBox">
     <header><h2>用户评论</h2></header>
     <form action="/admin/comment/commentController.php?action=deleteParentComment" method="post">
@@ -126,8 +174,8 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 
                             $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
                         ?>
-                    <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                    <tr id="comment_<?php echo $comment["r_id"]?>">
+                        <td>&nbsp;&nbsp;</td>
                         <td><?php echo $comment['r_id']?></td>
                         <td><?php echo $comment['r_parent_id']?></td>
                         <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
@@ -135,15 +183,15 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
                         <td><?php echo $comment['r_time'] ?></td>
-
+                        <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
                     </tr>
                 <?php
                 }
                 else if ($parent == 1 && $comment["r_id"] != null && $comment["l_id"] == $l_id){
                         $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
                 ?>
-                    <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                    <tr id="comment_<?php echo $comment["r_id"]?>">
+                        <td>&nbsp;&nbsp;</td>
                         <td><?php echo $comment['r_id']?></td>
                         <td><?php echo $comment['r_parent_id']?></td>
                         <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
@@ -151,7 +199,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
                         <td><?php echo $comment['r_time'] ?></td>
-
+                        <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
 
                     </tr>
                 <?php }
@@ -177,8 +225,8 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 
                     $sender = $userModel->getProfileOfUserById($comment["r_sender_id"]);
                     ?>
-                    <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['r_id']?>"></td>
+                    <tr id="comment_<?php echo $comment["r_id"]?>">
+                        <td>&nbsp;&nbsp;</td>
                         <td><?php echo $comment['r_id']?></td>
                         <td><?php echo $comment['r_parent_id']?></td>
                         <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
@@ -186,7 +234,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
                         <td><?php echo $comment['r_time'] ?></td>
-
+                        <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
                     </tr>
                     <?php
                 }
