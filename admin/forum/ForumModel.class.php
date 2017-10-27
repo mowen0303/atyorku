@@ -448,9 +448,9 @@ class ForumModel extends Model
             $condition .= " f.id IN ({$onlyShowSpecificForumId}) AND ";
         }
 
-        $sql = "SELECT f.*,fc.title AS classTitle, type AS classType FROM (select f.*,u_c.is_admin from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY `sort` DESC,`update_time` DESC";
+        $sql = "SELECT f.*,fc.title AS classTitle, type AS classType FROM (select f.*,u_c.is_admin,u_c.title as userTitle from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY `sort` DESC,`update_time` DESC";
 
-        $countSql = "SELECT COUNT(*)FROM (SELECT f.*,u.img,u.alias,u.gender FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE f.`forum_class_id` in (2) AND u.is_del = 0) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY f.sort DESC, `update_time` DESC";
+        $countSql = "SELECT COUNT(*) FROM (select f.*,u_c.is_admin from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY f.sort DESC,`update_time` DESC";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);
         $id = "";
         $idIndex = 0;
@@ -525,8 +525,9 @@ class ForumModel extends Model
         if ($onlyShowReportList == true) {
             $condition .= " AND f_c.report > 0";
         }
-        $sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
-        $countSql = "SELECT count(*) FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
+        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
+        //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
+        $countSql = "SELECT count(*) FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
         $arr = parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
         foreach ($arr as $k1 => $v1) {
             foreach ($v1 as $k2 => $v2) {
@@ -553,7 +554,8 @@ class ForumModel extends Model
 
 
     public function getCommentById($id){
-        $sql = "SELECT * from forum_comment INNER JOIN user ON forum_comment.user_id = user.id where forum_comment.id = {$id}";
+        //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}";
+        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
         $result = $this->sqltool->getRowBySql($sql);
         foreach($result as $k => $v){
             if($k == 'time'){
