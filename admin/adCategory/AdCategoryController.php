@@ -13,15 +13,20 @@ call_user_func(BasicTool::get("action"));
 function addAdCategory(){
     global $adCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
-    $size = BasicTool::post("size","图片尺寸不能为空");
-    $title = BasicTool::post("title","标题不能为空");
-    $description = BasicTool::post("description","description");
-    $bool = $adCategoryModel->addAdCategory($size,$title,$description);
-    if ($bool)
-        BasicTool::echoMessage("添加成功");
-    else
-        BasicTool::echoMessage("添加失败");
+    try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,添加失败");
+        $size = BasicTool::post("size", "图片尺寸不能为空");
+        $title = BasicTool::post("title", "标题不能为空");
+        $description = BasicTool::post("description", "description");
+        $bool = $adCategoryModel->addAdCategory($size, $title, $description);
+        if ($bool)
+            BasicTool::echoMessage("添加成功");
+        else
+            BasicTool::echoMessage("添加失败");
+    }
+    catch (Exception $e){
+        BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+    }
 }
 
 /**
@@ -31,13 +36,18 @@ function addAdCategory(){
 function deleteAdCategory(){
     global $adCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
-    $id = BasicTool::post("id","请指定将被删除的分类id");
-    $bool = $adCategoryModel->deleteAdCategory($id[0]);
-    if ($bool)
-        BasicTool::echoMessage("删除成功");
-    else
-        BasicTool::echoMessage("删除失败");
+    try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,删除失败");
+        $id = BasicTool::post("id", "请指定将被删除的分类id");
+        $bool = $adCategoryModel->deleteAdCategory($id[0]);
+        if ($bool)
+            BasicTool::echoMessage("删除成功");
+        else
+            BasicTool::echoMessage("删除失败");
+    }
+    catch (Exception $e){
+        BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+    }
 }
 
 /**
@@ -66,14 +76,19 @@ function getAdCategoriesWithJson(){
 function updateAdCategory(){
     global $adCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
-    $id = BasicTool::post("id","请指定分类ID");
-    $size = BasicTool::post("size","尺寸不能为空");
-    $title = BasicTool::post("title","标题不能为空");
-    $description = BasicTool::post("description","description");
-    $bool = $adCategoryModel->updateAdCategory($id,$size,$title,$description);
-    if ($bool)
-        BasicTool::echoMessage("修改成功");
-    else
-        BasicTool::echoMessage("修改失败");
+    try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,更改失败");
+        $id = BasicTool::post("id", "请指定分类ID");
+        $size = BasicTool::post("size", "尺寸不能为空");
+        $title = BasicTool::post("title", "标题不能为空");
+        $description = BasicTool::post("description", "description");
+        $bool = $adCategoryModel->updateAdCategory($id, $size, $title, $description);
+        if ($bool)
+            BasicTool::echoMessage("修改成功");
+        else
+            BasicTool::echoMessage("修改失败");
+    }
+    catch (Exception $e){
+        BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+    }
 }
