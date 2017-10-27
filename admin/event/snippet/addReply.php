@@ -12,7 +12,6 @@ $sender=$userModel->getProfileOfUserById($comment["sender_id"]);
         <table class="tab">
             <thead>
             <tr>
-                <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                 <th>ID</th>
                 <th>头像</th>
                 <th>用户名</th>
@@ -23,7 +22,6 @@ $sender=$userModel->getProfileOfUserById($comment["sender_id"]);
             </thead>
             <tbody>
             <tr>
-                <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $comment['l_id']?>"></td>
                 <td><?php echo $comment['id']?></td>
                 <td><img width="36" height="36" src="<?php echo $sender['img'] ?>"></td>
                 <td><?php echo $sender['name']?></td>

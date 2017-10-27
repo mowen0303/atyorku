@@ -9,8 +9,8 @@ use \Exception as Exception;
 class CommentModel extends Model
 {
 
-    /**
-     *
+    /**返回false或者刚插入的评论
+     * @return bool | result
      */
     public function addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment)
     {
@@ -25,8 +25,13 @@ class CommentModel extends Model
         if ($bool) {
             $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
             $this->sqltool->query($sql);
+            $arr["id"] = $this->sqltool->getInsertId();
+            return $arr;
         }
-        return $bool;
+        else{
+            return false;
+        }
+
     }
 
     /**
@@ -74,10 +79,27 @@ class CommentModel extends Model
         return $bool;
     }
 
-    public function deleteCommentsBySection($section_name,$section_id)
+    /*@param $section_id can be integer or an array of integers
+     *@return bool
+     */
+    public function deleteCommentsBySectionId($section_name,$section_id)
     {
-        $sql = "DELETE FROM comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}";
-        $bool = $this->sqltool->query($sql);
+        if (is_array($section_id)){
+            $concat = null;
+            foreach($section_id as $id){
+                $id = $id+0;
+                $id = $id.",";
+                $concat = $concat.$id;
+            }
+            $concat = substr($concat,0,-1);
+            $sql = "DELETE FROM comment WHERE section_name='{$section_name}' AND section_id in ({$concat})";
+            $bool = $this->sqltool->query($sql);
+        }
+
+        else {
+            $sql = "DELETE FROM comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}";
+            $bool = $this->sqltool->query($sql);
+        }
         return $bool;
     }
 

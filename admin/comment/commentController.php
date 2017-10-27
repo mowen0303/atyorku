@@ -24,7 +24,7 @@ function addComment($echoType="normal"){
     else
     {
         if ($bool)
-            BasicTool::echoJson(1,"添加成功");
+            BasicTool::echoJson(1,"添加成功",$bool);
         else
             BasicTool::echoJson(0,"添加失败");
     }
@@ -33,7 +33,7 @@ function addCommentWithJson(){
     addComment("json");
 }
 
-function deleteCommentsBySection($echoType = "normal"){
+function deleteCommentsBySectionId($echoType = "normal"){
     global $commentModel;
     $section_name = BasicTool::post("section_name");
     $section_id = BasicTool::post("section_id");
@@ -53,8 +53,8 @@ function deleteCommentsBySection($echoType = "normal"){
             BasicTool::echoJson(0,"删除失败");
     }
 }
-function deleteCommentsBySectionWithJson(){
-    deleteCommentsBySection("json");
+function deleteCommentsBySectionIdWithJson(){
+    deleteCommentsBySectionId("json");
 }
 
 
