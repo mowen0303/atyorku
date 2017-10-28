@@ -182,7 +182,7 @@ function modifyBook($echoType = "normal") {
         $currentBook = null;
         // 验证权限
         if ($flag=='update') {
-            $arr['id'] = BasicTool::post('f_id',"二手书ID不能为空");
+            $arr['id'] = BasicTool::post('id',"二手书ID不能为空");
             $currentBook = $bookModel->getBookById($arr['id']) or BasicTool::throwException("无法找到二手书");
             $bookUserId = $currentBook['user_id'];
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
@@ -196,7 +196,7 @@ function modifyBook($echoType = "normal") {
         $name = BasicTool::post("name", "二手书标题不能为空", 100);
         $description = BasicTool::post("description") or "";
         $bookCategoryId = BasicTool::post("book_category_id", "二手书所属分类不能为空");
-        $courseId = BasicTool::post("course_id","二手书所属科目不能为空");
+        $courseId = BasicTool::post("course_code_child_id","二手书所属科目不能为空");
         // validate and format price
         $price = (float)BasicTool::post("price", "二手书价格不能为空", 9999999999);
         ($price >= 0) or BasicTool::throwException("价格必须大于或等于0");

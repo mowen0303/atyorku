@@ -5,6 +5,8 @@ $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $flag = BasicTool::get("flag");
 ?>
 
+<script src="/admin/resource/js/component.js" type="text/javascript"></script>
+
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>
@@ -14,18 +16,18 @@ $flag = BasicTool::get("flag");
 <article class="mainBox">
     <form action="bookController.php?action=modifyBook" method="post" enctype="multipart/form-data">
         <input name="flag" value="<?php echo $flag?>" type="hidden">
-        <input name="f_id" value="<?php echo BasicTool::get('f_id')?>" type="hidden">
+        <input name="id" value="<?php echo BasicTool::get('id')?>" type="hidden">
         <header>
             <h2><?php echo $flag=="update"?"修改二手书":"添加二手书"; ?></h2>
         </header>
         <section class="formBox">
             <div>
                 <label>标题<i>*</i></label>
-                <input class="input" type="text" name="name" value="<?php echo BasicTool::get('f_name') ?>">
+                <input class="input" type="text" name="name" value="<?php echo BasicTool::get('name') ?>">
             </div>
             <div>
                 <label>所属分类<i>*</i></label>
-                <select class="input input-select input-size50 selectDefault" name="book_category_id" defvalue="<?php echo BasicTool::get('f_book_category_id') ?>">
+                <select class="input input-select input-size50 selectDefault" name="book_category_id" defvalue="<?php echo BasicTool::get('book_category_id') ?>">
                     <?php
                         $arrOfCategory = $bookCategoryModel->getListOfBookCategory(100);
                         foreach($arrOfCategory as $rowOfCategory){
@@ -34,33 +36,23 @@ $flag = BasicTool::get("flag");
                     ?>
                 </select>
             </div>
-            <div>
-                <label>科目<i>*</i></label>
-                <select class="input input-select input-size50 selectDefault" name="course_id" defvalue="<?php echo BasicTool::get('f_course_id') ?>">
-                    <?php
-                        $arrOfCourses = $bookModel->getListOfCourses();
-                        foreach($arrOfCourses as $rowOfCourses){
-                            echo '<option value="'.$rowOfCourses['id'].'}">' . ($rowOfCourses['parent_title'] .'-'. $rowOfCourses['title']) .'</option>';
-                        }
-                    ?>
-                </select>
-            </div>
+            <div id="courseCodeDiv" data-parent-id="<?php echo BasicTool::get('course_code_parent_id') ?>" data-child-id="<?php echo BasicTool::get('course_code_child_id') ?>"></div>
             <div>
                 <label>价格<i>*</i></label>
-                <input class="input" type="number" name="price" min="0.0" step="0.01" value="<?php echo (float)BasicTool::get('f_price') ?>">
+                <input class="input" type="number" name="price" min="0.0" step="0.01" value="<?php echo (float)BasicTool::get('price') ?>">
             </div>
             <div>
                 <label>描述</label>
-                <textarea class="input input-textarea" name="description"><?php echo BasicTool::get('f_description') ?></textarea>
+                <textarea class="input input-textarea" name="description"><?php echo BasicTool::get('description') ?></textarea>
             </div>
             <div>
                 <label>二手书图片:</label>
                 <div id="currentImages">
                     <?php
-                        $bookId = BasicTool::get('f_id');
-                        $img1 = BasicTool::get('f_image_id_one');
-                        $img2 = BasicTool::get('f_image_id_two');
-                        $img3 = BasicTool::get('f_image_id_three');
+                        $bookId = BasicTool::get('id');
+                        $img1 = BasicTool::get('image_id_one');
+                        $img2 = BasicTool::get('image_id_two');
+                        $img3 = BasicTool::get('image_id_three');
                         if ($img1) {
                             echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["thumbnail_url"]}' style='width: 100px; height: auto;'><input id='img1' name='image_id_one' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
                         }
