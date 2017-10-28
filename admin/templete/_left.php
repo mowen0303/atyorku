@@ -39,6 +39,7 @@ if(!$userModel->isAdminLogin()){
                 <li><a href ="/admin/eventCategory/" target="mainFrame">活动</a></li>
 				<li><a href="/admin/book/ " target="mainFrame">二手书</a ></li>
 				<li><a href="/admin/map/" target="mainFrame">地图</a ></li>
+                <li><a href="/admin/transaction/index.php" target="mainFrame">积分记录</a ></li>
 			</ul>
 		</article>
 	</section>
