@@ -60,7 +60,7 @@ $userModel = new \admin\user\UserModel();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
-                        $argument .= "&f_" . $key . "={$value}";
+                        $argument .= "&{$key}={$value}";
                     }
                 ?>
                     <tr>
@@ -71,7 +71,7 @@ $userModel = new \admin\user\UserModel();
                         <td><?php echo "$" . $row['price'] ?></td>
                         <td><?php echo $row['description'] ?></td>
                         <td><?php echo $row['book_category_name'] ?></td>
-                        <td><?php echo $row['course_parent_title'] . $row['course_child_title'] ?></td>
+                        <td><?php echo $row['course_code_parent_title'] . $row['course_code_child_title'] ?></td>
                         <td><?php echo $row['alias'] ?></td>
                         <td><?php echo $row['publish_time'] ?></td>
                         <td><a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a></td>
