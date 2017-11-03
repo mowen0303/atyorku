@@ -56,13 +56,13 @@
         buildingPath.setMap(map);
 
         // Create a marker on Steacie library
-//        var buildingPositionCoordinate = {lat: 43.773747, lng: -79.50603};
-//        var buildingMarker = new google.maps.Marker({
-//            map: map,
-//            draggable: false,
-//            animation: google.maps.Animation.DROP,
-//            position: buildingPositionCoordinate
-//        })
+        var buildingPositionCoordinate = {lat: 43.773747, lng: -79.50603};
+        var buildingMarker = new google.maps.Marker({
+            map: map,
+            draggable: false,
+            animation: google.maps.Animation.DROP,
+            position: buildingPositionCoordinate
+        })
     }
 </script>
 <script async defer
