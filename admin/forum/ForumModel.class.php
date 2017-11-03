@@ -525,9 +525,9 @@ class ForumModel extends Model
         if ($onlyShowReportList == true) {
             $condition .= " AND f_c.report > 0";
         }
-        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
+        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
-        $countSql = "SELECT count(*) FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
+        $countSql = "SELECT count(*) FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         $arr = parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
         foreach ($arr as $k1 => $v1) {
             foreach ($v1 as $k2 => $v2) {
