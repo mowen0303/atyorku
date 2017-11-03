@@ -24,7 +24,7 @@ $_AUT = [
     'AD_UPDATE'=>getAuthorityNum(24),
     'BOOK'=>getAuthorityNum(6),
     'MAP'=>getAuthorityNum(16),
-    'FORUM_SHOW'=>getAuthorityNum(11),
+    'EVENT'=>getAuthorityNum(11),
     'AD_SHOW'=>getAuthorityNum(21),
 
 

@@ -58,7 +58,7 @@ if(BasicTool::get(share) != 1) {
     <hr>
     <div class="authorBox">
     <div id="authorHead" class="authorHead clickAuthor" style="background-image: url(<?php echo $arr['img'] ?>)"></div>
-    <address>文章作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span><br>发表日期：<data><?php echo BasicTool::translateTime($arr['time'])?></data></address>
+    <address>文章作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span><br>最后更新：<data><?php echo BasicTool::translateTime($arr['time'])?></data></address>
     </div>
     <hr>
     <section>
