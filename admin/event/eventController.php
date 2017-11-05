@@ -152,6 +152,16 @@ function deleteEvent($echoType="normal"){
             }
             $bool = $imageModel->deleteImageById($img_ids);
         }
+
+        //删除ueditor图片
+        if ($bool){
+            foreach ($id as $i){
+                if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/uploads/event/" . $i)) {
+                   delete($_SERVER["DOCUMENT_ROOT"] . "/uploads/event/" . $i);
+                }
+            }
+        }
+
         //删除活动
         if ($bool) {
             $bool = $eventModel->deleteEvent($id);
@@ -251,4 +261,37 @@ function uploadImages() {
     global $currentUser;
     $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId, "event") or BasicTool::throwException($imageModel->errorMsg);
     return $uploadArr;
+}
+
+function delete($path)
+{
+    if (is_dir($path) === true)
+    {
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($files as $file)
+        {
+            if (in_array($file->getBasename(), array('.', '..')) !== true)
+            {
+                if ($file->isDir() === true)
+                {
+                    rmdir($file->getPathName());
+                }
+
+                else if (($file->isFile() === true) || ($file->isLink() === true))
+                {
+                    unlink($file->getPathname());
+                }
+            }
+        }
+
+        return rmdir($path);
+    }
+
+    else if ((is_file($path) === true) || (is_link($path) === true))
+    {
+        return unlink($path);
+    }
+
+    return false;
 }

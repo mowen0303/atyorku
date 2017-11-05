@@ -11,8 +11,6 @@ $event_category_title = $eventCategoryModel->getEventCategory($event_category_id
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 
-
-
 if($flag=='add'){
     $row = null;
     $img_url_1 = null;
@@ -31,6 +29,8 @@ if($flag=='add'){
     $text_editor_initation = "<script id='container' name='description' type='text/plain'>{$row['description']}</script>";
     $expiration_time = $row["expiration_time"];
     $form_action = "/admin/event/eventController.php?action=updateEvent";
+     session_start();
+     $_SESSION["ueditor_upload_location"] = "event/".$id;
 }
 
 ?>

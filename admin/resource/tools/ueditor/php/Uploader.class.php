@@ -284,6 +284,8 @@ class Uploader
     private function getFullName()
     {
         //替换日期事件
+        session_start();
+        $url = $_SESSION["ueditor_upload_location"];
         $t = time();
         $d = explode('-', date("Y-y-m-d-H-i-s"));
         $format = $this->config["pathFormat"];
@@ -294,6 +296,7 @@ class Uploader
         $format = str_replace("{hh}", $d[4], $format);
         $format = str_replace("{ii}", $d[5], $format);
         $format = str_replace("{ss}", $d[6], $format);
+        $format = str_replace("{ueditor_upload_location}",$url,$format);
         $format = str_replace("{time}", $t, $format);
 
         //过滤文件名的非法自负,并替换文件名
