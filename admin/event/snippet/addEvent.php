@@ -13,18 +13,15 @@ $flag = $id == null ? 'add' : 'update';
 
 if($flag=='add'){
     $row = null;
-    $img_url_1 = null;
-    $img_url_2 = null;
-    $img_url_3 = null;
     $text_editor_initation = "<script id='container' name='description' type='text/plain'></script>";
     $form_action = "/admin/event/eventController.php?action=addEvent";
 }
 
  else {
     $row = $eventModel->getEvent($id);
-    $img_url_1 = $imageModel->getImageById($row["img_id_1"])["url"];
-    $img_url_2 = $imageModel->getImageById($row["img_id_2"])["url"];
-    $img_url_3 = $imageModel->getImageById($row["img_id_3"])["url"];
+    $img1 = $row["img_id_1"];
+    $img2 = $row["img_id_2"];
+    $img3 = $row["img_id_3"];
     $event_time = $row["event_time"];
     $text_editor_initation = "<script id='container' name='description' type='text/plain'>{$row['description']}</script>";
     $expiration_time = $row["expiration_time"];
@@ -34,7 +31,35 @@ if($flag=='add'){
 }
 
 ?>
+<script>
+    //删除已上传图片 (点击更新后生效)
+    function removeImg(i) {
+        var v = $('#img'+i).val();
+        if (v) {
+            $('#img'+i).attr('value', '');
+            $('#pic'+i).attr('src', '').show();
+            $('#imgbtn'+i).hide();
+        }
+    }
 
+    $(function() {
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imgOfUpload').attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#imgFile").change(function(){
+            readURL(this);
+        });
+    })
+</script>
 <script>
     function eve(){
         var event_time = Date.parse(document.getElementById("aa").value) / 1000;
@@ -83,9 +108,21 @@ if($flag=='add'){
             <div>
                 <label>活动图片:</label>
                 <div id="currentImages">
-
-                    <p><img  id="imgOfUpload" src="<?php echo $img_url_1 ?>" style="width: 400px; height: auto; "></p>
-                    <input type="file" onchange = "fileChangeListener()" name="imgFile[]" id="imgFile" multiple/>
+                    <div id="currentImages">
+                        <?php
+                        if ($img1) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id_1' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
+                        }
+                        if ($img2) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic2' src='{$imageModel->getImageById($img2)["url"]}' style='width: 100px; height: auto;'><input id='img2' name='img_id_2' value='{$img2}' style='display: none'></div><div><input type='button' id='imgbtn2' value='删除' onclick='removeImg(2);'></div></div>";
+                        }
+                        if ($img3) {
+                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic3' src='{$imageModel->getImageById($img3)["url"]}' style='width: 100px; height: auto;'><input id='img3' name='img_id_3' value='{$img3}' style='display: none'></div><div><input type='button' id='imgbtn3' value='删除' onclick='removeImg(3);'></div></div>";
+                        }
+                        ?>
+                    </div>
+                    <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
+                    <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
 
                 <div>

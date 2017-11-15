@@ -11,7 +11,7 @@ call_user_func(BasicTool::get('action'));
 function addEvent($echoType = "normal"){
     global $eventModel;
     global $currentUser;
-
+    global $imageModel;
     try {
         //判断权限
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("EVENT")) or BasicTool::throwException("权限不足,添加失败");
@@ -24,21 +24,18 @@ function addEvent($echoType = "normal"){
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee", "活动费用不能为空");
         $max_participants = BasicTool::post("max_participants", "活动名额");
-
-        $img_id = uploadImages();
-        $img_id_1 = $img_id[0];
-        $img_id_2 = $img_id[1];
-        $img_id_3 = $img_id[2];
-
-
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
 
+        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        $currImgArr = false;
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
+
         $bool = $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $img_id_1, $img_id_2, $img_id_3, $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone);
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone);
 
         if ($echoType == "normal") {
             if ($bool)
@@ -195,6 +192,7 @@ function deleteEventWithJson(){
 function updateEvent($echoType = "normal"){
     global $eventModel;
     global $currentUser;
+    global $imageModel;
     $id = BasicTool::post("id","必须填写id");
     try {
         //判断权限
@@ -210,11 +208,6 @@ function updateEvent($echoType = "normal"){
         $expiration_time = BasicTool::post("expiration_time");
         $event_time = BasicTool::post("event_time");
 
-        $img_id = uploadImages();
-        $img_id_1 = $img_id[0];
-        $img_id_2 = $img_id[1];
-        $img_id_3 = $img_id[2];
-
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee");
         $max_participants = BasicTool::post("max_participants");
@@ -225,8 +218,13 @@ function updateEvent($echoType = "normal"){
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
 
+        $event = $eventModel->getEvent($id);
+        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
+
         $bool = $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $img_id_1, $img_id_2, $img_id_3, $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone);
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone);
 
         if ($echoType == "normal") {
             if ($bool)
