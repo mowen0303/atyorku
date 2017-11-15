@@ -7,6 +7,42 @@ call_user_func(BasicTool::get('action'));
 //============ Function with JSON ===============//
 
 /**
+* JSON - 添加Course Code
+* @param course_code_title 要添加的 Course Code title
+* @param course_code_parent_id 要添加的 Course Code parent id, 如果为空默认为添加父类Course code
+* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=addCourseCodeWithJson&course_code_title=1000&course_code_parent_id=3
+*/
+function addCourseCodeWithJson() {
+    global $courseCodeModel;
+    $title = BasicTool::get("course_code_title","需要提供Course Code Title");
+    $parentId = BasicTool::get("course_code_parent_id");
+    if(!$parentId)
+        $parentId = 0;
+    try {
+        $result = $courseCodeModel->addCourseCode($title, $parentId) or BasicTool::echoJson(0, "添加Course Code失败");
+        BasicTool::echoJson(1, "添加成功");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+* JSON - 删除Course Code
+* @param course_code_id 要删除的 Course Code ID
+* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=removeCourseCodeWithJson&course_code_id=3
+*/
+function removeCourseCodeWithJson() {
+    global $courseCodeModel;
+    $id = BasicTool::get("course_code_id","需要提供要删除的Course Code ID");
+    try {
+        $result = $courseCodeModel->removeCourseCodeById($id) or BasicTool::echoJson(0, "删除Course Code失败");
+        BasicTool::echoJson(1,"删除成功");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
  * JSON -  获取指定ID的科目号
  * @param course_code_id Course Code类别ID
  * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=getCourseCodeByIdWithJson&course_code_id=3
@@ -41,7 +77,7 @@ function getListOfParentCourseCodeWithJson() {
 /**
  * JSON -  通过父类ID获取子类科目列表
  * @param course_code_parent_id Course Code父类别ID
- * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=getListOfParentCourseCodeWithJson&course_code_parent_id=3
+ * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=getListOfChildCourseCodeByParentIdWithJson&course_code_parent_id=3
  */
 function getListOfChildCourseCodeByParentIdWithJson() {
     global $courseCodeModel;

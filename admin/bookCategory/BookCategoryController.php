@@ -4,6 +4,19 @@ $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
+/**
+ * JSON -  获取指定二手书类别ID下的一页二手书
+ * http://www.atyorku.ca/admin/bookCategory/bookCategoryController.php?action=getListOfBookCategoryByJson
+ */
+function getListOfBookCategoryWithJson() {
+    global $bookCategoryModel;
+    $result = $bookCategoryModel->getListOfBookCategory();
+    if ($result) {
+        BasicTool::echoJson(1, "成功", $result);
+    } else {
+        BasicTool::echoJson(0, "获取二手书类别列表失败");
+    }
+}
 
 function modifyBookCategory() {
     global $bookCategoryModel;
