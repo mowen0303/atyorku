@@ -59,7 +59,9 @@ function getAdCategoryWithJson(){
     $id = BasicTool::get("id","请指定分类id");
     BasicTool::echoJson(1,"成功",$adCategoryModel->getAdCategory($id));
 }
-
+/*
+ * 查一波广告
+ */
 function getAdCategoriesWithJson(){
     global $adCategoryModel;
     $result = $adCategoryModel->getAdCategories();

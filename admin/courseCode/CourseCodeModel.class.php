@@ -42,9 +42,11 @@ class CourseCodeModel extends Model
     */
     public function addCourseCode($title, $parentId=0) {
         if ($parentId != 0) {
-            $sql = "SELECT * FROM course_code c WHERE c.parent_id={$parentId}";
-            $this->sqltool->query($sql) or BasicTool::throwException("Course Code父类ID={$parentId} 不存在");
+            $sql = "SELECT * FROM course_code c WHERE c.id={$parentId}";
+            $this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code父类ID={$parentId} 不存在");
         }
+        $sql = "SELECT * FROM {$this->table} WHERE parent_id={$parentId} AND title='{$title}' LIMIT 1";
+        !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code名称={$title} 已存在");
         $arr = array("title"=>$title, "parent_id"=>$parentId);
         return $this->addRow($this->table,$arr);
     }
@@ -55,17 +57,28 @@ class CourseCodeModel extends Model
     * @param id 要删除的Course Code ID
     * @return bool
     */
-    public function removeCourseCodeById($id) {
+    public function deleteCourseCodeById($id) {
         $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
         $parentId = $result["parent_id"];
         if ($parentId == 0) {
-            $sql = "DELETE FROM {$this->table} WHERE id in {$id} AND NOT EXISTS (SELECT * FROM {$this->table} WHERE parent_id={$id})";
-            return $this->sqltool->query($sql);
-        } else {
-            $sql = "DELETE FROM {$this->table} WHERE id in {$id}";
-            return $this->sqltool->query($sql);
+            $sql = "SELECT * FROM {$this->table} WHERE parent_id in ({$id}) LIMIT 1";
+            !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("存在 Course Code 子类");
         }
+        $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
+        return $this->sqltool->query($sql);
+    }
 
+
+    /**
+    * 更新 CourseCode Title by ID
+    * @param id 要更新的 Course Code ID
+    * @return bool
+    */
+    public function updateCourseCodeTitleById($id, $title) {
+        $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
+        $arr = [];
+        $arr["title"] = $title;
+        return $this->updateRowById($this->table, $id, $arr);
     }
 
 }

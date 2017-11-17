@@ -819,7 +819,7 @@ function updatePasswordWithJson() {
     try{
         $oldPassword = BasicTool::post('oldPassword',false);
         $newPassword = BasicTool::post('newPassword',false);
-        $currentUser->login($currentUser->userName,$oldPassword) or BasicTool::echoMessage('原密码错误');
+        $currentUser->login($currentUser->userName,$oldPassword) or BasicTool::throwException('原密码错误');
         $currentUser->updatePassword(md5($newPassword)) or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoJson(1,"密码修改成功");
     }

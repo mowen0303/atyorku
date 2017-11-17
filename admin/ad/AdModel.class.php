@@ -13,13 +13,13 @@ class AdModel extends Model
      * 添加一则广告
      * @return $bool
      */
-    public function addAd($title, $description, $sponsor_name, $banner_url, $publish_time, $expiration_time, $ad_category_id, $ad_url)
+    public function addAd($title, $description, $sponsor_name, $img_id_one, $publish_time, $expiration_time, $ad_category_id, $ad_url)
     {
         $arr = [];
         $arr["title"] = $title;
         $arr["description"] = $description;
         $arr["sponsor_name"] = $sponsor_name;
-        $arr["banner_url"] = $banner_url;
+        $arr["img_id_one"] = $img_id_one;
         $arr["publish_time"] = $publish_time;
         $arr["expiration_time"] = $expiration_time;
         $arr["ad_category_id"] = $ad_category_id;
@@ -62,13 +62,13 @@ class AdModel extends Model
      * 更改一则广告
      * @return bool
      */
-    public function updateAd($id, $title, $description, $sponsor_name, $banner_url, $publish_time,$expiration_time, $ad_category_id, $ad_url)
+    public function updateAd($id, $title, $description, $sponsor_name, $img_id_one, $publish_time,$expiration_time, $ad_category_id, $ad_url)
     {
         $arr = [];
         $arr["title"] = $title;
         $arr["description"] = $description;
         $arr["sponsor_name"] = $sponsor_name;
-        $arr["banner_url"] = $banner_url;
+        $arr["img_id_one"] = $img_id_one;
         $arr["publish_time"] = $publish_time;
         $arr["expiration_time"] = $expiration_time;
         $arr["ad_category_id"] = $ad_category_id;

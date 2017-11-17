@@ -3,7 +3,7 @@ $adModel = new \admin\ad\AdModel();
 $userModel = new \admin\user\UserModel();
 $ad_category_id = BasicTool::get('ad_category_id');
 $ad_category_title = BasicTool::get("ad_category_title");
-
+$imageModel = new\admin\image\ImageModel();
 $flag = BasicTool::get("flag");
 $arr = $adModel->getAdsByCategory($ad_category_id,$flag);
 if($flag == 0){
@@ -46,11 +46,15 @@ else{
                     <tbody>
                     <?php
                     foreach ($arr as $row) {
+                        if($row["img_id_one"]){
+                            $banner_url = $imageModel->getImageById($row["img_id_one"])["url"];
+                        }
+
                         ?>
                         <tr>
                             <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                             <td><?php echo $row['id']?></td>
-                            <td><a target="_blank" href=""><img width="200" height="100" src="<?php echo $row['banner_url']?>"></a></td>
+                            <td><a target="_blank" href=""><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
                             <td><a target="_blank" href=""><?php echo $row['title']?></a></td>
                             <td><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>

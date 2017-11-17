@@ -5,8 +5,6 @@ $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $flag = BasicTool::get("flag");
 ?>
 
-<script src="/admin/resource/js/component.js" type="text/javascript"></script>
-
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>

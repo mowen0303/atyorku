@@ -33,6 +33,7 @@ if(!$userModel->isAdminLogin()){
 			<ul>
 				<li><a href="/admin/forum/" target="mainFrame">新鲜事</a></li>
 				<li><a href="/admin/guide/" target="mainFrame">资讯</a></li>
+                <li><a href="/admin/courseCode/" target="mainFrame">科目代码</a ></li>
 				<li><a href="/admin/course/" target="mainFrame">课评</a></li>
 				<li><a href="/admin/user/index.php?s=listUser&isAdmin=0" target="mainFrame">用户</a></li>
 				<li><a href="/admin/adCategory/" target="mainFrame">广告</a></li>

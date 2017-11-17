@@ -62,7 +62,7 @@ class AdCategoryModel extends Model {
             return $this->sqltool->query($sql);
         }
         else{
-            BasicTool::echoMessage("请删除分类下的所有广告");
+            BasicTool::throwException("请删除分类下的所有广告");
         }
     }
 }
