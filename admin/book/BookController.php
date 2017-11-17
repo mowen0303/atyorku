@@ -167,6 +167,26 @@ function uploadImgWithJson() {
     }
 }
 
+/**
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getImagesByBookId&id=3
+ * 获取该二手书ID的所有关联图片
+ * @return JSON 二维数组
+ */
+function getImagesByBookId() {
+    try {
+        global $bookModel;
+        $id = BasicTool::get('id','请提供二手书ID');
+        $result = $bookModel->getImagesByBookId($id);
+        if ($result) {
+            BasicTool::echoJson(1, "获取图片成功", $result);
+        } else {
+            BasicTool::echoJson(0, '未找到图片');
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 //=========== END Function with JSON ============//
 
 

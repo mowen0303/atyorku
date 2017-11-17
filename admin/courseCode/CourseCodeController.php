@@ -13,33 +13,16 @@ call_user_func(BasicTool::get('action'));
 * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=addCourseCodeWithJson&course_code_title=1000&course_code_parent_id=3
 */
 function addCourseCodeWithJson() {
-    global $courseCodeModel;
-    $title = BasicTool::get("course_code_title","需要提供Course Code Title");
-    $parentId = BasicTool::get("course_code_parent_id");
-    if(!$parentId)
-        $parentId = 0;
-    try {
-        $result = $courseCodeModel->addCourseCode($title, $parentId) or BasicTool::echoJson(0, "添加Course Code失败");
-        BasicTool::echoJson(1, "添加成功");
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
+    modifyCourseCode("json");
 }
 
 /**
 * JSON - 删除Course Code
 * @param course_code_id 要删除的 Course Code ID
-* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=removeCourseCodeWithJson&course_code_id=3
+* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=deleteCourseCodeWithJson&course_code_id=3
 */
-function removeCourseCodeWithJson() {
-    global $courseCodeModel;
-    $id = BasicTool::get("course_code_id","需要提供要删除的Course Code ID");
-    try {
-        $result = $courseCodeModel->removeCourseCodeById($id) or BasicTool::echoJson(0, "删除Course Code失败");
-        BasicTool::echoJson(1,"删除成功");
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
+function deleteCourseCodeWithJson() {
+    deleteCourseCode("json");
 }
 
 /**
@@ -87,5 +70,89 @@ function getListOfChildCourseCodeByParentIdWithJson() {
         BasicTool::echoJson(1, "成功", $result);
     } else {
         BasicTool::echoJson(0, "获取子科目列表失败");
+    }
+}
+
+
+// =============== End Function with JSON ================= //
+
+/**
+* 修改或添加一个Course Code
+* @param flag add | update
+* @param title 新的或修改的Course Code 名称
+* @param parent_id 父类科目ID
+* @param id 需要修改的科目ID (flag=="update"时必填)
+*/
+function modifyCourseCode($echoType = "normal") {
+    global $courseCodeModel;
+    $flag = BasicTool::post("flag");
+    $title = BasicTool::post("title","需要提供要修改的Course Code title");
+    $parentId = BasicTool::post("parent_id","请提供父类科目ID");
+    try {
+        checkAuthority();
+        if ($flag == "add") {
+            $result = $courseCodeModel->addCourseCode($title, (int)$parentId);
+            if ($echoType == "normal") {
+                BasicTool::echoMessage("添加成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
+            } else {
+                BasicTool::echoJson(1, "添加成功");
+            }
+        } else if ($flag == "update") {
+            $id = BasicTool::post("id","需要提供要修改的Course Code ID");
+            $result = $courseCodeModel->updateCourseCodeTitleById($id, $title);
+            if ($echoType == "normal") {
+                BasicTool::echoMessage("修改成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
+            } else {
+                BasicTool::echoJson(1, "修改成功");
+            }
+        }
+    } catch(Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+
+}
+
+/**
+* 删除一个或多个科目
+* @param id 数字或array 要删除的id
+*/
+function deleteCourseCode($echoType = "normal") {
+    global $courseCodeModel;
+    global $currentUser;
+    try {
+        checkAuthority();
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除科目ID");
+        $i = 0;
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $i++;
+                $courseCodeModel->deleteCourseCodeById($v) or BasicTool::throwException("删除多个科目失败");
+            }
+        } else {
+            $i++;
+            $courseCodeModel->deleteCourseCodeById($id) or BasicTool::throwException("删除1个科目失败");
+        }
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功删除{$i}个科目", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功删除{$i}个科目");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+function checkAuthority() {
+    global $currentUser;
+    if (!($currentUser->isUserHasAuthority('ADMIN'))) {
+        BasicTool::throwException("无权删除科目");
     }
 }

@@ -63,46 +63,13 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getListOfBooks($pageSize=20, $query=false) {
-        // $sql = "SELECT
-        //             b.*,
-        //             u.user_class_id,
-        //             u.img,
-        //             u.alias,
-        //             u.gender,
-        //             u.major,
-        //             u.enroll_year,
-        //             u.degree,
-        //             bc.id AS book_category_id,
-        //             bc.name AS book_category_name,
-        //             img.thumbnail_url AS thumbnail_url,
-        //             img.height AS img_height,
-        //             img.width AS img_width,
-        //             c1.title AS course_child_title,
-        //             c2.title AS course_parent_title
-        //         FROM
-        //             `book` b,
-        //             `course_code` c1,
-        //             `course_code` c2,
-        //             `book_category` bc,
-        //             `user` u,
-        //             `image` img
-        //         WHERE
-        //             b.course_id = c1.id AND(
-        //                 c1.parent_id = 0 OR c1.parent_id = c2.id
-        //             ) AND b.book_category_id = bc.id AND b.user_id = u.id AND b.image_id_one = img.id
-        //         ORDER BY
-        //             `sort`
-        //         DESC
-        //             ,
-        //             `last_modified_time`
-        //         DESC
-        //             ;"
-        $sql = "SELECT b.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id) ORDER BY `sort` DESC,`last_modified_time` DESC";
+        $sql = "SELECT b.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id)";
         $countSql = "SELECT COUNT(*) FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id)";
         if ($query) {
             $sql = "{$sql} WHERE ({$query})";
             $countSql = "{$countSql} WHERE ({$query})";
         }
+        $sql = "{$sql} ORDER BY `sort` DESC,`last_modified_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
         foreach ($arr as $k1 => $v1) {
             foreach ($v1 as $k2 => $v2) {
@@ -184,8 +151,8 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getImagesByBookId($id) {
-        $sql = "SELECT img.* FROM {$this->table} b INNER JOIN `image` img ON img.id in (b.image_id_one, b.image_id_two, b.image_id_three)";
-        return $this->sqltool->getRowBySql($sql);
+        $sql = "SELECT i.* FROM {$this->table} b, image i WHERE b.id={$id} AND (b.image_id_one=i.id or b.image_id_two=i.id or b.image_id_three=i.id)";
+        return $this->sqltool->getListBySql($sql);
     }
 
     /**
