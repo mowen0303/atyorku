@@ -47,6 +47,11 @@ function updateLocation() {
     }
 }
 
+function getAllLocations() {
+    global $locationModel;
+    BasicTool::echoJson(1, "获取大楼信息成功", $locationModel->getListOfLocation());
+}
+
 function getLocationById() {
     global $locationModel;
     $id = BasicTool::get("id", "请输入正确的大楼id");
@@ -57,6 +62,19 @@ function getLocationByInit() {
     global $locationModel;
     $init = BasicTool::get("init", "请输入正确的大楼缩写");
     BasicTool::echoJson(1, "获取大楼信息成功", $locationModel->getLocationByInit($init));
+}
+
+// Maybe unnecessary, but just in case...
+function getLocationsByInitKeyword() {
+    global $locationModel;
+    $str = BasicTool::get("str", "--");
+    BasicTool::echoJson(1, "获取大楼信息成功", $locationModel->getLocationsByInitKeyword($str));
+}
+// That, too
+function getLocationsByFullNameKeyword() {
+    global $locationModel;
+    $str = BasicTool::get("str", "--");
+    BasicTool::echoJson(1, "获取大楼信息成功", $locationModel->getLocationsByFullNameKeyword($str));
 }
 
 // Search function is implemented on client side
