@@ -24,7 +24,7 @@ $_AUT = [
     'EVENT'=>getAuthorityNum(11),
     'COURSE_QUESTION'=>getAuthorityNum(21),
     'COURSE_RATE'=>getAuthorityNum(22),
-    'AD_DELETE'=>getAuthorityNum(23),
+    'COURSE_RECALL'=>getAuthorityNum(23),
     'AD_UPDATE'=>getAuthorityNum(24),
 
 
