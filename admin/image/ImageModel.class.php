@@ -58,6 +58,7 @@ class ImageModel extends Model
     * @return boolean
     */
     public function deleteImageById($id) {
+        if(!$id) return true;
         $sql="";
         if (is_array($id)) {
             $img = $this->getImageById($id);
@@ -79,7 +80,7 @@ class ImageModel extends Model
     * 删除指定路径的一张图片文件
     * @return boolean
     */
-    function deleteImg($path) {
+    public function deleteImg($path) {
         $root = $_SERVER["DOCUMENT_ROOT"];
         return unlink($root . $path);
     }
@@ -98,7 +99,7 @@ class ImageModel extends Model
      *
      * @return int[] array of new image id
      */
-    function uploadImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200, $maxFileSize = 1000000, $maxLength = 1000) {
+    public function uploadImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200, $maxFileSize = 1000000, $maxLength = 1000) {
 
         try {
             $file = $_FILES[$inputName];
@@ -330,7 +331,7 @@ class ImageModel extends Model
     }
 
     // 获取上传图片数量
-    function getNumOfUploadImages($inputName) {
+    public function getNumOfUploadImages($inputName) {
         $count = 0;
         $total = count($_FILES[$inputName]['name']);
         for($i=0; $i<$total; $i++) {
@@ -362,7 +363,7 @@ class ImageModel extends Model
     *       $currentImageIds = array($result["image_id_one"],$result["image_id_two"],$result["image_id_three"]);
     *       $imageModel->uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds,3,"imgFile",$currentUser->userId,"table");
     */
-    function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false) {
+    public function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false) {
         $imgArr = array_values(array_filter($modifiedImageIds));
         if(!$maxNum) {
             $maxNum = count($modifiedImageIds);
