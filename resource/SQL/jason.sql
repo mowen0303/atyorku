@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 19, 2017 at 08:41 PM
+-- Generation Time: Nov 19, 2017 at 11:23 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -1057,8 +1057,6 @@ CREATE TABLE `course_rate` (
   `content_diff` tinyint(4) NOT NULL,
   `homework_diff` tinyint(4) NOT NULL,
   `test_diff` tinyint(4) NOT NULL,
-  `time_consuming` tinyint(4) NOT NULL,
-  `untitled_diff` enum('0','1','2','3','4','5') COLLATE utf8mb4_unicode_ci NOT NULL,
   `has_textbook` tinyint(1) NOT NULL,
   `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci DEFAULT 'U' COMMENT '''U'' is unknown',
   `year` smallint(6) NOT NULL,
@@ -1266,41 +1264,10 @@ ALTER TABLE `professor_report`
 --
 
 --
--- Constraints for table `book`
---
-ALTER TABLE `book`
-  ADD CONSTRAINT `book_category_id_fk` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`),
-  ADD CONSTRAINT `course_id_fk` FOREIGN KEY (`course_id`) REFERENCES `course_code` (`id`),
-  ADD CONSTRAINT `image_id_one_fk` FOREIGN KEY (`image_id_one`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  ADD CONSTRAINT `image_id_three_fk` FOREIGN KEY (`image_id_three`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  ADD CONSTRAINT `image_id_two_fk` FOREIGN KEY (`image_id_two`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  ADD CONSTRAINT `professor_id_fk` FOREIGN KEY (`professor_id`) REFERENCES `professor` (`id`);
-
---
--- Constraints for table `course_prof_report`
---
-ALTER TABLE `course_prof_report`
-  ADD CONSTRAINT `course_prof_report_ibfk_1` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`),
-  ADD CONSTRAINT `course_prof_report_ibfk_2` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`);
-
---
--- Constraints for table `course_rate`
---
-ALTER TABLE `course_rate`
-  ADD CONSTRAINT `course_code_id_fk` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`),
-  ADD CONSTRAINT `prof_id_fk` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`);
-
---
 -- Constraints for table `course_report`
 --
 ALTER TABLE `course_report`
   ADD CONSTRAINT `course_report_ibfk_1` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`);
-
---
--- Constraints for table `professor_report`
---
-ALTER TABLE `professor_report`
-  ADD CONSTRAINT `professor_report_ibfk_1` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
