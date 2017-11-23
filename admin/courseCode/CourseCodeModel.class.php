@@ -37,17 +37,19 @@ class CourseCodeModel extends Model
     /**
     * 添加一行Course Code
     * @param title Course Code title
+    * @param fullTitle Course Code full title
+    * @param credits Course credit
     * @param parentId Course Code parent_id, 如果是父类，无需提供
     * @return bool
     */
-    public function addCourseCode($title, $parentId=0) {
+    public function addCourseCode($title, $fullTitle, $credits=0, $parentId=0) {
         if ($parentId != 0) {
             $sql = "SELECT * FROM course_code c WHERE c.id={$parentId}";
             $this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code父类ID={$parentId} 不存在");
         }
         $sql = "SELECT * FROM {$this->table} WHERE parent_id={$parentId} AND title='{$title}' LIMIT 1";
         !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code名称={$title} 已存在");
-        $arr = array("title"=>$title, "parent_id"=>$parentId);
+        $arr = array("title"=>$title, "full_title"=>$fullTitle, "credits"=>$credits, "parent_id"=>$parentId);
         return $this->addRow($this->table,$arr);
     }
 
@@ -72,12 +74,17 @@ class CourseCodeModel extends Model
     /**
     * 更新 CourseCode Title by ID
     * @param id 要更新的 Course Code ID
+    * @param title 要更新的 Course Code Title
+    * @param fullTitle 要更新的 Course Code Full Title
+    * @param credits 要更新的 Course Code Credits
     * @return bool
     */
-    public function updateCourseCodeTitleById($id, $title) {
+    public function updateCourseCodeById($id, $title, $fullTitle, $credits) {
         $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
         $arr = [];
         $arr["title"] = $title;
+        $arr["full_title"] = $fullTitle;
+        $arr["credits"] = $credits;
         return $this->updateRowById($this->table, $id, $arr);
     }
 
