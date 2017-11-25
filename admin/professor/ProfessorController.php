@@ -92,20 +92,35 @@ function incrementProfessorViewCountByIdWithJson() {
 function modifyProfessor($echoType = "normal") {
     global $professorModel;
     $flag = BasicTool::post("flag");
-    $name = BasicTool::post("name","需要提供教授名称");
+    $firstname = BasicTool::post("firstname","需要提供教授名");
+    $lastname = BasicTool::post("lastname","需要提供教授姓");
+    $middlename = BasicTool::post("middlename");
     try {
         checkAuthority();
         $result = null;
         if ($flag == "add") {
-            $result = $professorModel->addProfessor($name);
+            $result = $professorModel->addProfessor($firstname, $lastname, $middlename);
+            if ($result) {
+                if ($echoType == "normal") {
+                    BasicTool::echoMessage("添加成功","/admin/professor/index.php?listProfessor");
+                } else {
+                    BasicTool::echoJson(1, "添加成功", $result);
+                }
+            } else {
+                BasicTool::throwException("添加教授失败。");
+            }
         } else if ($flag == "update") {
             $id = BasicTool::post("id","需要提供要修改的 Professor ID");
-            $result = $professorModel->updateProfessor($id, $name);
-        }
-        if ($echoType == "normal") {
-            BasicTool::echoMessage("修改成功","/admin/professor/index.php?listProfessor");
-        } else {
-            BasicTool::echoJson(1, "修改成功", $result);
+            $result = $professorModel->updateProfessor($id, $firstname, $lastname, $middlename);
+            if ($result) {
+                if ($echoType == "normal") {
+                    BasicTool::echoMessage("修改成功","/admin/professor/index.php?listProfessor");
+                } else {
+                    BasicTool::echoJson(1, "修改成功", $result);
+                }
+            } else {
+                BasicTool::throwException("修改教授失败。");
+            }
         }
     } catch(Exception $e) {
         if ($echoType == "normal") {

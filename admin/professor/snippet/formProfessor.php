@@ -18,8 +18,12 @@ $flag = BasicTool::get("flag");
         </header>
         <section class="formBox">
             <div>
-                <label><?php echo $typeStr ?>教授名称<i>*</i></label>
-                <input class="input" type="text" name="name" value="<?php echo BasicTool::get('name') ?>">
+                <label><?php echo $typeStr ?>教授 First Name<i>*</i></label>
+                <input class="input" type="text" name="firstname" value="<?php echo BasicTool::get('firstname') ?>">
+                <label><?php echo $typeStr ?>教授 Last Name<i>*</i></label>
+                <input class="input" type="text" name="lastname" value="<?php echo BasicTool::get('lastname') ?>">
+                <label><?php echo $typeStr ?>教授 Middle Name</label>
+                <input class="input" type="text" name="middlename" value="<?php echo BasicTool::get('middlename') ?>">
             </div>
         </section>
         <footer class="submitBox">

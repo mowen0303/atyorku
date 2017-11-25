@@ -17,7 +17,9 @@ $userModel = new \admin\user\UserModel();
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th width="60px">ID</th>
-                    <th>教授名称</th>
+                    <th width="100px">Firstname</th>
+                    <th width="100px">Lastname</th>
+                    <th width="80px">Middle</th>
                     <th width="60px">热度</th>
                     <th width="160px">操作</th>
                 </tr>
@@ -34,7 +36,9 @@ $userModel = new \admin\user\UserModel();
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
-                        <td><?php echo $row["name"] ?></td>
+                        <td><?php echo $row["firstname"] ?></td>
+                        <td><?php echo $row["lastname"] ?></td>
+                        <td><?php echo $row["middlename"] ?></td>
                         <td class="viewCount" data-id="<?php echo $row["id"]?>"><?php echo $row["view_count"] ?></td>
                         <td><a class="btn" href="index.php?s=formProfessor&flag=update<?php echo $argument?>">修改</a>
                         <a class="btn incrementBtn" data-id="<?php echo $row["id"]?>" href="javascript:void(0)">加热度</a></td>

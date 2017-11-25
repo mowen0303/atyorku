@@ -32,8 +32,8 @@ class ProfessorModel extends Model
         $sql = "SELECT * FROM {$this->table}";
         $condition = "";
         if ($str)
-            $condition = " WHERE name LIKE '{$str}%'";
-        $sql .= "{$condition} ORDER BY view_count DESC, name ASC";
+            $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
+        $sql .= "{$condition} ORDER BY firstname ASC, lastname ASC, view_count DESC";
         if ($pageSize) {
             $countSql = "SELECT COUNT(*) FROM {$this->table}{$condition}";
             return parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
@@ -45,31 +45,39 @@ class ProfessorModel extends Model
 
     /**
     * 添加一个 professor
-    * @param name professor name
+    * @param firstname professor firstname
+    * @param lastname professor lastname
+    * @param middlename professor middlename
     * @return bool
     * @throws unique_name_exception 教授名称唯一
     */
-    public function addProfessor($name) {
-        $sql = "SELECT * FROM {$this->table} WHERE name='{$name}' LIMIT 1";
-        !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$name} 已存在");
-        return $this->addRow($this->table, array("name"=>$name));
+    public function addProfessor($firstname, $lastname, $middlename=false) {
+        $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
+        !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
+        $arr = array("firstname"=>$firstname,"lastname"=>$lastname,"middlename"=>$middlename);
+        return $this->addRow($this->table, $arr);
     }
 
     /**
     * 更新一个 professor
     * @param id 要更新的 professor id
-    * @param name 新的 professor name
+    * @param firstname professor firstname
+    * @param lastname professor lastname
+    * @param middlename professor middlename
     * @return bool
     * @throws id_not_found_exception 教授ID未找到
     * @throws unique_name_exception 教授名称唯一
     */
-    public function updateProfessor($id, $name) {
+    public function updateProfessor($id, $firstname, $lastname, $middlename=false) {
         $result = $this->checkProfId($id);
-        $oldName = $result["name"];
-        if ($oldName == $name) return true;
-        $sql = "SELECT * FROM {$this->table} WHERE name='{$name}' LIMIT 1";
-        !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$name} 已存在");
-        return $this->updateRowById($this->table, $id, array("name"=>$name));
+        if ($result["firstname"] != $firstname || $result["lastname"] != $lastname) {
+            // 姓名变化
+            $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
+            !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
+        }
+
+        $arr = array("firstname"=>$firstname,"lastname"=>$lastname,"middlename"=>$middlename);
+        return $this->updateRowById($this->table, $id, $arr);
     }
 
     /**
