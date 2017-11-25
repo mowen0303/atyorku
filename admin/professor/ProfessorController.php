@@ -13,12 +13,16 @@ call_user_func(BasicTool::get('action'));
  */
 function getProfessorByIdWithJson() {
     global $professorModel;
-    $id = BasicTool::get("id","需要提供 Professor ID");
-    $result = $professorModel->getProfessorById($id);
-    if ($result) {
-        BasicTool::echoJson(1, "成功", $result);
-    } else {
-        BasicTool::echoJson(0, "未找到该ID对应的教授");
+    try {
+        $id = BasicTool::get("id","需要提供 Professor ID");
+        $result = $professorModel->getProfessorById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的教授");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -49,8 +53,8 @@ function getListOfProfessorWithJson() {
  */
 function incrementProfessorViewCountByIdWithJson() {
     global $professorModel;
-    $id = BasicTool::get("id","需要提供 Professor ID");
     try {
+        $id = BasicTool::get("id","需要提供 Professor ID");
         $result = $professorModel->incrementProfessorViewCountById($id);
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
@@ -91,11 +95,11 @@ function incrementProfessorViewCountByIdWithJson() {
 */
 function modifyProfessor($echoType = "normal") {
     global $professorModel;
-    $flag = BasicTool::post("flag");
-    $firstname = BasicTool::post("firstname","需要提供教授名");
-    $lastname = BasicTool::post("lastname","需要提供教授姓");
-    $middlename = BasicTool::post("middlename");
     try {
+        $flag = BasicTool::post("flag");
+        $firstname = BasicTool::post("firstname","需要提供教授名");
+        $lastname = BasicTool::post("lastname","需要提供教授姓");
+        $middlename = BasicTool::post("middlename");
         checkAuthority();
         $result = null;
         if ($flag == "add") {

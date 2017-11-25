@@ -32,12 +32,16 @@ function deleteCourseCodeWithJson() {
  */
 function getCourseCodeByIdWithJson() {
     global $courseCodeModel;
-    $id = BasicTool::get("course_code_id","需要提供Course Code ID");
-    $result = $courseCodeModel->getCourseCodeById($id);
-    if ($result) {
-        BasicTool::echoJson(1, "成功", $result);
-    } else {
-        BasicTool::echoJson(0, "未找到该ID对应的科目");
+    try {
+        $id = BasicTool::get("course_code_id","需要提供Course Code ID");
+        $result = $courseCodeModel->getCourseCodeById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的科目");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -48,11 +52,15 @@ function getCourseCodeByIdWithJson() {
  */
 function getListOfParentCourseCodeWithJson() {
     global $courseCodeModel;
-    $result = $courseCodeModel->getListOfCourseCodeByParentId();
-    if ($result) {
-        BasicTool::echoJson(1, "成功", $result);
-    } else {
-        BasicTool::echoJson(0, "获取科目类别列表失败");
+    try {
+        $result = $courseCodeModel->getListOfCourseCodeByParentId();
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "获取科目类别列表失败");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -64,12 +72,16 @@ function getListOfParentCourseCodeWithJson() {
  */
 function getListOfChildCourseCodeByParentIdWithJson() {
     global $courseCodeModel;
-    $id = BasicTool::get("course_code_parent_id","需要提供科目父类ID");
-    $result = $courseCodeModel->getListOfCourseCodeByParentId($id);
-    if ($result) {
-        BasicTool::echoJson(1, "成功", $result);
-    } else {
-        BasicTool::echoJson(0, "获取子科目列表失败");
+    try {
+        $id = BasicTool::get("course_code_parent_id","需要提供科目父类ID");
+        $result = $courseCodeModel->getListOfCourseCodeByParentId($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "获取子科目列表失败");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -85,13 +97,13 @@ function getListOfChildCourseCodeByParentIdWithJson() {
 */
 function modifyCourseCode($echoType = "normal") {
     global $courseCodeModel;
-    $flag = BasicTool::post("flag");
-    $title = BasicTool::post("title","需要提供 Course Code Title");
-    $fullTitle = BasicTool::post("full_title","需要提供 Course Code Full Title");
-    $credits = BasicTool::post("credits");
-    if(!$credits) $credits = 0;
-    $parentId = (int) BasicTool::post("parent_id","请提供父类科目ID");
     try {
+        $flag = BasicTool::post("flag");
+        $title = BasicTool::post("title","需要提供 Course Code Title");
+        $fullTitle = BasicTool::post("full_title","需要提供 Course Code Full Title");
+        $credits = BasicTool::post("credits");
+        if(!$credits) $credits = 0;
+        $parentId = (int) BasicTool::post("parent_id","请提供父类科目ID");
         checkAuthority();
         if ($flag == "add") {
             $result = $courseCodeModel->addCourseCode($title, $fullTitle, $credits, $parentId);
