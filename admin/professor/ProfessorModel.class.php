@@ -52,6 +52,9 @@ class ProfessorModel extends Model
     * @throws unique_name_exception 教授名称唯一
     */
     public function addProfessor($firstname, $lastname, $middlename=false) {
+        $firstname = ucwords($firstname);
+        $lastname = ucwords($lastname);
+        $middlename = ucwords($middlename);
         $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
         !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
         $arr = array("firstname"=>$firstname,"lastname"=>$lastname,"middlename"=>$middlename);
@@ -70,6 +73,9 @@ class ProfessorModel extends Model
     */
     public function updateProfessor($id, $firstname, $lastname, $middlename=false) {
         $result = $this->checkProfId($id);
+        $firstname = ucwords($firstname);
+        $lastname = ucwords($lastname);
+        $middlename = ucwords($middlename);
         if ($result["firstname"] != $firstname || $result["lastname"] != $lastname) {
             // 姓名变化
             $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
