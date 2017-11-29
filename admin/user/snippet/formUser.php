@@ -111,7 +111,7 @@ $headDefault = '/resource/img/head-default.png';
             </div>
             <div>
                 <label>入学年份</label>
-                <input class="input" type="date" name="enroll_year" value="<?php echo date("Y-m-d",$inquiredUser->enrollYear) ?>">
+                <input class="input" type="date" name="enroll_year" value="<?php echo date("Y-m-d",$inquiredUser->enrollYear+86400) ?>">
             </div>
             <div>
                 <label>个性签名</label>

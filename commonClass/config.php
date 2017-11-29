@@ -22,7 +22,7 @@ function __autoload($name){
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 //隐藏notice和warning级别错误
-error_reporting(E_ALL^E_WARNING^E_NOTICE);
+error_reporting(E_ALL^E_WARNING^E_NOTICE^E_STRICT);
 date_default_timezone_set("America/Toronto");
 
 ?>

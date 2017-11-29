@@ -60,6 +60,7 @@ class ImageModel extends Model
     public function deleteImageById($id) {
         if(!$id) return true;
         $sql="";
+        $img = null;
         if (is_array($id)) {
             $img = $this->getImageById($id);
             $foundIdStr = implode(array_column($img, "id"), ",");
