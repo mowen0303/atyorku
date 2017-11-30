@@ -31,7 +31,7 @@ $row = flag=='add' ? null : $userModel->getRowById('user_class',$user_class_id);
             global $_AUT;
             foreach($_AUT as $k=>$v){
             ?>
-            <P><input name="authority[]" value="<?php echo $v?>" <?echo $row['authority']&$v?'checked':null?> type="checkbox"><?php echo $k?></P>
+            <P><input name="authority[]" value="<?php echo $v?>" <?php echo $row['authority']&$v?'checked':null?> type="checkbox"><?php echo $k?></P>
             <?php
             }
             ?>
