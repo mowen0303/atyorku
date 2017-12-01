@@ -29,15 +29,15 @@ $userModel = new \admin\user\UserModel();
                 <?php
                 $arr = $locationModel->getListOfLocation();
                 foreach ($arr as $row) {
-                ?>
-                <tr>
-                    <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
-                    <td><?php echo $row['id']?></td>
-                    <td><?php echo $row['init']?></td>
-                    <td><img height="36" height="36" src="<?php echo $row['pic']?>"></td>
-                    <td><a href="index.php?s=addLocation&id=<?php echo $row['id']?>"><?php echo $row['full_name']?></a></td>
-                    <td><?php echo $row['info']?></td>
-                </tr>
+                    ?>
+                    <tr>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
+                        <td><?php echo $row['id']?></td>
+                        <td><?php echo $row['init']?></td>
+                        <td><img height="36" height="36" src="<?php echo $row['pic']?>"></td>
+                        <td><a href="index.php?s=addLocation&id=<?php echo $row['id']?>"><?php echo $row['full_name']?></a></td>
+                        <td><?php echo $row['info']?></td>
+                    </tr>
                     <?php
                 }
                 ?>

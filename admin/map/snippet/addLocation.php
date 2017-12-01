@@ -4,11 +4,11 @@ $id = BasicTool::get('id');
 $flag = $id ? 'update' : 'add';
 if ($flag=='update') {
     $row = $locationModel->getLocationById($id);
-    $form_action = "/admin/map/LocationController.php?action=updateLocation";
+    $form_action = "/admin/map/locationController.php?action=updateLocation";
 }
 else {
     $row = null;
-    $form_action = "/admin/map/LocationController.php?action=addLocation";
+    $form_action = "/admin/map/locationController.php?action=addLocation";
 }
 ?>
 <header class="topBox">
@@ -32,11 +32,11 @@ else {
             </div>
             <div>
                 <label>纬度<i>*</i></label>
-                <input class="input" type="text" name="lat" value="<?php echo $row['lat'] ?>">
+                <input class="input" type="text" name="latitude" value="<?php echo $row['latitude'] ?>">
             </div>
             <div>
                 <label >经度<i>*</i></label>
-                <input class="input" type="text" name="lng" value="<?php echo $row['lng'] ?>">
+                <input class="input" type="text" name="longitude" value="<?php echo $row['longitude'] ?>">
             </div>
             <div>
                 <label>大楼简介</label>
@@ -51,18 +51,18 @@ else {
 
             </div>
             <!-- TODO - Add visibility in the future, for now it's useless -->
-<!--            <div>-->
-<!--                --><?php //if ($row['visible']==0) {?>
-<!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="0">显示-->
-<!--                    <input type="radio" class="cBox" name="visible" value="1">隐藏-->
-<!--                    --><?php
-//                }
-//                elseif ($row['visible']==1) {?>
-<!--                    <input type="radio" class="cBox" name="visible" value="0">显示-->
-<!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="1">隐藏-->
-<!--                    --><?php
-//                }?>
-<!--            </div>-->
+            <!--            <div>-->
+            <!--                --><?php //if ($row['visible']==0) {?>
+            <!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="0">显示-->
+            <!--                    <input type="radio" class="cBox" name="visible" value="1">隐藏-->
+            <!--                    --><?php
+            //                }
+            //                elseif ($row['visible']==1) {?>
+            <!--                    <input type="radio" class="cBox" name="visible" value="0">显示-->
+            <!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="1">隐藏-->
+            <!--                    --><?php
+            //                }?>
+            <!--            </div>-->
         </section>
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">
