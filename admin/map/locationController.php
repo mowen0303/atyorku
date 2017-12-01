@@ -10,12 +10,12 @@ function addLocation() {
 //        $id = BasicTool::post("id", "id不能为空", 3);
         $init = BasicTool::post("init", "缩写不能为空", 3);
         $fullName = BasicTool::post("full_name", "大楼全名不能为空");
-        $lat = BasicTool::post("lat");
-        $lng = BasicTool::post("lng");
+        $latitude = BasicTool::post("latitude");
+        $longitude = BasicTool::post("longitude");
         $info = BasicTool::post("info");
         $shape = BasicTool::post("shape");
 
-        $locationModel->addLocation($init, $fullName, $info, $lat, $lng, $shape);
+        $locationModel->addLocation($init, $fullName, $info, $latitude, $longitude, $shape);
         BasicTool::echoMessage("大楼添加成功");
     } catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),-1);
