@@ -6,7 +6,10 @@ call_user_func(BasicTool::get('action'));
 
 function addLocation() {
     global $locationModel;
+    global $currentUser;
+
     try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权增加地点");
 //        $id = BasicTool::post("id", "id不能为空", 3);
         $init = BasicTool::post("init", "缩写不能为空", 3);
         $fullName = BasicTool::post("full_name", "大楼全名不能为空");
@@ -24,8 +27,11 @@ function addLocation() {
 
 function updateLocation() {
     global $locationModel;
+    global $currentUser;
     try
     {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权更改地点信息");
+
         // Validate field
         $id = BasicTool::post("id", "id不能为空", 3);
         $init = BasicTool::post("init", "缩写不能为空", 3);
@@ -88,7 +94,9 @@ function getLocationsByFullNameKeyword() {
 
 function deleteLocationById() {
     global $locationModel;
+    global $currentUser;
     try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权删除地点");
         $ids = BasicTool::post("id", "请选择要删除的ID");
         $idCount = '';
         foreach ($ids as $id) {
