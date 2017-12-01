@@ -16,7 +16,7 @@ function loadCourseCodeParentSelect($obj) {
     })
 
     $.ajax({
-        url: "/admin/courseCode/CourseCodeController.php?action=getListOfParentCourseCodeWithJson",
+        url: "/admin/courseCode/courseCodeController.php?action=getListOfParentCourseCodeWithJson",
         type:"POST",
         processData: false,
         contentType: false,

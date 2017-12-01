@@ -58,7 +58,7 @@ $userModel = new \admin\user\UserModel();
             let id = $(`.incrementBtn:eq(${i})`).attr("data-id");
             $(`.incrementBtn:eq(${i})`).click(()=>{
                 $.ajax({
-                    url: "/admin/professor/ProfessorController.php?action=incrementProfessorViewCountByIdWithJson&id="+id,
+                    url: "/admin/professor/professorController.php?action=incrementProfessorViewCountByIdWithJson&id="+id,
                     type: "POST",
                     processData: false,
                     contentType: false,
@@ -66,7 +66,7 @@ $userModel = new \admin\user\UserModel();
                     success:(json)=>{
                         if (json.code === 1) {
                             $.ajax({
-                                url: "/admin/professor/ProfessorController.php?action=getProfessorByIdWithJson&id="+id,
+                                url: "/admin/professor/professorController.php?action=getProfessorByIdWithJson&id="+id,
                                 type: "POST",
                                 processData: false,
                                 contentType: false,
