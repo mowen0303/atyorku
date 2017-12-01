@@ -19,13 +19,13 @@ $_AUT = [
     'GUIDE_COMMENT'=>getAuthorityNum(18),
     'GUIDE_UPDATE'=>getAuthorityNum(19),
     'GUIDE_DELETE'=>getAuthorityNum(20),
-    'AD_ADD'=>getAuthorityNum(22),
-    'AD_DELETE'=>getAuthorityNum(23),
-    'AD_UPDATE'=>getAuthorityNum(24),
     'BOOK'=>getAuthorityNum(6),
     'MAP'=>getAuthorityNum(16),
     'EVENT'=>getAuthorityNum(11),
-    'AD_SHOW'=>getAuthorityNum(21),
+    'COURSE_QUESTION'=>getAuthorityNum(21),
+    'COURSE_RATE'=>getAuthorityNum(22),
+    'COURSE_RECALL'=>getAuthorityNum(23),
+    'AD_UPDATE'=>getAuthorityNum(24),
 
 
 ];

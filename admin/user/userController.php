@@ -26,13 +26,7 @@ function modify()
         $arr['blockreason'] = BasicTool::post('blockreason', false, 70);
         $arr['img'] = BasicTool::post('img');
         $arr['major'] = BasicTool::post('major', false, 30);
-        $enrollYear = BasicTool::post('enroll_year', false, 30);
-        if ($enrollYear == "") {
-            $arr['enroll_year'] = 0;
-        } else {
-            $arr['enroll_year'] = strtotime(BasicTool::post('enroll_year', false, 30));
-        }
-
+        $arr['enroll_year'] = strtotime(BasicTool::post('enroll_year', false, 30));
         $arr['description'] = BasicTool::post('description', false, 90);
         $arr['wechat'] = BasicTool::post('wechat', false, 40);
 
