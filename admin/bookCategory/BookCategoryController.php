@@ -58,8 +58,6 @@ function getBookCategoryById($id) {
 */
 function deleteBookCategoryById($id) {
     global $bookCategoryModel;
-    global $currentUser;
-    $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
     return $bookCategoryModel->deleteBookCategory($id);
 }
 
@@ -68,8 +66,10 @@ function deleteBookCategoryById($id) {
 * @param $id 要删除的二手书分类id array
 */
 function deleteBookCategory() {
-    $idArray = BasicTool::post("id", "请指定要删除的二手书分类Id");
+    global $currentUser;
     try {
+        $idArray = BasicTool::post("id", "请指定要删除的二手书分类Id");
+        $currentUser->isUserHasAuthority('GOD') or BasicTool::throwException("权限不足");
         foreach($idArray as $id) {
             deleteBookCategoryById($id) or BasicTool::echoMessage("二手书分类ID ({$id}) 删除失败");
         }
