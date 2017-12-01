@@ -82,7 +82,7 @@ class CommentModel extends Model
     /*@param $section_id can be integer or an array of integers
      *@return bool
      */
-    public function deleteCommentsBySection($section_name,$section_id)
+    public function deleteCommentsBySectionId($section_name,$section_id)
     {
         if (is_array($section_id)){
             $concat = null;

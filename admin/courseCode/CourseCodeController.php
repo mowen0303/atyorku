@@ -19,7 +19,7 @@ function addCourseCodeWithJson() {
 /**
 * JSON - 删除Course Code
 * @param course_code_id 要删除的 Course Code ID
-* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=deleteCourseCodeWithJson&id=3
+* http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=deleteCourseCodeWithJson&course_code_id=3
 */
 function deleteCourseCodeWithJson() {
     deleteCourseCode("json");
@@ -32,16 +32,12 @@ function deleteCourseCodeWithJson() {
  */
 function getCourseCodeByIdWithJson() {
     global $courseCodeModel;
-    try {
-        $id = BasicTool::get("course_code_id","需要提供Course Code ID");
-        $result = $courseCodeModel->getCourseCodeById($id);
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "未找到该ID对应的科目");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
+    $id = BasicTool::get("course_code_id","需要提供Course Code ID");
+    $result = $courseCodeModel->getCourseCodeById($id);
+    if ($result) {
+        BasicTool::echoJson(1, "成功", $result);
+    } else {
+        BasicTool::echoJson(0, "未找到该ID对应的科目");
     }
 }
 
@@ -52,15 +48,11 @@ function getCourseCodeByIdWithJson() {
  */
 function getListOfParentCourseCodeWithJson() {
     global $courseCodeModel;
-    try {
-        $result = $courseCodeModel->getListOfCourseCodeByParentId();
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "获取科目类别列表失败");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
+    $result = $courseCodeModel->getListOfCourseCodeByParentId();
+    if ($result) {
+        BasicTool::echoJson(1, "成功", $result);
+    } else {
+        BasicTool::echoJson(0, "获取科目类别列表失败");
     }
 }
 
@@ -72,16 +64,12 @@ function getListOfParentCourseCodeWithJson() {
  */
 function getListOfChildCourseCodeByParentIdWithJson() {
     global $courseCodeModel;
-    try {
-        $id = BasicTool::get("course_code_parent_id","需要提供科目父类ID");
-        $result = $courseCodeModel->getListOfCourseCodeByParentId($id);
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "获取子科目列表失败");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
+    $id = BasicTool::get("course_code_parent_id","需要提供科目父类ID");
+    $result = $courseCodeModel->getListOfCourseCodeByParentId($id);
+    if ($result) {
+        BasicTool::echoJson(1, "成功", $result);
+    } else {
+        BasicTool::echoJson(0, "获取子科目列表失败");
     }
 }
 
@@ -97,16 +85,13 @@ function getListOfChildCourseCodeByParentIdWithJson() {
 */
 function modifyCourseCode($echoType = "normal") {
     global $courseCodeModel;
+    $flag = BasicTool::post("flag");
+    $title = BasicTool::post("title","需要提供要修改的Course Code title");
+    $parentId = BasicTool::post("parent_id","请提供父类科目ID");
     try {
-        $flag = BasicTool::post("flag");
-        $title = BasicTool::post("title","需要提供 Course Code Title");
-        $fullTitle = BasicTool::post("full_title","需要提供 Course Code Full Title");
-        $credits = BasicTool::post("credits");
-        if(!$credits) $credits = 0;
-        $parentId = (int) BasicTool::post("parent_id","请提供父类科目ID");
         checkAuthority();
         if ($flag == "add") {
-            $result = $courseCodeModel->addCourseCode($title, $fullTitle, $credits, $parentId);
+            $result = $courseCodeModel->addCourseCode($title, (int)$parentId);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
             } else {
@@ -114,7 +99,7 @@ function modifyCourseCode($echoType = "normal") {
             }
         } else if ($flag == "update") {
             $id = BasicTool::post("id","需要提供要修改的Course Code ID");
-            $result = $courseCodeModel->updateCourseCodeById($id, $title, $fullTitle, $credits);
+            $result = $courseCodeModel->updateCourseCodeTitleById($id, $title);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
             } else {
@@ -140,7 +125,7 @@ function deleteCourseCode($echoType = "normal") {
     global $currentUser;
     try {
         checkAuthority();
-        $id = BasicTool::post('id',"请指定被删除科目ID");
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除科目ID");
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
@@ -168,6 +153,6 @@ function deleteCourseCode($echoType = "normal") {
 function checkAuthority() {
     global $currentUser;
     if (!($currentUser->isUserHasAuthority('ADMIN'))) {
-        BasicTool::throwException("无权限操作");
+        BasicTool::throwException("无权删除科目");
     }
 }

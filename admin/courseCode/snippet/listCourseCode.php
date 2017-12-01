@@ -1,5 +1,6 @@
 <?php
 $courseCodeModel = new \admin\courseCode\CourseCodeModel();
+$userModel = new \admin\user\UserModel();
 $parentId = BasicTool::get("parent_id");
 $typeStr = $parentId > 0 ? "子类" : "父类";
 ?>
@@ -19,9 +20,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th width="60px">ID</th>
-                    <th width="100px"><?php echo $typeStr ?>科目简称</th>
-                    <th><?php echo $typeStr ?>科目全称</th>
-                    <?php if($parentId>0) echo '<th width="60px">学分</th>'; ?>
+                    <th><?php echo $typeStr ?>科目名称</th>
                     <th width="80px">操作</th>
                 </tr>
                 </thead>
@@ -44,8 +43,6 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                             echo ($parentId == 0 ? "<a href=\"index.php?s=listCourseCode&parent_id={$id}\">{$title}</a>" : "{$title}");
                             ?>
                         </td>
-                        <td><?php echo $row["full_title"]; ?></td>
-                        <?php if($parentId>0) echo "<td>{$row['credits']}</td>"; ?>
                         <td><a class="btn" href="index.php?s=formCourseCode&flag=update<?php echo $argument?>">修改</a></td>
                     </tr>
                 <?php

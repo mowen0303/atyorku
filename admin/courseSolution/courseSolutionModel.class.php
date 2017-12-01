@@ -32,9 +32,7 @@ class CourseSolutionModel extends Model
         $arr["img_id_3"] = $img_id_3;
         return $this->updateRowById("course_solution", $id,$arr);
     }
-    /*
-     * controller确保指定删除的答案并没有被采纳
-     */
+
     function deleteSolution($id){
         if (is_array($id)){
             $sql = "SELECT * FROM course_solution WHERE id = {$id[0]}";
@@ -86,9 +84,6 @@ class CourseSolutionModel extends Model
         $countSql = "SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";
         return $this->getListWithPage("course_solution", $sql, $countSql,20);
     }
-
-    function getInsertId(){
-        return $this->sqltool->getInsertId();
-    }
 }
+
 ?>

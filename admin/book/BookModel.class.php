@@ -71,12 +71,15 @@ class BookModel extends Model
         }
         $sql = "{$sql} ORDER BY `sort` DESC,`last_modified_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
-         // Format publish time and enroll year
-        foreach ($arr as $k => $v) {
-            $t = $v["publish_time"];
-            $y = $v["enroll_year"];
-            if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
-            if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
+        foreach ($arr as $k1 => $v1) {
+            foreach ($v1 as $k2 => $v2) {
+                if ($k2 == "publish_time") {
+                    $arr[$k1][$k2] = BasicTool::translateTime($v2);
+                }
+                if ($k2 == "enroll_year") {
+                    $arr[$k1][$k2] = BasicTool::translateEnrollYear($v2);
+                }
+            }
         }
         return $arr;
     }

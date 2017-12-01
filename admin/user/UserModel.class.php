@@ -821,7 +821,6 @@ class UserModel extends Model
         $arr['gender'] = 2;
         $arr['registertime'] = time();
         $arr['enroll_year'] = 0;
-        $arr['alias']=explode('@',$username)[0];
         return $this->addRow('user', $arr);
 //邮箱验证
 //        $code = md5(rand(999,999999));

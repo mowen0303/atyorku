@@ -5,13 +5,12 @@ use \Model as Model;
 class CourseQuestionModel extends Model
 {
     /*
-     * controller必须先验证用户是否有足够的积分，并扣除积分
+     * controller必须先验证用户是否有足够的积分
      */
-    function addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
+    function addQuestion($course_rating_id, $questioner_user_id, $description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
 
-        $arr["course_code_id"] = $course_code_id;
-        $arr["prof_id"] = $prof_id;
+        $arr["course_rating_id"] = $course_rating_id;
 
         $arr["description"] = $description;
         $arr["img_id_1"] = $img_id_1;
@@ -31,10 +30,7 @@ class CourseQuestionModel extends Model
 
         $bool = $this->addRow("course_question", $arr);
         if ($bool) {
-            $sql = "UPDATE course_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id =0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id}";
-            $this->sqltool->query($sql);
-            $sql = "UPDATE course_prof_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id} AND solution_id=0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND prof_id={$prof_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id}";
-            $this->sqltool->query($sql);
+            //update count_questions in course_rating table
         }
         return $bool;
     }
@@ -57,15 +53,11 @@ class CourseQuestionModel extends Model
         $arr["reward_amount"] = $reward_amount;
         return $this->updateRowById("course_question", $id,$arr);
     }
-    /*
-     * 删除之后退还积分,controller验证删除的问题没有被采纳
-     **/
+
     function deleteQuestion($id)
     {
         if (is_array($id)) {
-            $question = $this->getQuestionById($id[0]);
-            $course_code_id = $question["course_code_id"];
-            $prof_id = $question["prof_id"];
+            //抓course_rating_id
             $concat = null;
             foreach ($id as $i) {
                 $i = $i + 0;
@@ -76,19 +68,14 @@ class CourseQuestionModel extends Model
             $sql = "DELETE FROM course_question WHERE id in ({$concat})";
             $bool = $this->sqltool->query($sql);
         } else {
-            $question = $this->getQuestionById($id);
-            $course_code_id = $question["course_code_id"];
-            $prof_id = $question["prof_id"];
+            //抓course_rating_id
             $sql = "DELETE FROM course_question WHERE id in ({$id})";
             $bool = $this->sqltool->query($sql);
         }
 
         //更新count_questions
         if ($bool) {
-            $sql = "UPDATE course_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id =0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id}";
-            $this->sqltool->query($sql);
-            $sql = "UPDATE course_prof_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id} AND solution_id=0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND prof_id={$prof_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id}";
-            $this->sqltool->query($sql);
+            //update count_questions on course_rating with id=course_rating_id
         }
         return $bool;
     }
@@ -96,37 +83,20 @@ class CourseQuestionModel extends Model
     function getQuestionById($id)
     {
         return $this->getRowById("course_question", $id);
-
     }
 
     /*
      * $flag = 1 查询已解决的提问
      * $flag = 0 查询未解决的提问
      */
-    function getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id, $flag = 1)
+    function getQuestionsByCourseRatingId($course_rating_id, $flag = 1)
     {
         if ($flag == 0) {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id = 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id = 0 ORDER BY time_posted DESC";
+            $sql = "SELECT * FROM course_question WHERE course_rating_id = {$course_rating_id} AND solution_id == 0 ORDER BY time_posted DESC";
+            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_rating_id = {$course_rating_id} AND solution_id == 0 ORDER BY time_posted DESC";
         } else {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id != 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id != 0 ORDER BY time_posted DESC";
-        }
-
-        return $this->getListWithPage("course_question", $sql, $countSql, 20);
-    }
-
-    /*
-     * $flag = 1 查询已解决的提问
-     * $flag = 0 查询未解决的提问
-     */
-    function getQuestionsByCourseCodeId($course_code_id,$flag=1){
-        if ($flag == 0) {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id = 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id = 0 ORDER BY time_posted DESC";
-        } else {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id != 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id != 0 ORDER BY time_posted DESC";
+            $sql = "SELECT * FROM course_question WHERE course_rating_id = {$course_rating_id} AND solution_id != 0 ORDER BY time_posted DESC";
+            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_rating_id = {$course_rating_id} AND solution_id != 0 ORDER BY time_posted DESC";
         }
 
         return $this->getListWithPage("course_question", $sql, $countSql, 20);
@@ -146,9 +116,6 @@ class CourseQuestionModel extends Model
             return true;
         else
             return false;
-    }
-    function getInsertId(){
-        return $this->sqltool->getInsertId();
     }
 }
 ?>

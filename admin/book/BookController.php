@@ -15,20 +15,16 @@ call_user_func(BasicTool::get('action'));
  */
 function getBookByIdWithJson() {
     global $bookModel;
-    try {
-        $id = BasicTool::get("book_id","请指定二手书Id");
-        if (validateId($id)) {
-            $result = $bookModel->getBookById((int)$id);
-            if ($result) {
-                BasicTool::echoJson(1, "成功", $result);
-            } else {
-                BasicTool::echoJson(0, "未找到该ID对应的二手书");
-            }
+    $id = BasicTool::get("book_id","请指定二手书Id");
+    if (validateId($id)) {
+        $result = $bookModel->getBookById((int)$id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
         } else {
-            BasicTool::echoJson("二手书ID无效");
+            BasicTool::echoJson(0, "未找到该ID对应的二手书");
         }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+    } else {
+        BasicTool::echoJson("二手书ID无效");
     }
 }
 
@@ -39,13 +35,9 @@ function getBookByIdWithJson() {
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByCategoryIdWithJson&book_category_id=3&pageSize=20
  */
 function getListOfBooksByCategoryIdWithJson() {
-    try {
-        $id = BasicTool::get("book_category_id","请指定二手书类别Id");
-        if (validateId($id)) {
-            getListOfBooksWithJson("book_category_id", (int)$id);
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+    $id = BasicTool::get("book_category_id","请指定二手书类别Id");
+    if (validateId($id)) {
+        getListOfBooksWithJson("book_category_id", (int)$id);
     }
 }
 
@@ -56,13 +48,9 @@ function getListOfBooksByCategoryIdWithJson() {
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByUserIdWithJson&user_id=1123&pageSize=20
  */
 function getListOfBooksByUserIdWithJson() {
-    try {
-        $id = BasicTool::get("user_id","请指定用户ID");
-        if (validateId($id)) {
-            getListOfBooksWithJson("user_id", (int)$id);
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+    $id = BasicTool::get("user_id","请指定用户ID");
+    if (validateId($id)) {
+        getListOfBooksWithJson("user_id", (int)$id);
     }
 }
 
@@ -73,12 +61,8 @@ function getListOfBooksByUserIdWithJson() {
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByUsernameWithJson&username=abc@gmail.com&pageSize=20
  */
 function getListOfBooksByUsernameWithJson() {
-    try {
-        $username = BasicTool::get("username","请指定用户名");
-        getListOfBooksWithJson("username", $username);
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
-    }
+    $username = BasicTool::get("username","请指定用户名");
+    getListOfBooksWithJson("username", $username);
 }
 
 /**
@@ -88,12 +72,8 @@ function getListOfBooksByUsernameWithJson() {
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByKeywordsWithJson&keywords=计算机科学&pageSize=20
  */
 function getListOfBooksByKeywordsWithJson() {
-    try {
-        $keywords = BasicTool::get("keywords","请指定搜索关键词");
-        getListOfBooksWithJson("keywords", $keywords);
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
-    }
+    $keywords = BasicTool::get("keywords","请指定搜索关键词");
+    getListOfBooksWithJson("keywords", $keywords);
 }
 
 
@@ -106,47 +86,42 @@ function getListOfBooksByKeywordsWithJson() {
  */
 function getListOfBooksWithJson($queryType=NULL, $queryValue=NULL) {
     global $bookModel;
-    try {
-        $pageSize = BasicTool::get('pageSize');
-        if(!$pageSize){
-            $pageSize = 40;
-        }
-
-        $result = NULL;
-
-        if ($queryType) {
-            // 根据指定搜索类别来获取二手书
-            $queryValue or BasicTool::throwException("请指定搜索类别相对应搜索值");
-            switch($queryType) {
-                case "user_id":
-                    $result = $bookModel->getBooksByUserId($queryValue, $pageSize);
-                    break;
-                case "book_category_id":
-                    $result = $bookModel->getBooksByCategoryId($queryValue, $pageSize);
-                    break;
-                case "username":
-                    $result = $bookModel->getBooksByUsername($queryValue, $pageSize);
-                    break;
-                case "keywords":
-                    $result = $bookModel->getBooksByKeywords($queryValue, $pageSize);
-                    break;
-                default:
-                    BasicTool::throwException("无法识别搜索类别");
-            }
-        } else {
-            // 直接获取
-            $result = $bookModel->getListOfBooks($pageSize);
-        }
-
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "没有更多内容");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+    $pageSize = BasicTool::get('pageSize');
+    if(!$pageSize){
+        $pageSize = 40;
     }
 
+    $result = NULL;
+
+    if ($queryType) {
+        // 根据指定搜索类别来获取二手书
+        $queryValue or BasicTool::throwException("请指定搜索类别相对应搜索值");
+        switch($queryType) {
+            case "user_id":
+                $result = $bookModel->getBooksByUserId($queryValue, $pageSize);
+                break;
+            case "book_category_id":
+                $result = $bookModel->getBooksByCategoryId($queryValue, $pageSize);
+                break;
+            case "username":
+                $result = $bookModel->getBooksByUsername($queryValue, $pageSize);
+                break;
+            case "keywords":
+                $result = $bookModel->getBooksByKeywords($queryValue, $pageSize);
+                break;
+            default:
+                BasicTool::throwException("无法识别搜索类别");
+        }
+    } else {
+        // 直接获取
+        $result = $bookModel->getListOfBooks($pageSize);
+    }
+
+    if ($result) {
+        BasicTool::echoJson(1, "成功", $result);
+    } else {
+        BasicTool::echoJson(0, "没有更多内容");
+    }
 }
 
 
@@ -327,9 +302,9 @@ function deleteBook($echoType = "normal") {
 
 
 function searchBooks($bookModel, $pageSize=40) {
+    $queryType = BasicTool::post("search_type", "搜索类别不能为空");
+    $queryValue = BasicTool::post("search_value", "搜索内容不能为空");
     try {
-        $queryType = BasicTool::post("search_type", "搜索类别不能为空");
-        $queryValue = BasicTool::post("search_value", "搜索内容不能为空");
         $result = "";
         switch($queryType) {
             case "keywords":
@@ -371,12 +346,8 @@ function validateId($id) {
 function deleteBookImagesByBookId($id) {
     global $bookModel;
     global $imageModel;
-    try {
-        $data = $bookModel->getImagesIdByBookId($id) or BasicTool::throwException("没找到二手书");
-        $imgs = array_values(array_filter([$data["image_id_one"], $data["image_id_two"], $data["image_id_three"]]));
-        $imageModel->deleteImageById($imgs) or BasicTool::throwException("删除失败");
-    } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage(),-1);
-    }
+    $data = $bookModel->getImagesIdByBookId($id) or BasicTool::throwException("没找到二手书");
+    $imgs = array_values(array_filter([$data["image_id_one"], $data["image_id_two"], $data["image_id_three"]]));
+    $imageModel->deleteImageById($imgs) or BasicTool::throwException("删除失败");
 }
 ?>
