@@ -83,8 +83,8 @@ class LocationModel extends Model
     public function getListOfLocation()
     {
         $sql = "SELECT * FROM {$this->table}";
-
-        return $this->sqltool->getListBySql($sql);
+        $result = $this->sqltool->query($sql);
+        return $result;
     }
 
     /**

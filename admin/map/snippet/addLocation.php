@@ -4,11 +4,11 @@ $id = BasicTool::get('id');
 $flag = $id ? 'update' : 'add';
 if ($flag=='update') {
     $row = $locationModel->getLocationById($id);
-    $form_action = "/admin/map/locationController.php?action=updateLocation";
+    $form_action = "/admin/map/LocationController.php?action=updateLocation";
 }
 else {
     $row = null;
-    $form_action = "/admin/map/locationController.php?action=addLocation";
+    $form_action = "/admin/map/LocationController.php?action=addLocation";
 }
 ?>
 <header class="topBox">
@@ -32,11 +32,11 @@ else {
             </div>
             <div>
                 <label>纬度<i>*</i></label>
-                <input class="input" type="text" name="latitude" value="<?php echo $row['latitude'] ?>">
+                <input class="input" type="text" name="lat" value="<?php echo $row['lat'] ?>">
             </div>
             <div>
                 <label >经度<i>*</i></label>
-                <input class="input" type="text" name="longitude" value="<?php echo $row['longitude'] ?>">
+                <input class="input" type="text" name="lng" value="<?php echo $row['lng'] ?>">
             </div>
             <div>
                 <label>大楼简介</label>
