@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 02, 2017 at 12:24 AM
+-- Generation Time: Dec 02, 2017 at 01:23 AM
 -- Server version: 10.1.19-MariaDB
 -- PHP Version: 5.6.28
 
@@ -28,12 +28,12 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `map` (
   `id` int(3) UNSIGNED NOT NULL,
-  `init` char(4) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '大楼缩写',
-  `full_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `info` varchar(140) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '简介',
-  `latitude` double NOT NULL DEFAULT '0' COMMENT '纬度',
-  `longitude` double NOT NULL DEFAULT '0' COMMENT '经度',
-  `shape` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '坐标数组'
+  `init` char(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '大楼缩写',
+  `full_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `info` varchar(140) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '简介',
+  `latitude` double DEFAULT NULL COMMENT '纬度',
+  `longitude` double DEFAULT NULL COMMENT '经度',
+  `shape` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '坐标数组'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -63,7 +63,10 @@ INSERT INTO `map` (`id`, `init`, `full_name`, `info`, `latitude`, `longitude`, `
 -- Indexes for table `map`
 --
 ALTER TABLE `map`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `init` (`init`),
+  ADD KEY `init_2` (`init`),
+  ADD KEY `full_name` (`full_name`);
 
 --
 -- AUTO_INCREMENT for dumped tables
