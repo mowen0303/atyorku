@@ -30,6 +30,7 @@ CREATE TABLE `professor_report` (
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
   `rating_count` int(11) NOT NULL,
+  `recommendation_ratio` float NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_professor_report_professor` (`prof_id`) USING BTREE,
   CONSTRAINT `fk_professor_report_professor` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -45,4 +46,4 @@ CREATE TABLE `professor_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 20:04:48
+-- Dump completed on 2017-12-01 20:20:49

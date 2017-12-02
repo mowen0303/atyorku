@@ -30,6 +30,7 @@ CREATE TABLE `course_prof_report` (
   `test_diff` tinyint(4) NOT NULL,
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
+  `recommendation_ratio` float NOT NULL,
   `rating_count` int(11) NOT NULL,
   `count_questions` int(11) NOT NULL,
   `count_solved_questions` int(11) NOT NULL,
@@ -50,4 +51,4 @@ CREATE TABLE `course_prof_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 20:04:48
+-- Dump completed on 2017-12-01 20:20:49
