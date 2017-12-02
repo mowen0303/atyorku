@@ -37,7 +37,7 @@ function deleteAdCategory(){
     global $adCategoryModel;
     global $currentUser;
     try {
-        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,删除失败");
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足,删除失败");
         $id = BasicTool::post("id", "请指定将被删除的分类id");
         $bool = $adCategoryModel->deleteAdCategory($id[0]);
         if ($bool)

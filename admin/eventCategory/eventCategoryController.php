@@ -36,7 +36,7 @@ function deleteEventCategory()
 {
     global $eventCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,删除失败");
+    $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足,删除失败");
     try {
         $id = BasicTool::post("id", "请指定将被删除的分类id");
         $bool = $eventCategoryModel->deleteEventCategory($id[0]);
