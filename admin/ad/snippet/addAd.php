@@ -14,9 +14,9 @@ if($flag=='add'){
 
  else {
     $row = $adModel->getAd($id);
-    $img1 = $row["img_id_one"];
-    if ($img1){
-    $banner_url = $imageModel->getImageById($img1)["url"];}
+     $img1 = $row["img_id_1"];
+     $img2 = $row["img_id_2"];
+     $img3 = $row["img_id_3"];
      $form_action = "/admin/ad/AdController.php?action=updateAd";
 }
 
@@ -81,18 +81,22 @@ if($flag=='add'){
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
-            <div>
-                <label>封面图片: 1000X500</label>
+            <div id="currentImages">
                 <div id="currentImages">
                     <?php
                     if ($img1) {
-                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["thumbnail_url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id_one' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
+                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id_1' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
+                    }
+                    if ($img2) {
+                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic2' src='{$imageModel->getImageById($img2)["url"]}' style='width: 100px; height: auto;'><input id='img2' name='img_id_2' value='{$img2}' style='display: none'></div><div><input type='button' id='imgbtn2' value='删除' onclick='removeImg(2);'></div></div>";
+                    }
+                    if ($img3) {
+                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic3' src='{$imageModel->getImageById($img3)["url"]}' style='width: 100px; height: auto;'><input id='img3' name='img_id_3' value='{$img3}' style='display: none'></div><div><input type='button' id='imgbtn3' value='删除' onclick='removeImg(3);'></div></div>";
                     }
                     ?>
                 </div>
-                <p><img  id="imgOfUpload" src="" style="width: 100px; height: auto; display: none"></p>
+                <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                 <input type="file" name="imgFile[]" id="imgFile" multiple/>
-
             </div>
 
 

@@ -33,7 +33,9 @@ else{
                     <tr>
                         <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                         <th>ID</th>
-                        <th>封面</th>
+                        <th>图片1</th>
+                        <th>图片2</th>
+                        <th>图片3</th>
                         <th width="120px">标题</th>
                         <th>简介</th>
                         <th width="80px">广告商</th>
@@ -46,16 +48,30 @@ else{
                     <tbody>
                     <?php
                     foreach ($arr as $row) {
-                        if($row["img_id_one"]){
-                            $banner_url = $imageModel->getImageById($row["img_id_one"])["url"];
+                        $display_img_1 = "style=display:none";
+                        $display_img_2 = "style=display:none";
+                        $display_img_3 = "style=display:none";
+                        if($row["img_id_1"]){
+                            $img_url_1 = $imageModel->getImageById($row["img_id_1"])["url"];
+                            $display_img_1 = "style=display:inline-block";
+                        }
+                        if($row["img_id_2"]){
+                            $img_url_2 = $imageModel->getImageById($row["img_id_2"])["url"];
+                            $display_img_2 = "style=display:inline-block";
+                        }
+                        if($row["img_id_3"]){
+                            $img_url_3 = $imageModel->getImageById($row["img_id_3"])["url"];
+                            $display_img_3 = "style=display:inline-block";
                         }
 
                         ?>
                         <tr>
                             <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                             <td><?php echo $row['id']?></td>
-                            <td><a target="_blank" href=""><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
-                            <td><a target="_blank" href=""><?php echo $row['title']?></a></td>
+                            <td><img <?php echo $display_img_1?> width="120" height="60" src="<?php echo $img_url_1?>"></a></td>
+                            <td><img <?php echo $display_img_2?> width="120" height="60" src="<?php echo $img_url_2?>"></a></td>
+                            <td><img <?php echo $display_img_3?> width="120" height="60" src="<?php echo $img_url_3?>"></a></td>
+                            <td><?php echo $row['title']?></td>
                             <td><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>
                             <td><?php echo $row['view_count'] ?></td>
