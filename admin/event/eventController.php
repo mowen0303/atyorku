@@ -107,7 +107,7 @@ function deleteEvent($echoType="normal"){
         }
 
         //删除评论
-        $bool = $commentModel->deleteCommentsBySectionId("event", $id);
+        $bool = $commentModel->deleteCommentsBySection("event", $id);
 
         //删除图片
         if ($bool) {

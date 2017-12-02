@@ -35,7 +35,7 @@ class CourseSolutionModel extends Model
     /*
      * controller确保指定删除的答案并没有被采纳
      */
-    function deleteSolution($id){
+    function deleteSolutionById($id){
         if (is_array($id)){
             $sql = "SELECT * FROM course_solution WHERE id = {$id[0]}";
             $question_id = $this->sqltool->getRowBySql($sql)["question_id"];
@@ -65,20 +65,16 @@ class CourseSolutionModel extends Model
     }
 
     function getSolutionById($id){
-        return $this->getRowById("course_solution",$id);
-    }
 
+return $this->getRowById("course_solution",$id);
+}
     /*
      *@return solution|false
      */
     function getApprovedSolutionByQuestionId($question_id){
         $sql = "SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved !=0";
         $solution = $this->sqltool->getRowBySql($sql);
-        if ($sql){
-            return $solution;
-        }
-        else
-            return false;
+        return $solution;
     }
 
     function getSolutionsByQuestionId($question_id){

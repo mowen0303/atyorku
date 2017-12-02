@@ -154,7 +154,7 @@ if($flag=='add'){
                     <label>邮箱</label>
                     <input type="email" name="sponsor_email" class="input input-size30" value="<?php echo $row['sponsor_email'] ?>">
                 </div>
-
+            </div>
 
         </section>
         <label>活动时间</label>
