@@ -70,9 +70,9 @@ class AdModel extends Model
         $arr["title"] = $title;
         $arr["description"] = $description;
         $arr["sponsor_name"] = $sponsor_name;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
+        $arr["img_id_1"] = $img_id_1 == "" ? 0:$img_id_1;
+        $arr["img_id_2"] = $img_id_2 == "" ? 0:$img_id_2;
+        $arr["img_id_3"] = $img_id_3 == "" ? 0:$img_id_3;
         $arr["publish_time"] = $publish_time;
         $arr["expiration_time"] = $expiration_time;
         $arr["ad_category_id"] = $ad_category_id;
