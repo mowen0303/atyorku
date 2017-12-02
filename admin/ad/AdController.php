@@ -168,7 +168,7 @@ function updateAd($echoType="normal"){
 
         $event = $adModel->getAd($id);
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
-        $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
+        $currImgArr = array($ad["img_id_1"],$ad["img_id_2"],$ad["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"ad");
 
         $bool = $adModel->updateAd($id, $title, $description, $sponsor_name, $imgArr[0],$imgArr[1],$imgArr[2],$publish_time, $expiration_time, $ad_category_id, $ad_url);

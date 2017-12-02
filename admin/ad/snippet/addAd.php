@@ -63,6 +63,15 @@ if($flag=='add'){
         var expiration_time = Date.parse(document.getElementById("bb").value)/ 1000;
         document.getElementById("expiration_time").value = expiration_time;
     }
+    function fileChangeListener() {
+        var file = document.getElementById("imgFile").files[0];
+        var reader = new FileReader();
+        var img = document.getElementById("imgOfUpload");
+        reader.onload = function () {
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+    }
 </script>
 <header class="topBox">
     <h1> <?php

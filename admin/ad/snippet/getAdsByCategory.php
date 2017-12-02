@@ -75,8 +75,8 @@ else{
                             <td><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>
                             <td><?php echo $row['view_count'] ?></td>
-                            <td><?php echo $row['publish_time']?></td>
-                            <td><?php echo $row['expiration_time']?></td>
+                            <td><?php echo date("Y-m-d",($row['publish_time']))?></td>
+                            <td><?php echo date("Y-m-d",($row['expiration_time']))?></td>
                             <td><a href="index.php?s=addAd&id=<?php echo $row["id"] ?>&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">修改</a></td>
                         </tr>
                         <?php
