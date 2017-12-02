@@ -15,12 +15,16 @@ else {
     <h1><?php echo $pageTitle.' - ';
         echo $flag == 'add' ? '添加大楼' : '修改大楼'; ?></h1>
 </header>
+<nav class="mainNav">
+    <a class="btn" href="/admin/map/">返回列表</a>
+</nav>
 <article class="mainBox">
     <form action="locationController.php?action=<?php echo $form_action ?>" method="post">
         <section class="formBox">
             <div>
                 <label>大楼ID</label>
-                <input class="input" type="text" name="id" value="<?php echo $row['id'] ?>">
+                <p style="color: black; font-size: 18px"><?php echo $row['id'] ?></p>
+                <input hidden class="input" type="text" name="id" value="<?php echo $row['id'] ?>">
             </div>
             <div>
                 <label>大楼缩写<i>*</i></label>
@@ -40,25 +44,12 @@ else {
             </div>
             <div>
                 <label>大楼简介</label>
-                <textarea class="input input-textarea" name="info" value="<?php echo $row['info'] ?>"></textarea>
+                <textarea class="input input-textarea" name="info"><?php echo $row['info'] ?></textarea>
             </div>
             <div>
                 <label>形状坐标<i>*</i></label>
-                <input class="input input-textarea" type="text" name="shape" value="<?php echo $row['shape'] ?>">
+                <textarea class="input input-textarea" name="shape"><?php echo $row['shape'] ?></textarea>
             </div>
-            <!-- TODO - Add visibility in the future, for now it's useless -->
-            <!--            <div>-->
-            <!--                --><?php //if ($row['visible']==0) {?>
-            <!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="0">显示-->
-            <!--                    <input type="radio" class="cBox" name="visible" value="1">隐藏-->
-            <!--                    --><?php
-            //                }
-            //                elseif ($row['visible']==1) {?>
-            <!--                    <input type="radio" class="cBox" name="visible" value="0">显示-->
-            <!--                    <input type="radio" checked ="true" class="cBox" name="visible" value="1">隐藏-->
-            <!--                    --><?php
-            //                }?>
-            <!--            </div>-->
         </section>
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">

@@ -20,7 +20,6 @@ $userModel = new \admin\user\UserModel();
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th>#</th>
                     <th>缩写</th>
-                    <th>图片</th>
                     <th>全称</th>
                     <th>简介</th>
                 </tr>
@@ -34,7 +33,6 @@ $userModel = new \admin\user\UserModel();
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                         <td><?php echo $row['id']?></td>
                         <td><?php echo $row['init']?></td>
-                        <td><img height="36" height="36" src="<?php echo $row['pic']?>"></td>
                         <td><a href="index.php?s=addLocation&id=<?php echo $row['id']?>"><?php echo $row['full_name']?></a></td>
                         <td><?php echo $row['info']?></td>
                     </tr>
