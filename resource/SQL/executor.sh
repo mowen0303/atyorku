@@ -35,10 +35,10 @@ export_jason_db()
     printf "Export to single file? (y/n): "
     read op3
     if [ $op3 = "y" ]; then
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku image >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku image > ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku professor >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_code >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book_category > ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book_category >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku book >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_rating >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_prof_report >> ./jason/schema.sql
