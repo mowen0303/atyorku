@@ -1,5 +1,5 @@
 <?php
-namespace admin\Professor;   //-- 注意 --//
+namespace admin\professor;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
