@@ -15,7 +15,6 @@ class LocationModel extends Model
 
     /**
      * 添加一条大楼信息
-     * @param $id int 两位数大楼ID
      * @param $init varchar 大楼名称缩写（两个或三个大写字母）
      * @param $fullName varchar 大楼全称
      * @param $info varchar 大楼简介
@@ -27,12 +26,11 @@ class LocationModel extends Model
     public function addLocation($init, $fullName, $info, $lat, $lng, $shape)
     {
         $arr = [];
-//        $arr["id"] = $id;  //
         $arr["init"] = $init;
         $arr["full_name"] = $fullName;
         $arr["info"] = $info;
-        $arr["lat"] = $lat;
-        $arr["lng"] = $lng;
+        $arr["latitude"] = $lat;
+        $arr["longitude"] = $lng;
         $arr["shape"] = $shape;
 
         $bool = $this->addRow($this->table, $arr);
@@ -69,8 +67,8 @@ class LocationModel extends Model
         $arr["init"] = $init;
         $arr["full_name"] = $fullName;
         $arr["info"] = $info;
-        $arr["lat"] = $lat;
-        $arr["lng"] = $lng;
+        $arr["latitude"] = $lat;
+        $arr["longitude"] = $lng;
         $arr["shape"] = $shape;
 
         $bool = $this->updateRowById($this->table, $id, $arr);

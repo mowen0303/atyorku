@@ -4,11 +4,11 @@ $id = BasicTool::get('id');
 $flag = $id ? 'update' : 'add';
 if ($flag=='update') {
     $row = $locationModel->getLocationById($id);
-    $form_action = "/admin/map/locationController.php?action=updateLocation";
+    $form_action = "updateLocation";
 }
 else {
     $row = null;
-    $form_action = "/admin/map/locationController.php?action=addLocation";
+    $form_action = "addLocation";
 }
 ?>
 <header class="topBox">
@@ -16,7 +16,7 @@ else {
         echo $flag == 'add' ? '添加大楼' : '修改大楼'; ?></h1>
 </header>
 <article class="mainBox">
-    <form action="locationController.php?action=addLocation" method="post">
+    <form action="locationController.php?action=<?php echo $form_action ?>" method="post">
         <section class="formBox">
             <div>
                 <label>大楼ID</label>
@@ -43,12 +43,8 @@ else {
                 <textarea class="input input-textarea" name="info" value="<?php echo $row['info'] ?>"></textarea>
             </div>
             <div>
-                <label>形状坐标</label>
-                <input class="input" type="text" name="shape" value="<?php echo $row['shape'] ?>">
-            </div>
-            <div>
-                <label>上传图片</label>
-
+                <label>形状坐标<i>*</i></label>
+                <input class="input input-textarea" type="text" name="shape" value="<?php echo $row['shape'] ?>">
             </div>
             <!-- TODO - Add visibility in the future, for now it's useless -->
             <!--            <div>-->
