@@ -100,11 +100,13 @@ if($flag=='add'){
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
+        </section>
             <div>
                 <label>活动详情</label>
                 <!-- 加载编辑器的容器 -->
                 <?php echo $text_editor_initation ?>
             </div>
+        <section class="formBox">
             <div>
                 <label>活动图片:</label>
                 <div id="currentImages">
