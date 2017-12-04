@@ -22,9 +22,9 @@ class EventModel extends Model
         $arr["expiration_time"] = $expiration_time;
         $arr["publish_time"] = time();
         $arr["event_time"] = $event_time;
-        $arr["img_id_1"] = $img_id_1 == "" ? 0:$img_id_1;
-        $arr["img_id_2"] = $img_id_2 == "" ? 0:$img_id_2;
-        $arr["img_id_3"] = $img_id_3 == "" ? 0:$img_id_3;
+        $arr["img_id_1"] = $img_id_1;
+        $arr["img_id_2"] = $img_id_2;
+        $arr["img_id_3"] = $img_id_3;
         $arr["location_link"] = $location_link;
         $arr["registration_fee"] = $registration_fee;
         $arr["max_participants"]=$max_participants;
@@ -86,9 +86,9 @@ class EventModel extends Model
         $arr["description"] = $description;
         $arr["expiration_time"] = $expiration_time;
         $arr["event_time"] = $event_time;
-        $arr["img_id_1"] = $img_id_1 == "" ? 0:$img_id_1;
-        $arr["img_id_2"] = $img_id_2 == "" ? 0:$img_id_2;
-        $arr["img_id_3"] = $img_id_3 == "" ? 0:$img_id_3;
+        $arr["img_id_1"] = $img_id_1;
+        $arr["img_id_2"] = $img_id_2;
+        $arr["img_id_3"] = $img_id_3;
         $arr["location_link"] = $location_link;
         $arr["registration_fee"] = $registration_fee;
         $arr["max_participants"]=$max_participants;
