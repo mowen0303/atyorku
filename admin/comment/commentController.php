@@ -13,13 +13,23 @@ function addComment($echoType="normal"){
     $section_name = BasicTool::post("section_name","section_name不能为空");
     $section_id = BasicTool::post("section_id","section_id不能为空");
     $comment = BasicTool::post("comment","评论不能为空");
+    $redirect_url = BasicTool::post("redirect_url");
     $bool = $commentModel->addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment);
     if ($echoType == "normal")
     {
-        if ($bool)
-            BasicTool::echoMessage("添加成功");
-        else
-            BasicTool::echoMessage("添加失败");
+        if ($redirect_url){
+            if ($bool)
+                BasicTool::echoMessage("添加成功",$redirect_url);
+            else
+                BasicTool::echoMessage("添加失败",$redirect_url);
+        }
+        else{
+            if ($bool)
+                BasicTool::echoMessage("添加成功");
+            else
+                BasicTool::echoMessage("添加失败");
+        }
+
     }
     else
     {

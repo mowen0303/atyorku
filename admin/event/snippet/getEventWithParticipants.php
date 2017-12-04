@@ -52,9 +52,9 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 <td><?php echo $event['max_participants'] ?></td>
                 <td><?php echo $event['location_link'] ?></td>
                 <td><?php echo $event['count_participants']?></td>
-                <td><?php echo $event['publish_time']?></td>
-                <td><?php echo $event['expiration_time']?></td>
-                <td><?php echo $event['event_time']?></td>
+                <td><?php echo date("Y-m-d",$row['publish_time'])?></td>
+                <td><?php echo date("Y-m-d",$row['event_time'])?></td>
+                <td><?php echo date("Y-m-d",$row['expiration_time'])?></td>
                 <td><?php echo $event['count_comments']?></td>
                 <td><?php echo $event['count_views']?></td>
             </tr>
@@ -130,7 +130,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $participant['gender']?></a></td>
                         <td><?php echo $participant['major']?></a></td>
                         <td><?php echo $participant['enroll_year']?></a></td>
-                        <td><?php echo $row['register_time'] ?></td>
+                        <td><?php echo BasicTool::translateTime($row['register_time']) ?></td>
                     </tr>
                     <?php
                 }

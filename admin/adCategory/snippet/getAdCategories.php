@@ -1,6 +1,5 @@
 <?php
 $adCategoryModel = new \admin\adCategory\AdCategoryModel();
-$isAdmin = BasicTool::get('isAdmin');
 ?>
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
@@ -36,7 +35,7 @@ $isAdmin = BasicTool::get('isAdmin');
                         <td><?php echo $row['description']?></td>
                         <td><?php echo $row['ads_count']?></td>
                         <td><a href="index.php?s=addAdCategory&id=<?php echo $row['id'] ?>">修改</a></td>
-                        <td><a href="/admin/ad/index.php?s=getAdsByCategory&ad_category_id=<?php echo $row['id']?>&ad_category_title=<?php echo $row["title"] ?>&flag=1">查看</a></td>
+                        <td><a href="/admin/ad/index.php?s=getAdsByCategory&ad_category_id=<?php echo $row['id']?>&flag=1">查看</a></td>
                      </tr>
                     <?php
                 }

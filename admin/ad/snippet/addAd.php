@@ -9,7 +9,10 @@ $flag = $id == null ? 'add' : 'update';
 $imageModel = new \admin\image\ImageModel();
 if($flag=='add'){
     $row = null;
+    $publish_time = time();
+    $expiration_time = time();
     $form_action = "/admin/ad/adController.php?action=addAd";
+
 }
 
  else {
@@ -17,6 +20,8 @@ if($flag=='add'){
      $img1 = $row["img_id_1"];
      $img2 = $row["img_id_2"];
      $img3 = $row["img_id_3"];
+     $publish_time = $row["publish_time"];
+     $expiration_time = $row["expiration_time"];
      $form_action = "/admin/ad/adController.php?action=updateAd";
 }
 
@@ -51,7 +56,16 @@ if($flag=='add'){
             readURL(this);
         });
     })
-
+    $("#publish_time").ready(function(){
+        var a = $("#publish_time").val() * 1000;
+        var b = new Date(a).toISOString();
+        $("#aa").val(b.slice(0,b.indexOf(":",b.indexOf(":")+1)));
+    });
+    $("#expiration_time").ready(function(){
+        var a = $("#expiration_time").val() * 1000;
+        var b = new Date(a).toISOString();
+        $("#bb").val(b.slice(0,b.indexOf(":",b.indexOf(":")+1)));
+    });
 </script>
 
 <script>
@@ -90,6 +104,7 @@ if($flag=='add'){
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
+            <label>活动图片: 最多上传3张</label>
             <div id="currentImages">
                 <div id="currentImages">
                     <?php
@@ -124,11 +139,11 @@ if($flag=='add'){
                 <input class="input input-size30" type="text" name="ad_url" value="<?php echo $row['ad_url'] ?>">
             </div>
         </section>
-        <label>广告投放时间</label>
-        <input type="datetime-local" onchange="pub()" value="<?php echo $row["publish_time"]*1000 ?>" id="aa" style="margin-right:3rem"/>
+        <label>广告投放时间<i>*</i></label>
+        <input type="datetime-local" onchange="pub()" id="aa" style="margin-right:3rem"/>
 
-        <label>广告有效至</label>
-        <input type="datetime-local" onchange="exp()"  value="<?php echo $row["event_time"]*1000 ?>" id="bb"/>
+        <label>广告有效至<i>*</i></label>
+        <input type="datetime-local" onchange="exp()"  id="bb"/>
 
         <input type="number" name="publish_time" id="publish_time" value="<?php echo $row["publish_time"] ?>" hidden/>
         <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $row["expiration_time"] ?>" hidden/>

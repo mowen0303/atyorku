@@ -4,7 +4,7 @@ $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 
 $event_category_id = BasicTool::get('event_category_id');
-$event_category_title = BasicTool::get("event_category_title");
+$event_category_title = $eventModel->getEventsByCategory($event_category_id)["title"];
 $flag = BasicTool::get("flag");
 $arr = $eventModel->getEventsByCategory($event_category_id,$flag);
 if($flag == 0){
@@ -23,8 +23,8 @@ else{
     </header>
     <nav class="mainNav">
         <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
-        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=0">未生效或过期的活动</a>
-        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&event_category_title=<?php echo $event_category_title?>&flag=1">生效的活动</a>
+        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&flag=0">未生效或过期的活动</a>
+        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&flag=1">生效的活动</a>
         <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>">发布新活动</a>
     </nav>
     <article class="mainBox">
@@ -64,9 +64,9 @@ else{
                             <td><?php echo $row['registration_fee'] ?></td>
                             <td><?php echo $row['max_participants'] ?></td>
                             <td><?php echo $row['count_participants']?></td>
-                            <td><?php echo $row['publish_time']?></td>
-                            <td><?php echo $row['expiration_time']?></td>
-                            <td><?php echo $row['event_time']?></td>
+                            <td><?php echo date("Y-m-d",$row['publish_time'])?></td>
+                            <td><?php echo date("Y-m-d",$row['event_time'])?></td>
+                            <td><?php echo date("Y-m-d",$row['expiration_time'])?></td>
                             <td><?php echo $row['count_comments']?></td>
                             <td><?php echo $row['count_views']?></td>
                             <td><a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>

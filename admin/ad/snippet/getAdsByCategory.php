@@ -1,8 +1,9 @@
 <?php
 $adModel = new \admin\ad\AdModel();
+$adCategoryModel = new \admin\adCategory\AdCategoryModel();
 $userModel = new \admin\user\UserModel();
 $ad_category_id = BasicTool::get('ad_category_id');
-$ad_category_title = BasicTool::get("ad_category_title");
+$ad_category_title = $adCategoryModel->getAdCategory($ad_category_id)["title"];
 $imageModel = new\admin\image\ImageModel();
 $flag = BasicTool::get("flag");
 $arr = $adModel->getAdsByCategory($ad_category_id,$flag);
@@ -20,8 +21,8 @@ else{
     </header>
     <nav class="mainNav">
         <a class="btn" href="/admin/adCategory/index.php?s=getAdCategories">返回</a>
-        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>&flag=0">未生效或过期的广告</a>
-        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>&flag=1">生效的广告</a>
+        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&flag=0">未生效或过期的广告</a>
+        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getAdsByCategory&ad_category_id=<?php echo $ad_category_id ?>&flag=1">生效的广告</a>
         <a class="btn" href="index.php?s=addAd&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">发布新广告</a>
     </nav>
     <article class="mainBox">

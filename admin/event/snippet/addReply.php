@@ -4,6 +4,8 @@ $userModel = new \admin\user\UserModel();
 $parent_id = BasicTool::get("parent_id");
 $comment = $commentModel->getComment($parent_id);
 $sender=$userModel->getProfileOfUserById($comment["sender_id"]);
+$event_id = BasicTool::get("event_id");
+$redirect_url = "/admin/event/index.php?s=getEventWithComments&event_id={$event_id}";
 ?>
 
 <article class="mainBox">
@@ -27,7 +29,7 @@ $sender=$userModel->getProfileOfUserById($comment["sender_id"]);
                 <td><?php echo $sender['name']?></td>
                 <td><?php echo $sender['gender']?></a></td>
                 <td><?php echo $comment['comment'] ?></td>
-                <td><?php echo $comment['time'] ?></td>
+                <td><?php echo BasicTool::translateTime($comment['time']) ?></td>
             </tr>
             </tbody>
         </table>
@@ -40,6 +42,7 @@ $sender=$userModel->getProfileOfUserById($comment["sender_id"]);
     <section class="formBox">
         <form action="/admin/comment/commentController.php?action=addComment" method="post">
             <div>
+                <input type="hidden" name="redirect_url" value="<?php echo $redirect_url?>"/>
                 <input type="hidden" name="parent_id" value="<?php echo $parent_id ?>"/>
                 <input type="hidden" name="sender_id" value="<?php echo $userModel->userId?>"/>
                 <input type="hidden" name="receiver_id" value="<?php echo $comment["sender_id"]?>"/>

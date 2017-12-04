@@ -23,7 +23,9 @@ function addEvent($echoType = "normal"){
         $event_time = BasicTool::post("event_time", "活动时间不能为空");
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee", "活动费用不能为空");
-        $max_participants = BasicTool::post("max_participants", "活动名额");
+        $max_participants = BasicTool::post("max_participants", "活动名额不能为空");
+        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
+        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
@@ -37,9 +39,9 @@ function addEvent($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("添加成功");
+                BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
             else
-                BasicTool::echoMessage("添加失败");
+                BasicTool::echoMessage("添加失败","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
         } else {
             if ($bool)
                 BasicTool::echoJson(1, "添加成功");
@@ -148,7 +150,7 @@ function deleteEvent($echoType="normal"){
             $bool = $imageModel->deleteImageById($img_ids);
         }
 
-        //删除ueditor图片
+        /*删除ueditor图片
         if ($bool){
             foreach ($id as $i){
                 if (is_dir($_SERVER["DOCUMENT_ROOT"] . "/uploads/event/" . $i)) {
@@ -156,6 +158,7 @@ function deleteEvent($echoType="normal"){
                 }
             }
         }
+        */
 
         //删除活动
         if ($bool) {
@@ -209,6 +212,8 @@ function updateEvent($echoType = "normal"){
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee");
         $max_participants = BasicTool::post("max_participants");
+        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
+        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
 
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
@@ -218,6 +223,15 @@ function updateEvent($echoType = "normal"){
 
         $event = $eventModel->getEvent($id);
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        if ($event["img_id_1"] == 0){
+            $event["img_id_1"] = NULL;
+        }
+        if ($event["img_id_2"] == 0){
+            $event["img_id_2"] = NULL;
+        }
+        if ($event["img_id_3"] == 0){
+            $event["img_id_3"] = NULL;
+        }
         $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
 
@@ -226,9 +240,9 @@ function updateEvent($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("更改成功");
+                BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
             else
-                BasicTool::echoMessage("更改失败");
+                BasicTool::echoMessage("更改失败","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
         } else {
             if ($bool)
                 BasicTool::echoJson(1, "更改成功");

@@ -20,9 +20,9 @@ function addAdCategory(){
         $description = BasicTool::post("description", "description");
         $bool = $adCategoryModel->addAdCategory($size, $title, $description);
         if ($bool)
-            BasicTool::echoMessage("添加成功");
+            BasicTool::echoMessage("添加成功","/admin/adCategory/index.php");
         else
-            BasicTool::echoMessage("添加失败");
+            BasicTool::echoMessage("添加失败","/admin/adCategory/index.php");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -86,9 +86,9 @@ function updateAdCategory(){
         $description = BasicTool::post("description", "description");
         $bool = $adCategoryModel->updateAdCategory($id, $size, $title, $description);
         if ($bool)
-            BasicTool::echoMessage("修改成功");
+            BasicTool::echoMessage("修改成功","/admin/adCategory/index.php");
         else
-            BasicTool::echoMessage("修改失败");
+            BasicTool::echoMessage("修改失败","/admin/adCategory/index.php");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);

@@ -12,6 +12,7 @@ function addEventParticipant(){
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,添加失败");
 
         $user_id = BasicTool::post("user_id", "specify user_id");
+        $currentUser->getProfileOfUserById($user_id) or BasicTool::throwException("用户ID不存在");
         $event_id = BasicTool::post("event_id", "specify event_id");
         $bool = $eventParticipantModel->addEventParticipant($event_id, $user_id);
 

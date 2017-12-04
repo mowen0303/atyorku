@@ -72,9 +72,9 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 <td><?php echo $event['max_participants'] ?></td>
                 <td><?php echo $event['location_link'] ?></td>
                 <td><?php echo $event['count_participants']?></td>
-                <td><?php echo $event['publish_time']?></td>
-                <td><?php echo $event['expiration_time']?></td>
-                <td><?php echo $event['event_time']?></td>
+                <td><?php echo date("Y-m-d",$row['publish_time'])?></td>
+                <td><?php echo date("Y-m-d",$row['event_time'])?></td>
+                <td><?php echo date("Y-m-d",$row['expiration_time'])?></td>
                 <td><?php echo $event['count_comments']?></td>
                 <td><?php echo $event['count_views']?></td>
             </tr>
@@ -148,8 +148,8 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                             <td><?php echo $sender['name']?></td>
                             <td><?php echo $sender['gender']?></a></td>
                             <td><?php echo $comment['l_comment'] ?></td>
-                            <td><?php echo $comment['l_time'] ?></td>
-                            <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
+                            <td><?php echo BasicTool::translateTime($comment['l_time']) ?></td>
+                            <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>&event_id=<?php echo $event_id?>">回复</a></td>
                         </tr>
                     <?php }
                     else if ($parent == 0 && $comment["r_id"] != null ){
@@ -167,8 +167,8 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['name']?></td>
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['l_comment'] ?></td>
-                        <td><?php echo $comment['l_time'] ?></td>
-                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
+                        <td><?php echo BasicTool::translateTime($comment['l_time']) ?></td>
+                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>&event_id=<?php echo $event_id?>">回复</a></td>
                     </tr>
                         <?php
 
@@ -182,7 +182,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['name']?></td>
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
-                        <td><?php echo $comment['r_time'] ?></td>
+                        <td><?php echo BasicTool::translateTime($comment['r_time']) ?></td>
                         <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
                     </tr>
                 <?php
@@ -198,7 +198,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['name']?></td>
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
-                        <td><?php echo $comment['r_time'] ?></td>
+                        <td><?php echo BasicTool::translateTime($comment['r_time']) ?></td>
                         <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
 
                     </tr>
@@ -218,8 +218,8 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['name']?></td>
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['l_comment'] ?></td>
-                        <td><?php echo $comment['l_time'] ?></td>
-                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>">回复</a></td>
+                        <td><?php echo BasicTool::translateTime($comment['l_time']) ?></td>
+                        <td><a href="index.php?s=addReply&parent_id=<?php echo $comment["l_id"] ?>&event_id=<?php echo $event_id?>">回复</a></td>
                     </tr>
                     <?php
 
@@ -233,7 +233,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                         <td><?php echo $sender['name']?></td>
                         <td><?php echo $sender['gender']?></a></td>
                         <td><?php echo $comment['r_comment'] ?></td>
-                        <td><?php echo $comment['r_time'] ?></td>
+                        <td><?php echo BasicTool::translateTime($comment['r_time']) ?></td>
                         <td><span style="cursor:pointer;" onclick="<?php echo "removeComment({$comment['r_id']})" ?>">删除</span></td>
                     </tr>
                     <?php

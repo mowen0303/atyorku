@@ -26,11 +26,11 @@ else
         <section class="formBox">
             <input name="id" value="<?php echo $id?>" type="hidden">
             <div>
-                <label>活动类别</label>
+                <label>活动类别<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
             <div>
-                <label>描述</label>
+                <label>描述<i>*</i></label>
                 <input class="input" type="text" name="description" value="<?php echo $row['description'] ?>">
             </div>
         </section>

@@ -29,9 +29,9 @@ function addAd($echoType="normal"){
         if ($echoType == "normal")
         {
             if ($bool)
-                BasicTool::echoMessage("添加成功");
+                BasicTool::echoMessage("添加成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
             else
-                BasicTool::echoMessage("添加失败");
+                BasicTool::echoMessage("添加失败","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
         }
         else
         {
@@ -168,6 +168,15 @@ function updateAd($echoType="normal"){
 
         $ad= $adModel->getAd($id);
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        if ($ad["img_id_1"] == 0){
+            $ad["img_id_1"] = NULL;
+        }
+        if ($ad["img_id_2"] == 0){
+            $ad["img_id_2"] = NULL;
+        }
+        if ($ad["img_id_3"] == 0){
+            $ad["img_id_3"] = NULL;
+        }
         $currImgArr = array($ad["img_id_1"],$ad["img_id_2"],$ad["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"ad");
 
@@ -175,9 +184,9 @@ function updateAd($echoType="normal"){
         if ($echoType == "normal")
         {
             if ($bool)
-                BasicTool::echoMessage("修改成功");
+                BasicTool::echoMessage("修改成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
             else
-                BasicTool::echoMessage("修改失败");
+                BasicTool::echoMessage("修改失败","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
         }
         else
         {

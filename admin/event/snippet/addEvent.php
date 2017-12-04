@@ -13,8 +13,9 @@ $flag = $id == null ? 'add' : 'update';
 
 if($flag=='add'){
     $row = null;
-    $text_editor_initation = "<script id='container' name='description' type='text/plain'></script>";
     $form_action = "/admin/event/eventController.php?action=addEvent";
+    $event_time = time();
+    $expiration_time = time();
 }
 
  else {
@@ -23,11 +24,8 @@ if($flag=='add'){
     $img2 = $row["img_id_2"];
     $img3 = $row["img_id_3"];
     $event_time = $row["event_time"];
-    $text_editor_initation = "<script id='container' name='description' type='text/plain'>{$row['description']}</script>";
     $expiration_time = $row["expiration_time"];
     $form_action = "/admin/event/eventController.php?action=updateEvent";
-     session_start();
-     $_SESSION["ueditor_upload_location"] = "event/".$id;
 }
 
 ?>
@@ -80,6 +78,19 @@ if($flag=='add'){
         }
         reader.readAsDataURL(file);
     }
+    $("#event_time").ready(function(){
+        var a = $("#event_time").val() * 1000;
+        var b = new Date(a).toISOString();
+        $("#aa").val(b.slice(0,b.indexOf(":",b.indexOf(":")+1)));
+    });
+    $("#expiration_time").ready(function(){
+        var a = $("#expiration_time").val() * 1000;
+        var b = new Date(a).toISOString();
+        $("#bb").val(b.slice(0,b.indexOf(":",b.indexOf(":")+1)));
+    });
+
+
+
 </script>
 
 <header class="topBox">
@@ -101,14 +112,13 @@ if($flag=='add'){
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
         </section>
-            <div>
-                <label>活动详情</label>
-                <!-- 加载编辑器的容器 -->
-                <?php echo $text_editor_initation ?>
-            </div>
+        <div>
+            <label>活动详情<i>*</i></label>
+            <textarea class="input input-textarea" name="description"><?php echo $row["description"]?></textarea>
+        </div>
         <section class="formBox">
             <div>
-                <label>活动图片:</label>
+                <label>活动图片: 最多上传3张</label>
                 <div id="currentImages">
                     <div id="currentImages">
                         <?php
@@ -128,11 +138,11 @@ if($flag=='add'){
                 </div>
 
                 <div>
-                    <label>活动金额</label>
+                    <label>活动金额<i>*</i></label>
                     <input type="number" class="input input-size30" name="registration_fee" value="<?php echo $row['registration_fee'] ?>"/>
                 </div>
                 <div>
-                    <label>活动名额</label>
+                    <label>活动名额<i>*</i></label>
                     <input type="number" class="input input-size30" name="max_participants" value="<?php echo $row['max_participants'] ?>"/>
                 </div>
                 <div>
@@ -159,24 +169,18 @@ if($flag=='add'){
             </div>
 
         </section>
-        <label>活动时间</label>
-        <input type="datetime-local" onchange="eve()" id="aa" style="margin-right:3rem" value="<?php echo $event_time*1000 ?>"/>
-        <label>活动有效至</label>
-        <input type="datetime-local" onchange="exp()" id="bb" style="margin-right:3rem" value="<?php echo $expiration_time*1000 ?>"/>
+        <label>活动时间<i>*</i></label>
+        <input type="datetime-local" onchange="eve()" id="aa" style="margin-right:3rem"/>
+        <label>活动有效至<i>*</i></label>
+        <input type="datetime-local" onchange="exp()" id="bb"  style="margin-right:3rem" />
 
         <input type="number" name="event_time" id="event_time" value="<?php echo $event_time ?>" hidden/>
         <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $expiration_time ?>" hidden/>
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">
         </footer>
-        <!-- 配置文件 -->
-        <script type="text/javascript" src="/admin/resource/tools/ueditor/ueditor.config.js"></script>
-        <!-- 编辑器源码文件 -->
-        <script type="text/javascript" src="/admin/resource/tools/ueditor/ueditor.all.js"></script>
-        <!-- 实例化编辑器 -->
-        <script type="text/javascript">
-            var ue = UE.getEditor('container');
-        </script>
-    </form>
+        <div id="cc">
 
+        </div>
+    </form>
 </article>
