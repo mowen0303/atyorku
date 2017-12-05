@@ -8,7 +8,7 @@ class BasicTool
      * 重新封装$_POST
      * @param string $name
      * @param int $notNullMessage 必填项未填时,throw一个提示
-     * @return array|string / false
+     * @return array|string / NULL
      */
     public static function post($name, $notNullMessage = false, $rangeRestrict = false)
     {
@@ -55,7 +55,7 @@ class BasicTool
      * 重新封装 $_GET
      * @param string $name
      * @param int $notNullMessage 必填项未填时,throw一个提示
-     * @return array|string / false
+     * @return array|string / NULL
      */
     public static function get($name, $notNullMessage = false, $rangeRestrict = false, $rangeError = false)
     {
