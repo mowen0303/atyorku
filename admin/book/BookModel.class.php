@@ -185,9 +185,9 @@ class BookModel extends Model
         $arr["book_category_id"] = $bookCategoryId;
         $arr["course_id"] = $courseId;
         $arr["user_id"] = $userId;
-        $arr["image_id_one"] = $img1 ? $img1 : "NULL";
-        $arr["image_id_two"] = $img2 ? $img2 : "NULL";
-        $arr["image_id_three"] = $img3 ? $img3 : "NULL";
+        $arr["image_id_one"] = $img1 ? $img1 : 0;
+        $arr["image_id_two"] = $img2 ? $img2 : 0;
+        $arr["image_id_three"] = $img3 ? $img3 : 0;
         $arr["last_modified_time"] = time();
 
         // check if book category is changed
@@ -210,38 +210,7 @@ class BookModel extends Model
         }
         return false;
     }
-
-    /**
-    * Override updateRowById
-    * enable to set null to specified field, pass "NULL" as value to that key
-    *
-    * 通过主键id修改一条数据
-    * @param $table 表名
-    * @param $id id的值
-    * @param $arrKV 把字段和值封装到键值对数组中
-    * @param bool $debug
-    * @return bool
-    */
-    public function updateRowById($table, $id, $arrKV, $debug = false)
-    {
-        $str = "";
-        foreach ($arrKV as $k => $v) {
-            if ($v == "NULL") {
-                $str .= "{$k}=NULL,";
-            } else {
-                $str .= "{$k}='{$v}',";
-            }
-        }
-        $str = substr($str, 0, -1);
-        $sql = "update $table set {$str} where id in ('{$id}')";
-        echo $debug ? $sql : null;
-        $this->sqltool->query($sql);
-        if ($this->sqltool->getAffectedRows() > 0) {
-            return true;
-        }
-        $this->errorMsg = "没有数据受到影响";
-        return false;
-    }
+    
 
     /**
     * 删除二手书 by ID

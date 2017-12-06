@@ -31,7 +31,7 @@ CREATE TABLE `course_rating` (
   `homework_diff` tinyint(4) NOT NULL,
   `test_diff` tinyint(4) NOT NULL,
   `has_textbook` tinyint(1) NOT NULL,
-  `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci DEFAULT 'U' COMMENT '''U'' is unknown',
+  `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'U' COMMENT '''U'' is unknown',
   `year` smallint(6) NOT NULL,
   `term` enum('Winter','Summer','Summer 1','Summer 2','Year','Fall') COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -56,4 +56,4 @@ CREATE TABLE `course_rating` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:37
+-- Dump completed on 2017-12-05 20:27:47

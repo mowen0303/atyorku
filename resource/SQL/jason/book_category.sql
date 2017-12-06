@@ -37,7 +37,7 @@ CREATE TABLE `book_category` (
 
 LOCK TABLES `book_category` WRITE;
 /*!40000 ALTER TABLE `book_category` DISABLE KEYS */;
-INSERT INTO `book_category` VALUES (26,'作业',0),(27,'AAAA',0);
+INSERT INTO `book_category` VALUES (27,'AAAA',0);
 /*!40000 ALTER TABLE `book_category` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:36
+-- Dump completed on 2017-12-05 20:27:47

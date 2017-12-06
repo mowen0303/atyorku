@@ -62,6 +62,8 @@ class ImageModel extends Model
         $sql="";
         $img = null;
         if (is_array($id)) {
+            $id = array_filter($id);
+            if (!$id) return true;
             $img = $this->getImageById($id);
             $foundIdStr = implode(array_column($img, "id"), ",");
             foreach ($img as $v) {

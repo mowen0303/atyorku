@@ -27,7 +27,7 @@ CREATE TABLE `professor` (
   `firstname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `middlename` char(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `view_count` int(11) NOT NULL DEFAULT '0',
+  `view_count` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `prof_uc` (`firstname`,`lastname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -42,4 +42,4 @@ CREATE TABLE `professor` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:37
+-- Dump completed on 2017-12-05 20:27:47

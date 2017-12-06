@@ -29,9 +29,9 @@ CREATE TABLE `course_report` (
   `test_diff` tinyint(4) NOT NULL,
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
-  `rating_count` int(11) NOT NULL,
-  `count_questions` int(11) NOT NULL,
-  `count_solved_questions` int(11) NOT NULL,
+  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_questions` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_solved_questions` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_course_report_course_code` (`course_code_id`) USING BTREE,
   CONSTRAINT `fk_course_report_course_code` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -47,4 +47,4 @@ CREATE TABLE `course_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:37
+-- Dump completed on 2017-12-05 20:27:47

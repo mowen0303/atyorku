@@ -26,15 +26,15 @@ CREATE TABLE `image` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `url` char(255) NOT NULL,
   `thumbnail_url` char(255) NOT NULL,
-  `size` int(11) DEFAULT NULL,
-  `height` int(11) DEFAULT NULL,
-  `width` int(11) DEFAULT NULL,
-  `applied_table` char(25) NOT NULL COMMENT '''book'',''user'',''event'',''course'',''forum'',''guide'',''guide_class''',
+  `size` int(11) NOT NULL DEFAULT '0',
+  `height` int(11) NOT NULL DEFAULT '0',
+  `width` int(11) NOT NULL DEFAULT '0',
+  `applied_table` enum('book','user','event','course','forum','guide','guide_class','unknown') NOT NULL DEFAULT 'unknown',
   `publish_time` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`),
   UNIQUE KEY `thumbnail_url` (`thumbnail_url`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -46,7 +46,7 @@ CREATE TABLE `image` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:29
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -76,7 +76,7 @@ CREATE TABLE `professor` (
   `firstname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `middlename` char(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `view_count` int(11) NOT NULL DEFAULT '0',
+  `view_count` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `prof_uc` (`firstname`,`lastname`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -91,7 +91,7 @@ CREATE TABLE `professor` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:29
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -145,7 +145,7 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:29
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -185,7 +185,7 @@ CREATE TABLE `book_category` (
 
 LOCK TABLES `book_category` WRITE;
 /*!40000 ALTER TABLE `book_category` DISABLE KEYS */;
-INSERT INTO `book_category` VALUES (26,'作业',0),(27,'AAAA',0);
+INSERT INTO `book_category` VALUES (27,'AAAA',0);
 /*!40000 ALTER TABLE `book_category` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -198,7 +198,7 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:29
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -227,21 +227,21 @@ CREATE TABLE `book` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `price` decimal(10,2) NOT NULL,
   `name` char(255) CHARACTER SET utf8 NOT NULL,
-  `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `user_id` int(11) unsigned NOT NULL,
   `book_category_id` int(11) unsigned NOT NULL,
   `course_id` int(11) unsigned NOT NULL,
-  `image_id_one` int(11) unsigned DEFAULT NULL,
-  `image_id_two` int(11) unsigned DEFAULT NULL,
-  `image_id_three` int(11) unsigned DEFAULT NULL,
-  `professor_id` int(11) unsigned DEFAULT NULL,
-  `term_year` int(4) unsigned DEFAULT NULL,
-  `term_semester` enum('FALL','WINTER','SUMMER') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `paper_type` enum('Midterm','Final','Quiz','Assignment') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `count_comments` smallint(6) unsigned NOT NULL,
-  `count_view` smallint(6) unsigned NOT NULL,
-  `report` smallint(6) unsigned NOT NULL,
-  `sort` tinyint(3) unsigned NOT NULL,
+  `image_id_one` int(11) unsigned NOT NULL DEFAULT '0',
+  `image_id_two` int(11) unsigned NOT NULL DEFAULT '0',
+  `image_id_three` int(11) unsigned NOT NULL DEFAULT '0',
+  `professor_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `term_year` int(4) unsigned NOT NULL DEFAULT '0',
+  `term_semester` enum('Fall','Winter','Summer','Unknown') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Unknown',
+  `paper_type` enum('Midterm','Final','Quiz','Assignment','Unknown') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Unknown',
+  `count_comments` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `count_view` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `report` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `sort` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `publish_time` int(11) NOT NULL,
   `last_modified_time` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -255,13 +255,9 @@ CREATE TABLE `book` (
   KEY `fk_book_professor` (`professor_id`),
   KEY `fk_book_book_category` (`book_category_id`),
   CONSTRAINT `fk_book_book_category` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_book_course_code` FOREIGN KEY (`course_id`) REFERENCES `course_code` (`id`),
-  CONSTRAINT `fk_book_image_1` FOREIGN KEY (`image_id_one`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `fk_book_image_2` FOREIGN KEY (`image_id_two`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `fk_book_image_3` FOREIGN KEY (`image_id_three`) REFERENCES `image` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `fk_book_professor` FOREIGN KEY (`professor_id`) REFERENCES `professor` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_book_course_code` FOREIGN KEY (`course_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_book_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -273,7 +269,7 @@ CREATE TABLE `book` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:30
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -307,7 +303,7 @@ CREATE TABLE `course_rating` (
   `homework_diff` tinyint(4) NOT NULL,
   `test_diff` tinyint(4) NOT NULL,
   `has_textbook` tinyint(1) NOT NULL,
-  `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci DEFAULT 'U' COMMENT '''U'' is unknown',
+  `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'U' COMMENT '''U'' is unknown',
   `year` smallint(6) NOT NULL,
   `term` enum('Winter','Summer','Summer 1','Summer 2','Year','Fall') COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -332,7 +328,7 @@ CREATE TABLE `course_rating` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:30
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -366,9 +362,9 @@ CREATE TABLE `course_prof_report` (
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
   `recommendation_ratio` float NOT NULL,
-  `rating_count` int(11) NOT NULL,
-  `count_questions` int(11) NOT NULL,
-  `count_solved_questions` int(11) NOT NULL,
+  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_questions` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_solved_questions` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_course_prof_report_course_prof` (`course_code_id`,`prof_id`),
   KEY `fk_course_prof_report_professor` (`prof_id`),
@@ -386,7 +382,7 @@ CREATE TABLE `course_prof_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:30
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -418,9 +414,9 @@ CREATE TABLE `course_report` (
   `test_diff` tinyint(4) NOT NULL,
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
-  `rating_count` int(11) NOT NULL,
-  `count_questions` int(11) NOT NULL,
-  `count_solved_questions` int(11) NOT NULL,
+  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_questions` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_solved_questions` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_course_report_course_code` (`course_code_id`) USING BTREE,
   CONSTRAINT `fk_course_report_course_code` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -436,7 +432,7 @@ CREATE TABLE `course_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:30
 -- MySQL dump 10.16  Distrib 10.1.26-MariaDB, for osx10.6 (i386)
 --
 -- Host: localhost    Database: atyorku
@@ -468,7 +464,7 @@ CREATE TABLE `professor_report` (
   `test_diff` tinyint(4) NOT NULL,
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
-  `rating_count` int(11) NOT NULL,
+  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
   `recommendation_ratio` float NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_professor_report_professor` (`prof_id`) USING BTREE,
@@ -485,4 +481,4 @@ CREATE TABLE `professor_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:45
+-- Dump completed on 2017-12-05 20:26:30

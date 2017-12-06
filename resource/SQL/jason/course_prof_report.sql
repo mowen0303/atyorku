@@ -31,9 +31,9 @@ CREATE TABLE `course_prof_report` (
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
   `recommendation_ratio` float NOT NULL,
-  `rating_count` int(11) NOT NULL,
-  `count_questions` int(11) NOT NULL,
-  `count_solved_questions` int(11) NOT NULL,
+  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_questions` int(11) unsigned NOT NULL DEFAULT '0',
+  `count_solved_questions` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_course_prof_report_course_prof` (`course_code_id`,`prof_id`),
   KEY `fk_course_prof_report_professor` (`prof_id`),
@@ -51,4 +51,4 @@ CREATE TABLE `course_prof_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01 21:23:37
+-- Dump completed on 2017-12-05 20:27:47
