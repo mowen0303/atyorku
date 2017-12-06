@@ -121,13 +121,6 @@ class ImageModel extends Model
                     $fileTmpName = $file['tmp_name'][$i];   //临时文件
                     $fileType = $file["type"][$i];          //文件类型
                     $fileSize = $file["size"][$i];          //文件大小
-                    $fileError = $file["error"][$i];        //错误信息
-
-                    //检测文件是否成功获取
-                    !$fileError > 0 or BasicTool::throwException("上传出错,状态码:" . $fileError);
-
-                    //检测文件类型是否合法
-                    (($fileType == "image/gif") || ($fileType == "image/png") || ($fileType == "image/jpeg") || ($fileType == "image/pjpeg")) or BasicTool::throwException("只支持上传 jpg|png|gif 格式的文件");
 
                     //检测上传目录文件夹权限
                     if (is_dir($root . $uploadsDir)) {
@@ -333,13 +326,26 @@ class ImageModel extends Model
 
     }
 
-    // 获取上传图片数量
+    /** 获取上传图片数量, 同时检测是否所有上传图片成功获取且合法
+    * @throws upload_error 如果任何文件上传出错
+    * @throws invalid_format 如果任何文件类型不符合要求 (png | jpeg | gif)
+    */
     public function getNumOfUploadImages($inputName) {
         $count = 0;
         $total = count($_FILES[$inputName]['name']);
         for($i=0; $i<$total; $i++) {
           $tmpFilePath = $_FILES[$inputName]['tmp_name'][$i];
           $size = $_FILES[$inputName]['size'][$i];
+          $fileType = $_FILES[$inputName]['type'][$i];
+          $fileError = $file["error"][$i];        //错误信息
+
+          //检测文件是否成功获取
+          !$fileError > 0 or BasicTool::throwException("上传出错,状态码:" . $fileError);
+
+          //检测文件类型是否合法
+          (($fileType == "image/gif") || ($fileType == "image/png") || ($fileType == "image/jpeg") || ($fileType == "image/pjpeg")) or BasicTool::throwException("只支持上传 jpg|png|gif 格式的文件");
+
+
           //Make sure we have a filepath and size
           if ($tmpFilePath != "" and $size > 0){
               $count++;
