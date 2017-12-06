@@ -197,20 +197,17 @@ class BookModel extends Model
             $oldBookCategoryId = $result["book_category_id"];
 
             $bool = $this->updateRowById($this->table, $id, $arr);
-            if ($bool) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-                $this->sqltool->query($sql);
-                if ($bookCategoryId != $oldBookCategoryId) {
-                    $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$oldBookCategoryId})) WHERE id in ({$oldBookCategoryId})";
-                    $this->sqltool->query($sql);
-                }
+            if ($bool && $bookCategoryId != $oldBookCategoryId) {
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId});";
+                $sql .= "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$oldBookCategoryId})) WHERE id in ({$oldBookCategoryId})";
+                $this->sqltool->multiQuery($sql);
             }
 
             return $bool;
         }
         return false;
     }
-    
+
 
     /**
     * 删除二手书 by ID

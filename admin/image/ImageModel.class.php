@@ -342,12 +342,10 @@ class ImageModel extends Model
           //检测文件是否成功获取
           !$fileError > 0 or BasicTool::throwException("上传出错,状态码:" . $fileError);
 
-          //检测文件类型是否合法
-          (($fileType == "image/gif") || ($fileType == "image/png") || ($fileType == "image/jpeg") || ($fileType == "image/pjpeg")) or BasicTool::throwException("只支持上传 jpg|png|gif 格式的文件");
-
-
           //Make sure we have a filepath and size
           if ($tmpFilePath != "" and $size > 0){
+              //检测文件类型是否合法
+              (($fileType == "image/gif") || ($fileType == "image/png") || ($fileType == "image/jpeg") || ($fileType == "image/pjpeg")) or BasicTool::throwException("只支持上传 jpg|png|gif 格式的文件");
               $count++;
           }
         }
