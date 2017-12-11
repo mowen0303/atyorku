@@ -15,7 +15,7 @@ if($flag=='add'){
 
 }
 
- else {
+else {
     $row = $adModel->getAd($id);
      $img1 = $row["img_id_1"];
      $img2 = $row["img_id_2"];
@@ -104,8 +104,8 @@ if($flag=='add'){
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
-            <label>活动图片: 最多上传3张</label>
             <div id="currentImages">
+                <label style="margin-top:1.5rem">广告封面: 最多上传1张</label>
                 <div id="currentImages">
                     <?php
                     if ($img1) {
@@ -119,10 +119,9 @@ if($flag=='add'){
                     }
                     ?>
                 </div>
-                <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
+                <p style="margin-bottom:1rem"><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                 <input type="file" name="imgFile[]" id="imgFile" multiple/>
             </div>
-
 
 
             <div>
@@ -145,8 +144,8 @@ if($flag=='add'){
         <label>广告有效至<i>*</i></label>
         <input type="datetime-local" onchange="exp()"  id="bb"/>
 
-        <input type="number" name="publish_time" id="publish_time" value="<?php echo $row["publish_time"] ?>" hidden/>
-        <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $row["expiration_time"] ?>" hidden/>
+        <input type="number" name="publish_time" id="publish_time" value="<?php echo $publish_time ?>" hidden/>
+        <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $expiration_time ?>" hidden/>
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">
         </footer>

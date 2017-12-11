@@ -1,17 +1,23 @@
 <?php
 $solutionModel = new \admin\courseSolution\CourseSolutionModel();
+$questionModel = new \admin\courseQuestion\CourseQuestionModel();
 $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $question_id = BasicTool::get("question_id");
+$question = $questionModel->getQuestionById($question_id);
 $solution_id = BasicTool::get("solution_id");
+$questioner = $userModel->getProfileOfUserById($question["questioner_user_id"]);
 if ($solution_id){
     $flag="更改答案";
-    $solution = $solutionModel-
-    $form_action = "/admin/courseQuestion/courseQuestionController.php?action=updateQuestion";
+    $solution = $solutionModel->getSolutionById($solution_id);
+    $img1 = $solution["img_id_1"];
+    $img2 = $solution["img_id_2"];
+    $img3 = $solution["img_id_3"];
+    $form_action = "/admin/courseSolution/courseSolutionController.php?action=updateSolution";
 }
 else{
     $flag="添加答案";
-    $form_action = "/admin/courseQuestion/courseQuestionController.php?action=addQuestion";
+    $form_action = "/admin/courseSolution/courseSolutionController.php?action=addSolution";
 }
 ?>
 <script>
@@ -57,28 +63,24 @@ else{
 
 <header class="topBox">
     <h1> <?php
-        echo $pageTitle.'-'."发布提问"
+        echo $pageTitle.'-'.$flag;
         ?></h1>
 </header>
 
 <article class="mainBox">
-    <form action="/admin/courseQuestion/courseQuestionController.php?action=addQuestion" method="post" enctype="multipart/form-data">
-        <input name="course_code_id" value="<?php echo $course_code_id ?>" type="hidden">
-        <input name="prof_id" value="<?php echo $prof_id ?>" type="hidden">
+    <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
         <section class="formBox">
-            <h4 style="padding-left:5px;color:#555;">课程:&nbsp;<?php echo $course_code["full_title"] ?></h4>
-            <h5 style="padding-left:5px;color:#555;">教授:&nbsp;<?php echo $prof["firstname"]." ".$prof["lastname"] ?></h5>
+            <input type="number" name = "question_id" value="<?php echo $question['id']?>" hidden/>
+            <input type = "number" name="id" value="<?php echo $solution['id']?>" hidden/>
+            <h4 style="padding-left:5px;color:#555;">提问ID:&nbsp;<?php echo $question["id"] ?></h4>
+            <h4 style="padding-left:5px;color:#555;">提问者:<?php echo $questioner["alias"]?></h4>
             <div>
-                <label>问题描述<i>*</i></label>
-                <textarea class="input-textarea" name="description"></textarea>
+                <label>答案<i>*</i></label>
+                <textarea class="input-textarea" name="description"><?php echo $solution["description"] ?></textarea>
             </div>
             <div>
-                <label>积分奖励<i>*</i></label>
-                <input type="number" class="input input-size30" name="reward_amount"/>
-            </div>
-            <div>
-                <label>图片上传:</label>
                 <div id="currentImages">
+                    <label style="margin-top:1.5rem">图片上传: 最多上传3张</label>
                     <div id="currentImages">
                         <?php
                         if ($img1) {
@@ -92,7 +94,7 @@ else{
                         }
                         ?>
                     </div>
-                    <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
+                    <p style="margin-bottom:1rem"><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                     <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
             </div>

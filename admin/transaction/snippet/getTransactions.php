@@ -29,7 +29,7 @@ $transactions = $transactionModel->getTransactions();
                     <td><?php echo $transaction["user_id"]?></td>
                     <td><?php echo $transaction["amount"]?></td>
                     <td><?php echo $transaction["description"]?></td>
-                    <td><?php echo $transaction["time"]?></td>
+                    <td><?php echo BasicTool::translateTime($transaction["time"]) ?></td>
                 </tr>
                 <?php
             }

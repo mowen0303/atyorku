@@ -118,8 +118,8 @@ if($flag=='add'){
         </div>
         <section class="formBox">
             <div>
-                <label>活动图片: 最多上传3张</label>
                 <div id="currentImages">
+                    <label style="margin-top:1.5rem">活动图片: 最多上传3张</label>
                     <div id="currentImages">
                         <?php
                         if ($img1) {
@@ -133,7 +133,7 @@ if($flag=='add'){
                         }
                         ?>
                     </div>
-                    <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
+                    <p style="margin-bottom:1rem"><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                     <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
 
