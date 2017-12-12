@@ -21,10 +21,10 @@ function addAd($echoType="normal"){
         $expiration_time = BasicTool::post("expiration_time","广告过期时间不能为空");
         $description = BasicTool::post("description","description");
         $ad_category_id = BasicTool::post("ad_category_id");
-        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        $imgArr = array(BasicTool::post("img_id_1"));
         $currImgArr = false;
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"ad");
-        $bool = $adModel->addAd($title, $description, $sponsor_name, $imgArr[0],$imgArr[1],$imgArr[2],$publish_time, $expiration_time, $ad_category_id, $ad_url);
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,1,"imgFile",$currentUser->userId,"ad");
+        $bool = $adModel->addAd($title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url);
 
         if ($echoType == "normal")
         {
@@ -93,15 +93,7 @@ function deleteAd($echoType="normal"){
             $img_ids = array();
             foreach ($ads as $ad) {
                 if ($ad["img_id_1"]) {
-                    if ($ad["img_id_1"]) {
-                        array_push($img_ids, $ad["img_id_1"]);
-                    }
-                    if ($ad["img_id_2"]) {
-                        array_push($img_ids, $ad["img_id_2"]);
-                    }
-                    if ($ad["img_id_3"]) {
-                        array_push($img_ids, $ad["img_id_3"]);
-                    }
+                    array_push($img_ids, $ad["img_id_1"]);
                 }
             }
 
@@ -110,12 +102,6 @@ function deleteAd($echoType="normal"){
             $img_ids = array();
             if ($ad["img_id_1"]) {
                 array_push($img_ids, $ad["img_id_1"]);
-            }
-            if ($ad["img_id_2"]) {
-                array_push($img_ids, $ad["img_id_2"]);
-            }
-            if ($ad["img_id_3"]) {
-                array_push($img_ids, $ad["img_id_3"]);
             }
         }
         $bool = $imageModel->deleteImageById($img_ids);
@@ -167,20 +153,14 @@ function updateAd($echoType="normal"){
         $ad_category_id = BasicTool::post("ad_category_id");
 
         $ad= $adModel->getAd($id);
-        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        $imgArr = array(BasicTool::post("img_id_1"));
         if ($ad["img_id_1"] == 0){
             $ad["img_id_1"] = NULL;
         }
-        if ($ad["img_id_2"] == 0){
-            $ad["img_id_2"] = NULL;
-        }
-        if ($ad["img_id_3"] == 0){
-            $ad["img_id_3"] = NULL;
-        }
-        $currImgArr = array($ad["img_id_1"],$ad["img_id_2"],$ad["img_id_3"]);
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"ad");
+        $currImgArr = array($ad["img_id_1"]);
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,1,"imgFile",$currentUser->userId,"ad");
 
-        $bool = $adModel->updateAd($id, $title, $description, $sponsor_name, $imgArr[0],$imgArr[1],$imgArr[2],$publish_time, $expiration_time, $ad_category_id, $ad_url);
+        $bool = $adModel->updateAd($id, $title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url);
         if ($echoType == "normal")
         {
             if ($bool)

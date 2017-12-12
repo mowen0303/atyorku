@@ -14,8 +14,8 @@ class EventCategoryModel extends Model {
      */
     public function addEventCategory($title,$description){
         $arr = [];
-        $arr["description"] = $description;
-        $arr["title"] = $title;
+        $arr["description"] = $description ? $description : "";
+        $arr["title"] = $title ? $title : "";
         $arr["count_events"] = 0;
         $bool = $this->addRow("event_category",$arr);
         return $bool;
@@ -44,8 +44,8 @@ class EventCategoryModel extends Model {
      */
     public function updateEventCategory($id,$title,$description){
         $arr = [];
-        $arr["title"] = $title;
-        $arr["description"] = $description;
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
         return $this->updateRowById("event_category",$id,$arr);
     }
 

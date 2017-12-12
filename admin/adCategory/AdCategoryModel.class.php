@@ -14,9 +14,9 @@ class AdCategoryModel extends Model {
      */
     public function addAdCategory($size,$title,$description){
         $arr = [];
-        $arr["size"] = $size;
-        $arr["description"] = $description;
-        $arr["title"] = $title;
+        $arr["size"] = $size ? $size : "";
+        $arr["description"] = $description ? $description : "";
+        $arr["title"] = $title ? $title : "";
         $arr["ads_count"] = 0;
         $bool = $this->addRow("ad_category",$arr);
         return $bool;
@@ -45,9 +45,9 @@ class AdCategoryModel extends Model {
      */
     public function updateAdCategory($id,$size,$title,$description){
         $arr = [];
-        $arr["size"] = $size;
-        $arr["title"] = $title;
-        $arr["description"] = $description;
+        $arr["size"] = $size ? $size : "";
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
         return $this->updateRowById("ad_category",$id,$arr);
     }
 

@@ -34,9 +34,9 @@ function addQuestion($echoType = "normal"){
         $bool = $questionModel->addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("添加成功");
+                BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
             else
-                BasicTool::echoMessage("添加失败");
+                BasicTool::echoMessage("添加失败","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         } else {
             if ($bool){
                 $result["id"] = $questionModel->getInsertId();
@@ -114,9 +114,9 @@ function updateQuestion($echoType = "normal"){
             $bool = $questionModel->updateQuestion($id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("更改成功");
+                BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$question['course_code_id']}&prof_id={$question['prof_id']}");
             else
-                BasicTool::echoMessage("更改失败");
+                BasicTool::echoMessage("添加失败","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$question['course_code_id']}&prof_id={$question['prof_id']}");
         }
         else {
             if ($bool){

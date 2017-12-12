@@ -13,19 +13,17 @@ class AdModel extends Model
      * 添加一则广告
      * @return $bool
      */
-    public function addAd($title, $description, $sponsor_name, $img_id_1,$img_id_2,$img_id_3, $publish_time, $expiration_time, $ad_category_id, $ad_url)
+    public function addAd($title, $description, $sponsor_name, $img_id_1, $publish_time, $expiration_time, $ad_category_id, $ad_url)
     {
         $arr = [];
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["publish_time"] = $publish_time;
-        $arr["expiration_time"] = $expiration_time;
-        $arr["ad_category_id"] = $ad_category_id;
-        $arr["ad_url"] = $ad_url;
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
+        $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["publish_time"] = $publish_time ? $publish_time : 0;
+        $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
+        $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
+        $arr["ad_url"] = $ad_url ? $ad_url : "";
         $arr["view_count"] = 0;
         $bool = $this->addRow("ad", $arr);
         if ($bool) {
@@ -64,19 +62,17 @@ class AdModel extends Model
      * 更改一则广告
      * @return bool
      */
-    public function updateAd($id, $title, $description, $sponsor_name, $img_id_1,$img_id_2,$img_id_3, $publish_time,$expiration_time, $ad_category_id, $ad_url)
+    public function updateAd($id, $title, $description, $sponsor_name, $img_id_1, $publish_time,$expiration_time, $ad_category_id, $ad_url)
     {
         $arr = [];
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["publish_time"] = $publish_time;
-        $arr["expiration_time"] = $expiration_time;
-        $arr["ad_category_id"] = $ad_category_id;
-        $arr["ad_url"] = $ad_url;
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
+        $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["publish_time"] = $publish_time ? $publish_time : 0;
+        $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
+        $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
+        $arr["ad_url"] = $ad_url ? $ad_url : "";
         $bool = $this->updateRowById("ad", $id, $arr);
         return $bool;
     }

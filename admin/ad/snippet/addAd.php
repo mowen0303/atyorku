@@ -18,8 +18,6 @@ if($flag=='add'){
 else {
     $row = $adModel->getAd($id);
      $img1 = $row["img_id_1"];
-     $img2 = $row["img_id_2"];
-     $img3 = $row["img_id_3"];
      $publish_time = $row["publish_time"];
      $expiration_time = $row["expiration_time"];
      $form_action = "/admin/ad/adController.php?action=updateAd";
@@ -110,12 +108,6 @@ else {
                     <?php
                     if ($img1) {
                         echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id_1' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
-                    }
-                    if ($img2) {
-                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic2' src='{$imageModel->getImageById($img2)["url"]}' style='width: 100px; height: auto;'><input id='img2' name='img_id_2' value='{$img2}' style='display: none'></div><div><input type='button' id='imgbtn2' value='删除' onclick='removeImg(2);'></div></div>";
-                    }
-                    if ($img3) {
-                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic3' src='{$imageModel->getImageById($img3)["url"]}' style='width: 100px; height: auto;'><input id='img3' name='img_id_3' value='{$img3}' style='display: none'></div><div><input type='button' id='imgbtn3' value='删除' onclick='removeImg(3);'></div></div>";
                     }
                     ?>
                 </div>

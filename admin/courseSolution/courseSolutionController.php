@@ -23,9 +23,9 @@ function addSolution($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("添加成功");
+                BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
             else
-                BasicTool::echoMessage("添加失败");
+                BasicTool::echoMessage("添加失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
         }
         else {
             if ($bool){
@@ -66,9 +66,9 @@ function updateSolution($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("更改成功");
+                BasicTool::echoMessage("更改成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
             else
-                BasicTool::echoMessage("更改失败");
+                BasicTool::echoMessage("更改失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
         }
         else {
             if ($bool){
