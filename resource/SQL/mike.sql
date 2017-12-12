@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 2017-12-02 05:14:24
+-- Generation Time: 2017-12-12 03:50:52
 -- 服务器版本： 10.1.25-MariaDB
 -- PHP Version: 7.1.7
 
@@ -30,17 +30,15 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `ad` (
   `id` int(11) UNSIGNED NOT NULL,
-  `ad_category_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ad_category_id` int(11) UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `view_count` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `sponsor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sponsor_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `img_id_1` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `img_id_2` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `img_id_3` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `ad_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `publish_time` int(11) UNSIGNED DEFAULT '0',
-  `expiration_time` int(11) UNSIGNED DEFAULT '0'
+  `ad_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `publish_time` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `expiration_time` int(11) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -51,10 +49,10 @@ CREATE TABLE `ad` (
 
 CREATE TABLE `ad_category` (
   `id` int(11) UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `size` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ads_count` int(11) UNSIGNED DEFAULT '0'
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ads_count` int(11) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -66,11 +64,11 @@ CREATE TABLE `ad_category` (
 CREATE TABLE `comment` (
   `id` int(11) UNSIGNED NOT NULL,
   `parent_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `sender_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `receiver_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `section_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sender_id` int(11) UNSIGNED NOT NULL,
+  `receiver_id` int(11) UNSIGNED NOT NULL,
+  `section_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `section_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `time` int(11) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -82,12 +80,12 @@ CREATE TABLE `comment` (
 
 CREATE TABLE `course_question` (
   `id` int(11) UNSIGNED NOT NULL,
-  `course_code_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `prof_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `questioner_user_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `answerer_user_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `course_code_id` int(11) UNSIGNED NOT NULL,
+  `prof_id` int(11) UNSIGNED NOT NULL,
+  `questioner_user_id` int(11) UNSIGNED NOT NULL,
+  `answerer_user_id` int(11) UNSIGNED NOT NULL,
   `solution_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `img_id_1` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_2` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_3` int(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -105,17 +103,17 @@ CREATE TABLE `course_question` (
 --
 
 CREATE TABLE `course_solution` (
-  `id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `question_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` int(11) UNSIGNED NOT NULL,
+  `question_id` int(11) UNSIGNED NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `img_id_1` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_2` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_3` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `time_posted` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `time_approved` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `count_views` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `questioner_user_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `answerer_user_id` int(11) UNSIGNED NOT NULL DEFAULT '0'
+  `questioner_user_id` int(11) UNSIGNED NOT NULL,
+  `answerer_user_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -126,13 +124,13 @@ CREATE TABLE `course_solution` (
 
 CREATE TABLE `event` (
   `id` int(11) UNSIGNED NOT NULL,
-  `event_category_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` mediumtext COLLATE utf8mb4_unicode_ci,
+  `event_category_id` int(11) UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `img_id_1` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_2` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `img_id_3` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `location_link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location_link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `registration_fee` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `publish_time` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `expiration_time` int(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -142,10 +140,10 @@ CREATE TABLE `event` (
   `count_views` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `count_comments` int(11) UNSIGNED NOT NULL DEFAULT '0',
   `sponsor_user_id` int(11) UNSIGNED NOT NULL,
-  `sponsor_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sponsor_wechat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sponsor_email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sponsor_telephone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `sponsor_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sponsor_wechat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sponsor_email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sponsor_telephone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -156,8 +154,8 @@ CREATE TABLE `event` (
 
 CREATE TABLE `event_category` (
   `id` int(11) UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `count_events` int(11) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -169,8 +167,8 @@ CREATE TABLE `event_category` (
 
 CREATE TABLE `event_participant` (
   `id` int(11) UNSIGNED NOT NULL,
-  `user_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `event_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `user_id` int(11) UNSIGNED NOT NULL,
+  `event_id` int(11) UNSIGNED NOT NULL,
   `register_time` int(11) UNSIGNED DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -182,9 +180,9 @@ CREATE TABLE `event_participant` (
 
 CREATE TABLE `transaction` (
   `id` int(11) UNSIGNED NOT NULL,
-  `user_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
-  `amount` int(11) NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL,
+  `amount` int(11) NOT NULL DEFAULT '0',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `time` int(11) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -209,14 +207,19 @@ ALTER TABLE `ad_category`
 -- Indexes for table `comment`
 --
 ALTER TABLE `comment`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sender_id` (`sender_id`),
+  ADD KEY `receiver_id` (`receiver_id`);
 
 --
 -- Indexes for table `course_question`
 --
 ALTER TABLE `course_question`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `answerer_user_id` (`answerer_user_id`);
+  ADD KEY `answerer_user_id` (`answerer_user_id`),
+  ADD KEY `course_code_id` (`course_code_id`),
+  ADD KEY `prof_id` (`prof_id`),
+  ADD KEY `questioner_user_id` (`questioner_user_id`);
 
 --
 -- Indexes for table `course_solution`
@@ -253,7 +256,8 @@ ALTER TABLE `event_participant`
 -- Indexes for table `transaction`
 --
 ALTER TABLE `transaction`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- 在导出的表使用AUTO_INCREMENT
@@ -263,37 +267,47 @@ ALTER TABLE `transaction`
 -- 使用表AUTO_INCREMENT `ad`
 --
 ALTER TABLE `ad`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 --
 -- 使用表AUTO_INCREMENT `ad_category`
 --
 ALTER TABLE `ad_category`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- 使用表AUTO_INCREMENT `comment`
 --
 ALTER TABLE `comment`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--
+-- 使用表AUTO_INCREMENT `course_question`
+--
+ALTER TABLE `course_question`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+--
+-- 使用表AUTO_INCREMENT `course_solution`
+--
+ALTER TABLE `course_solution`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 --
 -- 使用表AUTO_INCREMENT `event`
 --
 ALTER TABLE `event`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 --
 -- 使用表AUTO_INCREMENT `event_category`
 --
 ALTER TABLE `event_category`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- 使用表AUTO_INCREMENT `event_participant`
 --
 ALTER TABLE `event_participant`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- 使用表AUTO_INCREMENT `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 --
 -- 限制导出的表
 --
@@ -305,10 +319,19 @@ ALTER TABLE `ad`
   ADD CONSTRAINT `ad_ibfk_1` FOREIGN KEY (`ad_category_id`) REFERENCES `ad_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- 限制表 `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- 限制表 `course_question`
 --
 ALTER TABLE `course_question`
-  ADD CONSTRAINT `course_question_ibfk_1` FOREIGN KEY (`answerer_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `course_question_ibfk_2` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `course_question_ibfk_3` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `course_question_ibfk_4` FOREIGN KEY (`questioner_user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 限制表 `course_solution`
@@ -331,6 +354,12 @@ ALTER TABLE `event`
 ALTER TABLE `event_participant`
   ADD CONSTRAINT `event_participant_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `event_participant_ibfk_3` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- 限制表 `transaction`
+--
+ALTER TABLE `transaction`
+  ADD CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
