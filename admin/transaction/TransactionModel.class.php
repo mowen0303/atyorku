@@ -13,8 +13,8 @@ class TransactionModel extends Model
     function addTransaction($user_id, $amount, $description)
     {
         $arr["user_id"] = $user_id;
-        $arr["amount"] = $amount;
-        $arr["description"] = $description;
+        $arr["amount"] = $amount ? $amount : 0;
+        $arr["description"] = $description ? $description : "";
         $arr["time"] = time();
         return $this->addRow("transaction", $arr);
     }

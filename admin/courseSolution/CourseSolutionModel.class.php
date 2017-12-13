@@ -6,10 +6,10 @@ class CourseSolutionModel extends Model
 {
     function addSolution($question_id,$answerer_user_id,$description,$img_id_1,$img_id_2,$img_id_3){
         $arr["question_id"]=$question_id;
-        $arr["description"]=$description;
-        $arr["img_id_1"]=$img_id_1;
-        $arr["img_id_2"]=$img_id_2;
-        $arr["img_id_3"]=$img_id_3;
+        $arr["description"]=$description ? $description : "";
+        $arr["img_id_1"]=$img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"]=$img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"]=$img_id_3 ? $img_id_3 : 0;
         $arr["time_posted"] = time();
         $arr["time_approved"] = 0;
         $arr["questioner_user_id"] = $this->getRowById("course_question",$question_id)["questioner_user_id"];
@@ -26,10 +26,10 @@ class CourseSolutionModel extends Model
      * controller确保指定修改的答案并没有被采纳
      */
     function updateSolution($id,$description,$img_id_1,$img_id_2,$img_id_3){
-        $arr["description"] = $description;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
+        $arr["description"] = $description ? $description : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
         return $this->updateRowById("course_solution", $id,$arr);
     }
     /*

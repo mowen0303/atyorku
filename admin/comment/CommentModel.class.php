@@ -17,9 +17,9 @@ class CommentModel extends Model
         $arr["parent_id"] = $parent_id;
         $arr["sender_id"] = $sender_id;
         $arr["receiver_id"] = $receiver_id;
-        $arr["section_name"] = $section_name;
-        $arr["section_id"] = $section_id;
-        $arr["comment"] = $comment;
+        $arr["section_name"] = $section_name ? $section_name : "";
+        $arr["section_id"] = $section_id ? $section_id : 0;
+        $arr["comment"] = $comment ? $comment : "";
         $arr["time"] = time();
         $bool = $this->addRow("comment", $arr);
         if ($bool) {

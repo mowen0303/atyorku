@@ -10,15 +10,15 @@ class CourseQuestionModel extends Model
         $arr["course_code_id"] = $course_code_id;
         $arr["prof_id"] = $prof_id;
 
-        $arr["description"] = $description;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
+        $arr["description"] = $description ? $description : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
 
         $arr["time_posted"] = time();
         $arr["time_solved"] = 0;
 
-        $arr["reward_amount"] = $reward_amount;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         $arr["count_solutions"] = 0;
         $arr["count_views"] = 0;
 
@@ -38,17 +38,17 @@ class CourseQuestionModel extends Model
 
     function updateQuestion($id,$description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
-        $arr["description"] = $description;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["reward_amount"] = $reward_amount;
+        $arr["description"] = $description ? $description : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         return $this->updateRowById("course_question", $id,$arr);
     }
 
     function updateRewardAmount($id, $reward_amount)
     {
-        $arr["reward_amount"] = $reward_amount;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         return $this->updateRowById("course_question", $id,$arr);
     }
 
