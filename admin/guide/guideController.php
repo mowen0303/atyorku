@@ -153,29 +153,49 @@ function modifyGuide(){
     }
 }
 
+function updateGuide(){
+    global $guideModel;
+    global $userModel;
+    try {
+        $userModel->isUserHasAuthority('ADMIN') or BasicTool::throwException('无权操作');
+
+        $guideID = BasicTool::post('guide_id') or BasicTool::throwException("缺少Guide ID");
+        $guideClassID = BasicTool::post('guide_class_id', '所属指南组不能为空');
+        $title = BasicTool::post('title', '标题不能为空',100);
+        $content = $_POST['content'];
+        BasicTool::limitAmountOfText($content,65500);
+        $introduction = BasicTool::post('introduction',false,65535);
+        $cover = BasicTool::post('cover',false,60);
+        $order = BasicTool::post('guide_order',false,4);
+        $oldClassId = BasicTool::post('guide_class_old_id');
+        $userID = BasicTool::post('userID');
+
+        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order) or BasicTool::throwException($guideModel->errorMsg);
+        if( $oldClassId != null && $oldClassId != $guideClassID){
+            $guideModel->updateAmountOfArticleByClassId($guideClassID);
+            $guideModel->updateAmountOfArticleByClassId($oldClassId);
+        }
+
+        BasicTool::echoMessage("修改成功", "index.php?s=listGuide&guide_class_id=" . $guideClassID);
+
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(),-1);
+    }
+}
+
 
 function deleteGuide()
 {
-    //删除论坛信息
-
     global $guideModel;
     global $userModel;
 
     try {
-
-        $userModel->isAdmin && $userModel->isUserHasAuthority('GUIDE_ADD') or BasicTool::throwException("无权限修改");
-
-        $id = BasicTool::post('id');
+        $userModel->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权删除");
+        $ids = BasicTool::post('id');
         $classId = BasicTool::post('classId');
-
-        if ($guideModel->logicalDeleteByFieldIn('guide', 'id', $id)) {
-
-            $guideModel->updateAmountOfArticleByClassId($classId);
-
-            throw new Exception('操作成功');
-        } else {
-            throw new Exception('删除失败,数据未受影响');
-        }
+        $guideModel->deleteGuideByIDs($ids) or BasicTool::throwException($guideModel->errorMsg);
+        $guideModel->updateAmountOfArticleByClassId($classId);
+        BasicTool::echoMessage("删除成功", "index.php?s=listGuide&guide_class_id=" . $classId);
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
     }
@@ -264,17 +284,9 @@ function test(){
 function pushToAll(){
     global $userModel;
     try {
+        $userModel->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权限");
         $silent = BasicTool::get('silent');
-        if($silent == "silent"){
-            $silent = true;
-        }
-
-        if ($silent == true){
-            $userModel->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权限");
-        }else{
-            $userModel->isUserHasAuthority('GOD') or BasicTool::throwException("只有GOD权限可以推送");
-        }
-        
+        $silent = $silent == "silent" ? true : false;
         $title = BasicTool::get('title',"标题不能为空");
         $id =  BasicTool::get('guide_id',"ID不能为空");
         $userModel->pushMsgToAllUser("guide",$id,$title,$silent);

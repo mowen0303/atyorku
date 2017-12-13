@@ -342,6 +342,38 @@ class BasicTool
 
     }
 
+    /**
+     * 假设需要删除一个名叫"upload"的同级目录即此目录下的所有文件，你可以通过以下代码完成： delFile($_SERVER["DOCUMENT_ROOT"].'/uploads',true);
+     * 假设需要删除一个名叫"upload"目录下的所有文件（但无需删除目录文件夹），你可以通过以下代码完成：	delFile($_SERVER["DOCUMENT_ROOT"].'/uploads');
+     * @param $dirName
+     * @param bool $delSelf
+     * @return bool
+     */
+    public static function delFile($dirName,$delSelf=false){
+        if(file_exists($dirName) && $handle = opendir($dirName)){
+            while(false !==($item = readdir( $handle))){
+                if($item != '.' && $item != '..'){
+                    if(file_exists($dirName.'/'.$item) && is_dir($dirName.'/'.$item)){
+                        delFile($dirName.'/'.$item);
+                    }else{
+                        if(!unlink($dirName.'/'.$item)){
+                            return false;
+                        }
+                    }
+                }
+            }
+            closedir($handle);
+            if($delSelf){
+                if(!rmdir($dirName)){
+                    return false;
+                }
+            }
+        }else{
+            return false;
+        }
+        return true;
+    }
+
 
 }
 
