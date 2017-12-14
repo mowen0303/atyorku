@@ -71,87 +71,6 @@ function deleteGuideClass()
         BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
     }
 }
-function modifyGuide(){
-    //添加或修改论坛中的信息
-
-    global $guideModel;
-    global $userModel;
-    try {
-
-        $flag = BasicTool::post('flag');
-        $id = BasicTool::post('guide_id');
-
-        // if($flag == "add"){
-        //     setcookie("guide_order",BasicTool::post('guide_order'));
-        //     setcookie("cover",BasicTool::post('cover'));
-        //     setcookie("title",BasicTool::post('title'));
-        //     setcookie("introduction",BasicTool::post('introduction'));
-        //     setcookie("content",$_POST['content']);
-        //     setcookie("user_id",BasicTool::post('user_id'));
-        // }
-
-
-        $arr = array();
-        $arr['guide_order'] = BasicTool::post('guide_order',false,4);
-        if($arr['guide_order'] == null){
-            $arr['guide_order'] = 0;
-        }
-        $arr['cover'] = BasicTool::post('cover',false,60);
-        $arr['title'] = BasicTool::post('title', '标题不能为空',100);
-        $arr['introduction'] = BasicTool::post('introduction',false,65535);
-        $arr['content'] = $_POST['content'];
-        BasicTool::limitAmountOfText($arr['content'],65500);
-        $arr['time'] = BasicTool::post('time');
-        $arr['guide_class_id'] = BasicTool::post('guide_class_id', '所属指南组不能为空');
-        $arr['user_id'] = BasicTool:: post('id', '内容不能为空') + 0;
-        $arr['user_id'] != 0 or BasicTool::throwException("用户ID非法");
-
-        $oldClassId = BasicTool::post('guide_class_old_id');
-
-
-        if ($flag == 'add') {
-            $arr['time'] = time();
-            $userModel->isAdmin && $userModel->isUserHasAuthority('GUIDE_ADD') or BasicTool::throwException("无权限修改");
-            if ($guideModel->addRow('guide', $arr)) {
-
-                setcookie("guide_order","",time()-3600);
-                setcookie("cover","",time()-3600);
-                setcookie("title","",time()-3600);
-                setcookie("introduction","",time()-3600);
-                setcookie("content","",time()-3600);
-                setcookie("user_id","",time()-3600);
-
-                $guideModel->updateAmountOfArticleByClassId($arr['guide_class_id']);
-
-                BasicTool::echoMessage("新消息添加成功", "index.php?s=listGuide&guide_class_id=" . $arr['guide_class_id']);
-            } else {
-                throw new Exception("没有添加任何数据");
-            }
-        } elseif ($flag == 'update') {
-            $userModel->isAdmin && $userModel->isUserHasAuthority('GUIDE_UPDATE') or BasicTool::throwException("无权限修改");
-            if ($guideModel->updateRowById('guide', $id, $arr)) {
-
-                setcookie("guide_order","",time()-3600);
-                setcookie("cover","",time()-3600);
-                setcookie("title","",time()-3600);
-                setcookie("introduction","",time()-3600);
-                setcookie("content","",time()-3600);
-                setcookie("user_id","",time()-3600);
-
-                if( $oldClassId != null && $oldClassId != $arr['guide_class_id']){
-                    $guideModel->updateAmountOfArticleByClassId($arr['guide_class_id']);
-                    $guideModel->updateAmountOfArticleByClassId($oldClassId);
-                }
-                BasicTool::echoMessage("修改成功", "index.php?s=listGuide&guide_class_id=" . $arr['guide_class_id']);
-            } else {
-                throw new Exception("没有修改任何数据");
-            }
-        }
-
-    } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage(),-1);
-    }
-}
 
 function updateGuide(){
     global $guideModel;
@@ -163,7 +82,8 @@ function updateGuide(){
         $guideClassID = BasicTool::post('guide_class_id', '所属指南组不能为空');
         $title = BasicTool::post('title', '标题不能为空',100);
         $content = $_POST['content'];
-        BasicTool::limitAmountOfText($content,65500);
+        $contentLength = strlen($content);
+        $contentLength < 65500 or BasicTool::throwException("内容超出字符限制{$contentLength}/65500");
         $introduction = BasicTool::post('introduction',false,65535);
         $cover = BasicTool::post('cover',false,60);
         $order = BasicTool::post('guide_order',false,4);

@@ -77,6 +77,8 @@ function updateChildCourseCodeByParentId(id,cb) {
 }
 
 
+
+
 $(document).ready(function () {
     if ($("#courseCodeDiv").length > 0) {
         loadCourseCodeParentSelect($("#courseCodeDiv"));
