@@ -166,6 +166,10 @@ if($flag=='add'){
                     <label>邮箱</label>
                     <input type="email" name="sponsor_email" class="input input-size30" value="<?php echo $row['sponsor_email'] ?>">
                 </div>
+                <div>
+                    <label>顺序</label>
+                    <input class="input input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
+                </div>
             </div>
 
         </section>

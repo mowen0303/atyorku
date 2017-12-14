@@ -13,7 +13,7 @@ class AdModel extends Model
      * 添加一则广告
      * @return $bool
      */
-    public function addAd($title, $description, $sponsor_name, $img_id_1, $publish_time, $expiration_time, $ad_category_id, $ad_url)
+    public function addAd($title, $description, $sponsor_name, $img_id_1, $publish_time, $expiration_time, $ad_category_id, $ad_url,$sort)
     {
         $arr = [];
         $arr["title"] = $title ? $title : "";
@@ -25,6 +25,7 @@ class AdModel extends Model
         $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
         $arr["ad_url"] = $ad_url ? $ad_url : "";
         $arr["view_count"] = 0;
+        $arr["sort"] = $sort? $sort : 0;
         $bool = $this->addRow("ad", $arr);
         if ($bool) {
             $sql = "UPDATE ad_category SET ads_count = (SELECT COUNT(*) from ad WHERE ad_category_id = {$ad_category_id}) WHERE id = {$ad_category_id}";
@@ -41,13 +42,13 @@ class AdModel extends Model
         $currentTime = time();
 
         if ($flag == 1) {
-            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ";
-            $countSql = "SELECT COUNT(*) FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time";
+            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
+            $countSql = "SELECT COUNT(*) FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
         }
         else{
-            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time)";
-            $countSql = "SELECT count(*) FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time)";
+            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
+            $countSql = "SELECT count(*) FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
         }
     }
@@ -62,7 +63,7 @@ class AdModel extends Model
      * 更改一则广告
      * @return bool
      */
-    public function updateAd($id, $title, $description, $sponsor_name, $img_id_1, $publish_time,$expiration_time, $ad_category_id, $ad_url)
+    public function updateAd($id, $title, $description, $sponsor_name, $img_id_1, $publish_time,$expiration_time, $ad_category_id, $ad_url,$sort)
     {
         $arr = [];
         $arr["title"] = $title ? $title : "";
@@ -73,6 +74,7 @@ class AdModel extends Model
         $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
         $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
         $arr["ad_url"] = $ad_url ? $ad_url : "";
+        $arr["sort"] = $sort ? $sort : 0;
         $bool = $this->updateRowById("ad", $id, $arr);
         return $bool;
     }

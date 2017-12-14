@@ -129,6 +129,10 @@ else {
                 <label>广告链接</label>
                 <input class="input input-size30" type="text" name="ad_url" value="<?php echo $row['ad_url'] ?>">
             </div>
+            <div>
+                <label>顺序</label>
+                <input class="input input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
+            </div>
         </section>
         <label>广告投放时间<i>*</i></label>
         <input type="datetime-local" onchange="pub()" id="aa" style="margin-right:3rem"/>

@@ -42,7 +42,8 @@ else{
                         <th width="40px">浏览量</th>
                         <th width="80px">投放时间</th>
                         <th width="40px">有效至</th>
-                        <th width="200px">操作</th>
+                        <th width="40px">顺序</th>
+                        <th width="40px">操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -66,6 +67,7 @@ else{
                             <td><?php echo $row['view_count'] ?></td>
                             <td><?php echo date("Y-m-d",($row['publish_time']))?></td>
                             <td><?php echo date("Y-m-d",($row['expiration_time']))?></td>
+                            <td><?php echo $row["sort"] ?></td>
                             <td><a href="index.php?s=addAd&id=<?php echo $row["id"] ?>&ad_category_id=<?php echo $ad_category_id ?>&ad_category_title=<?php echo $ad_category_title?>">修改</a></td>
                         </tr>
                         <?php
