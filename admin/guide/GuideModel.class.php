@@ -137,12 +137,8 @@ class GuideModel extends Model
         $arr['introduction'] = $introduction ? $introduction : "";
         $arr['guide_order'] = $order ? $order : 0;
         $arr['cover'] = $cover ? $cover : "";
-        if ($this->updateRowById('guide', $guideID, $arr)) {
-            return true;
-        } else {
-            $this->errorMsg = "更新文章失败";
-            return false;
-        }
+        $this->updateRowById('guide', $guideID, $arr);
+        return true;
     }
 
     public function deleteGuideByIDs($id)

@@ -263,8 +263,13 @@ function uploadImgWithJson(){
 
     global $guideModel;
     try {
+        session_start();
+        $oldImg = BasicTool::post('oldImg');
+        $uploadDir =  $guideModel->uploadImg("imgFile",$_SESSION["ueditor_upload_location"]) or BasicTool::throwException($guideModel->errorMsg);
 
-       $uploadDir =  $guideModel->uploadImg("imgFile","guide/images") or BasicTool::throwException($guideModel->errorMsg);
+        if($oldImg && file_exists($_SERVER['DOCUMENT_ROOT'].$oldImg)){
+            unlink($_SERVER['DOCUMENT_ROOT'].$oldImg);
+        }
 
         BasicTool::echoJson(1, "上传成功", $uploadDir);
 
@@ -273,7 +278,6 @@ function uploadImgWithJson(){
         BasicTool::echoJson(0, $e->getMessage());
 
     }
-
 }
 
 function test(){

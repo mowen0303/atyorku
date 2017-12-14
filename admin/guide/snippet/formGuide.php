@@ -8,11 +8,11 @@ $flag = $guide_id == null ? 'add' : 'update';
 
 if ($flag == 'add') {
     $row = null;
-    $guide_id = $guideModel->addGuide($guide_class_id,'待编辑草稿...','','',$currentUser->userId,'',0);
+    $guide_id = $guideModel->addGuide($guide_class_id, '待编辑草稿...', '', '', $currentUser->userId, '', 0);
 } else {
     $row = $guideModel->getRowOfGuideById($guide_id);
 }
-$_SESSION["ueditor_upload_location"] = "guide2/".$guide_id;
+$_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
 ?>
 
 <script>
@@ -24,6 +24,7 @@ $_SESSION["ueditor_upload_location"] = "guide2/".$guide_id;
             var formData = new FormData();
             //append(name,value) - 相当于 <input name="imgFile" value="">
             formData.append('imgFile', $('#imgFile')[0].files[0]);
+            formData.append('oldImg', $('#imgOfUpload').attr("src"));
 
             $.ajax({
                 url: 'guideController.php?action=uploadImgWithJson',
@@ -66,6 +67,25 @@ $_SESSION["ueditor_upload_location"] = "guide2/".$guide_id;
         }
 
 
+
+        //保存
+        $saveBtn = $("#saveBtn");
+        $saveBtn.click(function(){
+            $.ajax({
+                url: 'guideController.php?action=updateGuide',
+                type: 'POST',
+                contentType:"application/x-www-form-urlencoded",
+                data: $("#guideForm").serialize()
+            }).done(function (data) {
+                $saveBtn.html("成功");
+                setTimeout(function(){
+                    $saveBtn.html("保存");
+                },1000)
+            }).fail(function (data) {
+                alert("保存失败");
+            });
+        })
+
     })
 
 </script>
@@ -78,69 +98,74 @@ $_SESSION["ueditor_upload_location"] = "guide2/".$guide_id;
 </header>
 
 <article class="mainBox">
-    <form action="guideController.php?action=updateGuide" method="post">
-        <input name="guide_class_old_id" value="<?php echo $row['guide_class_id'] ?>" type="hidden">
+    <a id="saveBtn" style="position: fixed; top:26px; right: 200px; height: 70px; width: 70px; border-radius: 70px; padding: 0; line-height: 70px" class="btn">保存</a>
+    <a style="position: fixed; top:26px; right: 100px; height: 70px; width: 70px; border-radius: 100px; padding: 0; line-height: 70px" class="btn" href="/apps/guide/index.php?guide_id=<?php echo $guide_id?>" target="_blank">预览</a>
+    <div style="max-width: 700px">
+        <form id="guideForm" action="guideController.php?action=updateGuide" method="post">
+            <input name="guide_class_old_id" value="<?php echo $row['guide_class_id'] ?>" type="hidden">
 
-        <section class="formBox">
-            <input name="flag" value="<?php echo $flag ?>" type="hidden">
-            <input name="time" value="<?php echo $row['time'] ?>" type="hidden">
-            <input name="guide_id" value="<?php echo $guide_id ?>" type="hidden">
-            <input name="guide_class_id" value="<?php echo $guide_class_id ?>" type="hidden">
-            <div>
-                <label>标题<i>*</i></label>
-                <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
-            </div>
-            <div>
-                <label>所属分类<i>*</i></label>
-                <select class="input input-select input-size50 selectDefault" name="guide_class_id"
-                        defvalue="<?php echo $row['guide_class_id'] ?>">
-                    <?php
-                    $arrOfClass = $guideModel->getListOfGuideClass(100);
-                    foreach ($arrOfClass as $rowOfClass) {
-                        echo "1111";
-                        echo '<option value="' . $rowOfClass['id'] . '">' . $rowOfClass['title'] . '</option>';
+            <section class="formBox">
 
-                    }
-                    ?>
-                </select>
-            </div>
-            <div>
-                <label>封面图片: 1000X500</label>
-                <input class="input input-size50" type="hidden" name="cover" id="cover"
-                       value="<?php echo $row['cover'] ?>">
-                <p><img id="imgOfUpload" src="<?php echo $row['cover'] ?>"
-                        style="width: 100px; height: auto; display: none"></p>
-                <input type="file" name="imgFile" id="imgFile"/><input type="button" value="上传" id="uploadImg">
-            </div>
-            <?php $guide_author = $currentUser->userId;
-            if ($flag != 'add') {
-                $guide_author = $row['user_id'];
-            } ?>
-            <div>
-                <label>正文</label>
-            </div>
-        </section>
-        <script id='container' name='content' type='text/plain'><?php echo $row['content'] ?></script>
-        <section class="formBox">
-            <div>
-                <label>简介</label>
-                <textarea class="input input-textarea" name="introduction"><?php echo $row['introduction'] ?></textarea>
-            </div>
-            <div>
-                <lable>作者ID</lable>
-                <input class="input input-size30" type="text" name="userID" value="<?php echo $guide_author ?>">
-                <label>当前用户信息:<?php echo "别名: {$currentUser->aliasName}. ID: {$currentUser->userId}" ?> </label>
-            </div>
-            <div>
-                <label>顺序</label>
-                <input class="input input-size30" type="text" name="guide_order"
-                       value="<?php echo $row['guide_order'] ?>">
-            </div>
-        </section>
-        <footer class="buttonBox">
-            <input type="submit" value="提交" class="btn">
-        </footer>
-    </form>
+                <input name="flag" value="<?php echo $flag ?>" type="hidden">
+                <input name="time" value="<?php echo $row['time'] ?>" type="hidden">
+                <input name="guide_id" value="<?php echo $guide_id ?>" type="hidden">
+                <input name="guide_class_id" value="<?php echo $guide_class_id ?>" type="hidden">
+                <div>
+                    <label>标题<i>*</i></label>
+                    <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
+                </div>
+                <div>
+                    <label>所属分类<i>*</i></label>
+                    <select class="input input-select input-size50 selectDefault" name="guide_class_id"
+                            defvalue="<?php echo $row['guide_class_id'] ?>">
+                        <?php
+                        $arrOfClass = $guideModel->getListOfGuideClass(100);
+                        foreach ($arrOfClass as $rowOfClass) {
+                            echo "1111";
+                            echo '<option value="' . $rowOfClass['id'] . '">' . $rowOfClass['title'] . '</option>';
+
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div>
+                    <label>封面图片: 1000X500</label>
+                    <input class="input input-size50" type="hidden" name="cover" id="cover"
+                           value="<?php echo $row['cover'] ?>">
+                    <p><img id="imgOfUpload" src="<?php echo $row['cover'] ?>"
+                            style="width: 100px; height: auto;"></p>
+                    <input type="file" name="imgFile" id="imgFile"/><input type="button" value="上传" id="uploadImg">
+                </div>
+                <div>
+                    <label>正文</label>
+                </div>
+            </section>
+            <script id='container' name='content' type='text/plain'><?php echo $row['content'] ?></script>
+            <p>&nbsp;</p>
+            <section class="formBox">
+                <div>
+                    <label>简介</label>
+                    <textarea class="input input-textarea"
+                              name="introduction"><?php echo $row['introduction'] ?></textarea>
+                </div>
+                <div>
+                    <label>作者ID</label>
+                    <input class="input input-size30" type="text" name="userID" value="<?php echo $row['user_id']?$row['user_id']:$currentUser->userId ?>"> 当前用户<?php echo ": {$currentUser->aliasName} (ID: {$currentUser->userId})" ?>
+                </div>
+                <div>
+                    <label>置顶顺序 (设置0取消置顶))</label>
+                    <input class="input input-size30" type="text" name="guide_order"
+                           value="<?php echo $row['guide_order'] ?>">
+                </div>
+            </section>
+
+
+            <footer class="buttonBox">
+                <input type="submit" value="完成" class="btn">
+            </footer>
+        </form>
+    </div>
 </article>
 <article class="mainBox">
     <xmp>
