@@ -13,11 +13,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
             <div id="courseCodeInputComponent">
                 <div>
                     <label>课程类别 (例如:ADMS)</label>
-                    <input id="parentInput" class="input" type="text">
+                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="parentCode" value="">
+                    <datalist id="parentCodeList"></datalist>
                 </div>
                 <div>
                     <label>课程代码 (例如:1000)</label>
-                    <input id="childInput" class="input" type="text">
+                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="childCode" value="">
+                    <datalist id="childCodeCodeList"></datalist>
                 </div>
             </div>
             <div id="professorInputComponent">
@@ -26,7 +28,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
                     <input class="input" type="text" list="professorList" name="professorName" />
                     <datalist id="professorList"></datalist>
                 </div>
-
             </div>
         </section>
     </article>
