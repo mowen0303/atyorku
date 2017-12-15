@@ -20,62 +20,60 @@ function loadCourseCodeParentSelect($obj) {
         type:"POST",
         processData: false,
         contentType: false,
-        dataType:"json",
-        success:function(json){
-            if (json.code == 1) {
-                var options = "";
-                json.result.forEach((obj)=>{
-                    options += `<option value="`+obj.id+`">`+obj.title+`</option>`;
-                })
-                $("#courseCodeParentSelect").append(options);
-                var parentId = $obj.attr("data-parent-id");
+        dataType:"json"
+    }).done(function(json){
+        if (json.code == 1) {
+            var options = "";
+            json.result.forEach((obj)=>{
+                options += `<option value="`+obj.id+`">`+obj.title+`</option>`;
+            })
+            $("#courseCodeParentSelect").append(options);
+            var parentId = $obj.attr("data-parent-id");
+            if (parentId != null) {
+                $("#courseCodeParentSelect").val(parentId);
+                $("#courseCodeChildDiv").show();
                 var childId = $obj.attr("data-child-id");
-                if (parentId != null && childId != null) {
-                    $("#courseCodeParentSelect").val(parentId);
-                    $("#courseCodeChildDiv").show();
-                    updateChildCourseCodeByParentId(parentId,(success)=>{
-                        if(success) {
-                            $('#courseCodeChildSelect').val(childId);
-                        }
-                    });
-
+                if (childId) {
+                    // first time launch, clean the data-child-id attr value.
+                    $obj.attr("data-child-id", undefined);
                 }
-            }else {
-                console.error("Fail to get parent course code data.");
+                updateChildCourseCodeByParentId(parentId, childId);
             }
+        }else {
+            console.error("Fail to get parent course code data.");
         }
-    });
+    }).fail(function(jqXHR){
+        console.error("Fail to get parent course code data. " + jqXHR);
+    })
 }
 
 /**
 * 通过科目父类ID加载科目子类列表
 * @param id 科目父类ID
-* @param cb callback function，true为成功，false为失败
+* @param childId 科目子类ID
 */
-function updateChildCourseCodeByParentId(id,cb) {
+function updateChildCourseCodeByParentId(id,childId="-1") {
     $('#courseCodeChildSelect').find('option:not(:first)').remove();
     $.ajax({
         url: "/admin/courseCode/courseCodeController.php?action=getListOfChildCourseCodeByParentIdWithJson&course_code_parent_id="+id,
         type:"POST",
         processData: false,
         contentType: false,
-        dataType:"json",
-        success:function(json){
-            if (json.code == 1) {
-                var options = "";
-                json.result.forEach((obj)=>{
-                    options += `<option value="`+obj.id+`">`+obj.title+`</option>`;
-                })
-                $("#courseCodeChildSelect").append(options);
-                cb(true);
-            }else {
-                console.error("Fail to get child course code data.");
-                cb(false);
-            }
+        dataType:"json"
+    }).done(function(json){
+        if (json.code == 1) {
+            var options = "";
+            json.result.forEach((obj)=>{
+                options += `<option value="`+obj.id+`">`+obj.title+`</option>`;
+            })
+            $("#courseCodeChildSelect").append(options).val(childId);
+        }else {
+            console.error("Fail to get child course code data.");
         }
+    }).fail(function(jqXHR){
+        console.error("Fail to get child course code data. " + jqXHR);
     });
 }
-
 
 $(document).ready(function () {
     if ($("#courseCodeDiv").length > 0) {
