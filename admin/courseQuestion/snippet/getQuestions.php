@@ -10,7 +10,7 @@ $prof_id = BasicTool::get("prof_id");
 $flag = BasicTool::get("flag");
 */
 $course_code_id = 543;
-$prof_id=12;
+$prof_id=1;
 $flag = 0;
 $course_code = $courseCodeModel->getCourseCodeById($course_code_id);
 if($flag == 0){
@@ -58,11 +58,10 @@ else{
                         <th>详情</th>
                         <th>图片</th>
                         <th>积分奖励</th>
-                        <th>阅读量</th>
                         <th>答案量</th>
+                        <th>阅读量</th>
                         <th>提问时间</th>
                         <th <?php echo $display_option_0 ?>>解决时间</th>
-                        <th <?php echo $display_option_1 ?>></th>
                         <th></th>
                     </tr>
                     </thead>
@@ -78,14 +77,13 @@ else{
                             <td><?php echo $questioner['alias']?></td>
                             <td><img width="36" height="36" src="<?php echo $questioner["img"]?>"></td>
                             <td><?php echo $question['description']?></td>
-                            <td><img width="200" height="100" src="<?php echo $img?>"></td>
+                            <td><a href="/admin/courseSolution/index.php?s=getSolutions&question_id=<?php echo $question["id"]?>"><img width="200" height="100" src="<?php echo $img?>"></a></td>
                             <td><?php echo $question['reward_amount']?></a></td>
                             <td><?php echo $question['count_solutions'] ?></td>
                             <td><?php echo $question['count_views'] ?></td>
-                            <td><?php echo $question['time_posted']?></td>
-                            <td <?php echo $display_option_0 ?>><?php echo $question['time_solved']?></td>
-                            <td <?php echo $display_option_1 ?>><a href="/admin/courseQuestion/index.php?s=updateRewardAmount&question_id=<?php echo $question["id"]?>">更改积分</a></td>
-                            <td><a href="/admin/courseSolution/index.php?s=getSolutions&question_id=<?php echo $question['id'] ?>">查看</a></td>
+                            <td><?php echo BasicTool::translateTime($question['time_posted'])?></td>
+                            <td <?php echo $display_option_0 ?>><?php echo BasicTool::translateTime($question['time_solved'])?></td>
+                            <td><a href="/admin/courseQuestion/index.php?s=addQuestion&question_id=<?php echo $question['id'] ?>&course_code_id=<?php echo $course_code_id.$p ?>">更改</a></td>
                         </tr>
                         <?php
                     }
@@ -99,10 +97,3 @@ else{
             </footer>
         </form>
     </article>
-<?php
-/**
- * Created by PhpStorm.
- * User: XIN
- * Date: 2017/9/5
- * Time: 3:40
- */

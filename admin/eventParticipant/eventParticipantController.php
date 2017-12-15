@@ -1,12 +1,13 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $eventParticipantModel = new admin\eventParticipant\EventParticipantModel();
+$eventModel = new admin\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
 
 function addEventParticipant(){
-    global $eventParticipantModel;
+    global $eventParticipantModel,$eventModel;
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,添加失败");
@@ -14,6 +15,9 @@ function addEventParticipant(){
         $user_id = BasicTool::post("user_id", "specify user_id");
         $currentUser->getProfileOfUserById($user_id) or BasicTool::throwException("用户ID不存在");
         $event_id = BasicTool::post("event_id", "specify event_id");
+        $event = $eventModel->getEvent($event_id);
+        $event or BasicTool::throwException("活动不存在");
+        ($event["max_participants"] > $event["count_participants"]) or BasicTool::throwException("添加失败,名额已满");
         $bool = $eventParticipantModel->addEventParticipant($event_id, $user_id);
 
         if ($bool)
@@ -28,13 +32,16 @@ function addEventParticipant(){
 }
 
 function addEventParticipantWithJson(){
-    global $eventParticipantModel;
+    global $eventParticipantModel,$eventModel;
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority("EVENT") or BasicTool::throwException("权限不足,添加失败");
 
         $user_id = $currentUser->userId;
         $event_id = BasicTool::post("event_id","specify event_id");
+        $event = $eventModel->getEvent($event_id);
+        $event or BasicTool::throwException("活动不存在");
+        ($event["max_participants"] > $event["count_participants"]) or BasicTool::throwException("添加失败,名额已满");
         $bool = $eventParticipantModel->addEventParticipant($event_id,$user_id);
 
         if ($bool)

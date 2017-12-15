@@ -347,8 +347,6 @@ function modifyForum($echoType = "normal") {
             $arr['update_time'] = time();
             //上传图片 --------
             $arr["img1"] = $currentUser->uploadImg("img1", $currentUser->userId) or BasicTool::throwException($currentUser->errorMsg);
-            //限制输入字符数量
-            BasicTool::limitAmountOfText($arr['img1'], 80);
             //增加一个新信息
             $arr['user_id'] = $currentUser->userId;
             if ($forumModel->addRow('forum', $arr)) {

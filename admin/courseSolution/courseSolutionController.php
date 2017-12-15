@@ -2,13 +2,15 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $questionModel = new \admin\courseQuestion\CourseQuestionModel();
 $solutionModel = new \admin\courseSolution\CourseSolutionModel();
+$currentUser = new \admin\user\UserModel();
+$imageModel = new \admin\image\ImageModel();
 call_user_func(BasicTool::get('action'));
 
 function addSolution($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
         //权限验证
-        ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) || $currentUser->isUserHasAuthority("COURSE_SOLUTION") or BasicTool::throwException("权限不足");
+        ($currentUser->isUserHasAuthority("ADMIN") ||  $currentUser->isUserHasAuthority("COURSE_SOLUTION")) or BasicTool::throwException("权限不足");
 
         $question_id= BasicTool::post("question_id","missing q_id");
         $answerer_user_id = $currentUser->userId;
@@ -21,9 +23,9 @@ function addSolution($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("添加成功");
+                BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
             else
-                BasicTool::echoMessage("添加失败");
+                BasicTool::echoMessage("添加失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
         }
         else {
             if ($bool){
@@ -54,8 +56,8 @@ function updateSolution($echoType = "normal"){
     try{
         $id= BasicTool::post("id","missing id");
         $description = BasicTool::post("description","Missing Description");
-
         $solution = $solutionModel->getSolutionById($id);
+        $solution["time_approved"] == 0 or BasicTool::throwException("更改失败,答案已被采纳");
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = array($solution["img_id_1"],$solution["img_id_2"],$solution["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
@@ -64,9 +66,9 @@ function updateSolution($echoType = "normal"){
 
         if ($echoType == "normal") {
             if ($bool)
-                BasicTool::echoMessage("更改成功");
+                BasicTool::echoMessage("更改成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
             else
-                BasicTool::echoMessage("更改失败");
+                BasicTool::echoMessage("更改失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
         }
         else {
             if ($bool){
@@ -92,7 +94,7 @@ function updateSolutionWithJson(){
 }
 function getApprovedSolutionByQuestionIdWithJson(){
     global $solutionModel;
-    $question_id = BasicTool::get("question_id");
+    $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getApprovedSolutionByQuestionId($question_id);
     if ($result)
         BasicTool::echoJson(1,"查询成功",$result);
@@ -101,7 +103,7 @@ function getApprovedSolutionByQuestionIdWithJson(){
 }
 function getSolutionsByQuestionIdWithJson(){
     global $solutionModel;
-    $question_id = BasicTool::get("question_id");
+    $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getSolutionsByQuestionId($question_id);
     if ($result)
         BasicTool::echoJson(1,"查询成功",$result);
@@ -114,7 +116,7 @@ function getSolutionsByQuestionIdWithJson(){
 function deleteSolutionById($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
-        $id = BasicTool::post("id");
+        $id = BasicTool::post("id","Missing id");
         $is_solution_approved = false;
         $img_ids = array();
 

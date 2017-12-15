@@ -13,29 +13,30 @@ class EventModel extends Model
      * @return $bool
      */
     public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
+                             $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["expiration_time"] = $expiration_time;
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
+        $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
         $arr["publish_time"] = time();
-        $arr["event_time"] = $event_time;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["location_link"] = $location_link;
-        $arr["registration_fee"] = $registration_fee;
-        $arr["max_participants"]=$max_participants;
+        $arr["event_time"] = $event_time ? $event_time : 0;
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["location_link"] = $location_link ? $location_link : "";
+        $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
+        $arr["max_participants"]=$max_participants ? $max_participants : 0;
         $arr["count_participants"] = 0;
         $arr["count_views"] = 0;
         $arr["count_comments"] = 0;
         $arr["sponsor_user_id"] = $sponsor_user_id;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["sponsor_telephone"] = $sponsor_telephone;
-        $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_email"] = $sponsor_email;
+        $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
+        $arr["sponsor_telephone"] = $sponsor_telephone ? $sponsor_telephone : "";
+        $arr["sponsor_wechat"] = $sponsor_wechat ? $sponsor_wechat : "";
+        $arr["sponsor_email"] = $sponsor_email?$sponsor_email:"";
+        $arr["sort"] = $sort ? $sort : 0;
         $bool = $this->addRow("event", $arr);
         if ($bool) {
             $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
@@ -61,13 +62,13 @@ class EventModel extends Model
         $currentTime = time();
 
         if ($flag == 1) {
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ";
-            $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time";
+            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
+            $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }
         else{
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time)";
-            $countSql = "SELECT count(*) FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time)";
+            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
+            $countSql = "SELECT count(*) FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }
     }
@@ -78,25 +79,26 @@ class EventModel extends Model
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
-                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone)
+                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
-        $arr["title"] = $title;
-        $arr["description"] = $description;
-        $arr["expiration_time"] = $expiration_time;
-        $arr["event_time"] = $event_time;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["location_link"] = $location_link;
-        $arr["registration_fee"] = $registration_fee;
-        $arr["max_participants"]=$max_participants;
+        $arr["title"] = $title ? $title : "";
+        $arr["description"] = $description ? $description : "";
+        $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
+        $arr["event_time"] = $event_time ? $event_time : 0;
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["location_link"] = $location_link ? $location_link : "";
+        $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
+        $arr["max_participants"]=$max_participants ? $max_participants : 0;
         $arr["sponsor_user_id"] = $sponsor_user_id;
-        $arr["sponsor_name"] = $sponsor_name;
-        $arr["sponsor_telephone"] = $sponsor_telephone;
-        $arr["sponsor_wechat"] = $sponsor_wechat;
-        $arr["sponsor_email"] = $sponsor_email;
+        $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
+        $arr["sponsor_telephone"] = $sponsor_telephone ? $sponsor_telephone : "";
+        $arr["sponsor_wechat"] = $sponsor_wechat ? $sponsor_wechat : "";
+        $arr["sponsor_email"] = $sponsor_email ? $sponsor_email : "";
+        $arr["sort"] = $sort ? $sort : 0;
         $bool = $this->updateRowById("event", $id, $arr);
         if ($bool) {
             $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";

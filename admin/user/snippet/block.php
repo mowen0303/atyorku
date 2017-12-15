@@ -3,10 +3,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_header.html";
 
 $currentUser = new \admin\user\UserModel();
-if(!$userModel->isAdminLogin()){
-    $userModel->logOut();
-    BasicTool::jumpTo('/admin/login/');
-}
 $currentUser->isUserHasAuthority('ADMIN') or BasicTool::echoMessage("权限不足");
 $uid = BasicTool::get('userId','UID不能为空');
 $row = $currentUser->getProfileOfUserById($uid);

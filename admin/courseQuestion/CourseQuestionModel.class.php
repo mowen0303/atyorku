@@ -10,15 +10,15 @@ class CourseQuestionModel extends Model
         $arr["course_code_id"] = $course_code_id;
         $arr["prof_id"] = $prof_id;
 
-        $arr["description"] = $description;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
+        $arr["description"] = $description ? $description : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
 
         $arr["time_posted"] = time();
         $arr["time_solved"] = 0;
 
-        $arr["reward_amount"] = $reward_amount;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         $arr["count_solutions"] = 0;
         $arr["count_views"] = 0;
 
@@ -38,17 +38,17 @@ class CourseQuestionModel extends Model
 
     function updateQuestion($id,$description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
-        $arr["description"] = $description;
-        $arr["img_id_1"] = $img_id_1;
-        $arr["img_id_2"] = $img_id_2;
-        $arr["img_id_3"] = $img_id_3;
-        $arr["reward_amount"] = $reward_amount;
+        $arr["description"] = $description ? $description : "";
+        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
+        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
+        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         return $this->updateRowById("course_question", $id,$arr);
     }
 
     function updateRewardAmount($id, $reward_amount)
     {
-        $arr["reward_amount"] = $reward_amount;
+        $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         return $this->updateRowById("course_question", $id,$arr);
     }
 
@@ -131,18 +131,17 @@ class CourseQuestionModel extends Model
         $course_code_id = $question["course_code_id"];
         $prof_id = $question["prof_id"];
         $answerer_user_id = $this->getRowById("course_solution",$solution_id)["answerer_user_id"];
-        $sql = "UPDATE course_question SET answerer_user_id = {$answerer_user_id},time_solved={$time},solution_id = {$solution_id} WHERE id = {$id};
-                UPDATE course_solution SET time_approved = {$time} WHERE id = {$solution_id}";
-        $result = $this->sqltool->mysqli->multi_query($sql);
+        $sql = "UPDATE course_question SET answerer_user_id = {$answerer_user_id},time_solved={$time},solution_id = {$solution_id} WHERE id = {$id}";
+        $this->sqltool->query($sql);
+        $sql = "UPDATE course_solution SET time_approved = {$time} WHERE id = {$solution_id}";
+        $result = $this->sqltool->query($sql);
         if($result) {
             $sql = "UPDATE course_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id =0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id}";
             $this->sqltool->query($sql);
             $sql = "UPDATE course_prof_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id} AND solution_id=0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND prof_id={$prof_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id}";
-            $this->sqltool->query($sql);
-            return true;
+            $result = $this->sqltool->query($sql);
         }
-        else
-            return false;
+        return $result;
     }
     function getInsertId(){
         return $this->sqltool->getInsertId();

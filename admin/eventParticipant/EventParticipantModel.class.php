@@ -19,13 +19,8 @@ class EventParticipantModel extends Model
         $arr["event_id"] = $event_id;
         $arr["user_id"] = $user_id;
         $arr["register_time"] = time();
-        $sql = "SELECT max_participants,count_participants FROM event WHERE id={$event_id}";
-        $result = $this->sqltool->getRowBySql($sql);
-        $count_participants = $result["count_participants"];
-        $max_participants = $result["max_participants"];
-        if ($count_participants > $max_participants)
-            {return false;}
-
+        $sql = "SELECT * FROM event_participant WHERE user_id = {$user_id}";
+        !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("参与失败,该用户已参与");
         $bool = $this->addRow("event_participant", $arr);
         if ($bool) {
             $sql = "UPDATE event SET count_participants = (SELECT COUNT(*) from event_participant WHERE event_id = {$event_id}) WHERE id = {$event_id}";

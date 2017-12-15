@@ -47,6 +47,7 @@ else{
                         <th>过期时间</th>
                         <th>评论量</th>
                         <th>阅读量</th>
+                        <th>顺序</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -69,6 +70,7 @@ else{
                             <td><?php echo date("Y-m-d",$row['expiration_time'])?></td>
                             <td><?php echo $row['count_comments']?></td>
                             <td><?php echo $row['count_views']?></td>
+                            <td><?php echo $row["sort"]?></td>
                             <td><a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
                         </tr>
                         <?php

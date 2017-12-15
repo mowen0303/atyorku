@@ -42,6 +42,42 @@ class ProfessorModel extends Model
         }
     }
 
+    /**
+     * 根据教授full name获取教授的id
+     * @param $fullName
+     * @return int 若教输入的不是full name则返回0
+     */
+    public function getProfessorIdByFullName($fullName){
+        $fullName = explode(" ",$fullName);
+        $firstName = $fullName[0];
+        $middleName = "";
+        $lastName = "";
+        $nameSize = count($fullName);
+        if($nameSize==1){
+            $this->errorMsg = "请输入完整的名称, first name 与 last name之间用空格隔开";
+            return 0;
+        } else if($nameSize==2){
+            $lastName = $fullName[1];
+            $sql = "SELECT * FROM professor WHERE firstname = '{$firstName}' AND lastname = '{$lastName}'";
+        }else if($nameSize==3){
+            $middleName = $fullName[1];
+            $lastName = $fullName[2];
+            $sql = "SELECT * FROM professor WHERE firstname = '{$firstName}' AND middlename='{$middleName}' AND lastname = '{$lastName}'";
+        }
+
+        $row = $this->sqltool->getRowBySql($sql);
+        $professorId = intval($row['id']);
+
+        //如果没有此教授, 则添加,并返回id
+        if($professorId==0){
+            $this->addProfessor($firstName,$lastName,$middleName);
+            $professorId = intval($this->sqltool->getInsertId());
+        }
+
+        return $professorId;
+
+    }
+
 
     /**
     * 添加一个 professor

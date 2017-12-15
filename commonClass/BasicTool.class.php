@@ -234,52 +234,6 @@ class BasicTool
         throw new Exception($message, $code);
     }
 
-    /**
-     * @param $amount
-     * @throws Exception
-     */
-    public static function limitAmountOfText($str, $amount)
-    {
-        //--
-        $r = strlen($str);
-        if ($amount && $r > $amount) {
-            throw new Exception("输入字节超出限制:{$r}/{$amount}");
-        }
-        //--
-    }
-
-
-//    public static function mailTo($mailAddress,$mailTitle,$mailBody){
-//        require_once $_SERVER['DOCUMENT_ROOT']."/admin/resource/tools/email/class.phpmailer.php";
-//        $mail = new PHPMailer(); //建立邮件发送类
-//        $mail->CharSet = "UTF-8";                             // 设置邮件编码
-//        $mail->setLanguage('zh_cn');                          // 设置错误中文提示
-//
-//        //配置邮局GODADDY
-//        $mail->IsSMTP();                        // 使用SMTP方式发送
-//        $mail->Host = "smtpout.secureserver.net";          // 您的企业邮局域名
-//        $mail->SMTPAuth = true;                 // 启用SMTP验证功能
-//        $mail->Username = "support@atyorku.ca"; // 邮局用户名(请填写完整的email地址)
-//        $mail->Password = "miss0226";          // 邮局密码
-//        $mail->SMTPSecure = 'SSL';
-//        $mail->Port=80;                        //发送端口
-//        $mail->From = "support@atyorku.ca";     //邮件发送者email地址
-//        $mail->FromName = "AtYorkU Support";
-//
-//        //配置邮件内容
-//        $mail->AddAddress($mailAddress, "");    //收件人email,收件人姓名
-//        $mail->IsHTML(true);                    //是否使用HTML格式
-//        $mail->Subject = $mailTitle;            //邮件标题
-//        $mail->Body =  $mailBody;               //邮件内容
-//
-//        //$mail->AltBody = "This is the body in plain text for non-HTML mail clients"; //附加信息，可以省略
-//
-//        if($mail->Send()) {
-//            return true;
-//        }
-//        return false;
-//    }
-
     public static function mailTo($mailAddress, $mailTitle, $mailBody, $index = 1)
     {
 
@@ -340,6 +294,39 @@ class BasicTool
         }
         return date('Y', $timeStaple) . "级";
 
+    }
+
+    /**
+     * 假设需要删除一个名叫"upload"的同级目录即此目录下的所有文件，你可以通过以下代码完成： delFile($_SERVER["DOCUMENT_ROOT"].'/uploads',true);
+     * 假设需要删除一个名叫"upload"目录下的所有文件（但无需删除目录文件夹），你可以通过以下代码完成：    delFile($_SERVER["DOCUMENT_ROOT"].'/uploads');
+     * @param $dirName
+     * @param bool $delSelf
+     * @return bool
+     */
+    public static function delFile($dirName, $delSelf = false)
+    {
+        if (file_exists($dirName) && $handle = opendir($dirName)) {
+            while (false !== ($item = readdir($handle))) {
+                if ($item != '.' && $item != '..') {
+                    if (file_exists($dirName . '/' . $item) && is_dir($dirName . '/' . $item)) {
+                        delFile($dirName . '/' . $item);
+                    } else {
+                        if (!unlink($dirName . '/' . $item)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            closedir($handle);
+            if ($delSelf) {
+                if (!rmdir($dirName)) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
 

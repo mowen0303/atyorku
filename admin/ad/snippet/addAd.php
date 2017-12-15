@@ -15,11 +15,9 @@ if($flag=='add'){
 
 }
 
- else {
+else {
     $row = $adModel->getAd($id);
      $img1 = $row["img_id_1"];
-     $img2 = $row["img_id_2"];
-     $img3 = $row["img_id_3"];
      $publish_time = $row["publish_time"];
      $expiration_time = $row["expiration_time"];
      $form_action = "/admin/ad/adController.php?action=updateAd";
@@ -104,25 +102,18 @@ if($flag=='add'){
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
-            <label>活动图片: 最多上传3张</label>
             <div id="currentImages">
+                <label style="margin-top:1.5rem">广告封面: 最多上传1张</label>
                 <div id="currentImages">
                     <?php
                     if ($img1) {
                         echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img1)["url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id_1' value='{$img1}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
                     }
-                    if ($img2) {
-                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic2' src='{$imageModel->getImageById($img2)["url"]}' style='width: 100px; height: auto;'><input id='img2' name='img_id_2' value='{$img2}' style='display: none'></div><div><input type='button' id='imgbtn2' value='删除' onclick='removeImg(2);'></div></div>";
-                    }
-                    if ($img3) {
-                        echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic3' src='{$imageModel->getImageById($img3)["url"]}' style='width: 100px; height: auto;'><input id='img3' name='img_id_3' value='{$img3}' style='display: none'></div><div><input type='button' id='imgbtn3' value='删除' onclick='removeImg(3);'></div></div>";
-                    }
                     ?>
                 </div>
-                <p><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
+                <p style="margin-bottom:1rem"><img  id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                 <input type="file" name="imgFile[]" id="imgFile" multiple/>
             </div>
-
 
 
             <div>
@@ -138,6 +129,10 @@ if($flag=='add'){
                 <label>广告链接</label>
                 <input class="input input-size30" type="text" name="ad_url" value="<?php echo $row['ad_url'] ?>">
             </div>
+            <div>
+                <label>顺序</label>
+                <input class="input input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
+            </div>
         </section>
         <label>广告投放时间<i>*</i></label>
         <input type="datetime-local" onchange="pub()" id="aa" style="margin-right:3rem"/>
@@ -145,8 +140,8 @@ if($flag=='add'){
         <label>广告有效至<i>*</i></label>
         <input type="datetime-local" onchange="exp()"  id="bb"/>
 
-        <input type="number" name="publish_time" id="publish_time" value="<?php echo $row["publish_time"] ?>" hidden/>
-        <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $row["expiration_time"] ?>" hidden/>
+        <input type="number" name="publish_time" id="publish_time" value="<?php echo $publish_time ?>" hidden/>
+        <input type="number" name="expiration_time" id="expiration_time" value="<?php echo $expiration_time ?>" hidden/>
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">
         </footer>
