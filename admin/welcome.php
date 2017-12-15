@@ -7,16 +7,44 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
 
     <article class="mainBox">
         <header>
+            <h2>功能组件</h2>
+        </header>
+        <section class="formBox">
+            <div id="courseCodeInputComponent">
+                <div>
+                    <label>课程类别 (例如:ADMS)</label>
+                    <input id="parentInput" class="input" type="text">
+                </div>
+                <div>
+                    <label>课程代码 (例如:1000)</label>
+                    <input id="childInput" class="input" type="text">
+                </div>
+            </div>
+            <div id="professorInputComponent">
+                <div>
+                    <label>教授</label>
+                    <input class="input" type="text" list="professorList" name="professorName" />
+                    <datalist id="professorList"></datalist>
+                </div>
+
+            </div>
+        </section>
+    </article>
+
+    <article class="mainBox">
+        <header>
             <h2>安全手册 - 用户权限配置参考列表</h2>
         </header>
         <section>
-            <p>判断用户权限: $currentUser->isUserHasAuthority('FORUM_ADD') or BasicTool::throwException($currentUser->errorMsg);</p>
-            <p>判断管理员权限: $currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE');</p>
+            <p>判断用户权限: $currentUser->isUserHasAuthority('FORUM_ADD') or
+                BasicTool::throwException($currentUser->errorMsg);</p>
+            <p>判断管理员权限: $currentUser->isUserHasAuthority('ADMIN') &&
+                $currentUser->isUserHasAuthority('FORUM_DELETE');</p>
             <?php
             global $_AUT;
-            foreach($_AUT as $k=>$v){
+            foreach ($_AUT as $k => $v) {
                 ?>
-                <P><input name="authority[]" type="checkbox"><?php echo $k?></P>
+                <P><input name="authority[]" type="checkbox"><?php echo $k ?></P>
                 <?php
             }
             ?>
@@ -157,7 +185,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
                 <tr>
                     <td>echoMessage()</td>
                     <td>输出一个提示页</td>
-                    <td>BasicTool::echoMessage("操作成功", "/admin/administrator/");<br>BasicTool::echoMessage("操作成功", "/admin/administrator/");</td>
+                    <td>BasicTool::echoMessage("操作成功", "/admin/administrator/");<br>BasicTool::echoMessage("操作成功",
+                        "/admin/administrator/");
+                    </td>
                 </tr>
                 <tr>
                     <td>jumpTo()</td>
@@ -314,7 +344,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
                 </div>
                 <div>
                     <label>文本框_密码</label>
-                    <input class="input"  placeholder="占位符" type="password" name="" value="">
+                    <input class="input" placeholder="占位符" type="password" name="" value="">
                 </div>
                 <div>
                     <label>文本框_邮箱</label>
@@ -329,7 +359,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
                 </div>
                 <div>
                     <label>文本域</label>
-                    <textarea class="input input-textarea" placeholder="占位符"  name="" value=""></textarea>
+                    <textarea class="input input-textarea" placeholder="占位符" name="" value=""></textarea>
                 </div>
                 <div>
                     <input class="btn btn-center" type="submit" title="提交" value="提交">
