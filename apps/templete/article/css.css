@@ -6,7 +6,7 @@ body { color: #555; /* letter-spacing: 0.02em*/; margin: 1em}
 a { color:  #c91448}
 h1,h2,h3,h4,h5,h6 { font-weight: normal}
 h3,h4,h5,h6 { margin-top:2em}
-h1{font-size:1.6em; color: #2a2a2a; padding: 1em 0 10px 0;line-height:1.6em}
+h1{font-size:1.6em; color: #2a2a2a;line-height:1.6em}
 h2{font-size:1.2em; display:block; background:#c83c46; color: #fff; text-align: center; padding: 0.6em; line-height: 1.2em; margin-top:3em; margin-bottom: 1.5em; position: relative; border-radius: 6px}
 h2 em { position:absolute; display: block; width: 10px; height:10px; transform: rotate(45deg); background: #c83c46; bottom: -5px; left: 50%; margin-left:-5px}
 /*h3{font-size:1.2em; line-height: 1.8em; font-weight: bold; margin-left: 25px; margin-right: 25px; border-left: 4px solid #c83c46;border-right: 4px solid #c91448; padding-left: 4px;padding-right: 4px; background: #efefef; text-align: center; font-weight: normal; margin-top: 3em}*/
@@ -23,6 +23,7 @@ a:hover{text-decoration:underline}
 img{border:0;}
 button,input,select,textarea{font-size:1em}
 table{border-collapse:collapse;border-spacing:0}
+section.context { padding-top:0.4em}
 
 /*p { text-align: justify}*/
 
@@ -93,7 +94,7 @@ blockquote header {font-weight: bold;  font-size: 1.4em;  text-align: center;  p
 #coverImgBox { width: 100%;}
 
 
-.authorHead {position: absolute; left: 30px; top: 0; width: 45px; height:45px; border-radius: 45px; border:2px solid #eee;text-align: center; overflow: hidden; background-color:#efefef; background-size: 100% auto; background-position: center; margin-bottom:10px}
+.authorHead {position: absolute; left: 0px; top: -8px; width: 45px; height:45px; border-radius: 45px; border:2px solid #eee;text-align: center; overflow: hidden; background-color:#efefef; background-size: 100% auto; background-position: center; margin-bottom:10px}
 
 .viewBox { text-align: center; }
 
@@ -112,7 +113,7 @@ blockquote header {font-weight: bold;  font-size: 1.4em;  text-align: center;  p
 .imgDescribe { text-align: center; margin-top: -1.5em }
 
 .authorBox {position: relative;}
-.authorBox address {  padding: 0; padding-left: 90px }
+.authorBox address {  padding: 0; padding-left: 70px; line-height: 18px}
 .authorBox address span { margin: 0; padding: 0; }
 .readBox { text-align: center;  font-size: 0.8em; color:#8a8a8a;}
 

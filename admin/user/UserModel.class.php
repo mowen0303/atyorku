@@ -890,7 +890,6 @@ class UserModel extends Model
     {
         return self::updateRowById('user', $this->userId, ['pwd' => $val]);
     }
-
 }
 
 

@@ -807,11 +807,8 @@ function updateDegreeWithJson() {
  * @param newPassword : string
  * return json
  */
-
 function updatePasswordWithJson() {
-
     global $currentUser;
-
     try{
         $oldPassword = BasicTool::post('oldPassword',false);
         $newPassword = BasicTool::post('newPassword',false);
@@ -823,6 +820,4 @@ function updatePasswordWithJson() {
         BasicTool::echoJson(0,$e->getMessage());
     }
 }
-
-
 ?>

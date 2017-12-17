@@ -61,7 +61,7 @@ if(BasicTool::get(share) != 1) {
     <address>文章作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span><br>最后更新：<data><?php echo BasicTool::translateTime($arr['time'])?></data></address>
     </div>
     <hr>
-    <section>
+    <section class="context">
         <?php echo $arr['content'];?>
     </section>
     <p>&nbsp;</p>
