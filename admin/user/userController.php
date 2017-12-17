@@ -4,81 +4,6 @@ $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
 
-//管理员->添加或修改一个用户
-function modify()
-{
-
-    global $currentUser;
-
-    try {
-        //判断当前用户是否有"用户修改","用户添加"权限
-        $currentUser->isUserHasAuthority('USER_UPDATE') && $currentUser->isUserHasAuthority('USER_ADD') or BasicTool::throwException($currentUser->errorMsg);
-
-
-        $flag = BasicTool::post('flag');
-
-        $arr = [];
-        $arr['alias'] = BasicTool::post('alias', false, 28);
-        $arr['user_class_id'] = BasicTool::post('user_class_id', '所属用户组不能为空');
-        $arr['gender'] = BasicTool::post('gender', '性别不能为空');
-        $arr['blocktime'] = BasicTool::post('blocktime') == null ? "0" : BasicTool::post('blocktime');
-        //$arr['setblocktime'] = BasicTool::post('setblocktime');
-        $arr['blockreason'] = BasicTool::post('blockreason', false, 70);
-        $arr['img'] = BasicTool::post('img');
-        $arr['major'] = BasicTool::post('major', false, 30);
-        $arr['enroll_year'] = strtotime(BasicTool::post('enroll_year', false, 30));
-        $arr['description'] = BasicTool::post('description', false, 90);
-        $arr['wechat'] = BasicTool::post('wechat', false, 40);
-
-
-        if ($flag == 'add') {
-            //增加一个新用户
-            $arr['name'] = BasicTool::post('name', '用户名不能为空', 80);
-            if ($currentUser->isExistByFieldValue('user', 'name', $arr['name'])) {
-                throw new Exception('用户名邮箱已存在');
-            }
-            $pwd = BasicTool::post('pwd', '密码不能为空');
-            $arr['pwd'] = md5($pwd);
-            $arr['registertime'] = time();
-
-            $currentUser->addRow('user', $arr) or BasicTool::throwException($currentUser->errorMsg);
-            BasicTool::echoMessage("新用户 {$arr['name']} 添加成功", "index.php?s=listUser&isAdmin=0");
-        } elseif ($flag == 'update') {
-            //修改一个用户
-            $id = BasicTool::post('uid');
-
-
-            if (!$currentUser->isUserHasAuthority('GOD')) {
-
-                $targetUser = new \admin\user\UserModel($id);
-                if ($targetUser->isAdmin) {
-                    if ($arr['user_class_id'] < $currentUser->userClassId) {
-                        BasicTool::throwException("禁止进入比自身级别高的管理员组");
-                    }
-                }
-            }
-
-            $setblocktime = BasicTool::post('setblocktime');
-
-            if ($setblocktime > 0) {
-                //设置禁言
-                $arr['blocktime'] = time() + 3600 * 24 * $setblocktime;
-                $arr['blockreason'] = BasicTool::post('blockreason', false, 70);
-            } else if ($setblocktime == 0) {
-                //解除禁言
-                $arr['blocktime'] = 0;
-            }
-
-            //修改用户
-            $currentUser->updateRowById('user', $id, $arr) or BasicTool::throwException($currentUser->errorMsg);
-            BasicTool::echoMessage("修改成功");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage());
-    }
-}
-
-
 //管理员->增加或修改用户分类
 function modifyUserClass()
 {
@@ -614,17 +539,94 @@ function clearBadge()
  * return json
  */
 function userRegisterWithJson() {
-
     global $currentUser;
-
     try {
-        $username = BasicTool::post('username', '请填写用户名', 80);
-        $password = BasicTool::post('password', '请填写密码');
-        $currentUser->register($username, $password) or BasicTool::throwException($currentUser->errorMsg);
-        $userInfo = $currentUser->login($username, $password) or BasicTool::throwException($currentUser->errorMsg);
+        //不能为空,需要验证的字段
+        $name = BasicTool::post('username', '请填写用户名', 80);
+        $pwd = BasicTool::post('password', '请填写密码');
+        BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
+        !$currentUser->isExistByFieldValue('user', 'name', $name) or BasicTool::throwException("用户名邮箱已存在");
+        strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
+        $alias = explode('@', $name)[0];
+        //可以为空的字段
+        $user_class_id = 7; //普通用户
+        $degree  = BasicTool::post('degree');
+        $major =  BasicTool::post('major');
+        $wechat = BasicTool::post('wechat');
+        $description = BasicTool::post('description');
+        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException($currentUser->errorMsg);
+        $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoJson(1, "注册成功", $userInfo);
+
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+//管理员直接添加用户
+function addUser() {
+    global $currentUser;
+    try {
+        $currentUser->isUserHasAuthority("ADMIN")&&$currentUser->isUserHasAuthority("USER_ADD") or BasicTool::throwException("权限不足");
+        //不能为空,需要验证的字段
+        $name = BasicTool::post('username', '请填写用户名', 80);
+        $pwd = BasicTool::post('password', '请填写密码');
+        BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
+        !$currentUser->isExistByFieldValue('user', 'name', $name) or BasicTool::throwException("用户名邮箱已存在");
+        strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
+        $alias = explode('@', $name)[0];
+        //可以为空的字段
+        $user_class_id = BasicTool::post('user_class_id');
+        $degree  = BasicTool::post('degree');
+        $major =  BasicTool::post('major');
+        $wechat = BasicTool::post('wechat');
+        $description = BasicTool::post('description');
+        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException($currentUser->errorMsg);
+        $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
+        BasicTool::echoMessage("注册成功");
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage());
+    }
+}
+//管理员->添加或修改一个用户
+function updateUser()
+{
+    global $currentUser;
+    try {
+        //判断当前用户是否有"用户修改","用户添加"权限
+        $currentUser->isUserHasAuthority('ADMIN')&&$currentUser->isUserHasAuthority('USER_UPDATE') or BasicTool::throwException($currentUser->errorMsg);
+
+        $alias = BasicTool::post('alias', false, 28);
+        $user_class_id = BasicTool::post('user_class_id', '所属用户组不能为空');
+        $gender = BasicTool::post('gender', '性别不能为空');
+        $blocktime = BasicTool::post('setblocktime');
+        $blockreason = BasicTool::post('blockreason', false, 70);
+        $major = BasicTool::post('major', false, 30);
+        $enroll_year = strtotime(BasicTool::post('enroll_year', false, 30));
+        $description = BasicTool::post('description', false, 90);
+        $wechat = BasicTool::post('wechat', false, 40);
+
+        //修改一个用户
+        $targetUserId = BasicTool::post('uid');
+        if (!$currentUser->isUserHasAuthority('GOD')) {
+            $targetUser = new \admin\user\UserModel($targetUserId);
+            if ($targetUser->isAdmin) {
+                if ($user_class_id < $currentUser->userClassId) {
+                    BasicTool::throwException("禁止进入比自身级别高的管理员组");
+                }
+            }
+        }
+        if ($blocktime > 0) {
+            //设置禁言
+            $blocktime= time() + 3600 * 24 * $blocktime;
+        } else if ($blocktime == 0) {
+            //解除禁言
+            $blocktime = 0;
+        }
+        //修改用户
+        $currentUser->updateUserByAdmin($targetUserId,$alias,$user_class_id,$gender,$blocktime,$blockreason,$major,$enroll_year,$description,$wechat);
+        BasicTool::echoMessage("修改成功");
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage());
     }
 }
 

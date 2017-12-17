@@ -412,15 +412,6 @@ class UserModel extends Model
     }
 
 
-    //增加活跃度
-    public function addActivist()
-    {
-        $sql = "UPDATE user SET activist = activist + 1 WHERE id in ({$this->userId})";
-        $this->sqltool->query($sql);
-        return $this->sqltool->getAffectedRows() > 0;
-    }
-
-
     //更改用户为普通用户
     public function changeUserClassToNormal($username)
     {
@@ -526,7 +517,7 @@ class UserModel extends Model
         //a26c5e114dea2564018531ef4b2ae350d11569ca2970f6c4ae28d5f022da5d17
         //78166675a9f9c452f68a7c300c3f8516c44254ff9dca5953a38553a3e6f36189
         self::sendMsg($senderId, $this->userId, $type, $typeId, $content, 0);
-        self::applePush($this->deviceToke, $senderAlias.": ", $type, $typeId, $content);
+        self::applePush($this->deviceToke, $senderAlias . ": ", $type, $typeId, $content);
     }
 
     /**
@@ -547,28 +538,19 @@ class UserModel extends Model
             echo "小纸条写入失败";
         }
         echo "<br>";
-
         $start = 0;
         $size = 10;
         $i = 0;
         while ($deviceArr = self::getListOfDevice($start, $size)) {
-
-
-                foreach ($deviceArr as $row) {
-                    if($row['id']>=742){
-                        echo $i++ . "------UID:" . $row['id'] . "------" . $row['device'] . "<br>";
-                        if (self::applePush($row['device'], "", $type, $typeId, $content, 1, $silent)) {
-                            echo "------成功<br>";
-                        } else {
-                            echo "------失败<br>";
-                        }
-                    }
-
+            foreach ($deviceArr as $row) {
+                echo $i++ . "------UID:" . $row['id'] . "------" . $row['device'] . "<br>";
+                if (self::applePush($row['device'], "", $type, $typeId, $content, 1, $silent)) {
+                    echo "------成功<br>";
+                } else {
+                    echo "------失败<br>";
                 }
-
-
+            }
             $start += $size;
-
         }
         echo "END";
         return;
@@ -651,8 +633,6 @@ class UserModel extends Model
 
 
             // Create the payload body
-
-
             if ($silent == true) {
                 $body['aps'] = array(
                     'type' => $type,
@@ -797,32 +777,19 @@ class UserModel extends Model
      * @param $password
      * @return user|bool
      */
-    public function register($username,$password){
+    public function register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description)
+    {
+        $arr['name'] = $name;
+        $arr['pwd'] = md5($pwd);
+        $arr['user_class_id'] = $user_class_id ? $user_class_id : 7;
+        $arr['degree'] = $degree?$degree:"";
+        $arr['alias'] = $alias?$alias:"";
+        $arr['major'] = $major?$major:"";
+        $arr['wechat'] = $wechat?$wechat:"";
+        $arr['description'] = $description?$description:"";
+        $arr['registertime']=time();
+        return $this->addRow('user',$arr);
 
-        if(!BasicTool::checkFormatOfEmail($username)){
-            $this->errorMsg = "请输入一个正确的邮箱";
-            return false;
-        }
-
-        if( strlen($password) < 6){
-            $this->errorMsg = "密码至少6个字符";
-            return false;
-        }
-
-        if($this->isExistByFieldValue('user', 'name', $username)){
-            $this->errorMsg = "用户名邮箱已存在";
-            return false;
-        }
-
-        $arr = [];
-        $arr['name'] = $username;
-        $arr['pwd'] = md5($password);
-        $arr['user_class_id'] = 7;  //6 未激活用户
-        $arr['gender'] = 2;
-        $arr['registertime'] = time();
-        $arr['enroll_year'] = 0;
-        $arr['alias']=explode('@',$username)[0];
-        return $this->addRow('user', $arr);
 //邮箱验证
 //        $code = md5(rand(999,999999));
 //        $arr2 = [];
@@ -839,13 +806,19 @@ class UserModel extends Model
 //        }
     }
 
+    public function updateUserByAdmin($targetUserId,$alias,$user_class_id,$gender,$blocktime,$blockreason,$major,$enroll_year,$description,$wechat){
+        $sql = "UPDATE user SET alias='{$alias}',user_class_id='{$user_class_id}',gender='{$gender}',blocktime='{$blocktime}',blockreason='{$blockreason}',major='{$major}',enroll_year='{$enroll_year}',description='{$description}',wechat='{$wechat}' WHERE id in ({$targetUserId})";
+        return $this->sqltool->query($sql);
+    }
+
     /**
      * 更新别名
      * @param $val
      * @return bool
      */
-    public function updateAlias($val) {
-        return self::updateRowById('user',$this->userId,['alias'=>$val]);
+    public function updateAlias($val)
+    {
+        return self::updateRowById('user', $this->userId, ['alias' => $val]);
     }
 
     /**
@@ -853,8 +826,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateGender($val) {
-        return self::updateRowById('user',$this->userId,['gender'=>$val]);
+    public function updateGender($val)
+    {
+        return self::updateRowById('user', $this->userId, ['gender' => $val]);
     }
 
     /**
@@ -862,8 +836,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateMajor($val) {
-        return self::updateRowById('user',$this->userId,['major'=>$val]);
+    public function updateMajor($val)
+    {
+        return self::updateRowById('user', $this->userId, ['major' => $val]);
     }
 
     /**
@@ -871,8 +846,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateWechat($val) {
-        return self::updateRowById('user',$this->userId,['wechat'=>$val]);
+    public function updateWechat($val)
+    {
+        return self::updateRowById('user', $this->userId, ['wechat' => $val]);
     }
 
     /**
@@ -880,8 +856,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateDescription($val) {
-        return self::updateRowById('user',$this->userId,['description'=>$val]);
+    public function updateDescription($val)
+    {
+        return self::updateRowById('user', $this->userId, ['description' => $val]);
     }
 
     /**
@@ -889,8 +866,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateEnrollYear($val) {
-        return self::updateRowById('user',$this->userId,['enroll_year'=>$val]);
+    public function updateEnrollYear($val)
+    {
+        return self::updateRowById('user', $this->userId, ['enroll_year' => $val]);
     }
 
     /**
@@ -898,8 +876,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateDegree($val) {
-        return self::updateRowById('user',$this->userId,['degree'=>$val]);
+    public function updateDegree($val)
+    {
+        return self::updateRowById('user', $this->userId, ['degree' => $val]);
     }
 
     /**
@@ -907,8 +886,9 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updatePassword($val) {
-        return self::updateRowById('user',$this->userId,['pwd'=>$val]);
+    public function updatePassword($val)
+    {
+        return self::updateRowById('user', $this->userId, ['pwd' => $val]);
     }
 
 }

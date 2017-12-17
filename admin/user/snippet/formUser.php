@@ -2,12 +2,9 @@
 $currentUser = new \admin\user\UserModel();
 $userId = BasicTool::get('uid');
 try {$currentUser->isAuthorityToManageUserByTargetUserId($userId) or BasicTool::throwException("无权管理其他管理员");}catch(Exception $e){BasicTool::echoMessage($e->getMessage(),-1);die();}
-
-$flag = $userId == null ? 'add' : 'update';
-$inquiredUser = $flag=='add' ? false : new \admin\user\UserModel($userId);
-
+$action = $userId == null ? 'addUser' : 'updateUser';
+$inquiredUser = $userId == null ? false : new \admin\user\UserModel($userId);
 $headDefault = '/resource/img/head-default.png';
-
 ?>
 <script>
     $(function(){
@@ -34,7 +31,7 @@ $headDefault = '/resource/img/head-default.png';
     <h1>
         <?php
         echo $pageTitle.'-';
-        echo $flag=='add'?'添加新用户':'修改用户信息';
+        echo $action=="addUser"?'添加新用户':'修改用户信息';
         ?>
     </h1>
 </header>
@@ -43,15 +40,14 @@ $headDefault = '/resource/img/head-default.png';
     <a class="btn" href="index.php?s=formCredit&uid=<?php echo $userId?>">修改用户点券</a>
 </nav>
 <article class="mainBox">
-    <form action="userController.php?action=modify" method="post">
+    <form action="userController.php?action=<?php echo $action?>" method="post">
         <section class="formBox">
-            <input name="flag" value="<?php echo $flag?>" type="hidden">
             <input name="uid" value="<?php echo $userId?>" type="hidden">
             <div>
                 <label>用户名邮箱<i>*</i></label>
                 <?php
-                    if($flag=='add'){
-                        echo '<input class="input" type="text" name="name" value="">';
+                    if($action=="addUser"){
+                        echo '<input class="input" type="text" name="username" value="">';
                     }else{
                         echo "<label>{$inquiredUser->userName}</label>";
                     }
@@ -63,16 +59,16 @@ $headDefault = '/resource/img/head-default.png';
             <div>
                 <label>活跃度:<?php echo $inquiredUser->activist?></label>
             </div>
-            <?php if($flag=='add'){ ?>
+            <?php if($action=="addUser"){ ?>
                 <div>
                     <label>密码</label>
-                    <input class="input" type="password" name="pwd" value="">
+                    <input class="input" type="password" name="password" value="">
                 </div>
             <?php } ?>
             <div>
                 <label>头像</label>
-                <img src="<?php echo $flag=='add'?$headDefault:$inquiredUser->userHeadImg?>" height="80" width="80">
-                <input class="input" type="hidden" name="img" value="<?php echo $flag=='add'?$headDefault:$inquiredUser->userHeadImg?>">
+                <img src="<?php echo $action=="addUser"?$headDefault:$inquiredUser->userHeadImg?>" height="80" width="80">
+                <input class="input" type="hidden" name="img" value="<?php echo $action=="addUser"?$headDefault:$inquiredUser->userHeadImg?>">
             </div>
             <div>
                 <label>名字</label>

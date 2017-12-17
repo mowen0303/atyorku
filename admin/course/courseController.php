@@ -368,7 +368,7 @@ function addRate($echoType = "normal") {
         $courseModel->addRow('course_rate',$arr) or BasicTool::throwException("没有修改任何据数");
         //计算统计数据
         $courseModel->incrementStaticCount($courseNumberId);
-        $currentUser->addActivist();
+        $currentUser->addActivity();
 
         if($echoType=="json"){
             BasicTool::echoJson(1,"成功");
