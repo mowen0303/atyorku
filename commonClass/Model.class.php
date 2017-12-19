@@ -46,30 +46,38 @@ abstract class Model
         $count = $countSql == null ? $this->sqltool->getCountByTable($table) : $this->sqltool->getCountBySql($countSql);
         $pageCount = ceil($count / $pageSize);
         $this->totalPage = $pageCount;
-        $pageName = basename($_SERVER['PHP_SELF'] . $_SERVER['REQUEST_URI']);
-        $connector = strpos($pageName, '?') === false ? '?' : '&';
-        if (!strstr($pageName, $connector . 'page') === false) {
-            $pageName = strstr($pageName, $connector . 'page', true);
+        $url = basename($_SERVER['REQUEST_URI']);
+        $pageName = "?page=";
+        if(strpos($url, '?') !== false && strpos($url, '?page=') === false){
+            $pageName = "&page=";
+        }
+        if(BasicTool::get('page')){
+            $url = explode($pageName,$url)[0];
         }
         $pageHtml = '<div class="pageListBox">';
         if ($pageCount > 1) {
             if ($pageCurrent == 1) {
                 $pageHtml .= '<i >&lt;&lt;</i>';
             } else {
-                $pageHtml .= '<a href="' . $pageName . $connector . 'page=' . ($pageCurrent - 1) . '">&lt;&lt;</a>';
+                $pageHtml .= '<a href="' . $url . $pageName . 1 . '">&lt;&lt;</a>';
+                $pageHtml .= '<a href="' . $url . $pageName . ($pageCurrent - 1) . '">&lt;</a>';
             }
             for ($i = 1; $i <= $pageCount; $i++) {
                 $pageCurrentHtml = null;
                 if ($pageCurrent == $i) {
                     $pageCurrentHtml = 'class="current"';
                 }
-                $pageHtml .= '<a ' . $pageCurrentHtml . ' href="' . $pageName . $connector . 'page=' . $i . '">' . $i . '</a>';
-            }
 
+                if($pageCurrent-$i<15 && $i-$pageCurrent<15){
+                    $pageHtml .= '<a ' . $pageCurrentHtml . ' href="' . $url . $pageName . $i . '">' . $i . '</a>';
+                }
+
+            }
             if ($pageCurrent == $pageCount) {
                 $pageHtml .= '<i >&gt;&gt;</i>';
             } else {
-                $pageHtml .= '<a href="' . $pageName . $connector . 'page=' . ($pageCurrent + 1) . '">&gt;&gt;</a>';
+                $pageHtml .= '<a href="' . $url . $pageName . ($pageCurrent + 1) . '">&gt;</a>';
+                $pageHtml .= '<a href="' . $url . $pageName . $pageCount . '">&gt;&gt;</a>';
             }
             $pageHtml .= '</div>';
             $this->pageHtml = $pageHtml;

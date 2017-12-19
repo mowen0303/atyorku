@@ -3,6 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $action = BasicTool::get('action');
 $courseModel = new admin\course\CourseModel();
 $currentUser = new \admin\user\UserModel();
+$msgModel = new \admin\msg\MsgModel();
 call_user_func(BasicTool::get('action'));
 
 
@@ -288,8 +289,9 @@ function addCommentWithJson() {
     addComment("json");
 }
 function addComment($echoType = "normal") {
-    global  $courseModel;
+    global $courseModel;
     global $currentUser;
+    global $msgModel;
 
     try{
         $currentUser->isUserHasAuthority('COURSE_COMMENT') or BasicTool::throwException($currentUser->errorMsg);
@@ -315,13 +317,11 @@ function addComment($echoType = "normal") {
 
             //推送消息
             if($currentUser->userId != $ownerUserId && $currentUser->userId != $receiveUserId && $receiveUserId != $ownerUserId){
-                $ownerUser = new \admin\user\UserModel($ownerUserId);
-                $ownerUser->pushMsg($currentUser->userId,$currentUser->aliasName,"courseComment",$arr['course_class_id'],$arr['comment']);
+                $msgModel->pushMsgToUser($ownerUserId,"courseComment",$arr['course_class_id'],$arr['comment']);
             }
 
             if($currentUser->userId != $receiveUserId){
-                $receiveUser = new \admin\user\UserModel($receiveUserId);
-                $receiveUser->pushMsg($currentUser->userId,$currentUser->aliasName,"courseComment",$arr['course_class_id'],$arr['comment']);
+                $msgModel->pushMsgToUser($receiveUserId,"courseComment",$arr['course_class_id'],$arr['comment']);
             }
 
         }

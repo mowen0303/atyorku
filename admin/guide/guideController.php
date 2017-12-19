@@ -3,6 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $action = BasicTool::get('action');
 $userModel = new \admin\user\UserModel();
 $guideModel = new \admin\guide\GuideModel();
+$msgModel = new \admin\msg\MsgModel();
 $statisticsModel = new \admin\statistics\StatisticsModel();
 
 call_user_func(BasicTool::get('action'));
@@ -207,13 +208,14 @@ function test(){
 
 function pushToAll(){
     global $userModel;
+    global $msgModel;
     try {
         $userModel->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权限");
         $silent = BasicTool::get('silent');
         $silent = $silent == "silent" ? true : false;
         $title = BasicTool::get('title',"标题不能为空");
         $id =  BasicTool::get('guide_id',"ID不能为空");
-        $userModel->pushMsgToAllUser("guide",$id,$title,$silent);
+        $msgModel->pushMsgToAllUsers("guide",$id,$title,$silent);
 
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());

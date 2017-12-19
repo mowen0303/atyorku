@@ -30,7 +30,7 @@ class UserModel extends Model
     public $credit = null;
     public $activist = null;
     public $wechat = null;
-    public $deviceToke = 0;
+    public $deviceToken = 0;
 
 
     public $row = null;
@@ -91,7 +91,7 @@ class UserModel extends Model
             $this->credit = $arr['credit'];;
             $this->activist = $arr['activist'];;
             $this->wechat = $arr['wechat'];
-            $this->deviceToke = $arr['device'];
+            $this->deviceToken = $arr['device'];
 
         }
     }
@@ -503,70 +503,8 @@ class UserModel extends Model
         return false;
     }
 
-    /**
-     * 向特定用户推送
-     * @param $diviceToken
-     * @param $msg
-     * @param $typ
-     * @return bool
-     */
-    public function pushMsg($senderId, $senderAlias, $type, $typeId, $content)
-    {
-        // Put your device token here (without spaces):
-        //5dbd8b1a99e2c07c42914f1e726d0388801ddadf876462416a90c77bb98c94d1
-        //a26c5e114dea2564018531ef4b2ae350d11569ca2970f6c4ae28d5f022da5d17
-        //78166675a9f9c452f68a7c300c3f8516c44254ff9dca5953a38553a3e6f36189
-        self::sendMsg($senderId, $this->userId, $type, $typeId, $content, 0);
-        self::applePush($this->deviceToke, $senderAlias . ": ", $type, $typeId, $content);
-    }
 
-    /**
-     * 向所有用户推送
-     * @param $deviceArr
-     * @param $senderId
-     * @param $senderAlias
-     * @param $type
-     * @param $typeId
-     * @param $content
-     * @param int $alert
-     */
-    public function pushMsgToAllUser($type, $typeId, $content, $silent = false)
-    {
-        if (self::sendMsg("28", "28", $type, $typeId, $content, 1)) {
-            echo "小纸条写入成功";
-        } else {
-            echo "小纸条写入失败";
-        }
-        echo "<br>";
-        $start = 0;
-        $size = 10;
-        $i = 0;
-        while ($deviceArr = self::getListOfDevice($start, $size)) {
-            foreach ($deviceArr as $row) {
-                echo $i++ . "------UID:" . $row['id'] . "------" . $row['device'] . "<br>";
-                if (self::applePush($row['device'], "", $type, $typeId, $content, 1, $silent)) {
-                    echo "------成功<br>";
-                } else {
-                    echo "------失败<br>";
-                }
-            }
-            $start += $size;
-        }
-        echo "END";
-        return;
-    }
 
-    /**
-     * 获取设备列表
-     * @param $page
-     * @param $pageSize
-     * @return array
-     */
-    private function getListOfDevice($page, $pageSize)
-    {
-        $sql = "SELECT id,device FROM user WHERE device <> '0' LIMIT $page,$pageSize";
-        return $this->sqltool->getListBySql($sql);
-    }
 
     /**
      * 统计已经注册设备的数量
@@ -588,95 +526,6 @@ class UserModel extends Model
         return $this->sqltool->getCountBySql($sql);
     }
 
-
-    /**
-     * 手机信息推送
-     * @param $senderAlias
-     * @param $type
-     * @param $typeId
-     * @param $content
-     * @return bool
-     */
-    public function applePush($deviceToken, $senderAlias, $type, $typeId, $content, $alert = 0, $silent = false)
-    {
-        if ($deviceToken != "0") {
-            //$deviceToken = $this->deviceToke;
-            //$deviceToken = "e1e4f6a7f01ec5146829718c2730195e1f1110c6952a5b61db0e1a5b5649c725"; //jerry
-            //$deviceToken = "78166675a9f9c452f68a7c300c3f8516c44254ff9dca5953a38553a3e6f36189";  //wendy
-            //1d3e0f65535853b8b91fa055e0199651e2dea55cf479c53a1aeb9c92b5485adc  jerry online
-
-            // Put your private key's passphrase here:
-            $passphrase = 'miss0226';
-
-
-            ////////////////////////////////////////////////////////////////////////////////
-
-            $ctx = stream_context_create();
-            stream_context_set_option($ctx, 'ssl', 'local_cert', $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem');
-            stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
-
-            // Open a connection to the APNS server
-            $fp = stream_socket_client(
-                'ssl://gateway.push.apple.com:2195', $err,
-                $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-
-            if (!$fp) {
-                $this->errorMsg = "Failed to connect: $err $errstr" . PHP_EOL;
-                return false;
-            }
-
-            if ($alert == 0) {
-                $badge = $this->getBadge();
-            } else {
-                $badge = 1;
-            }
-
-
-            // Create the payload body
-            if ($silent == true) {
-                $body['aps'] = array(
-                    'type' => $type,
-                    'typeId' => $typeId,
-                    'badge' => (int)$badge
-                );
-            } else {
-                $body['aps'] = array(
-                    'alert' => $senderAlias . $content,
-                    'type' => $type,
-                    'typeId' => $typeId,
-                    'badge' => (int)$badge,
-                    'sound' => 'default'
-                );
-            }
-
-
-            // Encode the payload as JSON
-            $payload = json_encode($body);
-
-
-            // Build the binary notification
-            $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
-
-            // Send it to the server
-            $result = fwrite($fp, $msg, strlen($msg));
-
-            fclose($fp);
-
-            if (!$result) {
-                $this->errorMsg = 'Message not delivered' . PHP_EOL;
-                return false;
-            } else {
-                $this->errorMsg = 'Message successfully delivered' . $deviceToken . PHP_EOL;
-
-                return true;
-            }
-            return false;
-        } else {
-            return false;
-        }
-    }
-
-
     /**
      * 退出登录清空设备
      */
@@ -688,40 +537,8 @@ class UserModel extends Model
     }
 
     /**
-     * @param $senderId
-     * @param $userId
-     * @param $type    forum/forumComment/course/courseComment/guide/msg/
-     * @param $content
-     * @param $alert 是否是全体推送 0 否 1是
-     * @return bool
+     * @return array
      */
-    private function sendMsg($senderId, $receiverId, $type, $typeId, $content, $alert = 0)
-    {
-        $time = time();
-        if ($senderId == null) {
-            $senderId = 0;
-        }
-        if ($receiverId == null) {
-            return false;
-        }
-        if ($type == null) {
-            return false;
-        }
-        if ($content == null) {
-            return false;
-        }
-        if ($typeId == null) {
-            return false;
-        }
-        $sql = "INSERT INTO `msg`(`sender_id`, `receiver_id`, `content`, `type`,`type_id`,`time`,`alert`) VALUES ('{$senderId}','{$receiverId}','{$content}','{$type}','{$typeId}',{$time},{$alert})";
-        $this->sqltool->query($sql);
-        if ($this->sqltool->getAffectedRows() > 0) {
-            return true;
-        }
-        $this->errorMsg = "数据未受影响";
-        return false;
-    }
-
     public function getListOfMsgReceive()
     {
         $uid = $this->userId;

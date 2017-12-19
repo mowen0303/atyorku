@@ -3,10 +3,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $action = BasicTool::get('action');
 $forumModel = new \admin\forum\ForumModel();
 $currentUser = new \admin\user\UserModel();
-
+$msgModel = new \admin\msg\MsgModel();
 call_user_func(BasicTool::get('action'));
-
-
 
 /**
  * JSON -  获取(指定用户)的帖子
@@ -504,6 +502,7 @@ function addComment($echoType = "normal")
     //增加评论
     global $currentUser;
     global $forumModel;
+    global $msgModel;
     try {
         //判断是否有权限发帖
         $currentUser->isUserHasAuthority('FORUM_COMMENT') or BasicTool::throwException($currentUser->errorMsg);
@@ -518,29 +517,22 @@ function addComment($echoType = "normal")
         $forumId += 0;
         $forumId != 0 or BasicTool::throwException("forum_id非法");
         $arr['forum_id'] = $forumId;
-        if ($forumModel->addRow('forum_comment', $arr)) {
-            $forumModel->countAmountOfComment($arr['forum_id']);
-            $forumModel->updateForumTime($arr['forum_id']);
-            $newComment = $forumModel->getCommentById($forumModel->idOfInsert);
-            if ($echoType == "normal") {
-                BasicTool::echoMessage("评论添加成功", "/admin/forum/index.php?s=listForumComment&forum_id=" . $arr['forum_id'] . "&forum_class_id=" . $arr['forum_class_id']);
-            } else {
-                BasicTool::echoJson(1, "评论添加成功",$newComment);
-            }
-            //推送消息
-            if (receiveUserId != null && $forumId != null) {
-                if ($currentUser->userId != $ownerUserId && $currentUser->userId != $receiveUserId && $receiveUserId != $ownerUserId) {
-                    $ownerUser = new \admin\user\UserModel($ownerUserId);
-                    $ownerUser->pushMsg($currentUser->userId, $currentUser->aliasName, "forumComment", $forumId, $arr['content_comment']);
-                }
-
-                if ($currentUser->userId != $receiveUserId) {
-                    $receiveUser = new \admin\user\UserModel($receiveUserId);
-                    $receiveUser->pushMsg($currentUser->userId, $currentUser->aliasName, "forumComment", $forumId, $arr['content_comment']);
-                }
-            }
+        $forumModel->addRow('forum_comment', $arr) or BasicTool::throwException($forumModel->errorMsg);
+        //更新统计
+        $forumModel->countAmountOfComment($arr['forum_id']);
+        $forumModel->updateForumTime($arr['forum_id']);
+        $newComment = $forumModel->getCommentById($forumModel->idOfInsert);
+        //推送信息
+        $msgModel->pushMsgToUser($ownerUserId,"forumComment", $forumId, $arr['content_comment']);
+        if($ownerUserId!=$receiveUserId){
+            $msgModel->pushMsgToUser($receiveUserId,"forumComment", $forumId, $arr['content_comment']);
         }
-        die();
+
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("评论添加成功", "/admin/forum/index.php?s=listForumComment&forum_id=" . $arr['forum_id'] . "&forum_class_id=" . $arr['forum_class_id']);
+        } else {
+            BasicTool::echoJson(1, "评论添加成功",$newComment);
+        }
     } catch (Exception $e) {
         if ($echoType == "normal") {
             BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
