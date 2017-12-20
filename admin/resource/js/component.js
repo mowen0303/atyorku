@@ -119,6 +119,7 @@ function registerCourseCodeInputComponent($componentObj) {
     })
 
     $inputObj.blur(() => {
+        $componentObj.find("#childCodeCodeList").html("");
         let parentResult = $inputObj.val();
         if (parentResult == "") return false;
         let selectedItem = parentArr.filter((item) => item.title == parentResult);

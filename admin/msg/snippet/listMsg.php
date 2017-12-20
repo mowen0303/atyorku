@@ -17,10 +17,11 @@ $type = BasicTool::get("type");
                 <thead>
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th>发布人</th>
+                    <th style="text-align: center; width: 100px">发送者(ID)</th>
+                    <th style="text-align: center; width: 100px">接受者(ID)</th>
+                    <th>类别</th>
                     <th>内容</th>
-                    <th>接受者ID</th>
-                    <th>时间</th>
+                    <th style="text-align: center; width: 100px">时间</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -35,9 +36,10 @@ $type = BasicTool::get("type");
                 ?>
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
-                        <td><?php echo $row['alias']?></td>
-                        <td><?php echo $row['content']?></a></td>
-                        <td><?php echo $row['receiver_id']?></a></td>
+                        <td><?php echo $row['sender_alias']?><br>(<?php echo $row['sender_id']?>)</td>
+                        <td><?php echo $row['receiver_alias']?><br>(<?php echo $row['receiver_id']?>)</td>
+                        <td><?php echo $row['type']?></td>
+                        <td><?php echo $row['content']?></td>
                         <td><?php echo $row['time']?></td>
                     </tr>
                 <?php
