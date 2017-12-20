@@ -55,14 +55,22 @@ class EventModel extends Model
         return $result;
     }
 
-    /*调出一页广告
-     * 返回二维数组
+    /**
+     * 调出一页广告
+     * @param $event_category_id
+     * @param int $flag
+     * @return array 二维数组
      */
     public function getEventsByCategory($event_category_id,$flag = 1){
         $currentTime = time();
+        if($event_category_id != 0){
+            $condition = "";
+        }else{
+            $condition = "event_category_id = {$event_category_id} and";
+        }
 
         if ($flag == 1) {
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
+            $sql = "SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
             $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }

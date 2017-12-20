@@ -61,6 +61,16 @@ function addEvent($echoType = "normal"){
         }
     }
 }
+
+/**
+ * 添加一条评论
+ * [POST] http://www.atyorku.ca/admin/forum/forumController.php?action=addCommentWithJson
+ * @param content_comment
+ * @param forum_id
+ * @param ownerUserId
+ * @param receiveUserId
+ * @return json {code,message,forumCommentObject}
+ */
 function addEventWithJson(){
     addEvent("json");
 }
