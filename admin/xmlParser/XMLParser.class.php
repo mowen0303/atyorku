@@ -5,7 +5,7 @@ use \Model as Model;
 
 class XMLParser extends Model
 {
-    public function insertCourseCode($table, $arr, $debug = false)
+    public function insert($table, $arr, $debug = false)
     {
         $field = "";
         $value = "";

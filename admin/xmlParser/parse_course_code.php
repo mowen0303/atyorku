@@ -45,7 +45,7 @@ foreach($course_subjects as $subject){
         $arr["full_title"] = $course["courseTitle"];
         $arr["credits"] = intval($course["credit"]);
         $arr["description"] = $course["description"];
-        $parserModel->insertCourseCode("coursecode",$arr);
+        $parserModel->insert("coursecode",$arr);
     }
     else{
         foreach ($array["courseSubject"][$index]["course"] as $course){
@@ -58,7 +58,7 @@ foreach($course_subjects as $subject){
             $arr["full_title"] = $course["courseTitle"];
             $arr["credits"] = intval($course["credit"]);
             $arr["description"] = $course["description"];
-            $parserModel->insertCourseCode("coursecode",$arr);
+            $parserModel->insert("coursecode",$arr);
             array_push($childNodes,$course["courseCode"]);
             }
             else{

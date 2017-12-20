@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<script language="javascript">
+    function request(){
+        var url = "http://search.mtvnservices.com/typeahead/suggest/?solrformat=true&rows=4536&callback=callback&q=*%3A*+AND+schoolid_s%3A1495&defType=edismax&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=teacherlastname_sort_s+asc&siteName=rmp&rows=20&start=20&fl=pk_id+teacherfirstname_t+teacherlastname_t+total_number_of_ratings_i+averageratingscore_rf+schoolid_s&fq=&prefix=schoolname_t%3A%22York+University+(all+campuses)%22"
+        var new_script = document.createElement("script");
+        new_script.src = url;
+        document.getElementsByTagName("head")[0].append(new_script);
+    }
+    var callback = function(response){
+        var profs = response.response.docs;
+        profs.forEach(
+            function(prof){
+                var first_and_middle_name = prof.teacherfirstname_t.split(" ");
+                var last_name = prof.teacherlastname_t;
+                last_name = last_name ? last_name : "";
+                var first_name = "";
+                var middle_name = "";
+                if (first_and_middle_name[1]){
+                    middle_name = first_and_middle_name[1];
+                    first_name = first_and_middle_name[0]
+                }
+                else{
+                    middle_name="";
+                    first_name = first_and_middle_name[0]?first_and_middle_name[0]:"";
+                }
+                $.ajax(
+                    {
+                        type:"GET",
+                        url:"parse_prof.php?first_name="+ first_name+ "&last_name="+last_name+"&middle_name="+middle_name,
+                        contentType:"application/x-www-form-urlencoded",
+                        success:function(){console.log("success")}}
+                );
+            }
+        )
+    }
+    document.onload = request();
+
+</script>
+</body>
+
+</html>
