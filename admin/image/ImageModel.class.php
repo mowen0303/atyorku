@@ -332,12 +332,13 @@ class ImageModel extends Model
     */
     public function getNumOfUploadImages($inputName) {
         $count = 0;
-        $total = count($_FILES[$inputName]['name']);
+        $total = count(array_filter($_FILES[$inputName]['name']));
+        if($total==0) return 0;
         for($i=0; $i<$total; $i++) {
           $tmpFilePath = $_FILES[$inputName]['tmp_name'][$i];
           $size = $_FILES[$inputName]['size'][$i];
           $fileType = $_FILES[$inputName]['type'][$i];
-          $fileError = $file["error"][$i];        //错误信息
+          $fileError = $_FILES[$inputName]["error"][$i];        //错误信息
 
           //检测文件是否成功获取
           !$fileError > 0 or BasicTool::throwException("上传出错,状态码:" . $fileError);
@@ -372,6 +373,8 @@ class ImageModel extends Model
     */
     public function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false) {
         $imgArr = array_values(array_filter($modifiedImageIds));
+        $currentImageIds = array_values(array_filter($currentImageIds));
+
         if(!$maxNum) {
             $maxNum = count($modifiedImageIds);
         }
@@ -391,10 +394,10 @@ class ImageModel extends Model
         }
 
         // 检查并删除替代掉的图片
-        if($currentImageIds) {
+        if($imgArr != $currentImageIds) {
             $needDeletedIds=array();
             foreach($currentImageIds as $v) {
-                if($v != null and !in_array($v,$imgArr)) {
+                if($v and !in_array($v,$imgArr)) {
                     array_push($needDeletedIds,$v);
                 }
             }
