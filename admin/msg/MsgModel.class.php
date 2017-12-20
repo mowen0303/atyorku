@@ -8,55 +8,7 @@ use \Exception as Exception;
 
 class MsgModel extends Model
 {
-
-    /**
-     * @return array
-     *
-     * 返回字段
-        id
-        sender_id
-        receiver_id
-        content
-        type
-        type_id
-        time
-        alert
-        sender_alias
-        receiver_alias
-     */
-    public function getListOfMsg($receiverId = false){
-        $table = 'msg';
-        $condition = "";
-        if($receiverId){
-            $condition = " WHERE receiver_id='{$receiverId}' ";
-        }
-        $sql = "SELECT msg.*,user.alias AS receiver_alias FROM (SELECT msg.*,user.alias AS sender_alias FROM (SELECT * FROM msg {$condition}) AS msg INNER JOIN user ON msg.sender_id = user.id) AS msg INNER JOIN user ON msg.receiver_id = user.id ORDER BY id DESC";
-        $countSql = "SELECT COUNT(*) FROM msg {$condition}";
-        $result =   parent::getListWithPage($table,$sql,$countSql,40);
-        foreach($result as $k1 => $v1) {
-            foreach($v1 as $k2 => $v2){
-                if($k2=="time"){
-                    $result[$k1][$k2] = BasicTool::translateTime($v2);
-                }
-            }
-        }
-        return $result;
-    }
-
-    public function getListOfAlert(){
-        $table = 'msg';
-        $sql = "SELECT M.*,user.img,user.alias,user.gender FROM (SELECT * FROM {$table} WHERE alert = 1) AS M INNER JOIN user ON sender_id = user.id ORDER BY id DESC";
-        $countSql = "SELECT COUNT(*) FROM {$table} WHERE alert = 1 ORDER BY id DESC";
-        $result =   parent::getListWithPage($table,$sql,$countSql,40);
-        foreach($result as $k1 => $v1) {
-            foreach($v1 as $k2 => $v2){
-                if($k2=="time"){
-                    $result[$k1][$k2] = BasicTool::translateTime($v2);
-                }
-            }
-        }
-        return $result;
-    }
+    private $enablePush = false; //测试阶段，禁用信息推送
 
     /**
      * 给指定用户推送一条信息
@@ -74,7 +26,9 @@ class MsgModel extends Model
         if($senderUser->userId == $receiverUser->userId) return false;
         $receiverBadge = $receiverUser->getBadge();
         self::addMsg($senderUser->userId, $receiverUser->userId, $msgType, $msgTypeId, $content);
-        //苹果设备推送
+        //推送
+        if($this->enablePush==false) return false;
+        //苹果
         if($receiverUser->deviceToken == '0') return false;
         self::applePush($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
     }
@@ -94,7 +48,9 @@ class MsgModel extends Model
         }else{
             echo "小纸条写入失败<br>";
         }
+
         //推送
+        if($this->enablePush==false) return false;
         $start = 0;
         $size = 200;
         $i = 0;
@@ -196,6 +152,55 @@ class MsgModel extends Model
             $this->errorMsg = 'Message successfully delivered' . $deviceToken . PHP_EOL;
             return true;
         }
+    }
+
+    /**
+     * @return array
+     *
+     * 返回字段
+    id
+    sender_id
+    receiver_id
+    content
+    type
+    type_id
+    time
+    alert
+    sender_alias
+    receiver_alias
+     */
+    public function getListOfMsg($receiverId = false){
+        $table = 'msg';
+        $condition = "";
+        if($receiverId){
+            $condition = " WHERE receiver_id='{$receiverId}' ";
+        }
+        $sql = "SELECT msg.*,user.alias AS receiver_alias FROM (SELECT msg.*,user.alias AS sender_alias FROM (SELECT * FROM msg {$condition}) AS msg INNER JOIN user ON msg.sender_id = user.id) AS msg INNER JOIN user ON msg.receiver_id = user.id ORDER BY id DESC";
+        $countSql = "SELECT COUNT(*) FROM msg {$condition}";
+        $result =   parent::getListWithPage($table,$sql,$countSql,40);
+        foreach($result as $k1 => $v1) {
+            foreach($v1 as $k2 => $v2){
+                if($k2=="time"){
+                    $result[$k1][$k2] = BasicTool::translateTime($v2);
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getListOfAlert(){
+        $table = 'msg';
+        $sql = "SELECT M.*,user.img,user.alias,user.gender FROM (SELECT * FROM {$table} WHERE alert = 1) AS M INNER JOIN user ON sender_id = user.id ORDER BY id DESC";
+        $countSql = "SELECT COUNT(*) FROM {$table} WHERE alert = 1 ORDER BY id DESC";
+        $result =   parent::getListWithPage($table,$sql,$countSql,40);
+        foreach($result as $k1 => $v1) {
+            foreach($v1 as $k2 => $v2){
+                if($k2=="time"){
+                    $result[$k1][$k2] = BasicTool::translateTime($v2);
+                }
+            }
+        }
+        return $result;
     }
 
 

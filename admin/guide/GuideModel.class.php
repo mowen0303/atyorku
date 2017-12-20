@@ -119,6 +119,8 @@ class GuideModel extends Model
         $arr['guide_order'] = $order ? $order : 0;
         $arr['cover'] = $cover ? $cover : "";
         $arr['time'] = time();
+        $arr['post_time'] = time();
+        $arr['count_comments'] = 0;
         $arr['is_del'] = 0;
         if ($this->addRow('guide', $arr)) {
             return $this->idOfInsert;

@@ -488,9 +488,7 @@ function deleteComment($echoType = "normal"){
  * [POST] http://www.atyorku.ca/admin/forum/forumController.php?action=addCommentWithJson
  * @param content_comment
  * @param forum_id
- * @param ownerUserId
- * @param receiveUserId
- * @return json {code,message,forumCommentObject}
+ * @param receiveUserId 如果不是@某个特定用户，receiverUserId 为forum作者id
  */
 function addCommentWithJson()
 {

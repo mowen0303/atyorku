@@ -6,32 +6,42 @@ use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
+/**
+ * 评论Model使用指南：
+ * 1. 添加一个字段 count_comments 到需要使用评论功能的数据库表中
+ * 2. 使用表名作为 $section_name 的值
+ * 3. 使用表中的ID 作为 $section_id 的值
+ */
+
 class CommentModel extends Model
 {
-
-    /**返回false或者刚插入的评论
-     * @return bool | result
+    /**
+     * 添加一条评论，并将整条数据返回，失败则抛出异常
+     * @param $parent_id 新回复的parent为0
+     * @param $sender_id
+     * @param $receiver_id
+     * @param $section_name 数据库表名
+     * @param $section_id 数据库表里的ID
+     * @param $comment
+     * @return int
+     * @throws Exception
      */
     public function addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment)
     {
-        $arr["parent_id"] = $parent_id;
+        $arr["parent_id"] = $parent_id ? $parent_id : 0;
         $arr["sender_id"] = $sender_id;
         $arr["receiver_id"] = $receiver_id;
-        $arr["section_name"] = $section_name ? $section_name : "";
-        $arr["section_id"] = $section_id ? $section_id : 0;
+        $arr["section_name"] = $section_name;
+        $arr["section_id"] = $section_id;
         $arr["comment"] = $comment ? $comment : "";
         $arr["time"] = time();
-        $bool = $this->addRow("comment", $arr);
-        if ($bool) {
-            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
-            $this->sqltool->query($sql);
-            $arr["id"] = $this->sqltool->getInsertId();
-            return $arr;
-        }
-        else{
-            return false;
-        }
-
+        $this->addRow("comment", $arr) or BasicTool::throwException($this->errorMsg);
+        //更新
+        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
+        $this->sqltool->query($sql);
+        //获取新插入的评论及评论人信息
+        $sql = "SELECT comment.*, user.id AS user_id, user.alias AS user_alias, user.gender AS user_gender, user.major AS user_major, user.enroll_year AS user_enroll_year FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id";
+        return $this->sqltool->getRowBySql($sql);
     }
 
     /**

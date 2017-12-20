@@ -368,6 +368,21 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
             </section>
         </form>
     </article>
+    <article class="mainBox">
+        <header>
+            <h2>fetch</h2>
+        </header>
+        <section>
+            <xmp>
+fetch(`/admin/comment/commentController.php?action=addCommentWithJson`, {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: `parent_id=0&receiver_id=6&section_name=guide&section_id=125&comment=新生微信群`,
+    credentials:'same-origin'
+}).then(response => response.json());
+            </xmp>
+        </section>
+    </article>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainFoot.php";
 ?>
