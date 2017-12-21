@@ -37,19 +37,13 @@ function addEvent($echoType = "normal"){
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
-        $bool = $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort);
+        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
-            else
-                BasicTool::echoMessage("添加失败","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
+            BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
         } else {
-            if ($bool)
-                BasicTool::echoJson(1, "添加成功");
-            else
-                BasicTool::echoJson(0, "添加失败");
+            BasicTool::echoJson(1, "添加成功");
         }
     }
     catch (Exception $e){
@@ -112,44 +106,29 @@ function deleteEvent($echoType="normal"){
     global $imageModel;
     $id = BasicTool::post("id", "请指定要删除的广告的id");
 
-    try{
+    try {
         //判断权限
-        if(!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))){
+        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))) {
             $sponsor_user_id = $eventModel->getEvent($id)["sponsor_user_id"];
             $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,删除失败");
         }
 
         //删除评论
-        $bool = $commentModel->deleteCommentsBySection("event", $id);
+        $commentModel->deleteCommentsBySection("event", $id) or BasicTool::throwException("删除失败,评论删除失败");
 
         //删除图片
-        if ($bool) {
-            if (is_array($id)) {
-                $concat = null;
-                foreach ($id as $i) {
-                    $i = $i + 0;
-                    $i = $i . ",";
-                    $concat = $concat . $i;
-                }
-                $concat = substr($concat, 0, -1);
-                $sql = "SELECT * FROM event WHERE id in ({$concat})";
-                $events = SqlTool::getSqlTool()->getListBySql($sql);
-                $img_ids = array();
-                foreach ($events as $event) {
-                    if ($event["img_id_1"]) {
-                        array_push($img_ids, $event["img_id_1"]);
-                    }
-                    if ($event["img_id_2"]) {
-                        array_push($img_ids, $event["img_id_2"]);
-                    }
-                    if ($event["img_id_3"]) {
-                        array_push($img_ids, $event["img_id_3"]);
-                    }
-                }
-
-            } else {
-                $event = $eventModel->getEvent($id);
-                $img_ids = array();
+        if (is_array($id)) {
+            $concat = null;
+            foreach ($id as $i) {
+                $i = $i + 0;
+                $i = $i . ",";
+                $concat = $concat . $i;
+            }
+            $concat = substr($concat, 0, -1);
+            $sql = "SELECT * FROM event WHERE id in ({$concat})";
+            $events = SqlTool::getSqlTool()->getListBySql($sql);
+            $img_ids = array();
+            foreach ($events as $event) {
                 if ($event["img_id_1"]) {
                     array_push($img_ids, $event["img_id_1"]);
                 }
@@ -160,8 +139,22 @@ function deleteEvent($echoType="normal"){
                     array_push($img_ids, $event["img_id_3"]);
                 }
             }
-            $bool = $imageModel->deleteImageById($img_ids);
+
         }
+        else {
+            $event = $eventModel->getEvent($id);
+            $img_ids = array();
+            if ($event["img_id_1"]) {
+                array_push($img_ids, $event["img_id_1"]);
+            }
+            if ($event["img_id_2"]) {
+                array_push($img_ids, $event["img_id_2"]);
+            }
+            if ($event["img_id_3"]) {
+                array_push($img_ids, $event["img_id_3"]);
+            }
+        }
+        $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除失败，删除图片失败");
 
         /*删除ueditor图片
         if ($bool){
@@ -174,20 +167,14 @@ function deleteEvent($echoType="normal"){
         */
 
         //删除活动
-        if ($bool) {
-            $bool = $eventModel->deleteEvent($id);
-        }
+        $eventModel->deleteEvent($id) or BasicTool::throwException("删除失败");
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("删除成功");
-            else
-                BasicTool::echoMessage("删除失败");
-        } else {
-            if ($bool)
-                BasicTool::echoJson(1, "删除成功");
-            else
-                BasicTool::echoJson(0, "删除失败");
+            BasicTool::echoMessage("删除成功");
+        }
+        else
+        {
+            BasicTool::echoJson(1, "删除成功");
         }
     }
     catch (Exception $e){
@@ -237,6 +224,7 @@ function updateEvent($echoType = "normal"){
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
 
         $event = $eventModel->getEvent($id);
+        $event or BasicTool::throwException("event_id不存在");
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         if ($event["img_id_1"] == 0){
             $event["img_id_1"] = NULL;
@@ -250,19 +238,14 @@ function updateEvent($echoType = "normal"){
         $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
 
-        $bool = $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort);
+        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
-            else
-                BasicTool::echoMessage("更改失败","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
-        } else {
-            if ($bool)
-                BasicTool::echoJson(1, "更改成功");
-            else
-                BasicTool::echoJson(0, "更改失败");
+            BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
+        }
+        else {
+            BasicTool::echoJson(1, "更改成功");
         }
     }
     catch (Exception $e){
@@ -277,15 +260,6 @@ function updateEvent($echoType = "normal"){
 function updateEventWithJson(){
    updateEvent("json");
 
-}
-
-
-
-function uploadImages() {
-    global $imageModel;
-    global $currentUser;
-    $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId, "event") or BasicTool::throwException($imageModel->errorMsg);
-    return $uploadArr;
 }
 
 function delete($path)

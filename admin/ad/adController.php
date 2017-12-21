@@ -26,21 +26,15 @@ function addAd($echoType="normal"){
         $imgArr = array(BasicTool::post("img_id_1"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,1,"imgFile",$currentUser->userId,"ad");
-        $bool = $adModel->addAd($title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url,$sort);
+        $adModel->addAd($title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url,$sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal")
         {
-            if ($bool)
-                BasicTool::echoMessage("添加成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
-            else
-                BasicTool::echoMessage("添加失败","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
+            BasicTool::echoMessage("添加成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
         }
         else
         {
-            if ($bool)
-                BasicTool::echoJson(1,"添加成功");
-            else
-                BasicTool::echoJson(0,"添加失败");
+            BasicTool::echoJson(1,"添加成功");
         }
     }
     catch (Exception $e){
@@ -99,29 +93,24 @@ function deleteAd($echoType="normal"){
                 }
             }
 
-        } else {
+        }
+        else {
             $ad = $adModel->getAd($id);
             $img_ids = array();
             if ($ad["img_id_1"]) {
                 array_push($img_ids, $ad["img_id_1"]);
             }
         }
-        $bool = $imageModel->deleteImageById($img_ids);
+        $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
 
-        if ($bool) {
-            $bool = $adModel->deleteAd($id);
-        }
+        $adModel->deleteAd($id) or BasicTool::throwException("删除失败");
+
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("删除成功");
-            else
-                BasicTool::echoMessage("删除失败");
-        } else {
-            if ($bool)
-                BasicTool::echoJson(1, "删除成功");
-            else
-                BasicTool::echoJson(0, "删除失败");
+            BasicTool::echoMessage("删除成功");
+        }
+        else {
+            BasicTool::echoJson(1, "删除成功");
         }
     }
     catch (Exception $e){
@@ -162,21 +151,14 @@ function updateAd($echoType="normal"){
         }
         $currImgArr = array($ad["img_id_1"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,1,"imgFile",$currentUser->userId,"ad");
-
-        $bool = $adModel->updateAd($id, $title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url,$sort);
+        $adModel->updateAd($id, $title, $description, $sponsor_name, $imgArr[0],$publish_time, $expiration_time, $ad_category_id, $ad_url,$sort) or BasicTool::throwException("更改失败");
         if ($echoType == "normal")
         {
-            if ($bool)
-                BasicTool::echoMessage("修改成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
-            else
-                BasicTool::echoMessage("修改失败","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
+            BasicTool::echoMessage("修改成功","index.php?s=getAdsByCategory&ad_category_id={$ad_category_id}&flag=1");
         }
         else
         {
-            if ($bool)
-                BasicTool::echoJson(1,"修改成功");
-            else
-                BasicTool::echoJson(0,"修改失败");
+            BasicTool::echoJson(1,"修改成功");
         }
     }
     catch (Exception $e){

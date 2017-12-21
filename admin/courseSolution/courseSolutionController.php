@@ -19,24 +19,16 @@ function addSolution($echoType = "normal"){
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
-        $bool = $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]);
+        $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
-            else
-                BasicTool::echoMessage("添加失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
+            BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
         }
         else {
-            if ($bool){
-                $result=$solutionModel->getSolutionById($solutionModel->getInsertId());
-                BasicTool::echoJson(1, "添加成功",$result);
-                }
-            else
-                BasicTool::echoJson(0, "添加失败");
-            }
+            $result=$solutionModel->getSolutionById($solutionModel->getInsertId());
+            BasicTool::echoJson(1, "添加成功",$result);
         }
-
+    }
     catch (Exception $e){
         if ($echoType == "normal"){
             BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -62,24 +54,16 @@ function updateSolution($echoType = "normal"){
         $currImgArr = array($solution["img_id_1"],$solution["img_id_2"],$solution["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
 
-        $bool = $solutionModel->updateSolution($id,$description, $imgArr[0], $imgArr[1], $imgArr[2]);
+        $solutionModel->updateSolution($id,$description, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("更改成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
-            else
-                BasicTool::echoMessage("更改失败","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
+            BasicTool::echoMessage("更改成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$solution['question_id']}");
         }
         else {
-            if ($bool){
-                $result=$solutionModel->getSolutionById($id);
-                BasicTool::echoJson(1, $result);
-            }
-            else
-                BasicTool::echoJson(0, "更改失败");
+            $result=$solutionModel->getSolutionById($id);
+            BasicTool::echoJson(1, $result);
         }
     }
-
     catch (Exception $e){
         if ($echoType == "normal"){
             BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -155,7 +139,7 @@ function deleteSolutionById($echoType = "normal"){
         else {
             $solution = $solutionModel->getSolutionById($id);
             //普通用户权限判断
-            ($currentUser->isUserHasAuthority("COURSE_QUESTION") && $currentUser->userId == $solution["answerer_user_id"]) or BasicTool::throwException("权限不足,删除失败");
+            (($currentUser->isUserHasAuthority("COURSE_QUESTION") && $currentUser->userId == $solution["answerer_user_id"]) || $currentUser->isUserHasAuthority("ADMIN")) or BasicTool::throwException("权限不足,删除失败");
             //把要删除的图片id添加到img_ids
             if ($solution["img_id_1"]) {
                 array_push($img_ids, $solution["img_id_1"]);
@@ -172,26 +156,17 @@ function deleteSolutionById($echoType = "normal"){
 
         !$is_solution_approved or BasicTool::throwException("删除失败,禁止删除已被采纳的答案");
         //删除图片
-        $bool = $imageModel->deleteImageById($img_ids);
+        $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
         //图片删除成功,删除答案
-        if ($bool){
-            $bool = $solutionModel->deleteSolutionById($id);
-        }
+        $solutionModel->deleteSolutionById($id) or BasicTool::throwException("删除失败");
+
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("删除成功");
-            else
-                BasicTool::echoMessage("删除失败");
+            BasicTool::echoMessage("删除成功");
         }
         else {
-            if ($bool){
-                BasicTool::echoJson(1, "删除成功");
-            }
-            else
-                BasicTool::echoJson(0, "删除失败");
+            BasicTool::echoJson(1, "删除成功");
         }
     }
-
     catch (Exception $e){
         if ($echoType == "normal"){
             BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);

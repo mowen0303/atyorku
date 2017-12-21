@@ -31,34 +31,29 @@ function addQuestion($echoType = "normal"){
         //扣除积分
         $transactionModel->deductCredit($currentUser->userId,$reward_amount,"发布提问");
 
-        $bool = $questionModel->addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
+        $questionModel->addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount) or BasicTool::throwException("添加失败");
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
-            else
-                BasicTool::echoMessage("添加失败","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
-        } else {
-            if ($bool){
-                $result["id"] = $questionModel->getInsertId();
-                $result["course_code_id"] = $course_code_id;
-                $result["prof_id"] = $prof_id;
-                $result["description"] = $description;
-                $result["img_id_1"] = $imgArr[0];
-                $result["img_id_2"] = $imgArr[1];
-                $result["img_id_3"] = $imgArr[2];
-                $result["questioner_user_id"] = $currentUser->userId;
-                $result["answerer_user_id"] = 0;
-                $result["time_posted"] = time();
-                $result["time_solved"] = 0;
-                $result["solution_id"] = 0;
-                $result["reward_amount"] = $reward_amount;
-                $result["count_solutions"] = 0;
-                $result["count_views"] = 0;
-                BasicTool::echoJson(1,"添加成功", $result);
-            }
-            else
-                BasicTool::echoJson(0, "添加失败");
+            BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         }
+        else {
+            $result["id"] = $questionModel->getInsertId();
+            $result["course_code_id"] = $course_code_id;
+            $result["prof_id"] = $prof_id;
+            $result["description"] = $description;
+            $result["img_id_1"] = $imgArr[0];
+            $result["img_id_2"] = $imgArr[1];
+            $result["img_id_3"] = $imgArr[2];
+            $result["questioner_user_id"] = $currentUser->userId;
+            $result["answerer_user_id"] = 0;
+            $result["time_posted"] = time();
+            $result["time_solved"] = 0;
+            $result["solution_id"] = 0;
+            $result["reward_amount"] = $reward_amount;
+            $result["count_solutions"] = 0;
+            $result["count_views"] = 0;
+            BasicTool::echoJson(1,"添加成功", $result);
+            }
+
     }
     catch (Exception $e){
         if ($echoType == "normal"){
@@ -79,18 +74,17 @@ function addQuestionWithJson(){
  */
 function updateQuestion($echoType = "normal"){
     global $questionModel,$imageModel,$currentUser,$transactionModel;
-    try{
+    try {
         //判断管理员权限
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) or BasicTool::throwException("权限不足");
         //field验证
-        $id = BasicTool::post("id","Missing id");
+        $id = BasicTool::post("id", "Missing id");
         $description = BasicTool::post("description");
         $reward_amount = BasicTool::post("reward_amount");
-        $reward_amount>0 or BasicTool::throwException("请输入有效的积分");
+        $reward_amount > 0 or BasicTool::throwException("请输入有效的积分");
         $question = $questionModel->getQuestionById($id);
         //确认问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("更改失败,提问已经被解决");
-
         //积分验证
         $balance = $transactionModel->getCredit($question["questioner_user_id"]);
         (($balance + $question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
@@ -99,32 +93,20 @@ function updateQuestion($echoType = "normal"){
         $currImgArr = array($question["img_id_1"], $question["img_id_2"], $question["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "course_question");
         //如果传回来的reward_amount跟数据库里的值是一致的.则不做任何积分操作
-        if ($reward_amount == $question["reward_amount"]){
-            $bool = true;
-        }
-        else {
+        if (!($reward_amount == $question["reward_amount"])) {
             //添加积分
-            $bool = $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励");
+            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
             //消耗积分
-            if ($bool) {
-                $bool = $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励");
-            }
+            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
         }
-        if ($bool)
-            $bool = $questionModel->updateQuestion($id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
+        $questionModel->updateQuestion($id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount) or BasicTool::throwException("更改失败");
+
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$question['course_code_id']}&prof_id={$question['prof_id']}");
-            else
-                BasicTool::echoMessage("添加失败","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$question['course_code_id']}&prof_id={$question['prof_id']}");
+            BasicTool::echoMessage("添加成功", "/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$question['course_code_id']}&prof_id={$question['prof_id']}");
         }
         else {
-            if ($bool){
-                $result=$questionModel->getQuestionById($id);
-                BasicTool::echoJson(1, "更改成功",$result);
-            }
-            else
-                BasicTool::echoJson(0, "更改失败");
+            $result = $questionModel->getQuestionById($id);
+            BasicTool::echoJson(1, "更改成功", $result);
         }
     }
     catch (Exception $e){
@@ -156,7 +138,7 @@ function deleteQuestion($echoType="normal"){
         if (is_array($id)) {
 
             //判断管理员权限
-            ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) or BasicTool::throwException("权限不足,删除失败");
+            $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,删除失败");
 
             $concat = null;
             foreach ($id as $i) {
@@ -204,8 +186,8 @@ function deleteQuestion($echoType="normal"){
         else {
             $question = $questionModel->getQuestionById($id);
             $solutions = $solutionModel->getSolutionsByQuestionId($id);
-            //普通用户权限判断
-            ($currentUser->isUserHasAuthority("COURSE_QUESTION") && $currentUser->userId == $question["questioner_user_id"]) or BasicTool::throwException("权限不足,删除失败");
+            //权限判断
+            (($currentUser->isUserHasAuthority("COURSE_QUESTION") && $currentUser->userId == $question["questioner_user_id"]) || $currentUser->isUserHasAuthority("ADMIN")) or BasicTool::throwException("权限不足,删除失败");
             //把要删除的图片id添加到img_ids
             if ($question["img_id_1"]) {
                 array_push($img_ids, $question["img_id_1"]);
@@ -239,28 +221,21 @@ function deleteQuestion($echoType="normal"){
         !$is_questions_solved or BasicTool::throwException("删除失败,禁止删除已被解决的问题");
         //退还积分
         if(is_array($id))
-            $bool = $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids,$reward_amounts,"删除提问");
+            $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids,$reward_amounts,"删除提问") or BasicTool::throwException("删除失败，退还积分失败");
         else{
-            $bool = $transactionModel->addCredit($questioner_user_id,$reward_amount,"删除提问");
+            $transactionModel->addCredit($questioner_user_id,$reward_amount,"删除提问") or BasicTool::throwException("删除失败，退还积分失败");
         }
         //退还积分成功,删除图片
-        if($bool)
-            $bool = $imageModel->deleteImageById($img_ids);
+        $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
         //图片删除成功,删除提问
-        if ($bool){
-            $bool = $questionModel->deleteQuestion($id);
-        }
+        $questionModel->deleteQuestion($id) or BasicTool::throwException("删除失败");
+
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("删除成功");
-            else
-                BasicTool::echoMessage("删除失败");
-        } else {
-            if ($bool)
-                BasicTool::echoJson(1, "删除成功");
-            else
-                BasicTool::echoJson(0, "删除失败");
+            BasicTool::echoMessage("删除成功");
         }
+        else {
+            BasicTool::echoJson(1, "删除成功");
+         }
     }
     catch (Exception $e){
         if ($echoType == "normal"){
@@ -322,6 +297,7 @@ function updateRewardAmount($echoType="normal"){
         $reward_amount = BasicTool::post("reward_amount","missing reward_amount");
         $reward_amount>0 or BasicTool::throwException("请输入有效的积分数");
         $question = $questionModel->getQuestionById($id);
+        $question or BasicTool::throwException("question_id不存在");
         $questioner_user_id = $question["questioner_user_id"];
 
         //判断权限
@@ -331,34 +307,25 @@ function updateRewardAmount($echoType="normal"){
         //验证问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("更改积分失败,提问已经被解决");
         //如果传回来的reward_amount跟数据库里的值是一致的.则不做任何积分操作
-        if ($reward_amount == $question["reward_amount"])
-            $bool = true;
-        else {
+        if ($reward_amount != $question["reward_amount"])
+        {
             //积分验证
             $balance = $transactionModel->getCredit($question["questioner_user_id"]);
             (($balance + $question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
             //添加积分
-            $bool = $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励");
+            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
             //消耗积分
-            if ($bool) {
-                $bool = $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励");
-            }
+            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
         }
+
         //更改
-        if ($bool)
-            $bool = $questionModel->updateRewardAmount($id,$reward_amount);
+        $questionModel->updateRewardAmount($id,$reward_amount) or BasicTool::throwException("更改失败");
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("更改成功");
-            else
-                BasicTool::echoMessage("更改失败");
-        } else {
-            if ($bool){
-                BasicTool::echoJson(1,"更改成功");
-            }
-            else
-                BasicTool::echoJson(0, "更改失败");
+            BasicTool::echoMessage("更改成功");
         }
+        else {
+            BasicTool::echoJson(1,"更改成功");
+            }
     }
     catch (Exception $e){
         if ($echoType == "normal"){
@@ -393,19 +360,13 @@ function approveSolution($echoType="normal"){
         $answerer_user_id != $questioner_user_id or BasicTool::throwException("questioner_user_id = answerer_user_id");
         //验证问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("采纳失败,提问已经被解决");
-        $bool = $transactionModel->addCredit($answerer_user_id,$reward_amount,"答案被采纳");
-        if ($bool)
-            $bool = $questionModel->approveSolution($question_id,$solution_id);
+        $transactionModel->addCredit($answerer_user_id,$reward_amount,"答案采纳") or BasicTool::throwException("采纳失败");
+        $questionModel->approveSolution($question_id,$solution_id) or BasicTool::throwException("采纳失败");
         if ($echoType == "normal") {
-            if ($bool)
-                BasicTool::echoMessage("采纳成功");
-            else
-                BasicTool::echoMessage("采纳失败");
-        } else {
-            if ($bool)
-                BasicTool::echoJson(1, "采纳成功");
-            else
-                BasicTool::echoJson(0, "采纳失败");
+            BasicTool::echoMessage("采纳成功");
+        }
+        else {
+            BasicTool::echoJson(1, "采纳成功");
         }
     }
     catch (Exception $e){

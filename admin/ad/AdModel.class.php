@@ -40,15 +40,20 @@ class AdModel extends Model
      */
     public function getAdsByCategory($ad_category_id,$flag){
         $currentTime = time();
-
+        if ($ad_category_id){
+            $condition = "ad_category_id = {$ad_category_id} and";
+        }
+        else{
+            $condition="";
+        }
         if ($flag == 1) {
-            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
-            $countSql = "SELECT COUNT(*) FROM ad WHERE ad_category_id = {$ad_category_id} and {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
+            $sql = "SELECT * FROM ad WHERE {$condition} {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
+            $countSql = "SELECT COUNT(*) FROM ad WHERE {$condition} {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
         }
         else{
-            $sql = "SELECT * FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
-            $countSql = "SELECT count(*) FROM ad WHERE ad_category_id = {$ad_category_id} and ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
+            $sql = "SELECT * FROM ad WHERE {$condition} ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
+            $countSql = "SELECT count(*) FROM ad WHERE {$condition} ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
             return $this->getListWithPage("ad", $sql, $countSql, 20);
         }
     }

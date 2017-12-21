@@ -63,20 +63,20 @@ class EventModel extends Model
      */
     public function getEventsByCategory($event_category_id,$flag = 1){
         $currentTime = time();
-        if($event_category_id != 0){
-            $condition = "";
-        }else{
+        if($event_category_id){
             $condition = "event_category_id = {$event_category_id} and";
+        }else{
+            $condition = "";
         }
 
         if ($flag == 1) {
             $sql = "SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
-            $countSql = "SELECT COUNT(*) FROM event WHERE event_category_id = {$event_category_id} and {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
+            $countSql = "SELECT COUNT(*) FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }
         else{
-            $sql = "SELECT * FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
-            $countSql = "SELECT count(*) FROM event WHERE event_category_id = {$event_category_id} and ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
+            $sql = "SELECT * FROM event WHERE {$condition} ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
+            $countSql = "SELECT count(*) FROM event WHERE {$condition} ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }
     }

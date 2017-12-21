@@ -14,6 +14,7 @@
         document.getElementsByTagName("head")[0].append(new_script);
     }
     var callback = function(response){
+        console.log(response);
         var profs = response.response.docs;
         profs.forEach(
             function(prof){
@@ -30,13 +31,14 @@
                     middle_name="";
                     first_name = first_and_middle_name[0]?first_and_middle_name[0]:"";
                 }
-                $.ajax(
-                    {
-                        type:"GET",
-                        url:"parse_prof.php?first_name="+ first_name+ "&last_name="+last_name+"&middle_name="+middle_name,
-                        contentType:"application/x-www-form-urlencoded",
-                        success:function(){console.log("success")}}
-                );
+
+                //$.ajax(
+                  //  {
+                    //    type:"GET",
+                      //  url:"parse_prof.php?first_name="+ first_name+ "&last_name="+last_name+"&middle_name="+middle_name,
+                        //contentType:"application/x-www-form-urlencoded",
+                        //success:function(){console.log("success")}}
+                //);
             }
         )
     }

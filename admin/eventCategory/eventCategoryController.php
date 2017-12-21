@@ -17,11 +17,8 @@ function addEventCategory(){
         $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,添加失败");
         $title = BasicTool::post("title", "specify title");
         $description = BasicTool::post("description", "specify description");
-        $bool = $eventCategoryModel->addEventCategory($title, $description);
-        if ($bool)
-            BasicTool::echoMessage("添加成功");
-        else
-            BasicTool::echoMessage("添加失败");
+        $eventCategoryModel->addEventCategory($title, $description) or BasicTool::throwException("添加失败");
+        BasicTool::echoMessage("添加成功");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -36,8 +33,8 @@ function deleteEventCategory()
 {
     global $eventCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足,删除失败");
     try {
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足,删除失败");
         $id = BasicTool::post("id", "请指定将被删除的分类id");
         $bool = $eventCategoryModel->deleteEventCategory($id[0]);
         if ($bool)
@@ -71,16 +68,13 @@ function getEventCategoriesWithJson(){
 function updateEventCategory(){
     global $eventCategoryModel;
     global $currentUser;
-    $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,更改失败");
     try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,更改失败");
         $id = BasicTool::post("id", "请指定分类ID");
         $title = BasicTool::post("title", "missing title");
         $description = BasicTool::post("description", "missing description");
-        $bool = $eventCategoryModel->updateEventCategory($id, $title, $description);
-        if ($bool)
-            BasicTool::echoMessage("更改成功");
-        else
-            BasicTool::echoMessage("更改失败");
+        $eventCategoryModel->updateEventCategory($id, $title, $description) or BasicTool::throwException("更改失败");
+        BasicTool::echoMessage("更改成功");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);

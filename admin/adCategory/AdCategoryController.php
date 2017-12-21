@@ -18,11 +18,8 @@ function addAdCategory(){
         $size = BasicTool::post("size", "图片尺寸不能为空");
         $title = BasicTool::post("title", "标题不能为空");
         $description = BasicTool::post("description", "description");
-        $bool = $adCategoryModel->addAdCategory($size, $title, $description);
-        if ($bool)
-            BasicTool::echoMessage("添加成功","/admin/adCategory/index.php");
-        else
-            BasicTool::echoMessage("添加失败","/admin/adCategory/index.php");
+        $adCategoryModel->addAdCategory($size, $title, $description) or BasicTool::throwException("添加成功");
+        BasicTool::echoMessage("添加成功","/admin/adCategory/index.php");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -39,11 +36,8 @@ function deleteAdCategory(){
     try {
         $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足,删除失败");
         $id = BasicTool::post("id", "请指定将被删除的分类id");
-        $bool = $adCategoryModel->deleteAdCategory($id[0]);
-        if ($bool)
-            BasicTool::echoMessage("删除成功");
-        else
-            BasicTool::echoMessage("删除失败");
+        $adCategoryModel->deleteAdCategory($id[0]) or BasicTool::throwException("删除失败");
+        BasicTool::echoMessage("删除成功");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
@@ -84,11 +78,8 @@ function updateAdCategory(){
         $size = BasicTool::post("size", "尺寸不能为空");
         $title = BasicTool::post("title", "标题不能为空");
         $description = BasicTool::post("description", "description");
-        $bool = $adCategoryModel->updateAdCategory($id, $size, $title, $description);
-        if ($bool)
-            BasicTool::echoMessage("修改成功","/admin/adCategory/index.php");
-        else
-            BasicTool::echoMessage("修改失败","/admin/adCategory/index.php");
+        $adCategoryModel->updateAdCategory($id, $size, $title, $description) or BasicTool::throwException("修改失败");
+        BasicTool::echoMessage("修改成功","/admin/adCategory/index.php");
     }
     catch (Exception $e){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
