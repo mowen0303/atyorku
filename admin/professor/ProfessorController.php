@@ -99,11 +99,10 @@ function modifyProfessor($echoType = "normal") {
         $flag = BasicTool::post("flag");
         $firstname = BasicTool::post("firstname","需要提供教授名");
         $lastname = BasicTool::post("lastname","需要提供教授姓");
-        $middlename = BasicTool::post("middlename");
         checkAuthority();
         $result = null;
         if ($flag == "add") {
-            $result = $professorModel->addProfessor($firstname, $lastname, $middlename);
+            $result = $professorModel->addProfessor($firstname, $lastname);
             if ($result) {
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("添加成功","/admin/professor/index.php?listProfessor");
@@ -115,7 +114,7 @@ function modifyProfessor($echoType = "normal") {
             }
         } else if ($flag == "update") {
             $id = BasicTool::post("id","需要提供要修改的 Professor ID");
-            $result = $professorModel->updateProfessor($id, $firstname, $lastname, $middlename);
+            $result = $professorModel->updateProfessor($id, $firstname, $lastname);
             if ($result) {
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("修改成功","/admin/professor/index.php?listProfessor");

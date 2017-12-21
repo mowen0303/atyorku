@@ -172,11 +172,7 @@ function registerProfessorInputComponent($componentObj) {
                         let $dataListOption = "";
                         let data = "";
                         json.result.forEach(item => {
-                            if (item.middlename == "") {
-                                data = `${item.firstname} ${item.lastname}`;
-                            } else {
-                                data = `${item.firstname} ${item.middlename} ${item.lastname}`;
-                            }
+                            data = `${item.firstname} ${item.lastname}`;
                             $dataListOption += `<option label="" value="${data}" />`;
                         })
                         $componentObj.find("datalist").html($dataListOption);

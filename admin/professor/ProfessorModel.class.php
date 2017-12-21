@@ -49,28 +49,27 @@ class ProfessorModel extends Model
      */
     public function getProfessorIdByFullName($fullName){
         $fullName = explode(" ",$fullName);
-        $firstName = $fullName[0];
-        $middleName = "";
-        $lastName = "";
         $nameSize = count($fullName);
         if($nameSize==1){
-            $this->errorMsg = "请输入完整的名称, first name 与 last name之间用空格隔开";
+            $this->errorMsg = "较少名称至少有first name和last name组成，中间由空格隔开";
             return 0;
-        } else if($nameSize==2){
-            $lastName = $fullName[1];
+        } else {
+            $fullName = array_filter($fullName,'trim');
+            $firstName = array_slice($fullName,0,$nameSize-1);
+            $lastName = array_slice($fullName,-1,1);
+            $firstName = implode(" ",$firstName);
+            $lastName = implode(" ",$lastName);
             $sql = "SELECT * FROM professor WHERE firstname = '{$firstName}' AND lastname = '{$lastName}'";
-        }else if($nameSize==3){
-            $middleName = $fullName[1];
-            $lastName = $fullName[2];
-            $sql = "SELECT * FROM professor WHERE firstname = '{$firstName}' AND middlename='{$middleName}' AND lastname = '{$lastName}'";
+
         }
+
 
         $row = $this->sqltool->getRowBySql($sql);
         $professorId = intval($row['id']);
 
         //如果没有此教授, 则添加,并返回id
         if($professorId==0){
-            $this->addProfessor($firstName,$lastName,$middleName);
+            $this->addProfessor($firstName,$lastName);
             $professorId = intval($this->sqltool->getInsertId());
         }
 
@@ -83,17 +82,15 @@ class ProfessorModel extends Model
     * 添加一个 professor
     * @param firstname professor firstname
     * @param lastname professor lastname
-    * @param middlename professor middlename
     * @return bool
     * @throws unique_name_exception 教授名称唯一
     */
-    public function addProfessor($firstname, $lastname, $middlename=false) {
+    public function addProfessor($firstname, $lastname) {
         $firstname = ucwords($firstname);
         $lastname = ucwords($lastname);
-        $middlename = ucwords($middlename);
         $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
         !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
-        $arr = array("firstname"=>$firstname,"lastname"=>$lastname,"middlename"=>$middlename);
+        $arr = array("firstname"=>$firstname,"lastname"=>$lastname);
         return $this->addRow($this->table, $arr);
     }
 
@@ -102,23 +99,20 @@ class ProfessorModel extends Model
     * @param id 要更新的 professor id
     * @param firstname professor firstname
     * @param lastname professor lastname
-    * @param middlename professor middlename
     * @return bool
     * @throws id_not_found_exception 教授ID未找到
     * @throws unique_name_exception 教授名称唯一
     */
-    public function updateProfessor($id, $firstname, $lastname, $middlename=false) {
+    public function updateProfessor($id, $firstname, $lastname) {
         $result = $this->checkProfId($id);
         $firstname = ucwords($firstname);
         $lastname = ucwords($lastname);
-        $middlename = ucwords($middlename);
         if ($result["firstname"] != $firstname || $result["lastname"] != $lastname) {
             // 姓名变化
             $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
             !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
         }
-
-        $arr = array("firstname"=>$firstname,"lastname"=>$lastname,"middlename"=>$middlename);
+        $arr = array("firstname"=>$firstname,"lastname"=>$lastname);
         return $this->updateRowById($this->table, $id, $arr);
     }
 
