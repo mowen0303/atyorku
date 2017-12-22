@@ -7,8 +7,16 @@ $currentUser = new \admin\user\UserModel();
 $transactionModel = new \admin\transaction\TransactionModel();
 call_user_func(BasicTool::get('action'));
 
-/*
- * 验证用户是否有足够的积分并进行扣除
+/**添加一个提问
+ * POST
+ * @param course_code_id
+ * @param prof_id
+ * @param description 问题描述
+ * @param reward_amount 积分奖励
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=addQuestion
  */
 function addQuestion($echoType = "normal"){
     global $questionModel,$imageModel,$currentUser,$transactionModel;
@@ -64,13 +72,30 @@ function addQuestion($echoType = "normal"){
         }
     }
 }
-
+/**添加一个提问
+ * POST,JSON接口
+ * @param course_code_id
+ * @param prof_id
+ * @param description 问题描述
+ * @param reward_amount 积分奖励
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=addQuestionWithJson
+ */
 function addQuestionWithJson(){
     addQuestion("normal");
 }
 
-/*
- * Controller核对管理员权限,确保提问者没还有采纳答案,退还原来的积分,扣除新积分. 确认用户在退还了原积分后有足够的积分进行扣除
+/**更改一个提问
+ * POST
+ * @param id 提问id
+ * @param description 问题描述
+ * @param reward_amount 积分奖励
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=updateQuestion
  */
 function updateQuestion($echoType = "normal"){
     global $questionModel,$imageModel,$currentUser,$transactionModel;
@@ -118,12 +143,24 @@ function updateQuestion($echoType = "normal"){
         }
     }
 }
+/**更改一个提问
+ * POST,JSON接口
+ * @param id 提问id
+ * @param description 问题描述
+ * @param reward_amount 积分奖励
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=updateQuestionWithJson
+ */
 function updateQuestionWithJson(){
     updateQuestion("json");
 }
-/*权限验证，必须是管理员或提问者
- * 删除之后退还积分,controller验证删除的问题是否被采纳
-  */
+/**删除提问
+ * POST
+ * @param id 提问id,integer或者一维数组
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestion
+ */
 function deleteQuestion($echoType="normal"){
     global $questionModel,$imageModel,$transactionModel,$currentUser,$solutionModel;
     $sqlTool = SqlTool::getSqlTool();
@@ -246,13 +283,21 @@ function deleteQuestion($echoType="normal"){
         }
     }
 }
+/**删除提问
+ * POST,JSON接口
+ * @param id 提问id
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestionWithJson
+ */
 function deleteQuestionWithJson(){
     deleteQuestion("json");
 }
 
-/*
- * $flag = 1 查询已解决的提问
- * $flag = 0 查询未解决的提问
+/**根据course_code_id查询一页提问
+ * GET,JSON接口
+ * @param course_code_id
+ * @param flag 0=为解决的提问，1=已解决的提问
+ * @param page 页数
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdWithJson&page=1&flag=1&course_code_id=1
  */
 function getQuestionsByCourseCodeIdWithJson(){
     global $questionModel;
@@ -269,6 +314,14 @@ function getQuestionsByCourseCodeIdWithJson(){
             BasicTool::echoJson(0,$e->getMessage());
         }
 }
+/**根据course_code_id和prof_id查询一页提问
+ * GET,JSON接口
+ * @param course_code_id
+ * @param prof_id
+ * @param flag 0=为解决的提问，1=已解决的提问
+ * @param page 页数
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdWithJson&page=1&flag=1&course_code_id=1&prof_id=1
+ */
 function getQuestionsByCourseCodeIdProfIdWithJson(){
     global $questionModel;
     try{
@@ -286,8 +339,11 @@ function getQuestionsByCourseCodeIdProfIdWithJson(){
         BasicTool::echoJson(0,$e->getMessage());
     }
 }
-/*权限验证，必须是管理员或提问者
- * 在问题未被解决的前提下,退还原来的积分,扣除新积分. 确认用户在退还了原积分后有足够的积分进行扣除
+/**更改积分奖励
+ * POST
+ * @param id 提问id
+ * @param reward_amount 积分奖励
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=updateRewardAmount
  */
 function updateRewardAmount($echoType="normal"){
     global $questionModel,$transactionModel,$currentUser;
@@ -336,12 +392,21 @@ function updateRewardAmount($echoType="normal"){
         }
     }
 }
+/**更改积分奖励
+ * POST,JSON接口
+ * @param id 提问id
+ * @param reward_amount 积分奖励
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=updateRewardAmountWithJson
+ */
 function updateRewardAmountWithJson(){
     updateRewardAmount("json");
 }
 
-/*权限验证，必须是管理员或提问者
- * Ensure question is not solved
+/**采纳答案
+ * GET
+ * @param question_id 提问id
+ * @param solution_id 答案id
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=approveSolution
  */
 
 function approveSolution($echoType="normal"){
@@ -378,6 +443,12 @@ function approveSolution($echoType="normal"){
         }
     }
 }
+/**采纳答案
+ * GET,JSON接口
+ * @param question_id 提问id
+ * @param solution_id 答案id
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=approveSolutionWithJson
+ */
 function approveSolutionWithJson(){
     approveSolution("json");
 }

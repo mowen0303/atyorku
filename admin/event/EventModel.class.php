@@ -8,9 +8,27 @@ use \Exception as Exception;
 class EventModel extends Model
 {
 
-    /**
-     * 添加一则活动
-     * @return $bool
+
+     /**
+     * 添加一则广告
+     * @param int $event_category_id 活动类ID
+     * @param String $title 活动标题
+     * @param String $description 活动详情
+     * @param PHP时间戳 $expiration_time 活动截止时间
+     * @param PHP时间戳 $event_time 活动时间
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @param String $location_link 活动地址,谷歌地图链接
+     * @param int $registration_fee 活动费
+     * @param int $max_participants 活动名额
+     * @param int $sponsor_user_id
+     * @param String $sponsor_name
+     * @param String $sponsor_telephone
+     * @param String $sponsor_wechat
+     * @param String $sponsor_email
+     * @param int $sort 排序值 0或1
+     * @return bool
      */
     public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
                              $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
@@ -45,9 +63,6 @@ class EventModel extends Model
         return $bool;
     }
 
-    /**
-     * 查询一则活动，返回一维键值数组
-     */
     public function getEvent($id)
     {
         $sql = "SELECT * from event WHERE id = {$id}";
@@ -55,9 +70,10 @@ class EventModel extends Model
         return $result;
     }
 
-    /**
-     * 调出一页广告
-     * @param $event_category_id
+    /**查询一个活动类下的活动
+     * flag=1 查询生效的活动
+     * flag=0 查询未生效的活动
+     * @param int $event_category_id
      * @param int $flag
      * @return array 二维数组
      */
@@ -82,8 +98,25 @@ class EventModel extends Model
     }
 
     /**
-     * 更改一则活动-----------update count on switching event_category_id---requires further implementation
-     *
+     * 更改一则广告
+     * @param int $id 活动id
+     * @param int $event_category_id 活动类ID
+     * @param String $title 活动标题
+     * @param String $description 活动详情
+     * @param PHP时间戳 $expiration_time 活动截止时间
+     * @param PHP时间戳 $event_time 活动时间
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @param String $location_link 活动地址,谷歌地图链接
+     * @param int $registration_fee 活动费
+     * @param int $max_participants 活动名额
+     * @param int $sponsor_user_id
+     * @param String $sponsor_name
+     * @param String $sponsor_telephone
+     * @param String $sponsor_wechat
+     * @param String $sponsor_email
+     * @param int $sort 排序值 0或1
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
@@ -115,9 +148,8 @@ class EventModel extends Model
         return $bool;
     }
 
-    /**
-     * 删除活动
-     * @id can be an integer or an array of integers
+    /**删除活动
+     * @param int|array $id 活动id
      * @return bool
      */
     public function deleteEvent($id)
@@ -152,8 +184,7 @@ class EventModel extends Model
         return $bool;
     }
 
-    /**
-     * @更新阅读量
+    /**更新阅读量
      */
     public function addAmountOfRead($id)
     {
@@ -161,8 +192,4 @@ class EventModel extends Model
         $this->sqltool->query($sql);
     }
 }
-
-
-
-
 ?>

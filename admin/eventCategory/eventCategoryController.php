@@ -5,10 +5,11 @@ $test = new \admin\eventCategory\EventCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get("action"));
 
-/**
- * 添加一则活动分类
- * @param $title
- * @param $description
+/**添加一个活动分类
+ * POST
+ * @param title 分类标题
+ * @param description
+ * localhost/admin/eventCategory/eventCategoryController.php?action=addEventCategory
  */
 function addEventCategory(){
     global $eventCategoryModel;
@@ -26,8 +27,10 @@ function addEventCategory(){
 }
 
 /**
- * 删除一则活动分类
- * @param $id
+ * 删除活动分类
+ * POST
+ * @param id 分类id
+ * localhost/admin/eventCategory/eventCategoryController.php?action=deleteEventCategory
  */
 function deleteEventCategory()
 {
@@ -56,14 +59,21 @@ function getEventCategory(){
     BasicTool::echoJson(1,"成功",$eventCategoryModel->getEventCategory($id));
 }
 
+/**查询所有活动分类
+ * JSON接口
+ * localhost/admin/eventCategory/eventCategoryController.php?action=getEventCategoriesWithJson
+ */
 function getEventCategoriesWithJson(){
     global $eventCategoryModel;
     BasicTool::echoJson(1,"成功",$eventCategoryModel->getEventCategories());
 }
 
-/**
- * 更改一则广告分类
- * @param $id,$title,$description,$size
+/**更改一个活动分类
+ * POST
+ * @param id 分类id
+ * @param title 分类标题
+ * @param description
+ * localhost/admin/eventCategory/eventCategoryController.php?action=updateEventCategory
  */
 function updateEventCategory(){
     global $eventCategoryModel;

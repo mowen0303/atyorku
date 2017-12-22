@@ -5,11 +5,22 @@ use \Model as Model;
 
 class TransactionModel extends Model
 {
+    /**查询某个用户的积分记录
+     * @param int $user_id
+     * @return array
+     */
     function getTransactionsByUserId($user_id){
         $sql = "SELECT * FROM transaction WHERE user_id = {$user_id} SORT BY time desc";
         $countSql = "SELECT COUNT(*) FROM transaction WHERE user_id = {$user_id} SORT BY time desc";
         return $this->getListWithPage("transaction",$sql,$countSql,30);
     }
+
+    /**添加一个积分记录
+     * @param int $user_id 用户id
+     * @param int $amount 积分
+     * @param String $description 描述
+     * @return bool
+     */
     function addTransaction($user_id, $amount, $description)
     {
         $arr["user_id"] = $user_id;
@@ -19,8 +30,9 @@ class TransactionModel extends Model
         return $this->addRow("transaction", $arr);
     }
 
-    /*
-     * @return $credit or false if query failed
+    /**查询某个用户的积分
+     * @param int $user_id 用户id
+     * @return mixed
      */
     function getCredit($user_id)
     {
@@ -28,26 +40,32 @@ class TransactionModel extends Model
         $result = $this->sqltool->getRowBySql($sql)["credit"];
         return $result;
     }
-    /*到user表下更改credit
-     * @return true/false
+
+    /**把积分写进user表
+     * @param int $user_id 用户id
+     * @param int $credit 用户当前积分
+     * @return bool|\mysqli_result
      */
     function setCredit($user_id,$credit){
         $sql = "UPDATE user SET credit = {$credit} WHERE id={$user_id}";
         return $this->sqltool->query($sql);
     }
 
-    /*判断用户是否有足够的积分进行消耗
-     *
-     * @return true/false
+    /**判断用户是否有足够积分进行消耗
+     * @param int $user_id 用户id
+     * @param int $amount 扣除的积分
+     * @return bool
      */
     function isCreditDeductible($user_id,$amount){
         $credit = $this->getCredit($user_id);
         return $credit - $amount >= 0;
     }
 
-    /*给用户加积分
-     *@para $amount is positive
-     * @return true/false
+    /**给用户添加积分
+     * @param int $user_id 用户id
+     * @param int $amount 积分
+     * @param String $description 描述
+     * @return bool
      */
     function addCredit($user_id,$amount,$description){
         $bool = $this->addTransaction($user_id,$amount,$description);
@@ -69,8 +87,12 @@ class TransactionModel extends Model
         $bool = $this->sqltool->query($sql);
         return $bool;
     }
-    /*@param $amount is positive
-     *@return true/false
+
+    /**消耗用户的积分
+     * @param int $user_id 用户id
+     * @param int $amount 扣除的积分,positive
+     * @param String $description 描述
+     * @return bool
      */
     function deductCredit($user_id,$amount,$description){
         $bool = $this->isCreditDeductible($user_id,$amount);
@@ -82,8 +104,14 @@ class TransactionModel extends Model
         }
         return $bool;
     }
-    /*
-     * @return true/false
+
+    /**购买
+     * @param $buyer_user_id
+     * @param $seller_user_id
+     * @param $amount
+     * @param $buyer_description
+     * @param $seller_description
+     * @return bool|\mysqli_result
      */
     function buy($buyer_user_id,$seller_user_id,$amount,$buyer_description,$seller_description){
         //判断买家积分是否足够消耗

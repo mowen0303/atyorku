@@ -4,6 +4,15 @@ use \Model as Model;
 
 class CourseSolutionModel extends Model
 {
+    /**添加答案
+     * @param int $question_id 提问id
+     * @param int $answerer_user_id 回答者id
+     * @param String $description 答案
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @return bool
+     */
     function addSolution($question_id,$answerer_user_id,$description,$img_id_1,$img_id_2,$img_id_3){
         $arr["question_id"]=$question_id;
         $arr["description"]=$description ? $description : "";
@@ -22,8 +31,14 @@ class CourseSolutionModel extends Model
         }
         return $bool;
     }
-    /*
-     * controller确保指定修改的答案并没有被采纳
+
+    /**更改答案
+     * @param int $id 答案id
+     * @param String $description 答案
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @return bool
      */
     function updateSolution($id,$description,$img_id_1,$img_id_2,$img_id_3){
         $arr["description"] = $description ? $description : "";
@@ -32,8 +47,10 @@ class CourseSolutionModel extends Model
         $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
         return $this->updateRowById("course_solution", $id,$arr);
     }
-    /*
-     * controller确保指定删除的答案并没有被采纳
+
+    /**删除答案
+     * @param int|array $id 答案id
+     * @return bool|\mysqli_result
      */
     function deleteSolutionById($id){
         if (is_array($id)){
@@ -65,11 +82,12 @@ class CourseSolutionModel extends Model
     }
 
     function getSolutionById($id){
+        return $this->getRowById("course_solution",$id);
+    }
 
-return $this->getRowById("course_solution",$id);
-}
-    /*
-     *@return solution|false
+    /**查询被采纳的答案
+     * @param $question_id 答案id
+     * @return \一维关联数组
      */
     function getApprovedSolutionByQuestionId($question_id){
         $sql = "SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved !=0";
@@ -77,6 +95,10 @@ return $this->getRowById("course_solution",$id);
         return $solution;
     }
 
+    /**查询未被采纳的答案
+     * @param $question_id 答案ID
+     * @return array
+     */
     function getSolutionsByQuestionId($question_id){
         $sql = "SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";
         $countSql = "SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";

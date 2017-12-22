@@ -9,8 +9,16 @@ use \Exception as Exception;
 class AdModel extends Model
 {
 
-    /**
-     * 添加一则广告
+    /** 添加一则广告
+     * @param String $title 广告标题
+     * @param String $description 广告详情
+     * @param String $sponsor_name 广告商
+     * @param int $img_id_1
+     * @param PHP时间戳 $publish_time 投放时间
+     * @param PHP时间戳 $expiration_time 过期时间
+     * @param int $ad_category_id 广告分类id
+     * @param String $ad_url 广告链接
+     * @param int $sort 排序时0或者1
      * @return $bool
      */
     public function addAd($title, $description, $sponsor_name, $img_id_1, $publish_time, $expiration_time, $ad_category_id, $ad_url,$sort)
@@ -35,8 +43,12 @@ class AdModel extends Model
     }
 
 
-    /*调出一页广告
-     * 返回二维数组
+    /**调出一分类下的广告
+     * flag=1查询生效的广告
+     * flag=0查询未生效的广告
+     * @param int $ad_category_id 广告分类id
+     * @param int $flag
+     * @return array
      */
     public function getAdsByCategory($ad_category_id,$flag){
         $currentTime = time();
@@ -66,7 +78,17 @@ class AdModel extends Model
 
     /**
      * 更改一则广告
-     * @return bool
+     * @param int $id 广告id
+     * @param String $title 广告标题
+     * @param String $description 广告详情
+     * @param String $sponsor_name 广告商
+     * @param int $img_id_1
+     * @param PHP时间戳 $publish_time 投放时间
+     * @param PHP时间戳 $expiration_time 过期时间
+     * @param int $ad_category_id 广告分类id
+     * @param String $ad_url 广告链接
+     * @param int $sort 排序时0或者1
+     * @return $bool
      */
     public function updateAd($id, $title, $description, $sponsor_name, $img_id_1, $publish_time,$expiration_time, $ad_category_id, $ad_url,$sort)
     {
@@ -84,6 +106,10 @@ class AdModel extends Model
         return $bool;
     }
 
+    /**删除广告
+     * @param int|array $id 广告id
+     * @return bool
+     */
     public function deleteAd($id)
     {
         if (is_array($id))
@@ -100,9 +126,7 @@ class AdModel extends Model
         return $bool;
     }
 
-    /**
-     * @更新阅读量
-     */
+    //更新阅读量
     public function addAmountOfRead($AdId)
     {
         $sql = "UPDATE ad SET view_count = view_count + 1 WHERE id = " . $AdId;

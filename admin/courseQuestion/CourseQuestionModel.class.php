@@ -4,6 +4,17 @@ use \Model as Model;
 
 class CourseQuestionModel extends Model
 {
+    /**添加一个提问
+     * @param int $course_code_id
+     * @param int $prof_id 教授id
+     * @param int $questioner_user_id 提问者id
+     * @param String $description 问题描述
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @param int $reward_amount 积分奖励
+     * @return bool
+     */
     function addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
 
@@ -36,6 +47,15 @@ class CourseQuestionModel extends Model
         return $bool;
     }
 
+    /**更改一个提问
+     * @param int $id 提问id
+     * @param String $description 问题描述
+     * @param int $img_id_1
+     * @param int $img_id_2
+     * @param int $img_id_3
+     * @param int $reward_amount 积分奖励
+     * @return bool
+     */
     function updateQuestion($id,$description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
         $arr["description"] = $description ? $description : "";
@@ -46,12 +66,21 @@ class CourseQuestionModel extends Model
         return $this->updateRowById("course_question", $id,$arr);
     }
 
+    /**更改积分奖励
+     * @param int $id 提问id
+     * @param int $reward_amount 积分奖励
+     * @return bool
+     */
     function updateRewardAmount($id, $reward_amount)
     {
         $arr["reward_amount"] = $reward_amount ? $reward_amount : 0;
         return $this->updateRowById("course_question", $id,$arr);
     }
 
+    /**删除提问
+     * @param int|array $id 提问id
+     * @return bool|\mysqli_result
+     */
     function deleteQuestion($id)
     {
         if (is_array($id)) {
@@ -91,9 +120,13 @@ class CourseQuestionModel extends Model
 
     }
 
-    /*
-     * $flag = 1 查询已解决的提问
-     * $flag = 0 查询未解决的提问
+    /**根据course_code_id和教授id查询提问
+     * flag=1查询已解决的提问
+     * flag=0查询未解决的提问
+     * @param int $course_code_id
+     * @param int $prof_id 教授id
+     * @param int $flag
+     * @return array
      */
     function getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id, $flag = 1)
     {
@@ -108,9 +141,12 @@ class CourseQuestionModel extends Model
         return $this->getListWithPage("course_question", $sql, $countSql, 20);
     }
 
-    /*
-     * $flag = 1 查询已解决的提问
-     * $flag = 0 查询未解决的提问
+    /**根据course_code_id查询提问
+     * flag=1查询已解决的提问
+     * flag=0查询未解决的提问
+     * @param int $course_code_id
+     * @param int $flag
+     * @return array
      */
     function getQuestionsByCourseCodeId($course_code_id,$flag=1){
         if ($flag == 0) {
@@ -124,6 +160,11 @@ class CourseQuestionModel extends Model
         return $this->getListWithPage("course_question", $sql, $countSql, 20);
     }
 
+    /**采纳答案
+     * @param int $id 提问id
+     * @param int $solution_id 答案id
+     * @return bool|\mysqli_result
+     */
     function approveSolution($id, $solution_id)
     {
         $time = time();
