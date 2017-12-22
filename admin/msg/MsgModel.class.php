@@ -59,7 +59,6 @@ class MsgModel extends Model
         $sql = "SELECT id,badge,device FROM user WHERE device <> '0' LIMIT $start,$size";
         while ($deviceArr = $this->sqltool->getListBySql($sql)) {
             foreach ($deviceArr as $row) {
-                if($i>=1) return false; //群发控制
                 echo $i++ . "--UID:" . $row['id'] . "--" . $row['device'];
                 if (self::applePush($row['device'],false,$msgType,$msgTypeId,$content, $row['badge'], $silent)) {
                     echo "--成功<br>";

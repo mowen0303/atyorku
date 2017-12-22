@@ -432,16 +432,18 @@ function deleteForum($echoType = "normal") {
 function getForumCommentListWithJson(){
     global $forumModel;
     //执行逻辑处理
-    if(!$pageSize = BasicTool::get('pageSize')){
-        $pageSize = 40;
-    }
-    $result = $forumModel->getListOfForumCommentByForumId(BasicTool::get("forum_id"), $pageSize);
-    $totalPage = $forumModel->getTotalPage();
-    if ($result) {
-        //输出json结果
-        BasicTool::echoJson(1, "成功", "", $result, $totalPage);
-    } else {
-        BasicTool::echoJson(0, "");
+    try{
+        $pageSize = BasicTool::get('pageSize')?:40;
+        $result = $forumModel->getListOfForumCommentByForumId(BasicTool::get("forum_id"), $pageSize);
+        $totalPage = $forumModel->getTotalPage();
+        if($result){
+            BasicTool::echoJson(1, "成功", "", $result, $totalPage);
+        }else{
+            BasicTool::echoJson(0, "没有更多数据了", "", $result, $totalPage);
+        }
+
+    }catch(Exception $e){
+        BasicTool::echoJson(0, $e->getMessage(),$totalPage);
     }
 }
 
