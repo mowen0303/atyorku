@@ -164,7 +164,7 @@ function registerProfessorInputComponent($componentObj) {
     let queryWord = "";
     $inputObj.on('input', () => {
         queryWord = $inputObj.val();
-        if (queryWord.length <= 3) {
+        if (queryWord.length <= 6) {
             fetch(url + queryWord)
                 .then(response => response.json())
                 .then(json => {

@@ -30,9 +30,7 @@ abstract class Model
      */
     protected function getListWithPage($table, $sql, $countSql = null, $pageSize = 50, $debug = false)
     {
-        $pageCurrent = BasicTool::get('page');
-        $pageCurrent = $pageCurrent === null ? 1 : $pageCurrent;
-
+        $pageCurrent = BasicTool::get('page')?:1;
         $limitX = ($pageCurrent - 1) * $pageSize;
 
         $sql .= " limit {$limitX},{$pageSize}";
