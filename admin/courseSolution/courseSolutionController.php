@@ -6,6 +6,15 @@ $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 call_user_func(BasicTool::get('action'));
 
+/**添加答案
+ * POST
+ * @param question_id 提问id
+ * @param description
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=addSolution
+ */
 function addSolution($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
@@ -39,10 +48,28 @@ function addSolution($echoType = "normal"){
     }
 }
 
+/**添加答案
+ * POST,JSON接口
+ * @param question_id 提问id
+ * @param description
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=addSolutionWithJson
+ */
 function addSolutionWithJson(){
     addQuestion("normal");
 }
 
+/**更改答案
+ * POST
+ * @param id 答案id
+ * @param description
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=updateSolution
+ */
 function updateSolution($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
@@ -73,9 +100,23 @@ function updateSolution($echoType = "normal"){
         }
     }
 }
+/**更改答案
+ * POST,JSON接口
+ * @param id 答案id
+ * @param description
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=updateSolutionWithJson
+ */
 function updateSolutionWithJson(){
     updateSolution("json");
 }
+/**查询某个提问下被采纳的答案
+ * GET,JSON接口
+ * @param question_id 答案id
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=getApprovedSolutionByQuestionIdWithJson&question_id=1
+ */
 function getApprovedSolutionByQuestionIdWithJson(){
     global $solutionModel;
     $question_id = BasicTool::get("question_id","请指定question_id");
@@ -85,6 +126,11 @@ function getApprovedSolutionByQuestionIdWithJson(){
     else
         BasicTool::echoJson(0,"空");
 }
+/**查询某个提问下位被采纳的答案
+ * GET,JSON接口
+ * @param question_id 答案id
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=getSolutionsByQuestionIdWithJson&question_id=1
+ */
 function getSolutionsByQuestionIdWithJson(){
     global $solutionModel;
     $question_id = BasicTool::get("question_id","请指定question_id");
@@ -94,8 +140,10 @@ function getSolutionsByQuestionIdWithJson(){
     else
         BasicTool::echoJson(0,"空");
 }
-/*
- * 确认选中的答案没有被采纳
+/**删除答案
+ * POST
+ * @param id 答案id，integer或一维数组
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=deleteSolutionById
  */
 function deleteSolutionById($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
@@ -176,6 +224,11 @@ function deleteSolutionById($echoType = "normal"){
         }
     }
 }
+/**删除答案
+ * POST,JSON接口
+ * @param id 答案id，integer或一维数组
+ * localhost/admin/courseSolution/courseSolutionnController.php?action=deleteSolutionByIdWithJson
+ */
 function deleteSolutionByIdWithJson(){
     deleteSolutionById("json");
 }

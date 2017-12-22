@@ -10,7 +10,8 @@ class EventParticipantModel extends Model
 {
 
     /**
-     * 添加一个活动参与人
+     * @param int $event_id 活动id
+     * @param int $user_id 用户id
      * @return $bool
      */
     public function addEventParticipant($event_id,$user_id)
@@ -29,9 +30,6 @@ class EventParticipantModel extends Model
         return $bool;
     }
 
-    /**
-     *
-     */
     public function getEventParticipant($id)
     {
         $sql = "SELECT * from event_participant WHERE id = {$id}";
@@ -39,21 +37,18 @@ class EventParticipantModel extends Model
         return $result;
     }
 
-    /*调出指定活动下的所有参与者
-     *
+    /**调出一个活动下的所有参与者
+     * @param int $event_id 活动id
+     * @return array
      */
     public function getEventParticipantsByEvent($event_id){
-
-            $sql = "SELECT * FROM event_participant WHERE event_id = {$event_id} ";
-            $countSql = "SELECT * FROM event_participant WHERE event_id = {$event_id}";
-            return $this->getListWithPage("event", $sql, $countSql, 20);
-
+        $sql = "SELECT * FROM event_participant WHERE event_id = {$event_id} ";
+        $countSql = "SELECT * FROM event_participant WHERE event_id = {$event_id}";
+        return $this->getListWithPage("event", $sql, $countSql, 20);
     }
 
-
-
-    /**
-     * 删除活动参与人
+    /**删除活动参与人
+     * $param int $id eventparticipant_id
      * @return bool
      */
     public function deleteEventParticipant($id)
@@ -73,10 +68,5 @@ class EventParticipantModel extends Model
         }
         return $bool;
     }
-
-
 }
-
-
-
 ?>

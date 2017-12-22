@@ -5,8 +5,18 @@ $imageModel = new admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
-/*
- * $ad_url
+/**添加一则广告
+ * POST
+ * @param title 广告标题
+ * @param sponsor_name 广告商
+ * @param ad_url 广告链接
+ * @param publish_time 投放时间,PHP时间戳
+ * @param expiration_time 过期时间,PHP时间戳
+ * @param description 广告详情
+ * @param ad_category_id 广告分类ID
+ * @param sort 排序值
+ * @param img_id_1
+ * localhost/admin/ad/adController.php?action=addAd
  */
 function addAd($echoType="normal"){
     global $adModel;
@@ -46,10 +56,31 @@ function addAd($echoType="normal"){
         }
     }
 }
+/**添加一则广告
+ * POST传值
+ * JSON返回
+ * @param title 广告标题
+ * @param sponsor_name 广告商
+ * @param ad_url 广告链接
+ * @param publish_time 投放时间,PHP时间戳
+ * @param expiration_time 过期时间,PHP时间戳
+ * @param description 广告详情
+ * @param ad_category_id 广告分类ID
+ * @param sort 排序值
+ * @param img_id_1
+ * localhost/admin/ad/adController.php?action=addAdWithJson
+ */
 function addAdWithJson(){
     addAd("json");
 }
 
+/**查询某个广告类下的一页广告
+ * GET
+ * JSON返回
+ * @param ad_category_id 广告分类ID
+ * @param page 页数
+ * localhost/admin/ad/adController.php?action=getAdsByCategoryWithJson&ad_category_id=1&page=2
+ */
 function getAdsByCategoryWithJson(){
     global $adModel;
     global $currentUser;
@@ -66,7 +97,11 @@ function getAdsByCategoryWithJson(){
     }
 }
 
-
+/**根据广告id删除广告
+ * POST
+ * @param id integer或者一维数组
+ * localhost/admin/ad/adController.php?action=deleteAd
+ */
 function deleteAd($echoType="normal"){
     global $adModel;
     global $currentUser;
@@ -122,11 +157,28 @@ function deleteAd($echoType="normal"){
         }
     }
 }
+/**根据广告id删除广告
+ * POST
+ * JSON
+ * @param id integer或者一维数组
+ * localhost/admin/ad/adController.php?action=deleteAdWithJson
+ */
 function deleteAdWithJson(){
     deleteAd("json");
 }
-/*
- *
+/**更改一则广告
+ * POST
+ * @param id 广告id
+ * @param title 广告标题
+ * @param sponsor_name 广告商
+ * @param ad_url 广告链接
+ * @param publish_time 投放时间,PHP时间戳
+ * @param expiration_time 过期时间,PHP时间戳
+ * @param description 广告详情
+ * @param ad_category_id 广告分类ID
+ * @param sort 排序值
+ * @param img_id_1
+ * localhost/admin/ad/adController.php?action=updateAd
  */
 function updateAd($echoType="normal"){
     global $adModel;
@@ -170,6 +222,21 @@ function updateAd($echoType="normal"){
         }
     }
 }
+/**更改一则广告
+ * POST
+ * JSON接口
+ * @param id 广告id
+ * @param title 广告标题
+ * @param sponsor_name 广告商
+ * @param ad_url 广告链接
+ * @param publish_time 投放时间,PHP时间戳
+ * @param expiration_time 过期时间,PHP时间戳
+ * @param description 广告详情
+ * @param ad_category_id 广告分类ID
+ * @param sort 排序值
+ * @param img_id_1
+ * localhost/admin/ad/adController.php?action=updateAdWithJson
+ */
 function updateAdWithJson(){
     updateAd("json");
 }

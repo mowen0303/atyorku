@@ -4,11 +4,12 @@ $adCategoryModel = new admin\adCategory\AdCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get("action"));
 
-/**
- * 添加一则广告分类
- * @param $size
- * @param $title
- * @param $description
+/**添加一个广告分类
+ * POST
+ * @param size
+ * @param title
+ * @param description
+ * localhost/admin/adCategory/AdCategoryController.php?action=addAdCategory
  */
 function addAdCategory(){
     global $adCategoryModel;
@@ -27,7 +28,7 @@ function addAdCategory(){
 }
 
 /**
- * 删除一则广告分类
+ * 删除一个广告分类
  * @param $id
  */
 function deleteAdCategory(){

@@ -5,7 +5,12 @@ $eventModel = new admin\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
-
+/**添加活动参与人
+ * POST
+ * @param user_id 参与者id
+ * @param event_id 活动id
+ *localhost/admin/eventParticipant/eventParticipantController.php?action=addEventParticipant
+ */
 function addEventParticipant(){
     global $eventParticipantModel,$eventModel;
     global $currentUser;
@@ -25,7 +30,12 @@ function addEventParticipant(){
         BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
     }
 }
-
+/**添加活动参与人
+ * POST，JSON接口
+ * @param user_id 参与者id
+ * @param event_id 活动id
+ *localhost/admin/eventParticipant/eventParticipantController.php?action=addEventParticipantWithJson
+ */
 function addEventParticipantWithJson(){
     global $eventParticipantModel,$eventModel;
     global $currentUser;
@@ -45,6 +55,12 @@ function addEventParticipantWithJson(){
     }
 }
 
+/**查询某个活动的参与者
+ * GET，JSON接口
+ * @param event_id 活动id
+ * @param page 页数
+ *localhost/admin/eventParticipant/eventParticipantController.php?action=getEventParticipantsByEventWithJson?page=1&event_id=2
+ */
 function getEventParticipantsByEventWithJson(){
     global $eventParticipantModel;
     $event_id = BasicTool::get("event_id","specify id");
@@ -56,6 +72,11 @@ function getEventParticipantsByEventWithJson(){
         BasicTool::echoJson(0,"空");
 }
 
+/**删除活动参与者
+ * POST
+ * @param id event_participant_id,int或者一维数组
+ *localhost/admin/eventParticipant/eventParticipantController.php?action=deleteEventParticipant
+ */
 function deleteEventParticipant($echoType="normal"){
     global $eventParticipantModel;
     global $currentUser;
@@ -85,6 +106,11 @@ function deleteEventParticipant($echoType="normal"){
     }
 }
 
+/**删除活动参与者
+ * POST,JSON接口
+ * @param id event_participant_id,int或者一维数组
+ *localhost/admin/eventParticipant/eventParticipantController.php?action=deleteEventParticipantWithJson
+ */
 function deleteEventParticipantWithJson(){
     deleteEventParticipant("json");
 }

@@ -7,7 +7,27 @@ $commentModel = new \admin\comment\CommentModel();
 call_user_func(BasicTool::get('action'));
 
 
-
+/**添加活动
+ * POST
+ * @param event_category_id 活动分类id
+ * @param title 活动标题
+ * @param description 活动详情
+ * @param expiration_time 活动截止时间,PHP时间戳
+ * @param event_time 活动时间,PHP时间戳
+ * @param location_link 活动地址,谷歌地图URL
+ * @param registration_fee 报名费
+ * @param max_participants 活动名额
+ * @param sponsor_user_id
+ * @param sponsor_name
+ * @param sponsor_wechat
+ * @param sponsor_email
+ * @param sponsor_telephone
+ * @param sort 排序值
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/event/eventController.php?action=addEvent
+ */
 function addEvent($echoType = "normal"){
     global $eventModel;
     global $currentUser;
@@ -56,21 +76,38 @@ function addEvent($echoType = "normal"){
     }
 }
 
-/**
- * 添加一条评论
- * [POST] http://www.atyorku.ca/admin/forum/forumController.php?action=addCommentWithJson
- * @param content_comment
- * @param forum_id
- * @param ownerUserId
- * @param receiveUserId
- * @return json {code,message,forumCommentObject}
+/**添加活动
+ * POST
+ * JSON接口
+ * @param event_category_id 活动分类id
+ * @param title 活动标题
+ * @param description 活动详情
+ * @param expiration_time 活动截止时间,PHP时间戳
+ * @param event_time 活动时间,PHP时间戳
+ * @param location_link 活动地址,谷歌地图URL
+ * @param registration_fee 报名费
+ * @param max_participants 活动名额
+ * @param sponsor_user_id
+ * @param sponsor_name
+ * @param sponsor_wechat
+ * @param sponsor_email
+ * @param sponsor_telephone
+ * @param sort 排序值
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ * localhost/admin/event/eventController.php?action=addEventWithJson
  */
 function addEventWithJson(){
     addEvent("json");
 }
 
-/*
- * @flag
+/**根据分类ID查询一页活动
+ * GET
+ * @param event_category_id 分类id
+ * @param flag 0查询未生效,1查询生效广告
+ * @param page 页数
+ * localhost/admin/event/eventController.php?action=getEventsByCategory&flag=1&page=1$event_category_id=2
  */
 function getEventsByCategory($echoType="normal")
 {
@@ -95,10 +132,23 @@ function getEventsByCategory($echoType="normal")
             BasicTool::echoJson(0,"查询失败");
     }
 }
+/**根据分类ID查询一页活动
+ * GET
+ * JSON接口
+ * @param event_category_id 分类id
+ * @param flag 0查询未生效,1查询生效广告
+ * @param page 页数
+ * localhost/admin/event/eventController.php?action=getEventsByCategoryWithJson&flag=1&page=1$event_category_id=2
+ */
 function getEventsByCategoryWithJson(){
     getEventsByCategory("json");
 }
 
+/**根据活动ID删除活动
+ * POST
+ * @param id int或者一维数组
+ *  localhost/admin/event/eventController.php?action=deleteEvent
+ */
 function deleteEvent($echoType="normal"){
     global $eventModel;
     global $currentUser;
@@ -186,10 +236,37 @@ function deleteEvent($echoType="normal"){
         }
     }
 }
+/**根据活动ID删除活动
+ * POST
+ * JSON接口
+ * @param id int或者一维数组
+ *  localhost/admin/event/eventController.php?action=deleteEventWithJson
+ */
 function deleteEventWithJson(){
     deleteEvent("json");
 }
-
+/**更改活动
+ * POST
+ * @param id 活动ID
+ * @param event_category_id 活动分类id
+ * @param title 活动标题
+ * @param description 活动详情
+ * @param expiration_time 活动截止时间,PHP时间戳
+ * @param event_time 活动时间,PHP时间戳
+ * @param location_link 活动地址,谷歌地图URL
+ * @param registration_fee 报名费
+ * @param max_participants 活动名额
+ * @param sponsor_user_id
+ * @param sponsor_name
+ * @param sponsor_wechat
+ * @param sponsor_email
+ * @param sponsor_telephone
+ * @param sort 排序值
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ *  localhost/admin/event/eventController.php?action=updateEvent
+ */
 function updateEvent($echoType = "normal"){
     global $eventModel;
     global $currentUser;
@@ -257,6 +334,29 @@ function updateEvent($echoType = "normal"){
         }
     }
 }
+/**更改活动
+ * POST
+ * JSON接口
+ * @param id 活动ID
+ * @param event_category_id 活动分类id
+ * @param title 活动标题
+ * @param description 活动详情
+ * @param expiration_time 活动截止时间,PHP时间戳
+ * @param event_time 活动时间,PHP时间戳
+ * @param location_link 活动地址,谷歌地图URL
+ * @param registration_fee 报名费
+ * @param max_participants 活动名额
+ * @param sponsor_user_id
+ * @param sponsor_name
+ * @param sponsor_wechat
+ * @param sponsor_email
+ * @param sponsor_telephone
+ * @param sort 排序值
+ * @param img_id_1
+ * @param img_id_2
+ * @param img_id_3
+ *  localhost/admin/event/eventController.php?action=updateEventWithJson
+ */
 function updateEventWithJson(){
    updateEvent("json");
 
