@@ -23,7 +23,7 @@ $_AUT = [
     'MAP'=>getAuthorityNum(16),
     'EVENT'=>getAuthorityNum(11),
     'COURSE_QUESTION'=>getAuthorityNum(21),
-    'COURSE_RATE'=>getAuthorityNum(22),
+    'COURSE_RATING'=>getAuthorityNum(22),
     'COURSE_RECALL'=>getAuthorityNum(23),
     'COMMENT'=>getAuthorityNum(24),
 ];
