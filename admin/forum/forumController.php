@@ -349,8 +349,7 @@ function modifyForum($echoType = "normal") {
             $arr['user_id'] = $currentUser->userId;
             if ($forumModel->addRow('forum', $arr)) {
                 //更新今日数据
-                $forumModel->updateCountOfToday($arr['forum_class_id']);
-                $forumModel->updateCountOfAll($arr['forum_class_id']);
+                $forumModel->updateCountData($forumModel->idOfInsert,false);
 
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("新信息添加成功", "/admin/forum/index.php?s=listForum&forum_class_id=" . $arr['forum_class_id']);
@@ -469,7 +468,7 @@ function deleteComment($echoType = "normal"){
         }
         $forumId = $forumModel->getForumIdOfCommentId($id) or BasicTool::throwException("forumId:" . $forumId);
         $forumModel->realDeleteByFieldIn("forum_comment", "id", $id) or BasicTool::throwException($forumModel->errorMsg);
-        $forumModel->countAmountOfComment($forumId);
+        $forumModel->updateCountData($forumId,false);
         if ($echoType == "normal") {
             BasicTool::echoMessage("删除成功");
         } else {
@@ -519,9 +518,10 @@ function addComment($echoType = "normal")
         $arr['forum_id'] = $forumId;
         $forumModel->addRow('forum_comment', $arr) or BasicTool::throwException($forumModel->errorMsg);
         //更新统计
-        $forumModel->countAmountOfComment($arr['forum_id']);
+        $forumModel->updateCountData($arr['forum_id']);
         $forumModel->updateForumTime($arr['forum_id']);
         $newComment = $forumModel->getCommentById($forumModel->idOfInsert);
+
         //推送信息
         $msgModel->pushMsgToUser($ownerUserId,"forumComment", $forumId, $arr['content_comment']);
         if($ownerUserId!=$receiveUserId){

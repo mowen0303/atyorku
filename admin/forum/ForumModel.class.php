@@ -146,29 +146,6 @@ class ForumModel extends Model
 
     }
 
-    /**
-     * 获取今日发帖量
-     */
-    public function updateCountOfToday($classId)
-    {
-        $timeOfMidnight = strtotime(date("Y-m-d"));
-        $sql = "SELECT COUNT(*) AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$classId}";
-        $row = $this->sqltool->getRowBySql($sql);
-        $amount = $row['amount'];
-        $sql = "UPDATE forum_class SET count_today = {$amount} WHERE id = {$classId}";
-        return $this->sqltool->query($sql);
-    }
-
-
-    public function updateCountOfAll($classId)
-    {
-        $sql = "SELECT COUNT(*) AS amount FROM forum WHERE forum_class_id = {$classId}";
-        $row = $this->sqltool->getRowBySql($sql);
-        $amount = $row['amount'];
-        $sql = "UPDATE forum_class SET count_all = {$amount} WHERE id = {$classId}";
-        return $this->sqltool->query($sql);
-    }
-
 
     /**
      * 根据帖子id 获取发帖人id
@@ -260,13 +237,35 @@ class ForumModel extends Model
      * 执行添加和删除操作时, 重新计算留言数量
      * @param $courseNumberId
      */
-    public function countAmountOfComment($courseNumberId)
+    public function updateCountData($forumId)
     {
-        $sql = "SELECT COUNT(id) AS count FROM forum_comment WHERE forum_id = {$courseNumberId}";
-        $row = $this->sqltool->getRowBySql($sql);
-        $count = $row['count'];
 
-        $sql = "UPDATE forum SET comment_num = {$count} WHERE id = {$courseNumberId}";
+        //根据forum的id获取forum class id
+        $sql = "SELECT forum_class_id FROM forum WHERE id in ({$forumId})";
+        $row = $this->sqltool->getRowBySql($sql);
+        $forum_class_id = $row['forum_class_id'];
+        //更新forum表的评论数
+        $sql = "UPDATE forum SET comment_num = (SELECT COUNT(id) AS count FROM (SELECT * FROM forum_comment) AS fc WHERE forum_id = {$forumId}) WHERE id = {$forumId};";
+        $this->sqltool->query($sql);
+        //更新forum_class表的总主题数
+        $sql = "UPDATE forum_class SET count_all = (SELECT COUNT(*)  FROM (SELECT * FROM forum) AS f WHERE forum_class_id = {$forum_class_id}) WHERE id = {$forum_class_id}";
+        $this->sqltool->query($sql);
+
+        //更新forum_class表的总帖子数（forum数量+评论数量）
+        $sql = "UPDATE forum_class set count_forum_and_comment = count_all+(SELECT COUNT(*) FROM (select * from forum_comment) as fc WHERE forum_id IN (SELECT id FROM forum WHERE forum_class_id = {$forum_class_id})) WHERE id = {$forum_class_id};";
+        $this->sqltool->query($sql);
+
+        //更新今日发帖量
+        $timeOfMidnight = strtotime(date("Y-m-d"));
+        //获取今日发的帖子数量
+        $sql = "SELECT COUNT(*) AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$forum_class_id}";
+        $row = $this->sqltool->getRowBySql($sql);
+        $amount = $row['amount'];
+        //获取今日发的评论的数量
+        $sql = "SELECT COUNT(*) AS amount FROM forum_comment WHERE forum_id in ((SELECT id AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$forum_class_id})) AND time > {$timeOfMidnight}";
+        $row = $this->sqltool->getRowBySql($sql);
+        $amount += $row['amount'];
+        $sql = "UPDATE forum_class SET count_today = {$amount} WHERE id = {$forum_class_id}";
         $this->sqltool->query($sql);
 
     }
@@ -380,24 +379,29 @@ class ForumModel extends Model
         //生成分页代码
         $result = parent::getListWithPage($table, $sql);
         //封装分类集合
-        $countTodayOfAll = 0;
-        $countAllOfAll = 0;
+        $count_today = 0;
+        $count_all = 0;
+        $count_forum_and_comment = 0;
         foreach ($result as $k1 => $v1) {
             foreach ($v1 as $k2 => $v2) {
                 //计算发帖总量
                 if ($k2 == "count_today") {
-                    $countTodayOfAll += $v2;
+                    $count_today += $v2;
                 }
                 if ($k2 == "count_all") {
-                    $countAllOfAll += $v2;
+                    $count_all += $v2;
+                }
+                if ($k2 == "count_forum_and_comment") {
+                    $count_forum_and_comment += $v2;
                 }
             }
         }
         $all = [];
         $all['id'] = '0';
         $all['title'] = '全部';
-        $all['count_today'] = "{$countTodayOfAll}";
-        $all['count_all'] = "{$countAllOfAll}";
+        $all['count_today'] = "{$count_today}";
+        $all['count_all'] = "{$count_all}";
+        $all['count_forum_and_comment'] = "{$count_forum_and_comment}";
         $all['description'] = '最新信息';
         $all['type'] = 'normal';
         $all['icon'] = '/admin/resource/img/icon/f1.png';
