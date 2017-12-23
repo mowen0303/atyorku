@@ -144,12 +144,12 @@ function deleteCourseCode($echoType = "normal") {
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
-                $i++;
                 $courseCodeModel->deleteCourseCodeById($v) or BasicTool::throwException("删除多个科目失败");
+                $i++;
             }
         } else {
-            $i++;
             $courseCodeModel->deleteCourseCodeById($id) or BasicTool::throwException("删除1个科目失败");
+            $i++;
         }
         if ($echoType == "normal") {
             BasicTool::echoMessage("成功删除{$i}个科目", $_SERVER['HTTP_REFERER']);
@@ -171,5 +171,3 @@ function checkAuthority() {
         BasicTool::throwException("无权限操作");
     }
 }
-
-
