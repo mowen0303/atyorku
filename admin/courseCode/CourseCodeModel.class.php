@@ -45,10 +45,11 @@ class CourseCodeModel extends Model
         $sql = "SELECT id FROM course_code WHERE title = '{$childCode}' AND parent_id IN (SELECT id FROM course_code WHERE title = '$parentCode')";
         $row = $this->sqltool->getRowBySql($sql);
 
+
         //增加热度
         if($row){
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE title = '{$parentCode}';UPDATE course_code SET view_count = view_count+1 WHERE id = '{$row[id]}'";
-            $this->sqltool->multiQuery($sql);
+            $this->sqltool->query($sql);
         }
 
         return intval($row['id']);
