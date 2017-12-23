@@ -48,7 +48,9 @@ class CourseCodeModel extends Model
 
         //增加热度
         if($row){
-            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE title = '{$parentCode}';UPDATE course_code SET view_count = view_count+1 WHERE id = '{$row[id]}'";
+            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE title = '{$parentCode}';";
+            $this->sqltool->query($sql);
+            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id = '{$row[id]}'";
             $this->sqltool->query($sql);
         }
 
