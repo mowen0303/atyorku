@@ -37,6 +37,7 @@ if(!$userModel->isAdminLogin()){
 				<li><a href="/admin/guide/" target="mainFrame">文章</a></li>
 				<li><a href="/admin/book/index.php?s=listBook" target="mainFrame">二手书</a ></li>
 				<li><a href="/admin/course/" target="mainFrame">课评V1</a></li>
+                <li><a href="/admin/courseRating/" target="mainFrame">课评V2</a></li>
 				<li><a href="/admin/courseQuestion/" target="mainFrame">问答系统</a></li>
                 <li><a href="/admin/professor/index.php?s=listProfessor" target="mainFrame">教授管理</a></li>
 				<li><a href="/admin/user/index.php?s=listUser&isAdmin=0" target="mainFrame">用户管理</a></li>
