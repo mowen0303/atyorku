@@ -349,7 +349,7 @@ function modifyForum($echoType = "normal") {
             $arr['user_id'] = $currentUser->userId;
             if ($forumModel->addRow('forum', $arr)) {
                 //更新今日数据
-                $forumModel->updateCountData($forumModel->idOfInsert,false);
+                $forumModel->updateCountData($forumModel->idOfInsert);
 
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("新信息添加成功", "/admin/forum/index.php?s=listForum&forum_class_id=" . $arr['forum_class_id']);
@@ -396,6 +396,7 @@ function deleteForum($echoType = "normal") {
     global $forumModel;
     try {
         $id = BasicTool::post('id');
+        BasicTool::throwException(var_dump($id));
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
@@ -405,7 +406,9 @@ function deleteForum($echoType = "normal") {
         } else {
             $i++;
             $forumModel->deleteOneForumById($id) or BasicTool::throwException("删除1条失败");
+            $forumModel->updateCountData($id);
         }
+
         if ($echoType == "normal") {
             BasicTool::echoMessage("成功删除{$i}条帖子", $_SERVER['HTTP_REFERER']);
         } else {
@@ -468,7 +471,7 @@ function deleteComment($echoType = "normal"){
         }
         $forumId = $forumModel->getForumIdOfCommentId($id) or BasicTool::throwException("forumId:" . $forumId);
         $forumModel->realDeleteByFieldIn("forum_comment", "id", $id) or BasicTool::throwException($forumModel->errorMsg);
-        $forumModel->updateCountData($forumId,false);
+        $forumModel->updateCountData($forumId);
         if ($echoType == "normal") {
             BasicTool::echoMessage("删除成功");
         } else {
