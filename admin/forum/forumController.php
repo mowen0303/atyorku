@@ -396,7 +396,6 @@ function deleteForum($echoType = "normal") {
     global $forumModel;
     try {
         $id = BasicTool::post('id');
-        BasicTool::throwException(var_dump($id));
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
@@ -406,7 +405,6 @@ function deleteForum($echoType = "normal") {
         } else {
             $i++;
             $forumModel->deleteOneForumById($id) or BasicTool::throwException("删除1条失败");
-            $forumModel->updateCountData($id);
         }
 
         if ($echoType == "normal") {
