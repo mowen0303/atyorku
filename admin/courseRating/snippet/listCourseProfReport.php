@@ -5,37 +5,32 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=listCourseProfReport">科目教授报告表</a>
-    <a class="btn" href="index.php?s=listCourseReport">科目报告表</a>
-    <a class="btn" href="index.php?s=listProfReport">教授报告表</a>
-    <a class="btn" href="index.php?s=formCourseRating&flag=add">添加新课评</a>
+    <a class="btn" href="index.php?s=listCourseRating">返回</a>
 </nav>
 <article class="mainBox">
-    <header><h2><?php echo $typeStr ?>课评列表</h2></header>
-    <form action="courseRatingController.php?action=deleteCourseRating" method="post">
+    <header><h2><?php echo $typeStr ?>科目教授报告列表</h2></header>
+    <form action="courseRatingController.php?action=deleteCourseProfessorReport" method="post">
         <section>
             <table class="tab">
                 <thead>
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th width="60px">ID</th>
-                    <th width="60px">科目</th>
-                    <th width="60px">用户</th>
-                    <th width="60px">教授</th>
-                    <th width="60px">内容</th>
-                    <th width="60px">作业</th>
-                    <th width="60px">考试</th>
-                    <th width="60px">书</th>
-                    <th width="60px">成绩</th>
-                    <th width="100px">学期</th>
-                    <th width="60px">推荐</th>
-                    <th width="150px">评论</th>
-                    <th width="80px">操作</th>
+                    <th width="100px">科目</th>
+                    <th width="100px">教授</th>
+                    <th width="80px">内容难度</th>
+                    <th width="80px">作业难度</th>
+                    <th width="80px">考试难度</th>
+                    <th width="80px">综合难度</th>
+                    <th width="80px">推荐比例</th>
+                    <th width="80px">评论数</th>
+                    <th width="80px">问题数</th>
+                    <th width="120px">已解决问题数</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
-                $arr = $courseRatingModel->getListOfCourseRating();
+                $arr = $courseRatingModel->getListOfCourseProfessorReports();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
@@ -46,17 +41,15 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
                         <td><?php echo $row["course_code_parent_title"] . " " . $row["course_code_child_title"] ?></td>
-                        <td><?php echo $row["user"] ?></td>
                         <td><?php echo $row["prof_name"] ?></td>
                         <td><?php echo $row["content_diff"] ?></td>
                         <td><?php echo $row["homework_diff"] ?></td>
                         <td><?php echo $row["test_diff"] ?></td>
-                        <td><?php echo $row["has_textbook"] ?></td>
-                        <td><?php echo $row["grade"] ?></td>
-                        <td><?php echo $row["term"] . " " . $row["year"] ?></td>
-                        <td><?php echo $row["recommendation"] ?></td>
-                        <td><?php echo $row["comment"] ?></td>
-                        <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo $argument?>">修改</a></td>
+                        <td><?php echo $row["overall_diff"] ?></td>
+                        <td><?php echo number_format(100*$row["recommendation_ratio"],2) . '%' ?></td>
+                        <td><?php echo $row["rating_count"] ?></td>
+                        <td><?php echo $row["count_questions"] ?></td>
+                        <td><?php echo $row["count_solved_questions"] ?></td>
                     </tr>
                 <?php
                 }

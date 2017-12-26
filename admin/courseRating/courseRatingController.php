@@ -28,14 +28,35 @@ function deleteCourseRatingWithJson() {
 }
 
 /**
- * JSON -  获取指定ID的课评号
- * @param course_code_id Course Code类别ID
- * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseRatingByIdWithJson&course_code_id=3
+ * JSON -  获取指定ID的课评信息
+ * @param id course rating id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseRatingByIdWithJson&id=3
  */
 function getCourseRatingByIdWithJson() {
     global $courseRatingModel;
     try {
-        $id = BasicTool::get("course_code_id","需要提供Course Code ID");
+        $id = BasicTool::get("id","需要提供Course rating ID");
+        $result = $courseRatingModel->getCourseRatingById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的课评");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定Course ID的课评信息
+ * @param id course rating id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseRatingByIdWithJson&id=3
+ */
+function getCourseRatingByCourseIdProfIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $courseId = BasicTool::get("course_code_id","需要提供 Course code ID");
+        $profId = BasicTool::get("prof_id","需要提供 Professor ID");
         $result = $courseRatingModel->getCourseRatingById($id);
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
@@ -49,69 +70,149 @@ function getCourseRatingByIdWithJson() {
 
 
 /**
- * JSON -  获取父类课评列表
- * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfParentCourseRatingWithJson
+ * JSON -  通过指定科目ID获取某一页课评
+ * @param course_code_id 科目ID
+ * @param pageSize 每一页课评获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseRatingByCourseIdWithJson&course_code_id=3&pageSize=20
  */
-function getListOfParentCourseRatingWithJson() {
-    global $courseRatingModel;
-    try {
-        $result = $courseRatingModel->getListOfCourseRatingByParentId();
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "获取课评类别列表失败");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
+function getListOfCourseRatingByCourseIdWithJson() {
+    $courseId = BasicTool::get("course_code_id","请指定科目ID");
+    getListOfCourseRatingWithJson("courseId", $courseId);
 }
-
 
 /**
- * JSON -  通过父类ID获取子类课评列表
- * @param course_code_parent_id Course Code父类别ID
- * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfChildCourseRatingByParentIdWithJson&course_code_parent_id=3
+ * JSON -  通过指定教授ID获取某一页课评
+ * @param prof_id 教授ID
+ * @param pageSize 每一页课评获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseRatingByProfIdWithJson&prof_id=3&pageSize=20
  */
-function getListOfChildCourseRatingByParentIdWithJson() {
+function getListOfCourseRatingByProfIdWithJson() {
+    $profId = BasicTool::get("prof_id","请指定教授ID");
+    getListOfCourseRatingWithJson("profId", $profId);
+}
+
+/**
+ * JSON -  通过指定科目ID和教授ID获取某一页课评
+ * @param course_code_id 科目ID
+ * @param prof_id 教授ID
+ * @param pageSize 每一页课评获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseRatingByCourseIdProfIdWithJson&course_code_id=3&prof_id=3&pageSize=20
+ */
+function getListOfCourseRatingByCourseIdProfIdWithJson() {
+    $courseId = BasicTool::get("course_code_id","请指定科目ID");
+    $profId = BasicTool::get("prof_id","请指定教授ID");
+    getListOfCourseRatingWithJson("courseIdProfId", $courseId, $profId);
+}
+
+/**
+ * JSON -  获取某一页课评
+ * @param t 获取类别 (courseId | profId | courseIdProfId)
+ * @param v1 类别对应第一个必填值 (ex. 对应的course ID)
+ * @param v2 类别对应第二个必填值 (ex. 对应的 prof ID)
+ * @param pageSize 每一页课评获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseRatingWithJson&pageSize=20
+ */
+function getListOfCourseRatingWithJson($t="normal", $v1=false, $v2=false) {
     global $courseRatingModel;
     try {
-        $id = BasicTool::get("course_code_parent_id","需要提供课评父类ID");
-        $result = $courseRatingModel->getListOfCourseRatingByParentId($id);
+        $pageSize = BasicTool::get('pageSize') ?: 20;
+
+        $result = NULL;
+
+        switch($t) {
+            case "courseId":
+                $result = $courseRatingModel->getListOfCourseRatingByCourseId($v1, $pageSize);
+                break;
+            case "profId":
+                $result = $courseRatingModel->getListOfCourseRatingByProfId($v1, $pageSize);
+                break;
+            case "courseIdProfId":
+                $result = $courseRatingModel->getListOfCourseRatingByCourseIdProfId($v1, $v2, $pageSize);
+                break;
+            default:
+                $result = $courseRatingModel->getListOfCourseRating(false, $pageSize);
+        }
+
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
         } else {
-            BasicTool::echoJson(0, "获取子课评列表失败");
+            BasicTool::echoJson(0, "没有更多内容");
         }
     } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
+        BasicTool::echoJson(0,$e->getMessage());
     }
 }
+
+/**
+ * JSON -  获取某一页科目报告
+ * @param pageSize 每一页科目报告获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseReportWithJson&pageSize=20
+ */
+function getListOfCourseReportWithJson() {
+    global $courseRatingModel;
+    try {
+        $pageSize = BasicTool::get('pageSize') ?: 20;
+
+        $result = $courseRatingModel->getListOfCourseReports($pageSize);
+
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取某一页教授报告
+ * @param pageSize 每一页教授报告获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfProfReportWithJson&pageSize=20
+ */
+function getListOfProfReportWithJson() {
+    global $courseRatingModel;
+    try {
+        $pageSize = BasicTool::get('pageSize') ?: 20;
+
+        $result = $courseRatingModel->getListOfProfessorReports($pageSize);
+
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取某一页科目教授报告
+ * @param pageSize 每一页科目教授报告获取量，默认值=20
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseProfReportWithJson&pageSize=20
+ */
+function getListOfCourseProfReportWithJson() {
+    global $courseRatingModel;
+    try {
+        $pageSize = BasicTool::get('pageSize') ?: 20;
+
+        $result = $courseRatingModel->getListOfCourseProfessorReports($pageSize);
+
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+
 
 
 // =============== End Function with JSON ================= //
-
-/**
-* 通过ID获取一个 Course Rating
-* @param id course rating id
-* @return mysqliResult course rating
-*/
-function getCourseRatingById($id, $echoType = "normal") {
-    global $courseRatingModel;
-
-    try {
-        $currentCourseRating = $courseRatingModel->getCourseRatingById($id);
-        if (!$currentCourseRating) {
-            BasicTool::throwException("无法找到课评");
-        }
-        return $currentCourseRating;
-    } catch (Exception $e) {
-        if ($echoType == "normal") {
-            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
-        } else {
-            BasicTool::echoJson(0, $e->getMessage());
-        }
-    }
-}
 
 /**
 * 修改或添加一个 Course Rating
@@ -136,6 +237,8 @@ function modifyCourseRating($echoType = "normal") {
             checkAuthority('update', $courseRatingUserId);
         } else if ($flag=='add') {
             checkAuthority('add');
+        } else {
+            BasicTool::throwException("Unknown Operation: {$flag}");
         }
 
         // 验证 Fields
@@ -237,6 +340,101 @@ function checkAuthority($flag, $id) {
         $currentUser->userId or BasicTool::throwException("权限不足，请先登录");
         if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('COURSE_RATING'))) {
             $currentUser->userId == $id or BasicTool::throwException("无权修改其他人的课评");
+        }
+    }
+}
+
+
+
+function deleteCourseReport($echoType="normal") {
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
+        $id = BasicTool::post('id',"请指定被删除科目报告ID");
+        $i = 0;
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $courseRatingModel->deleteCourseReportById($v) or BasicTool::throwException("删除多个科目报告失败");
+                $i++;
+            }
+        } else {
+            $courseRatingModel->deleteCourseReportById($id) or BasicTool::throwException("删除1个科目报告失败");
+            $i++;
+        }
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功删除{$i}个科目报告", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功删除{$i}个科目报告");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+function deleteProfessorReport($echoType="normal") {
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
+        $id = BasicTool::post('id',"请指定被删除教授报告ID");
+        $i = 0;
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $courseRatingModel->deleteProfessorReportById($v) or BasicTool::throwException("删除多个教授报告失败");
+                $i++;
+            }
+        } else {
+            $courseRatingModel->deleteProfessorReportById($id) or BasicTool::throwException("删除1个教授报告失败");
+            $i++;
+        }
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功删除{$i}个教授报告", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功删除{$i}个教授报告");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+function deleteCourseProfessorReport($echoType="normal") {
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
+        $id = BasicTool::post('id',"请指定被删除科目教授报告ID");
+        $i = 0;
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $courseRatingModel->deleteCourseProfessorReportById($v) or BasicTool::throwException("删除多个科目教授报告失败");
+                $i++;
+            }
+        } else {
+            $courseRatingModel->deleteCourseProfessorReportById($id) or BasicTool::throwException("删除1个科目教授报告失败");
+            $i++;
+        }
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功删除{$i}个科目教授报告", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功删除{$i}个科目教授报告");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
         }
     }
 }

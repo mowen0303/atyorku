@@ -1,7 +1,6 @@
 <?php
 namespace admin\courseRating;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
-use admin\user\UserModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -24,9 +23,10 @@ class CourseRatingModel extends Model
     }
 
     /**
-    * 通过 Parent ID 来获取 Course code, 获取父类Course Code, $id=0
-    * @param id course code parent id
-    * @return 一维数组
+    * 获取一页课评
+    * @param query additional query
+    * @param pageSize 每页query数量
+    * @return 2维数组
     */
     public function getListOfCourseRating($query=false, $pageSize=20) {
         $sql = "SELECT cr.*, u.id AS user_id, u.name AS user, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM {$this->table} cr, user u, course_code cc, course_code cc2, professor p WHERE cr.user_id=u.id AND cr.course_code_id=cc.id AND cc.parent_id=cc2.id AND cr.prof_id=p.id";
@@ -43,6 +43,40 @@ class CourseRatingModel extends Model
             if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
         }
         return $arr;
+    }
+
+    /**
+    * 通过指定科目ID，获取一页课评
+    * @param courseId 科目ID
+    * @param pageSize 每页query数量
+    * @return 2维数组
+    */
+    public function getListOfCourseRatingByCourseId($courseId, $pageSize=20) {
+        $query = "course_code_id in ({$courseId})";
+        return $this->getListOfCourseRating($query, $pageSize);
+    }
+
+    /**
+    * 通过指定教授ID，获取一页课评
+    * @param profId 教授ID
+    * @param pageSize 每页query数量
+    * @return 2维数组
+    */
+    public function getListOfCourseRatingByProfId($profId, $pageSize=20) {
+        $query = "prof_id in ({$profId})";
+        return $this->getListOfCourseRating($query, $pageSize);
+    }
+
+    /**
+    * 通过指定科目ID和教授ID，获取一页课评
+    * @param courseId 科目ID
+    * @param profId 教授ID
+    * @param pageSize 每页query数量
+    * @return 2维数组
+    */
+    public function getListOfCourseRatingByCourseIdProfId($courseId, $profId, $pageSize=20) {
+        $query = "course_code_id in ({$courseId}) AND prof_id in ({$profId})";
+        return $this->getListOfCourseRating($query, $pageSize);
     }
 
 
@@ -91,9 +125,9 @@ class CourseRatingModel extends Model
         $bool;
         if($flag=='add') {
             $arr["publish_time"] = time();
-            $this->addRow($this->table, $arr);
+            $bool = $this->addRow($this->table, $arr);
         } else if($flag=='update') {
-            $this->updateRowById($this->table, $id, $arr);
+            $bool = $this->updateRowById($this->table, $id, $arr);
         } else {
             BasicTool::throwException("Unknown flag.");
         }
@@ -101,19 +135,6 @@ class CourseRatingModel extends Model
             $this->updateReports($courseCodeId, $profId);
         }
         return $bool;
-    }
-
-
-    private function updateReports($courseCodeId, $profId) {
-        // $from = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
-        //
-        // $sql = "UPDATE course_prof_report cpr SET cpr.homework_diff=cr.avg_hw, cpr.content_diff=cr.avg_content, cpr.test_diff=cr.avg_test, cpr.overall_diff=(cr.avg_hw+cr.avg_content+cr.avg_test)/3, cpr.recommendation_ratio=CAST(cr.sum_recommendation AS Float)/CAST(cr.sum_rating AS Float) FROM ({$from} WHERE cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}) WHERE cpr.course_code_id={$courseCodeId} AND cpr.prof_id={$profId};"
-        //
-        // $sql .= "UPDATE course_report crpt SET crpt.homework_diff=cr.avg_hw, crpt.content_diff=cr.avg_content, crpt.test_diff=cr.avg_test, crpt.overall_diff=(cr.avg_hw+cr.avg_content+cr.avg_test)/3) FROM ({$from} WHERE cr.course_code_id={$courseCodeId}) WHERE crpt.course_code_id={$courseCodeId};"
-        //
-        // $sql .= "UPDATE professor_report pr SET pr.homework_diff=cr.avg_hw, pr.content_diff=cr.avg_content, pr.test_diff=cr.avg_test, pr.overall_diff=(cr.avg_hw+cr.avg_content+cr.avg_test)/3, pr.recommendation_ratio=(CAST(cr.sum_recommendation AS Float)/CAST(cr.sum_rating AS Float)) FROM ({$from} WHERE cr.prof_id={$profId}) WHERE cpr.prof_id={$profId};"
-        //
-        // $this->sqltool->multiQuery($sql);
     }
 
 
@@ -190,7 +211,215 @@ class CourseRatingModel extends Model
         return in_array($term, array('Winter','Summer','Summer 1','Summer 2','Year','Fall'));
     }
 
+    /************************************/
+    /*         Reports Functions        */
+    /************************************/
 
+    /**
+    * 获取一页科目报告
+    * @return 二维数组
+    */
+    public function getListOfCourseReports($pageSize=20) {
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id";
+        $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id";
+        $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
+        return $arr;
+    }
+
+    /**
+    * 获取一页教授报告
+    * @return 二维数组
+    */
+    public function getListOfProfessorReports($pageSize=20) {
+        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id";
+        $countSql = "SELECT COUNT(*) FROM professor_report pr, professor p WHERE pr.prof_id=p.id";
+        $arr = parent::getListWithPage("professor_report", $sql, $countSql, $pageSize);
+        return $arr;
+    }
+
+    /**
+    * 获取一页科目教授报告
+    * @return 二维数组
+    */
+    public function getListOfCourseProfessorReports($pageSize=20) {
+        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id";
+        $countSql = "SELECT COUNT(*) FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id";
+        $arr = parent::getListWithPage("course_prof_report", $sql, $countSql, $pageSize);
+        return $arr;
+    }
+
+    /**
+    * 获取一行科目报告
+    * @param id 指定的科目报告ID
+    * @return 1维数组
+    */
+    public function getCourseReportById($id) {
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id AND cr.id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 获取一行教授报告
+    * @param id 指定的教授报告ID
+    * @return 1维数组
+    */
+    public function getProfessorReportById($id) {
+        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id AND pr.id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 获取一行科目教授报告
+    * @param id 指定的科目教授报告ID
+    * @return 1维数组
+    */
+    public function getCourseProfessorReportById($id) {
+        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id AND cp.id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 获取一行科目报告
+    * @param courseId 指定的科目ID
+    * @return 1维数组
+    */
+    public function getCourseReportByCourseId($courseId) {
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id AND cr.course_code_id in ({$courseId})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 获取一行教授报告
+    * @param profId 指定的教授ID
+    * @return 1维数组
+    */
+    public function getProfessorReportByProfId($profId) {
+        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id AND pr.prof_id in ({$profId})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 获取一行科目教授报告
+    * @param courseId 指定的科目ID
+    * @param profId 指定教授ID
+    * @return 1维数组
+    */
+    public function getCourseProfessorReportByCourseIdProfId($courseId, $profId) {
+        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id AND cp.course_code_id in ({$courseId}) AND cp.prof_id in ({$profId})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+    * 删除一行科目报告
+    * @param id 指定的科目报告ID
+    * @return 1维数组
+    */
+    public function deleteCourseReportById($id) {
+        $bool = $this->getCourseReportById($id);
+        if($bool) {
+            $sql = "DELETE FROM course_report WHERE id in ({$id})";
+            return $this->sqltool->query($sql);
+        }
+        return $bool;
+    }
+
+    /**
+    * 删除一行教授报告
+    * @param id 指定的教授报告ID
+    * @return 1维数组
+    */
+    public function deleteProfessorReportById($id) {
+        $bool = $this->getProfessorReportById($id);
+        if($bool) {
+            $sql = "DELETE FROM professor_report WHERE id in ({$id})";
+            return $this->sqltool->query($sql);
+        }
+        return $bool;
+    }
+
+    /**
+    * 删除一行科目教授报告
+    * @param id 指定的科目教授报告ID
+    * @return 1维数组
+    */
+    public function deleteCourseProfessorReportById($id) {
+        $bool = $this->getCourseProfessorReportById($id);
+        if($bool) {
+            $sql = "DELETE FROM course_prof_report WHERE id in ({$id})";
+            return $this->sqltool->query($sql);
+        }
+        return $bool;
+    }
+
+    /**
+    * 更新报告 (指定科目ID和教授ID)
+    * @param courseCodeId 指定的科目ID
+    * @param profId 指定的教授ID
+    */
+    private function updateReports($courseCodeId, $profId) {
+        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
+        // Update course_prof_report
+        $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
+
+        $result = $this->sqltool->getRowBySql($sql);
+        $arr = array("course_code_id"=>$courseCodeId, "prof_id"=>$profId);
+        $this->parseUpdateReportArray($result, $arr, 'course_prof_report');
+
+        $sql = "SELECT * FROM course_prof_report WHERE course_code_id={$courseCodeId} AND prof_id={$profId}";
+        $courseProfReport = $this->sqltool->getRowBySql($sql);
+        if($courseProfReport){
+            parent::updateRowById("course_prof_report", $courseProfReport["id"], $arr);
+        } else {
+            parent::addRow("course_prof_report", $arr);
+        }
+
+
+        // Update course_report
+        $sql = "{$querySql} cr.course_code_id={$courseCodeId}";
+
+        $result = $this->sqltool->getRowBySql($sql);
+        $arr = array("course_code_id"=>$courseCodeId);
+        $this->parseUpdateReportArray($result, $arr, 'course_report');
+
+        $sql = "SELECT * FROM course_report WHERE course_code_id={$courseCodeId}";
+        $courseReport = $this->sqltool->getRowBySql($sql);
+        if($courseReport){
+            parent::updateRowById("course_report", $courseReport["id"], $arr);
+        } else {
+            parent::addRow("course_report", $arr);
+        }
+
+        // Update professor_report
+        $sql = "{$querySql} cr.prof_id={$profId}";
+
+        $result = $this->sqltool->getRowBySql($sql);
+        $arr = array("prof_id"=>$profId);
+        $this->parseUpdateReportArray($result, $arr, 'professor_report');
+
+        $sql = "SELECT * FROM professor_report WHERE prof_id={$profId}";
+        $profReport = $this->sqltool->getRowBySql($sql);
+        if($profReport){
+            parent::updateRowById("professor_report", $profReport["id"], $arr);
+        } else {
+            parent::addRow("professor_report", $arr);
+        }
+    }
+
+    /**
+    * 加载对应报告表格array
+    */
+    private function parseUpdateReportArray($result, &$arr, $table) {
+        if ($result) {
+            $arr["homework_diff"] = $result["avg_hw"] ?: 0;
+            $arr["test_diff"] = $result["avg_test"] ?: 0;
+            $arr["content_diff"] = $result["avg_content"] ?: 0;
+            $arr["overall_diff"] = intval(round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/3));
+            $arr["rating_count"] = $result["sum_rating"] ?: 0;
+            if($table=='course_prof_report' || $table=='professor_report') {
+                $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
+            }
+        }
+    }
 
 }
 
