@@ -26,7 +26,7 @@ CREATE TABLE `book` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `price` decimal(10,2) NOT NULL,
   `name` char(255) CHARACTER SET utf8 NOT NULL,
-  `description` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `description` varchar(255) CHARACTER SET utf8 NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
   `book_category_id` int(11) unsigned NOT NULL,
   `course_id` int(11) unsigned NOT NULL,
@@ -36,7 +36,6 @@ CREATE TABLE `book` (
   `professor_id` int(11) unsigned NOT NULL DEFAULT '0',
   `term_year` int(4) unsigned NOT NULL DEFAULT '0',
   `term_semester` enum('Fall','Winter','Summer','Unknown') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Unknown',
-  `paper_type` enum('Midterm','Final','Quiz','Assignment','Unknown') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Unknown',
   `count_comments` smallint(6) unsigned NOT NULL DEFAULT '0',
   `count_view` smallint(6) unsigned NOT NULL DEFAULT '0',
   `report` smallint(6) unsigned NOT NULL DEFAULT '0',
@@ -54,10 +53,20 @@ CREATE TABLE `book` (
   KEY `fk_book_professor` (`professor_id`),
   KEY `fk_book_book_category` (`book_category_id`),
   CONSTRAINT `fk_book_book_category` FOREIGN KEY (`book_category_id`) REFERENCES `book_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_book_course_code` FOREIGN KEY (`course_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_book_course_code` FOREIGN KEY (`course_id`) REFERENCES `course_code` (`id`),
   CONSTRAINT `fk_book_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `book`
+--
+
+LOCK TABLES `book` WRITE;
+/*!40000 ALTER TABLE `book` DISABLE KEYS */;
+INSERT INTO `book` VALUES (1,30.00,'90åˆ†æœŸä¸­Past Paper','',1,28,222,2,0,0,0,2017,'Fall',0,0,0,0,1512183806,1513805101);
+/*!40000 ALTER TABLE `book` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -68,4 +77,4 @@ CREATE TABLE `book` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-05 20:27:47
+-- Dump completed on 2017-12-25 19:46:15

@@ -29,13 +29,23 @@ CREATE TABLE `professor_report` (
   `test_diff` tinyint(4) NOT NULL,
   `content_diff` tinyint(4) NOT NULL,
   `overall_diff` tinyint(4) NOT NULL,
-  `rating_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `rating_count` int(11) NOT NULL DEFAULT '0',
   `recommendation_ratio` float NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uc_professor_report_professor` (`prof_id`) USING BTREE,
   CONSTRAINT `fk_professor_report_professor` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `professor_report`
+--
+
+LOCK TABLES `professor_report` WRITE;
+/*!40000 ALTER TABLE `professor_report` DISABLE KEYS */;
+INSERT INTO `professor_report` VALUES (4,920,4,4,4,4,1,1),(5,3714,0,0,0,0,0,0),(6,2125,1,2,1,1,1,1);
+/*!40000 ALTER TABLE `professor_report` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -46,4 +56,4 @@ CREATE TABLE `professor_report` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-05 20:27:47
+-- Dump completed on 2017-12-25 19:46:15

@@ -31,7 +31,7 @@ CREATE TABLE `course_rating` (
   `homework_diff` tinyint(4) NOT NULL,
   `test_diff` tinyint(4) NOT NULL,
   `has_textbook` tinyint(1) NOT NULL,
-  `grade` enum('A+','A','B','C','D','E','F','U') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'U' COMMENT '''U'' is unknown',
+  `grade` enum('','A+','A','B+','B','C+','C','D+','D','E','F') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT ''''' is unknown',
   `year` smallint(6) NOT NULL,
   `term` enum('Winter','Summer','Summer 1','Summer 2','Year','Fall') COLLATE utf8mb4_unicode_ci NOT NULL,
   `comment` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -44,8 +44,18 @@ CREATE TABLE `course_rating` (
   CONSTRAINT `fk_course_rating_course_code` FOREIGN KEY (`course_code_id`) REFERENCES `course_code` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_course_rating_professor` FOREIGN KEY (`prof_id`) REFERENCES `professor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_course_rating_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_rating`
+--
+
+LOCK TABLES `course_rating` WRITE;
+/*!40000 ALTER TABLE `course_rating` DISABLE KEYS */;
+INSERT INTO `course_rating` VALUES (13,1342,1,920,4,4,4,0,'A+',2017,'Fall','Nice Prof. Very easy pass.',1,1514246298),(14,1323,1,2125,1,1,2,0,'A+',1996,'Summer','so easy man.',1,1514251762);
+/*!40000 ALTER TABLE `course_rating` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -56,4 +66,4 @@ CREATE TABLE `course_rating` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-05 20:27:47
+-- Dump completed on 2017-12-25 19:46:15

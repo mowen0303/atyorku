@@ -35,25 +35,25 @@ export_jason_db()
     printf "Export to single file? (y/n): "
     read op3
     if [ $op3 = "y" ]; then
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku image > ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku professor >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku image > ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku professor >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_code >> ./jason/schema.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book_category >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku book >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_rating >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_prof_report >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_report >> ./jason/schema.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku professor_report >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_rating >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_prof_report >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_report >> ./jason/schema.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku professor_report >> ./jason/schema.sql
     else
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku book > ./jason/book.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book > ./jason/book.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku book_category > ./jason/book_category.sql
         /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_code > ./jason/course_code.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_prof_report > ./jason/course_prof_report.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_rating > ./jason/course_rating.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku course_report > ./jason/course_report.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku image > ./jason/image.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku professor_report > ./jason/professor_report.sql
-        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --no-data --password='' atyorku professor > ./jason/professor.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_prof_report > ./jason/course_prof_report.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_rating > ./jason/course_rating.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku course_report > ./jason/course_report.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku image > ./jason/image.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku professor_report > ./jason/professor_report.sql
+        /Applications/xampp/xamppfiles/bin/mysqldump --user=root --password='' atyorku professor > ./jason/professor.sql
     fi
 }
 
