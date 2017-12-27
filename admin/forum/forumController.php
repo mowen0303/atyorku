@@ -350,11 +350,12 @@ function modifyForum($echoType = "normal") {
             if ($forumModel->addRow('forum', $arr)) {
                 //更新今日数据
                 $forumModel->updateCountData($forumModel->idOfInsert);
-
+                //获取刚增加的forum信息
+                $newForum = $forumModel->getListOfForumByForumClassId(0,1,false,false,$forumModel->idOfInsert)[0];
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("新信息添加成功", "/admin/forum/index.php?s=listForum&forum_class_id=" . $arr['forum_class_id']);
                 } else {
-                    BasicTool::echoJson(1, "新信息添加成功");
+                    BasicTool::echoJson(1, "新信息添加成功",$newForum);
                 }
 
             }
