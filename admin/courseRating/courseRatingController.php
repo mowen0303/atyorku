@@ -123,6 +123,129 @@ function getListOfCourseRatingWithJson($t="normal", $v1=false, $v2=false) {
 }
 
 /**
+ * JSON -  获取指定ID的课评报告信息
+ * @param id course report id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseReportByIdWithJson&id=3
+ */
+function getCourseReportByIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $id = BasicTool::get("id","需要提供 Course report ID");
+        $result = $courseRatingModel->getCourseReportById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的科目报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定ID的教授报告信息
+ * @param id professor report id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getProfReportByIdWithJson&id=3
+ */
+function getProfReportByIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $id = BasicTool::get("id","需要提供 professor report ID");
+        $result = $courseRatingModel->getProfessorReportById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的教授报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定ID的科目教授报告信息
+ * @param id course professor report id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseProfReportByIdWithJson&id=3
+ */
+function getCourseProfReportByIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $id = BasicTool::get("id","需要提供 Course professor report ID");
+        $result = $courseRatingModel->getCourseProfessorReportById($id);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该ID对应的科目教授报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定科目ID的课评报告信息
+ * @param course_id course code id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseReportByCourseIdWithJson&course_id=3
+ */
+function getCourseReportByCourseIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $courseId = BasicTool::get("course_id","需要提供 Course code ID");
+        $result = $courseRatingModel->getCourseReportByCourseId($courseId);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该科目ID对应的科目报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定教授ID的教授报告信息
+ * @param prof_id professor id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getProfReportByProfIdWithJson&prof_id=3
+ */
+function getProfReportByProfIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $profId = BasicTool::get("prof_id","需要提供 professor ID");
+        $result = $courseRatingModel->getProfessorReportByProfId($profId);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该教授ID对应的教授报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON -  获取指定科目ID和教授ID的科目教授报告信息
+ * @param course_id course code id
+ * @param prof_id professor id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseProfReportByCourseIdProfIdWithJson&course_id=3&prof_id=3
+ */
+function getCourseProfReportByCourseIdProfIdWithJson() {
+    global $courseRatingModel;
+    try {
+        $courseId = BasicTool::get("course_id","需要提供 Course code ID");
+        $profId = BasicTool::get("prof_id","需要提供 professor ID");
+        $result = $courseRatingModel->getCourseProfessorReportByCourseIdProfId($courseId, $profId);
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "未找到该科目ID和教授ID对应的科目教授报告");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+
+/**
  * JSON -  获取某一页科目报告
  * @param pageSize 每一页科目报告获取量，默认值=20
  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseReportWithJson&pageSize=20
