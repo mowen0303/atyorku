@@ -158,8 +158,7 @@ function registerCourseCodeInputComponent($componentObj) {
  </div>
  */
 function registerProfessorInputComponent($componentObj) {
-    url = "/admin/professor/professorController.php?action=getListOfProfessorWithJson&query=";
-
+    let url = "/admin/professor/professorController.php?action=getListOfProfessorWithJson&query=";
     let $inputObj = $componentObj.find("input");
     let queryWord = "";
     $inputObj.on('input', () => {

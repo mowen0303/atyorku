@@ -25,10 +25,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- 表的结构 `professors`
+-- 表的结构 `professor`
 --
 
-CREATE TABLE `professors` (
+CREATE TABLE `professor` (
   `id` int(11) UNSIGNED NOT NULL,
   `firstname` char(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastname` char(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -36,10 +36,10 @@ CREATE TABLE `professors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- 转存表中的数据 `professors`
+-- 转存表中的数据 `professor`
 --
 
-INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1, 'Rebecca', 'Jubis', 0),
 (2, 'Michael', 'Rochon', 0),
 (3, 'John', 'Paschakis', 0),
@@ -1772,7 +1772,7 @@ INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1730, 'John', 'Dingley', 0),
 (1731, 'Govind', 'Rao', 0),
 (1732, 'Penelope', 'Stewart', 0);
-INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1733, 'Syed', 'Basher', 0),
 (1734, 'Leo', 'Davids', 0),
 (1735, 'Elie', 'Appelbaum', 0),
@@ -3463,7 +3463,7 @@ INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3420, 'Aubie', 'Golombek', 0),
 (3421, 'Carolina', 'Bereinstein', 0),
 (3422, 'Jackie', 'Robinson', 0);
-INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3423, 'Steve', 'Ledrew', 0),
 (3424, 'Yael', 'Selinger', 0),
 (3425, 'Denise', 'Nuttall', 0),
@@ -4251,7 +4251,7 @@ INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (4207, 'Karl Andrew Karl Andrew', 'White', 0),
 (4208, 'Karl Andrew', 'White', 0),
 (4209, 'Harman', 'Tiwana', 0),
-(4210, 'Anastasios T Adamopoulos Anastasios T', 'Adamopoulos', 0),
+(4210, 'Anastasios T', 'Adamopoulos', 0),
 (4211, 'Anastasios T', 'Tadamopoulos', 0),
 (4212, 'Kimble', 'Ainslie', 0),
 (4213, 'Matthew', 'Crippen', 0),
@@ -4486,9 +4486,9 @@ INSERT INTO `professors` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 --
 
 --
--- Indexes for table `professors`
+-- Indexes for table `professor`
 --
-ALTER TABLE `professors`
+ALTER TABLE `professor`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4496,9 +4496,9 @@ ALTER TABLE `professors`
 --
 
 --
--- 使用表AUTO_INCREMENT `professors`
+-- 使用表AUTO_INCREMENT `professor`
 --
-ALTER TABLE `professors`
+ALTER TABLE `professor`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4439;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

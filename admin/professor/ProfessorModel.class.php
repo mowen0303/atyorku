@@ -31,12 +31,14 @@ class ProfessorModel extends Model
     public function getListOfProfessor($str=false) {
         $sql = "SELECT * FROM {$this->table}";
         $condition = "";
-        if ($str)
-            $condition = " WHERE firstname LIKE '{$str}%'";
-            //$condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
-        $sql .= "{$condition} ORDER BY firstname ASC, lastname ASC, view_count DESC";
+        if ($str){
+            $str = ucwords($str);
+            //$condition = " WHERE firstname LIKE '{$str}%'";
+            $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
+        }
+        $sql .= "{$condition} ORDER BY view_count DESC, firstname ASC, lastname ASC, view_count DESC";
         $countSql = "SELECT COUNT(*) FROM {$this->table}{$condition}";
-        return parent::getListWithPage($this->table, $sql, $countSql, 40);
+        return array_slice(parent::getListWithPage($this->table, $sql, $countSql, 1000),0,60);
     }
 
     /**
@@ -53,14 +55,10 @@ class ProfessorModel extends Model
         } else {
             $fullName = array_filter($fullName,'trim');
             $firstName = array_slice($fullName,0,$nameSize-1);
-            $lastName = array_slice($fullName,-1,1);
             $firstName = implode(" ",$firstName);
-            $lastName = implode(" ",$lastName);
+            $lastName = array_slice($fullName,-1,1)[0];
             $sql = "SELECT * FROM professor WHERE firstname = '{$firstName}' AND lastname = '{$lastName}'";
-
         }
-
-
         $row = $this->sqltool->getRowBySql($sql);
         $professorId = intval($row['id']);
 
@@ -69,9 +67,10 @@ class ProfessorModel extends Model
             $this->addProfessor($firstName,$lastName);
             $professorId = intval($this->sqltool->getInsertId());
         }
-
+        //增加热度
+        $sql = "UPDATE professor SET view_count = view_count + 1 WHERE id = {$professorId}";
+        $this->sqltool->query($sql);
         return $professorId;
-
     }
 
 
