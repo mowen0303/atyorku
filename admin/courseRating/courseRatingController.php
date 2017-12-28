@@ -47,27 +47,6 @@ function getCourseRatingByIdWithJson() {
     }
 }
 
-/**
- * JSON -  获取指定Course ID的课评信息
- * @param id course rating id
- * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseRatingByIdWithJson&id=3
- */
-function getCourseRatingByCourseIdProfIdWithJson() {
-    global $courseRatingModel;
-    try {
-        $courseId = BasicTool::get("course_code_id","需要提供 Course code ID");
-        $profId = BasicTool::get("prof_id","需要提供 Professor ID");
-        $result = $courseRatingModel->getCourseRatingById($id);
-        if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
-        } else {
-            BasicTool::echoJson(0, "未找到该ID对应的课评");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
-}
-
 
 /**
  * JSON -  通过指定科目ID获取某一页课评
