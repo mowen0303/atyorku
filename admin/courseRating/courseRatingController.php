@@ -232,7 +232,7 @@ function modifyCourseRating($echoType = "normal") {
         // 验证权限
         if ($flag=='update') {
             $id = BasicTool::post('id',"课评ID不能为空");
-            $currentCourseRating = getCourseRatingById($id, $echoType);
+            $currentCourseRating = $courseRatingModel->getCourseRatingById($id);
             $courseRatingUserId = $currentCourseRating['user_id'];
             checkAuthority('update', $courseRatingUserId);
         } else if ($flag=='add') {
@@ -245,7 +245,7 @@ function modifyCourseRating($echoType = "normal") {
         $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
         $childCode = BasicTool::post("course_code_child_title", "子类课评不能为空");
         $courseCodeId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode);
-        $courseCodeId or BasicTool::throwException("未找到指定课评Id");
+        $courseCodeId or BasicTool::throwException("未找到指定科目Id");
         $profName = BasicTool::post("prof_name", "教授名称不能为空");
         $profId = $professorModel->getProfessorIdByFullName($profName);
         $profId or BasicTool::throwException("教授名称格式错误");
@@ -299,14 +299,14 @@ function deleteCourseRating($echoType = "normal") {
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
-                $currentCourseRating = getCourseRatingById($v, $echoType);
+                $currentCourseRating = $courseRatingModel->getCourseRatingById($v);
                 $courseRatingUserId = $currentCourseRating['user_id'];
                 checkAuthority('delete', $courseRatingUserId);
                 $courseRatingModel->deleteCourseRatingById($v) or BasicTool::throwException("删除多个课评失败");
                 $i++;
             }
         } else {
-            $currentCourseRating = getCourseRatingById($id, $echoType);
+            $currentCourseRating = $courseRatingModel->getCourseRatingById($id);
             $courseRatingUserId = $currentCourseRating['user_id'];
             checkAuthority('delete', $courseRatingUserId);
             $courseRatingModel->deleteCourseRatingById($id) or BasicTool::throwException("删除1个课评失败");
