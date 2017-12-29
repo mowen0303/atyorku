@@ -4,6 +4,8 @@ $bookModel = new admin\book\BookModel();
 $bookCategoryModel = new admin\bookCategory\BookCategoryModel();
 $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
+$courseCodeModel = new \admin\courseCode\CourseCodeModel();
+$professorModel = new \admin\professor\ProfessorModel();
 call_user_func(BasicTool::get('action'));
 
 //============ Function with JSON ===============//
@@ -221,6 +223,9 @@ function modifyBook($echoType = "normal") {
     global $imageModel;
     global $bookCategoryModel;
     global $currentUser;
+    global $courseCodeModel;
+    global $professorModel;
+
     try{
         $flag = BasicTool::post('flag');
         $bookUserId = false;    // 二手书卖家ID
@@ -241,10 +246,24 @@ function modifyBook($echoType = "normal") {
         $name = BasicTool::post("name", "二手书标题不能为空", 100);
         $description = BasicTool::post("description") or "";
         $bookCategoryId = BasicTool::post("book_category_id", "二手书所属分类不能为空");
-        $courseId = BasicTool::post("course_code_child_id");
-        if (!$courseId || $courseId < 1) {
-            BasicTool::throwException("二手书所属科目不能为空");
+        $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
+        $childCode = BasicTool::post("course_code_child_title", "子类课评不能为空");
+        $courseCodeId = 0;
+        if ($parentCode && $childCode) {
+            $courseCodeId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode);
+            $courseCodeId or BasicTool::throwException("未找到指定科目Id");
         }
+
+        $profName = BasicTool::post("prof_name");
+        $profId = 0;
+        if ($profName) {
+            $profId = $professorModel->getProfessorIdByFullName($profName);
+            $profId or BasicTool::throwException("教授名称格式错误");
+        }
+
+        $year = BasicTool::post("term_year") ?: 0;
+        $term = BasicTool::post("term_semester") ?: "";
+
         // validate and format price
         $price = (float)BasicTool::post("price", "二手书价格不能为空", 9999999999);
         ($price >= 0) or BasicTool::throwException("价格必须大于或等于0");
@@ -259,7 +278,7 @@ function modifyBook($echoType = "normal") {
         // 执行
         if ($flag=='update') {
             $userId = $bookUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
-            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $courseId, $userId, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/book/index.php?listBook");
             } else {
@@ -267,7 +286,7 @@ function modifyBook($echoType = "normal") {
             }
         } else if ($flag=='add') {
             $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
-            $bookModel->addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->addBook($name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/book/index.php?listBook");
             } else {

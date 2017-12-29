@@ -5,6 +5,19 @@ $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $flag = BasicTool::get("flag");
 ?>
 
+<style>
+.row {
+    overflow: hidden;
+}
+.col-2 {
+    float:left;
+    width: 47%;
+}
+.col-2:nth-child(1) {
+    margin-right: 5%;
+}
+</style>
+
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>
@@ -34,7 +47,48 @@ $flag = BasicTool::get("flag");
                     ?>
                 </select>
             </div>
-            <div id="courseCodeDiv" data-parent-id="<?php echo BasicTool::get('course_code_parent_id') ?>" data-child-id="<?php echo BasicTool::get('course_code_child_id') ?>"></div>
+            <div id="courseCodeInputComponent" class="row">
+                <div class="col-2">
+                    <label>课程类别 (例如:ADMS)<i>*</i></label>
+                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent_title" value="<?php echo BasicTool::get('course_code_parent_title')?>">
+                    <datalist id="parentCodeList"></datalist>
+                </div>
+                <div class="col-2">
+                    <label>课程代码 (例如:1000)<i>*</i></label>
+                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child_title" value="<?php echo BasicTool::get('course_code_child_title')?>">
+                    <datalist id="childCodeCodeList"></datalist>
+                </div>
+            </div>
+            <div id="professorInputComponent">
+                <div>
+                    <label>教授<i>*</i></label>
+                    <input class="input" type="text" list="professorList" name="prof_name" value="<?php echo BasicTool::get('prof_name') ?>" />
+                    <datalist id="professorList"></datalist>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <label>所修学年<i>*</i></label>
+                    <select class="input input-select selectDefault" name="term_year" defvalue="<?php echo BasicTool::get('term_year') ?>">
+                        <?php
+                            echo "<option value=''>请选择学年</option>";
+                            for($i=date("Y");$i>1959;$i--) echo "<option value='{$i}'>{$i}</option>";
+                        ?>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label>所修学期<i>*</i></label>
+                    <select class="input input-select selectDefault" name="term_semester" defvalue="<?php echo BasicTool::get('term_semester') ?>">
+                        <option value="">选择学期</option>
+                        <option value="Fall">Fall</option>
+                        <option value="Winter">Winter</option>
+                        <option value="Year">Year</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Summer 1">Summer 1</option>
+                        <option value="Summer 2">Summer 2</option>
+                    </select>
+                </div>
+            </div>
             <div>
                 <label>价格<i>*</i></label>
                 <input class="input" type="number" name="price" min="0.0" step="0.01" value="<?php echo (float)BasicTool::get('price') ?>">

@@ -18,7 +18,7 @@ class BookModel extends Model
      * 添加一本书
      * @return $bool
      */
-    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3)
+    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term)
     {
         $arr = [];
         $arr["name"] = $name;
@@ -36,6 +36,9 @@ class BookModel extends Model
         if ($img3) {
             $arr["image_id_three"] = $img3;
         }
+        $arr["professor_id"] = $profId;
+        $arr["term_year"] = $year;
+        $arr["term_semester"] = $term;
         $arr["publish_time"] = time();
         $arr["last_modified_time"] = time();
         $bool = $this->addRow($this->table, $arr);
@@ -63,8 +66,8 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getListOfBooks($pageSize=20, $query=false) {
-        $sql = "SELECT b.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id)";
-        $countSql = "SELECT COUNT(*) FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id)";
+        $sql = "SELECT b.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+        $countSql = "SELECT COUNT(*) FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
         if ($query) {
             $sql = "{$sql} WHERE ({$query})";
             $countSql = "{$countSql} WHERE ({$query})";
@@ -176,8 +179,11 @@ class BookModel extends Model
      * 更改一本书
      * @return bool
      */
-    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3)
+    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term)
     {
+        $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
+        $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
+        
         $arr = [];
         $arr["name"] = $name;
         $arr["price"] = $price;
@@ -188,6 +194,9 @@ class BookModel extends Model
         $arr["image_id_one"] = $img1 ? $img1 : 0;
         $arr["image_id_two"] = $img2 ? $img2 : 0;
         $arr["image_id_three"] = $img3 ? $img3 : 0;
+        $arr["professor_id"] = $profId;
+        $arr["term_year"] = $year;
+        $arr["term_semester"] = $term;
         $arr["last_modified_time"] = time();
 
         // check if book category is changed
@@ -198,9 +207,8 @@ class BookModel extends Model
 
             $bool = $this->updateRowById($this->table, $id, $arr);
             if ($bool && $bookCategoryId != $oldBookCategoryId) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId});";
-                $sql .= "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$oldBookCategoryId})) WHERE id in ({$oldBookCategoryId})";
-                $this->sqltool->multiQuery($sql);
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId}, {$oldBookCategoryId})";
+                $this->sqltool->query($sql);
             }
 
             return $bool;
@@ -229,6 +237,26 @@ class BookModel extends Model
             }
         }
         return false;
+    }
+
+
+    /**
+    * validate year
+    * @param year 用户提供的year
+    * @return bool
+    */
+    private function isValidYear($year) {
+        $year = intval($year);
+        return $year == 0 || ($year > 1959 && $year <= date("Y"));
+    }
+
+    /**
+    * validate term
+    * @param term 用户提供的term
+    * @return bool
+    */
+    private function isValidTerm($term) {
+        return in_array($term, array('','Winter','Summer','Summer 1','Summer 2','Year','Fall'));
     }
 }
 
