@@ -124,3 +124,31 @@ label i { color:#C83C46; font-weight:bold}
 .msgBox .btn {width:80px;}
 
 
+/*----- 评论 -----*/
+#commentComponent { font-size: 15px; line-height: 17px; background: #f3f3f3; padding:1.5em 0.8em; border-top: 1px solid #eee; margin-top: 5em}
+#commentComponent .textAreaContainer {display: flex;margin-bottom: 3em; position: relative}
+#commentComponent .textAreaContainer textarea { flex:1; color:#484848; padding: 10px; border:2px solid #ccc}
+#commentComponent .textAreaContainer #commentButton { width: 80px; height: 36px; line-height: 36px; background: #c83c46; color: #fff; text-align:center; margin-left:10px; cursor: pointer; border-radius: 4px; position: absolute; right: 0px; bottom:-45px}
+#commentComponent .textAreaContainer #commentButton.loading {background: #ccc}
+#commentComponent header {font-size: 1em;  padding-bottom: 1em;color: #838383; text-align: center}
+#commentListContainer .commentContainer .parentComment { display: flex;}
+#commentListContainer .commentContainer .parentComment .comment .l1 {padding-top: 0.3em}
+#commentListContainer .commentContainer .avatar {width: 40px;height: 40px; background-repeat:no-repeat; background-size: 100% auto; background-position: center; margin-right: 1em; border-radius:100px}
+#commentListContainer .commentContainer .comment {flex: 1;}
+#commentListContainer .commentContainer { margin-bottom: 1.3em; padding-top: 1.1em}
+#commentListContainer .commentContainer:last-child {padding-bottom: 1.1em}
+#commentListContainer .commentContainer .l1 { color: #3e3e3e}
+#commentListContainer .commentContainer .l1 span { color: #727272}
+#commentListContainer .commentContainer .l2 { margin: 5px 0;color: #bdbdbd; font-size: 13px;}
+#commentListContainer .commentContainer .l2 span { }
+#commentListContainer .commentContainer .l2 i { padding: 0 10px}
+#commentListContainer .commentContainer .l2 em { font-style: normal;font-size: 13px; cursor: pointer; margin-left: 15px; }
+#commentListContainer .commentContainer .l2 em:hover { color: #c83c46}
+#commentListContainer .commentContainer .childComment { margin-left: 56px; background: #eaeaea; overflow: hidden; border-radius:6px}
+#commentListContainer .commentContainer .childComment .comment {margin: 0.7em 0.7em 0 0.7em}
+#commentListContainer .commentContainer .childComment .comment:last-child {border-bottom: 0}
+#commentListContainer .replyBox {display: flex;align-items: center; justify-content: center;margin-top: 10px}
+#commentListContainer .replyBox input {flex:1; border:2px solid #e4e4e4;padding: 4px 6px; color: #484848}
+#commentListContainer .postButton { width: 50px; height: 30px; line-height: 30px; color: #fff; background:#c83c46; text-align: center; font-size: 12px; margin-left: 10px; border-radius: 4px; cursor: pointer}
+#commentListContainer .postButton.loading {background: #ccc}
+#commentComponent #loadMoreButton { margin: 1em 40px 0 40px; background: #c83c46; text-align: center; line-height: 44px; cursor: pointer; color: #eee; border-radius: 100px}

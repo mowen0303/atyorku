@@ -1,6 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_header.html";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_header.html";
 ?>
 <article id="container">
     <section>
@@ -9,5 +8,5 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_header.html";
     </section>
 </article>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_footer.html";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_footer.html";
 ?>

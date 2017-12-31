@@ -81,7 +81,7 @@
         //,initialStyle:'p{line-height:1em}'//编辑器层级的基数,可以用来改变字体等
 
         //,iframeCssUrl: URL + '/themes/iframe.css' //给编辑区域的iframe引入一个css文件
-        ,iframeCssUrl:'/apps/templete/article/css.css'
+        ,iframeCssUrl:'/apps/guide/css.css'
 
         //indentValue
         //首行缩进距离,默认是2em

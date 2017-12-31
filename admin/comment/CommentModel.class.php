@@ -28,6 +28,10 @@ class CommentModel extends Model
      */
     public function addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment)
     {
+        //验证权限
+        $currentUser = new UserModel();
+        $currentUser->isUserHasAuthority("COMMENT") or BasicTool::throwException("无权限进行评论");
+        //插入数据
         $arr["parent_id"] = $parent_id ? $parent_id : 0;
         $arr["sender_id"] = $sender_id;
         $arr["receiver_id"] = $receiver_id;
@@ -36,146 +40,83 @@ class CommentModel extends Model
         $arr["comment"] = $comment ? $comment : "";
         $arr["time"] = time();
         $this->addRow("comment", $arr) or BasicTool::throwException($this->errorMsg);
-        //更新
-        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
-        $this->sqltool->query($sql);
+        //更新统计
+        self::updateCountNumber($section_name,$section_id);
         //获取新插入的评论及评论人信息
-        $sql = "SELECT comment.*, user.id AS user_id, user.alias AS user_alias, user.gender AS user_gender, user.major AS user_major, user.enroll_year AS user_enroll_year FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id";
-        return $this->sqltool->getRowBySql($sql);
+        $sql = "SELECT comment.*, user.id AS uid, user.alias,img,gender,major,enroll_year FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id";
+        $arr = $this->sqltool->getRowBySql($sql);
+        $arr['time'] = BasicTool::translateTime($arr['time']);
+        return $arr;
+    }
+
+
+    /*
+     * 获取评论列表
+     */
+    public function getComments($section_name, $section_id){
+
+        $condition = $section_name == "all" ? "":"AND section_name = '{$section_name}' AND section_id = {$section_id}";
+        //父级结果
+        $sql = "SELECT comment.*,user.id AS uid,user.alias,img,gender,degree,major,enroll_year FROM (SELECT * FROM comment WHERE parent_id = 0 {$condition}) AS comment INNER JOIN user ON comment.sender_id = user.id ORDER BY id DESC";
+        $countSql = "SELECT COUNT(*) FROM comment WHERE parent_id = 0 {$condition} ORDER BY id DESC";
+        $arr = $this->getListWithPage("comment",$sql,$countSql,10);
+        //子集结果
+        $parentIdArr = [];
+        foreach ($arr as $k => $row){
+            $arr[$k]['time'] = BasicTool::translateTime($row['time']);
+            $parentIdArr[] = $row['id'];
+        }
+        $parentId = implode(",",$parentIdArr);
+        if(!$parentId) return $arr;
+        $sql = "SELECT comment.*,user.id AS uid,user.alias FROM (SELECT * FROM comment WHERE parent_id in ({$parentId})) AS comment INNER JOIN user ON comment.sender_id = user.id";
+        $childArr = $this->sqltool->getListBySql($sql);
+        //将子集放到父级中
+        foreach ($childArr as $k => $childRow){
+            $childRow['time'] = BasicTool::translateTime($childRow['time']);
+            $parentId = $childRow['parent_id'];
+            foreach ($arr as $k => $parentRow){
+                if($parentId == $parentRow['id']){
+                    $arr[$k]['child_comment'][] = $childRow;
+                }
+            }
+        }
+        return $arr;
     }
 
     /**
-     *
+     * 根据comment id删除评论及其子评论
+     * @param $commentId
      */
-    public function getComment($id)
-    {
-        $sql = "SELECT * from comment WHERE id = {$id}";
-        $result = $this->sqltool->getRowBySql($sql);
-        return $result;
-    }
+    public function deleteCommentById($commentId){
 
-    /*
-     */
-    public function getCommentsBySection($section_name,$section_id){
-        $sql = "SELECT l_table.id AS l_id,l_table.parent_id AS l_parent_id,l_table.sender_id AS 
-            l_sender_id,l_table.receiver_id AS l_receiver_id,l_table.section_name AS l_section_name,l_table.section_id AS 
-            l_section_id,l_table.comment AS l_comment,l_table.time AS l_time,r_table.id AS r_id,r_table.parent_id AS 
-            r_parent_id,r_table.sender_id AS r_sender_id, r_table.receiver_id AS r_receiver_id, r_table.section_name AS 
-            r_section_name,r_table.section_id AS r_section_id,r_table.comment AS r_comment, r_table.time AS r_time FROM 
-            (SELECT * from comment WHERE section_name='{$section_name}' AND section_id={$section_id} AND parent_id=0) l_table LEFT JOIN comment r_table ON l_table.id = r_table.parent_id ORDER BY l_table.id desc,r_table.time desc";
+        //根据ID获取其他信息
+        $sql = "SELECT * FROM comment WHERE id in ({$commentId})";
+        $commentRow = $this->sqltool->getRowBySql($sql);
+        $section_name = $commentRow['section_name'];
+        $section_id = $commentRow['section_id'];
+        $sender_id = $commentRow['sender_id'];
 
-        $countSql = "SELECT count(*) FROM (SELECT * from comment WHERE section_name='{$section_name}' AND parent_id = 0 AND section_id={$section_id}) l_table LEFT JOIN comment r_table ON l_table.id = r_table.parent_id ORDER BY l_table.id desc,r_table.time desc";
-        return $this->getListWithPage("comment",$sql,$countSql,20);
-    }
+        //操作权限验证
+        $currentUser = new UserModel();
+        ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->userId == $sender_id) or BasicTool::throwException("无权删除");
 
-    /**
-     *id 可以是个integer也可以是个integer array但是必须是子级评论的ID
-     */
-
-    public function deleteChildComment($id)
-    {
-        if (is_array($id))
-            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id[0]}";
-        else
-            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id}";
-        $result = $this->sqltool->getRowBySql($sql);
-        $section_name = $result["section_name"];
-        $section_id = $result["section_id"];
-        $bool = $this->realDeleteByFieldIn("comment","id",$id);
-        if ($bool) {
-            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
-            $this->sqltool->query($sql);
-        }
-        return $bool;
-    }
-
-    /*@param $section_id can be integer or an array of integers
-     *@return bool
-     */
-    public function deleteCommentsBySection($section_name,$section_id)
-    {
-        if (is_array($section_id)){
-            $concat = null;
-            foreach($section_id as $id){
-                $id = $id+0;
-                $id = $id.",";
-                $concat = $concat.$id;
-            }
-            $concat = substr($concat,0,-1);
-            $sql = "DELETE FROM comment WHERE section_name='{$section_name}' AND section_id in ({$concat})";
-            $bool = $this->sqltool->query($sql);
-        }
-
-        else {
-            $sql = "DELETE FROM comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}";
-            $bool = $this->sqltool->query($sql);
-        }
-        return $bool;
-    }
-
-    /*
-     * @param id可以是integer或者integer array,但是必须是父级评论的id
-     * @return $bool
-     */
-    public function deleteParentComment($id){
-        if (is_array($id)){
-            /*抓section_name跟section_id，用于最后更新评论量*/
-            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id[0]}";
-            $result = $this->sqltool->getRowBySql($sql);
-            $section_name = $result["section_name"];
-            $section_id = $result["section_id"];
-
-            $concat = null;
-            foreach($id as $i){
-                $i = $i+0;
-                $i = $i.",";
-                $concat = $concat.$i;
-            }
-            $concat = substr($concat,0,-1);
-
-            /*删除子级评论*/
-            $sql = "DELETE from comment WHERE parent_id IN ({$concat})";
-            $bool = $this->sqltool->query($sql);
-            if ($bool) {
-                /*删除父级评论*/
-                $sql = "DELETE FROM comment WHERE id IN ({$concat})";
-                $bool = $this->sqltool->query($sql);
-            }
-            else{
-                /*删除子级评论失败，返回false*/
-                $this->errorMsg = "子评论删除失败";
-                return false;
-            }
-        }
-
-        else{
-            /*抓section_name跟section_id,用于最后更新评论量*/
-            $sql = "SELECT section_name,section_id FROM comment WHERE id = {$id}";
-            $result = $this->sqltool->getRowBySql($sql);
-            $section_name = $result["section_name"];
-            $section_id = $result["section_id"];
-
-            /*删除子评论*/
-            $sql = "DELETE FROM comment WHERE parent_id = {$id}";
-            $bool = $this->sqltool->query($sql);
-            if ($bool){
-                /*删除父级评论*/
-                $sql = "DELETE FROM comment WHERE id = {$id}";
-                $bool = $this->sqltool->query($sql);
-            }
-            else{
-                /*删除子评论失败，结束并返回false*/
-                $this->errorMsg = "子评论删除失败";
-                return false;
-            }
-        }
-
-        /*更新评论量*/
-        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
+        //删除数据
+        $sql ="DELETE FROM comment WHERE id in ({$commentId}) or parent_id in ({$commentId})";
         $this->sqltool->query($sql);
-        if ($bool == false)
-            $this->errorMsg = "子评论删除成功,父级评论删除失败";
-        return $bool;
+        //更新统计
+        self::updateCountNumber($section_name,$section_id);
+    }
+
+
+    /**
+     * 更新评论数量的统计
+     * @param $section_name
+     * @param $section_id
+     * @return bool|\mysqli_result
+     */
+    private function updateCountNumber($section_name,$section_id){
+        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
+        return $this->sqltool->query($sql);
     }
 
 

@@ -56,8 +56,8 @@ class MsgModel extends Model
         $i = 0;
         $sql = "UPDATE user SET badge = badge+1";
         $this->sqltool->query($sql);
-        $sql = "SELECT id,badge,device FROM user WHERE device <> '0' LIMIT $start,$size";
-        while ($deviceArr = $this->sqltool->getListBySql($sql)) {
+
+        while ($deviceArr = self::getListOfDevice($start,$size)) {
             foreach ($deviceArr as $row) {
                 echo $i++ . "--UID:" . $row['id'] . "--" . $row['device'];
                 if (self::applePush($row['device'],false,$msgType,$msgTypeId,$content, $row['badge'], $silent)) {
@@ -69,6 +69,17 @@ class MsgModel extends Model
             $start += $size;
         }
         echo "END";
+    }
+
+    /**
+     * 获取设备列表
+     * @param $start
+     * @param $size
+     * @return array
+     */
+    private function getListOfDevice($start,$size){
+        $sql = "SELECT id,badge,device FROM user WHERE device <> '0' LIMIT $start,$size";
+        return $this->sqltool->getListBySql($sql);
     }
 
     /**

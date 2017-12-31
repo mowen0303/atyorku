@@ -44,6 +44,7 @@ if(!$userModel->isAdminLogin()){
 				<li><a href="/admin/map/" target="mainFrame">地图管理</a ></li>
 				<li><a href="/admin/courseCode/index.php?s=listCourseCode&parent_id=0" target="mainFrame">科目管理</a ></li>
                 <li><a href="/admin/transaction/index.php" target="mainFrame">积分记录</a ></li>
+                <li><a href="/admin/comment/index.php" target="mainFrame">评论管理</a></li>
 				<li><a href="/admin/msg/index.php" target="mainFrame">小纸条</a></li>
 			</ul>
 		</article>

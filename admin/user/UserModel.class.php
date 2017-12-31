@@ -382,8 +382,9 @@ class UserModel extends Model
      */
     public function logout()
     {
+
         foreach ($_COOKIE as $k => $v) {
-            setcookie($k, $v, time() - 1, '/');
+            setcookie($k, "", time() - 10000000, '/');
         }
         return true;
     }

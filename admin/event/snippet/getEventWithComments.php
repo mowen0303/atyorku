@@ -131,7 +131,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 </thead>
                 <tbody>
                 <?php
-                $comments = $commentModel->getCommentsBySection("event",$event_id);
+                $comments = $commentModel->getComments("event",$event_id);
                 $parent = 0;
                 foreach ($comments as $comment) {
 

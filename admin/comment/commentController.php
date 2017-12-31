@@ -25,13 +25,12 @@ function addComment($echoType="normal"){
     global $currentUser;
     global $msgModel;
     try{
-        $currentUser->isUserHasAuthority("COMMENT") or BasicTool::throwException("无权限进行评论");
         $sender_id = $currentUser->userId;
         $parent_id = BasicTool::post("parent_id");
         $receiver_id = BasicTool::post("receiver_id","receiver_Id不能为空");
         $section_name = BasicTool::post("section_name","section_name不能为空");
         $section_id = BasicTool::post("section_id","section_id不能为空");
-        $comment = BasicTool::post("comment","评论不能为空");
+        $comment = BasicTool::post("comment","说点什么吧...",255);
         $row = $commentModel->addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment);
         //推送
         $msgModel->pushMsgToUser($receiver_id,$section_name."Comment",$section_id,$comment);
@@ -50,87 +49,45 @@ function addComment($echoType="normal"){
     }
 }
 
-
-
-function deleteCommentsBySectionId($echoType = "normal"){
+/**
+ * 获取某条产品的留言
+ * [GET] http://www.atyorku.ca/admin/comment/commentController.php?action=getCommentsWithJson&section_name=guide&section_Id=198
+ * 获取全部留言
+ * [GET]http://www.atyorku.ca/admin/comment/commentController.php?action=getCommentsWithJson&section_name=all&section_Id=0
+ * @param section_name  表名 : all 代表获取全部留言
+ * @param section_id    产品id
+ */
+function getCommentsWithJson(){
     global $commentModel;
-    $section_name = BasicTool::post("section_name");
-    $section_id = BasicTool::post("section_id");
-    $bool = $commentModel->deleteCommentsBySection($section_name,$section_id);
-    if ($echoType == "normal")
-    {
-        if ($bool)
-            BasicTool::echoMessage("删除成功");
-        else
-            BasicTool::echoMessage("删除失败");
-    }
-    else
-    {
-        if ($bool)
-            BasicTool::echoJson(1,"删除成功");
-        else
-            BasicTool::echoJson(0,"删除失败");
+    global $currentUser;
+    try{
+        $section_name = BasicTool::get("section_name","section_name 不能为空");
+        $section_id = BasicTool::get("section_id","section_Id 不能为空");
+        $result = $commentModel->getComments($section_name,$section_id);
+        $otherInfo['uid'] = $currentUser->userId;
+        $otherInfo['isAdmin'] = $currentUser->isAdmin;
+        $otherInfo['totalPage'] = $commentModel->getTotalPage()['totalPage'];
+        if($result){
+            BasicTool::echoJson(1,"获取成功",$result,$otherInfo);
+        }else{
+            BasicTool::echoJson(0,"没有数据",$result,$otherInfo);
+        }
+    }catch (Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
-function deleteCommentsBySectionIdWithJson(){
-    deleteCommentsBySectionId("json");
-}
 
-
-function deleteChildComment($echoType="normal"){
+/**
+ *
+ */
+function deleteCommentByIdWithJson(){
     global $commentModel;
-    $id = BasicTool::post("id","id不能为空");
-    $bool = $commentModel->deleteChildComment($id);
-    if ($echoType == "normal")
-    {
-        if ($bool)
-            BasicTool::echoMessage("删除成功");
-        else
-            BasicTool::echoMessage("删除失败");
+    try{
+        $commentId = BasicTool::get("commentId","commentId不能为空");
+        $result = $commentModel->deleteCommentById($commentId);
+        BasicTool::echoJson(1,"删除成功");
+    }catch (Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
     }
-    else
-    {
-        if ($bool)
-            BasicTool::echoJson(1,"删除成功");
-        else
-            BasicTool::echoJson(0,"删除失败");
-    }
-
-}
-function deleteChildCommentWithJson(){
-    deleteChildComment("json");
-}
-function deleteParentComment($echoType="normal"){
-    global $commentModel;
-    $id = BasicTool::post("id","id不能为空");
-    $bool = $commentModel->deleteParentComment($id);
-    if ($echoType == "normal")
-    {
-        if ($bool)
-            BasicTool::echoMessage("删除成功");
-        else
-            BasicTool::echoMessage("删除失败");
-    }
-    else
-    {
-        if ($bool)
-            BasicTool::echoJson(1,"删除成功");
-        else
-            BasicTool::echoJson(0,"删除失败");
-    }
-
-}
-function deleteParentCommentWithJson(){
-    deleteParentComment("json");
-}
-function getCommentsBySectionWithJson(){
-    global $commentModel;
-    $section_name = BasicTool::post("section_name");
-    $section_id = BasicTool::post("section_Id");
-    $result = $commentModel->getCommentsBySection($section_name,$section_id);
-    if($result)
-        BasicTool::echoJson(1,"查询成功",$result);
-    else
-        BasicTool::echoJson(0,"查询失败");
 }
 
