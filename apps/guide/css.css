@@ -1,8 +1,8 @@
 *:focus { outline: none;}
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
-body,button,input,select,textarea{font:16px/1.6em "Heiti SC","Microsoft YaHei", "WenQuanYi Micro Hei", SimHei, tahoma, sans-serif;}
-body { color: #555; /* letter-spacing: 0.02em*/;}
+body,button,input,select,textarea{font-size:15px; line-height: 25px;font-family: PingFang SC Light,Heiti SC,San Francisco,Helvetica}
+body { color: #5a5a5a; /* letter-spacing: 0.02em*/;}
 #container {max-width:700px; margin:0 auto; overflow: hidden;white-space:normal; /*word-break:break-all;text-align:justify;*/ background: #fefefe;}
 a { color:  #c91448}
 h1,h2,h3,h4,h5,h6 { font-weight: normal}
@@ -11,17 +11,13 @@ h1{font-size:1.6em; color: #2a2a2a;line-height:1.6em}
 h2{font-size:1.2em; display:block; background:#c83c46; color: #fff; text-align: center; padding: 0.6em; line-height: 1.2em; margin-top:3em; margin-bottom: 1.5em; position: relative; border-radius: 6px}
 h2 em { position:absolute; display: block; width: 10px; height:10px; transform: rotate(45deg); background: #c83c46; bottom: -5px; left: 50%; margin-left:-5px}
 /*h3{font-size:1.2em; line-height: 1.8em; font-weight: bold; margin-left: 25px; margin-right: 25px; border-left: 4px solid #c83c46;border-right: 4px solid #c91448; padding-left: 4px;padding-right: 4px; background: #efefef; text-align: center; font-weight: normal; margin-top: 3em}*/
-
 h3{font-size:1.2em; line-height: 1.3em; font-weight: bold; border-left: 6px solid #c83c46 ;font-weight: normal; margin-top: 2em; color: #c83c46; font-weight: bold; padding: 0px 4px 0px 8px;  }
-
-h4{font-size:1.4em; line-height: 1.3em; font-weight: bold;  width: 50%; margin: 0 auto; margin-top: 4em; margin-bottom: 2em; border:2px solid #444; color: #444;text-align: center; padding:0.5em 1em; border-left: 0; border-right: 0}
-
-
+h4{font-size:1.4em; line-height: 1.3em; font-weight: bold;  width: 50%; margin: 0 auto; margin-top: 1.5em; margin-bottom: 2em; border:2px solid #444; color: #444;text-align: center; padding:0.5em 1em; border-left: 0; border-right: 0}
 h4,h5,h6{font-size:1em}
 
 a{text-decoration:none; word-break: break-word}
 a:hover{text-decoration:underline}
-img{border:0; border-radius: 6px}
+img{border:0;width: 96%; height: auto; border-radius: 8px; box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); display: block; margin: auto}
 button,input,select,textarea{font-size:1em}
 table{border-collapse:collapse;border-spacing:0}
 section.context { padding-top:0.4em}
@@ -29,18 +25,17 @@ section.context { padding-top:0.4em}
 /*p { text-align: justify}*/
 
 
-blockquote { background: #f8f8f8; display: block; overflow: hidden; padding:0px 1em; border-radius: 6px;}
-img { width: 100%; height: auto}
+blockquote { background: #f8f8f8; display: block; overflow: hidden; padding:0px 1em; border-radius: 6px; box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); display: block;}
 mark { background: #f9f2f4; color: #c7254e; padding:0.1em 0.3em; display:inline-block; border-radius:4px; line-height: 1.3em}
 .quot { display: block; text-align:center;}
 hr { border:none; border-top: 1px dashed #eee; height: 1px; overflow: hidden}
 
 ol,ul{ margin:1em 1em 1em 2em}
-table,p,hr,blockquote  {margin:1em 0;}
+table,p,hr,blockquote  {margin:1.2em 0;}
 li { padding: 2px 0 }
 li p {margin:0}
 blockquote { background: #f8f8f8; padding:3px 0.8em; border-radius: 4px;}
-blockquote header {font-weight: bold;  font-size: 1.4em;  text-align: center;  padding: 1em 0 0.5em 0;  border-bottom: 1px solid #eee;  margin: 0 1em;}
+blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  padding: 1em 0 0.5em 0;  border-bottom: 1px solid #eaeaea;  margin: 0 1em;}
 
 .tab td {padding:0.5em; background: #fafafa}
 .tab,.tab td { border:1px solid #cfcfcf; }
@@ -87,15 +82,9 @@ blockquote header {font-weight: bold;  font-size: 1.4em;  text-align: center;  p
 .boxWithTitle { background: #f8f8f8; padding:10px 0; padding-top: 20px; border-radius: 6px; position: relative; text-align: center; margin: 1.5em 25px; margin-top: 4em}
 .boxWithTitle .tit { display: inline-block;  background: #666; color: #fff; position: absolute;top: -10px; left:50%; transform: translate(-50%,0); padding: 2px 20px; border-radius: 6px}
 
-
-
 #coverImgBox { width: 100%;}
 
-
-
-
 .viewBox { text-align: center; padding-top: 2em }
-
 
 @keyframes animate1{
     0% {transform: rotate(-12deg)}
@@ -111,13 +100,15 @@ blockquote header {font-weight: bold;  font-size: 1.4em;  text-align: center;  p
 .imgDescribe { text-align: center; margin-top: -1.5em }
 
 .authorBox {position: relative; display: flex; justify-content: space-between; font-size: 14px;margin-top: 0.5em}
-.authorBox .left{ display: flex; flex-direction: row; align-items: center;}
+.authorBox .left{ display: flex; flex-direction: row; align-items: center; color: #aaa}
 .authorBox i { margin-left: 10px; font-style: normal}
 .authorBox .author { color:#c74457}
 .authorHead {width: 26px; height:26px; border-radius: 45px; border:2px solid #eee;text-align: center; overflow: hidden; background-color:#efefef; background-size: 100% auto; background-position: center;}
-
 body #container .center { text-align: center; }
 body #container .center * { text-align: center;}
+.readCount {margin-top: 3em; margin-bottom: 3em; color: #999; text-align: right; font-size:1em; display: flex; flex-direction: row; align-items: center}
+    .readCount em { flex: 1; line-height: 0; height: 0; border-top: 1px solid #eee; display: block;}
+    .readCount span { display:block; border:1px solid #eee; padding:2px 13px; margin:0 10px; border-radius: 100px}
 
 
 /*foldBox*/
@@ -138,12 +129,12 @@ body #container .center * { text-align: center;}
 
 
 /*评论*/
-#commentComponent { font-size: 15px; line-height: 17px; background: #f3f3f3; padding:1.5em 0.8em; border-top: 1px solid #eee; margin-top: 4em}
-#commentComponent .textAreaContainer {display: flex;margin-bottom: 3em; position: relative}
-#commentComponent .textAreaContainer textarea { flex:1; color:#484848; padding: 10px; border:2px solid #ccc}
-#commentComponent .textAreaContainer #commentButton { width: 80px; height: 36px; line-height: 36px; background: #c83c46; color: #fff; text-align:center; margin-left:10px; cursor: pointer; border-radius: 4px; position: absolute; right: 0px; bottom:-45px}
+#commentComponent { font-size: 15px; line-height: 17px; background: #f3f3f3; padding:2em 0.8em 1.5em 0.8em;  margin-top: 1.5em; box-shadow: 0 7px 8px -9px rgba(0, 0, 0, 0.3) inset}
+#commentComponent .textAreaContainer {display: flex;margin-bottom: 5em; position: relative}
+#commentComponent .textAreaContainer textarea { flex:1; color:#484848; padding: 10px; border:2px solid #ccc; border-radius: 4px}
+#commentComponent .textAreaContainer #commentButton { width: 120px; height: 36px; line-height: 36px; background: #c83c46; color: #fff; text-align:center; margin-left:10px; cursor: pointer; border-radius: 4px; position: absolute; right: 0px; bottom:-45px}
 #commentComponent .textAreaContainer #commentButton.loading {background: #ccc}
-#commentComponent header {font-size: 1em;  padding-bottom: 1em;color: #838383; text-align: center}
+#commentComponent header {color: #838383; margin-bottom: 1em;}
 #commentListContainer .commentContainer .parentComment { display: flex;}
 #commentListContainer .commentContainer .parentComment .comment .l1 {padding-top: 0.3em}
 #commentListContainer .commentContainer .avatar {width: 40px;height: 40px; background-repeat:no-repeat; background-size: 100% auto; background-position: center; margin-right: 1em; border-radius:100px}
@@ -164,4 +155,4 @@ body #container .center * { text-align: center;}
 #commentListContainer .replyBox input {flex:1; border:2px solid #e4e4e4;padding: 4px 6px; color: #484848}
 #commentListContainer .postButton { width: 50px; height: 30px; line-height: 30px; color: #fff; background:#c83c46; text-align: center; font-size: 12px; margin-left: 10px; border-radius: 4px; cursor: pointer}
 #commentListContainer .postButton.loading {background: #ccc}
-#commentComponent #loadMoreButton { margin: 1em 40px 0 40px; background: #c83c46; text-align: center; line-height: 44px; cursor: pointer; color: #eee; border-radius: 100px}
+#commentComponent #loadMoreButton { margin: 2em auto 2em auto; padding: 10px 0; border-radius: 4px; background: #666; width: 200px; text-align: center; cursor: pointer; color:#fff;display: none}

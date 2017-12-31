@@ -14,7 +14,7 @@ $signPackage = $jssdk->GetSignPackage();
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
     <title><?php echo $arr['title'] ?></title>
-    <link href="/apps/guide/css.css?121512" rel="stylesheet" type="text/css">
+    <link href="/apps/guide/css.css?121513" rel="stylesheet" type="text/css">
     <style type="text/css">
         #coverImgBox {
             position: absolute;
@@ -219,11 +219,11 @@ $signPackage = $jssdk->GetSignPackage();
                 <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
                 <i><?php echo BasicTool::translateTime($arr['time']) ?></i>
             </div>
-            <div class="right">浏览：<?php echo $arr['view_no']; ?></div>
         </div>
         <section class="context">
             <?php echo $arr['content']; ?>
         </section>
+        <div class="readCount"><em></em><span>浏览量：<?php echo $arr['view_no']; ?></span><em></em></div>
     </div>
     <!--评论组件 S-->
     <!--
@@ -231,18 +231,18 @@ $signPackage = $jssdk->GetSignPackage();
     data-production-id 产品ID（文章、二手书、分享、同学圈）
     data-receiver-id 产品作者ID
     -->
-    <script type="text/javascript" src="/admin/resource/js/component.js?105"></script>
+    <script type="text/javascript" src="/admin/resource/js/component.js"></script>
     <div id="commentComponent"
          data-category="guide"
          data-production-id="<?php echo $arr['id']; ?>"
          data-receiver-id="<?php echo $arr['uid']; ?>">
-        <header>全部评论（<span id="commentCountNumber"><?php echo $arr['count_comments']; ?></span>）</header>
+        <header><span>用户评论（<?php echo $arr['count_comments']; ?>）</span></header>
+        <section id="commentListContainer"></section>
+        <section id="loadMoreButton">点击加载更多</section>
         <section class="textAreaContainer">
             <textarea name="comment" placeholder="说两句吧..."></textarea>
             <div id="commentButton">评论</div>
         </section>
-        <section id="commentListContainer"></section>
-        <section id="loadMoreButton">点击加载更多</section>
     </div>
     <!--评论组件 E-->
 </article>

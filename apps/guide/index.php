@@ -64,12 +64,11 @@ if (BasicTool::get(share) != 1) {
                 <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
                 <i><?php echo BasicTool::translateTime($arr['time']) ?></i>
             </div>
-            <div class="right">浏览：<?php echo $arr['view_no']; ?></div>
         </div>
-        <hr>
         <section class="context">
             <?php echo $arr['content']; ?>
         </section>
+        <div class="readCount"><em></em><span>浏览量：<?php echo $arr['view_no']; ?></span><em></em></div>
     </div>
     <!--评论组件 S-->
     <!--
@@ -82,13 +81,13 @@ if (BasicTool::get(share) != 1) {
          data-category="guide"
          data-production-id="<?php echo $arr['id']; ?>"
          data-receiver-id="<?php echo $arr['uid']; ?>">
-        <header>全部评论（<span id="commentCountNumber"><?php echo $arr['count_comments']; ?></span>）</header>
+        <header><span>用户评论（<?php echo $arr['count_comments']; ?>）</span></header>
+        <section id="commentListContainer"></section>
+        <section id="loadMoreButton">点击加载更多评论</section>
         <section class="textAreaContainer">
             <textarea name="comment" placeholder="说两句吧..."></textarea>
             <div id="commentButton">评论</div>
         </section>
-        <section id="commentListContainer"></section>
-        <section id="loadMoreButton">点击加载更多</section>
     </div>
     <!--评论组件 E-->
 </article>

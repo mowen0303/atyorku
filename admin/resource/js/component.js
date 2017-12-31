@@ -339,7 +339,7 @@ function registerCommentComponent($componentObj){
                         registerDeleteButton($(this));
                     })
                     page++;
-                    if(page > json.secondResult.totalPage) $loadMoreButton.hide();
+                    if(page < json.secondResult.totalPage) $loadMoreButton.show();
                 }else{
                     $loadMoreButton.remove();
                 }
