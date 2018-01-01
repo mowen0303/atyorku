@@ -2,9 +2,10 @@
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
 body,button,input,select,textarea{font-size:15px; line-height: 25px;font-family: PingFang SC Light,Heiti SC,San Francisco,Helvetica}
-body { color: #5a5a5a; /* letter-spacing: 0.02em*/;}
+body { color: #626262; /* letter-spacing: 0.02em*/;}
 #container {max-width:700px; margin:0 auto; overflow: hidden;white-space:normal; /*word-break:break-all;text-align:justify;*/ background: #fefefe;}
 a { color:  #c91448}
+b {color:#505050}
 h1,h2,h3,h4,h5,h6 { font-weight: normal}
 h3,h4,h5,h6 { margin-top:2em}
 h1{font-size:1.6em; color: #2a2a2a;line-height:1.6em}
@@ -25,7 +26,7 @@ section.context { padding-top:0.4em}
 /*p { text-align: justify}*/
 
 
-blockquote { background: #f8f8f8; display: block; overflow: hidden; padding:0px 1em; border-radius: 6px; box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); display: block;}
+blockquote { background: #eaeaea; display: block; overflow: hidden; padding:0px 1em; border-radius: 6px;}
 mark { background: #f9f2f4; color: #c7254e; padding:0.1em 0.3em; display:inline-block; border-radius:4px; line-height: 1.3em}
 .quot { display: block; text-align:center;}
 hr { border:none; border-top: 1px dashed #eee; height: 1px; overflow: hidden}

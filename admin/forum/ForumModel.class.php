@@ -529,7 +529,7 @@ class ForumModel extends Model
         if ($onlyShowReportList == true) {
             $condition .= " AND f_c.report > 0";
         }
-        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
+        $sql ="select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
         $countSql = "SELECT count(*) FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         $arr = parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
@@ -559,7 +559,7 @@ class ForumModel extends Model
 
     public function getCommentById($id){
         //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}";
-        $sql ="select f.*,u_c.title as userTitle FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
+        $sql ="select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
         $result = $this->sqltool->getRowBySql($sql);
         foreach($result as $k => $v){
             if($k == 'time'){

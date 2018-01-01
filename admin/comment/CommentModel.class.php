@@ -57,13 +57,14 @@ class CommentModel extends Model
 
         $condition = $section_name == "all" ? "":"AND section_name = '{$section_name}' AND section_id = {$section_id}";
         //父级结果
-        $sql = "SELECT comment.*,user.id AS uid,user.alias,img,gender,degree,major,enroll_year FROM (SELECT * FROM comment WHERE parent_id = 0 {$condition}) AS comment INNER JOIN user ON comment.sender_id = user.id ORDER BY id DESC";
+        $sql = "SELECT comment.*,user_class.title,is_admin FROM (SELECT comment.*,user.id AS uid,user.user_class_id,alias,img,gender,degree,major,enroll_year FROM (SELECT * FROM comment WHERE parent_id = 0 {$condition}) AS comment INNER JOIN user ON comment.sender_id = user.id) AS comment LEFT JOIN user_class ON comment.user_class_id = user_class.id ORDER BY id DESC";
         $countSql = "SELECT COUNT(*) FROM comment WHERE parent_id = 0 {$condition} ORDER BY id DESC";
         $arr = $this->getListWithPage("comment",$sql,$countSql,10);
         //子集结果
         $parentIdArr = [];
         foreach ($arr as $k => $row){
             $arr[$k]['time'] = BasicTool::translateTime($row['time']);
+            $arr[$k]['enroll_year'] = BasicTool::translateTime($row['enroll_year']);
             $parentIdArr[] = $row['id'];
         }
         $parentId = implode(",",$parentIdArr);
