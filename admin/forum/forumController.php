@@ -523,6 +523,7 @@ function addComment($echoType = "normal")
         $forumModel->updateCountData($arr['forum_id']);
         $forumModel->updateForumTime($arr['forum_id']);
         $newComment = $forumModel->getCommentById($forumModel->idOfInsert);
+        $newComment['enroll_year'] = BasicTool::translateEnrollYear($newComment['enroll_year']);
 
         //推送信息
         $msgModel->pushMsgToUser($ownerUserId,"forumComment", $forumId, $arr['content_comment']);
