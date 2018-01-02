@@ -86,8 +86,8 @@ class EventModel extends Model
         }
 
         if ($flag == 1) {
-            $sql = "SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
-            $countSql = "SELECT COUNT(*) FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time ORDER BY sort DESC, event_time DESC";
+            $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+            $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
             return $this->getListWithPage("event", $sql, $countSql, 20);
         }
         else{
@@ -120,7 +120,7 @@ class EventModel extends Model
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
-                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
+                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -134,7 +134,6 @@ class EventModel extends Model
         $arr["location_link"] = $location_link ? $location_link : "";
         $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
         $arr["max_participants"]=$max_participants ? $max_participants : 0;
-        $arr["sponsor_user_id"] = $sponsor_user_id;
         $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
         $arr["sponsor_telephone"] = $sponsor_telephone ? $sponsor_telephone : "";
         $arr["sponsor_wechat"] = $sponsor_wechat ? $sponsor_wechat : "";

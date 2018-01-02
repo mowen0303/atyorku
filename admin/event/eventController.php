@@ -76,6 +76,7 @@ function addEvent($echoType = "normal"){
     }
 }
 
+
 /**添加活动
  * POST
  * JSON接口
@@ -112,24 +113,30 @@ function addEventWithJson(){
 function getEventsByCategory($echoType="normal")
 {
     global $eventModel;
-
-    $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
-    $flag = BasicTool::get("flag");
-    $result = $eventModel->getEventsByCategory($event_category_id, $flag);
-
-    if ($echoType == "normal")
-    {
-        if ($result)
+    try{
+        $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
+        $flag = BasicTool::get("flag");
+        $result = $eventModel->getEventsByCategory($event_category_id, $flag) or BasicTool::throwException("查询失败");
+        $results = [];
+        foreach ($result as $event){
+            $event["event_time"] = BasicTool::translateTime($event["event_time"]);
+            array_push($results,$event);
+        }
+        if ($echoType == "normal") {
             BasicTool::echoMessage("查询成功");
+        }
         else
-            BasicTool::echoMessage("查询失败");
+        {
+            BasicTool::echoJson(1, "查询成功",$results);
+        }
     }
-    else
-    {
-        if ($result)
-            BasicTool::echoJson(1,"查询成功");
-        else
-            BasicTool::echoJson(0,"查询失败");
+    catch (Exception $e){
+        if ($echoType == "normal"){
+            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+        }
+        else{
+            BasicTool::echoJson(0,$e->getMessage());
+        }
     }
 }
 /**根据分类ID查询一页活动
@@ -292,7 +299,7 @@ function updateEvent($echoType = "normal"){
         $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
         $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
 
-        $sponsor_user_id = BasicTool::post("sponsor_user_id");
+        //$sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
@@ -316,7 +323,7 @@ function updateEvent($echoType = "normal"){
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
 
         $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");

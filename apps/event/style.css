@@ -1,0 +1,65 @@
+@media only screen and (min-width : 320px) and (max-width:600px) {
+    *{
+        padding:0;
+        margin:0;
+        font-family:"Heiti SC","Microsoft YaHei", "WenQuanYi Micro Hei", SimHei, tahoma, sans-serif;
+    }
+    html{
+        font-size:14px;
+    }
+    body{
+        height:100vh
+    }
+    a{
+        text-decoration:none;
+    }
+    ul{
+        list-style-type:none;
+    }
+    a:hover{
+        text-decoration:none;
+    }
+    .img{
+        width:100%;
+        padding-top:50%;
+        background-size:cover;
+        background-position:center center;
+        background-repeat:no-repeat;
+    }
+    #container{
+        width:100vw;
+        padding:0 1.5rem;
+        position:relative
+    }
+    #title{
+        font-weight:bold
+    }
+    #profile_container{
+        position:relative;
+    }
+    #profile_picture{
+        background-size:cover;
+        height:4.1rem;
+        width:4.1rem;
+        border-radius: 100px;
+        position:relative;
+        margin-top:1.5rem;
+    }
+    #sponsor_info{
+        position:absolute;
+        top:50%;
+        -webkit-transform: translate3d(0,-50%,0);
+        left:5rem;
+    }
+    #event_info_container{
+        border:solid 1px #e2e2e2;
+        padding:1.7rem 1.7rem;
+    }
+    .event_info_subcontainer{
+        display:inline-block;
+        width:49.2%;
+        font-size:0.95rem;
+    }
+}
+
+
