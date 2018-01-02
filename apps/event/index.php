@@ -14,7 +14,7 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
     <meta charset="UTF-8"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <style>#profile_picture,.img{background-size:cover}#container,#profile_container,#profile_picture{position:relative}*{padding:0;margin:0;font-family:"Heiti SC","Microsoft YaHei","WenQuanYi Micro Hei",SimHei,tahoma,sans-serif}html{font-size:14px;overflow:hidden}body{height:100vh}a,a:hover{text-decoration:none}ul{list-style-type:none}.img{width:100%;padding-top:50%;background-position:center center;background-repeat:no-repeat}#container{width:100vw;padding:0 2rem}#title{font-weight:700}#profile_picture{height:4.1rem;width:4.1rem;border-radius:100px;margin-top:1.5rem}#sponsor_info{position:absolute;top:50%;-webkit-transform:translate3d(0,-50%,0);left:5rem}#event_info_container{border:1px solid #e2e2e2;padding:1.7rem}.event_info_subcontainer{display:inline-block;width:49.2%;font-size:.95rem}</style>
 </head>
 <body>
     <div>

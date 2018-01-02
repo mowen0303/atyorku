@@ -1,11 +1,11 @@
-@media only screen and (min-width : 320px) and (max-width:600px) {
-    *{
+ *{
         padding:0;
         margin:0;
         font-family:"Heiti SC","Microsoft YaHei", "WenQuanYi Micro Hei", SimHei, tahoma, sans-serif;
     }
     html{
         font-size:14px;
+        overflow:hidden;
     }
     body{
         height:100vh
@@ -28,7 +28,7 @@
     }
     #container{
         width:100vw;
-        padding:0 1.5rem;
+        padding:0 2rem;
         position:relative
     }
     #title{
@@ -60,6 +60,5 @@
         width:49.2%;
         font-size:0.95rem;
     }
-}
 
 
