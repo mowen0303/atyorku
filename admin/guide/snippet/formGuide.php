@@ -136,6 +136,14 @@ $_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
                     <p><img id="imgOfUpload" src="<?php echo $row['cover'] ?>"
                             style="width: 100px; height: auto;"></p>
                     <input type="file" name="imgFile" id="imgFile"/><input type="button" value="上传" id="uploadImg">
+                    <p>资源上传地址配置：<?php
+                        if(explode("/",$_SESSION["ueditor_upload_location"])[1]==$guide_id){
+                            echo '<span style="color:green">正常</span> ('.$guide_id.')';
+                        }else{
+                            echo '<span style="color:#f00">异常<br>'.$_SESSION["ueditor_upload_location"]."<br>".$guide_id."</span>";
+                        }
+                        ?>
+                    </p>
                 </div>
                 <div>
                     <label>正文</label>
