@@ -64,7 +64,7 @@ class CommentModel extends Model
         $parentIdArr = [];
         foreach ($arr as $k => $row){
             $arr[$k]['time'] = BasicTool::translateTime($row['time']);
-            $arr[$k]['enroll_year'] = BasicTool::translateTime($row['enroll_year']);
+            $arr[$k]['enroll_year'] = BasicTool::translateEnrollYear($row['enroll_year']);
             $parentIdArr[] = $row['id'];
         }
         $parentId = implode(",",$parentIdArr);
