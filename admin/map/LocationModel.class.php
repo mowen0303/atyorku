@@ -97,7 +97,7 @@ class LocationModel extends Model
     }
 
     /**
-     * 用大楼缩写查询大楼信息
+     * 查找缩写为$init的大楼
      * @param $init varchar 大楼缩写
      * @return 大楼条目
      */
@@ -108,31 +108,42 @@ class LocationModel extends Model
     }
 
     /**
-     * 返回所有*全名*以$str开头的大楼
+     * 查找全称为$fullName的大楼
+     * @oaram $fullName varchar 大楼全称
+     * @return 大楼条目
+     */
+    public function getLocationByFullName($fullName)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE full_name = {$fullName}";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+     * 返回所有*全名*包括$str的大楼
      * @param $str
      * @return \一维关联数组
      */
     public function getLocationsByFullNameKeyword($str) {
-        $sql = "SELECT * FROM {$this->table} WHERE full_name LIKE '{$str}%'";
+        $sql = "SELECT * FROM {$this->table} WHERE full_name LIKE '%{$str}%'";
         return $this->sqltool->query($sql);
     }
 
     /**
-     * 返回所有*缩写*以$str开头的大楼
+     * 返回所有*缩写*包括$str的大楼
      * @param $str
      * @return \一维关联数组
      */
     public function getLocationsByInitKeyword($str) {
-        $sql = "SELECT * FROM {$this->table} WHERE init LIKE '{$str}%'";
+        $sql = "SELECT * FROM {$this->table} WHERE init LIKE '%{$str}%'";
         return $this->sqltool->query();
     }
 
-//    public function getLocationPolygonById($id) { /* TODO */ }
+//    public function getLocationPolygonById($id)
 
-//    public function getLocationPolygonByInit($init) { /* TODO */ }
+//    public function getLocationPolygonByInit($init)
 
     /**
-     *
+     * 删除$id的大楼
      * @param $id
      */
     public function deleteLocationById($id) {

@@ -11,6 +11,20 @@ else {
     $form_action = "addLocation";
 }
 ?>
+<script>
+    function fullNameDoesExist(str) {
+        if (str.length == 0) {
+            document.getElementById("fullName").style.background = "#fff";
+        } else {
+            // TODO
+            var url = "www.atyorku.ca/admin/map/locationModel.php?"
+        }
+    }
+
+    function initDoesExist(str) {
+        // TODO
+    }
+</script>
 <header class="topBox">
     <h1><?php echo $pageTitle.' - ';
         echo $flag == 'add' ? '添加大楼' : '修改大楼'; ?></h1>
@@ -28,11 +42,11 @@ else {
             </div>
             <div>
                 <label>大楼缩写<i>*</i></label>
-                <input class="input" type="text" name="init" value="<?php echo $row['init'] ?>">
+                <input class="input" type="text" name="init" id="init" value="<?php echo $row['init'] ?>">
             </div>
             <div>
                 <label>大楼全名<i>*</i></label>
-                <input class="input" type="text" name="full_name" value="<?php echo $row['full_name'] ?>">
+                <input class="input" type="text" name="full_name" id="fullName" value="<?php echo $row['full_name'] ?>">
             </div>
             <div>
                 <label>纬度<i>*</i></label>
@@ -47,7 +61,7 @@ else {
                 <textarea class="input input-textarea" name="info"><?php echo $row['info'] ?></textarea>
             </div>
             <div>
-                <label>形状坐标<i>*</i></label>
+                <label>形状坐标</label>
                 <textarea class="input input-textarea" name="shape"><?php echo $row['shape'] ?></textarea>
             </div>
         </section>

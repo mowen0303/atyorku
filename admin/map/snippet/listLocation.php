@@ -1,4 +1,7 @@
 <?php
+/*
+ * WARNING - this page is deprecated and will be deleted. Use it only for testing purpose.
+ */
 $locationModel = new \admin\map\LocationModel();
 $userModel = new \admin\user\UserModel();
 ?>

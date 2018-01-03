@@ -38,6 +38,7 @@ if ($flag=='listResult') {
                     <th>缩写</th>
                     <th>全称</th>
                     <th>简介</th>
+                    <th>有无形状</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -58,6 +59,13 @@ if ($flag=='listResult') {
                             <a href="index.php?s=addLocation&id=<?php echo $row['id'] ?>"><?php echo $row['full_name'] ?></a>
                         </td>
                         <td><?php echo $row['info'] ?></td>
+                        <?php
+                        if($row['shape'] != "") {
+                            echo "<td style='color: green'>有</td>";
+                        } else {
+                            echo "<td style='color: red'>无</td>";
+                        }
+                        ?>
                     </tr>
                     <?php
                 }

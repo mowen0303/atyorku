@@ -17,6 +17,10 @@ function addLocation() {
         $info = BasicTool::post("info");
         $shape = BasicTool::post("shape");
 
+        // check if there exist an entry with the same full name or initial
+        // doesLocationExist($fullName, $init);
+
+
         $locationModel->addLocation($init, $fullName, $info, $latitude, $longitude, $shape);
         BasicTool::echoMessage("大楼添加成功 :)");
     } catch (Exception $e){
@@ -39,6 +43,8 @@ function updateLocation() {
         $lng = BasicTool::post("longitude");
         $info = BasicTool::post("info");
         $shape = BasicTool::post("shape");
+
+        // doesLocationExist($fullName, $init);
 
         $locationModel->updateLocation($id, $init, $fullName, $info, $lat, $lng, $shape);
         BasicTool::echoMessage("大楼信息更新成功 :)");
@@ -63,6 +69,12 @@ function getLocationByInit() {
     global $locationModel;
     $init = BasicTool::get("init", "请输入正确的大楼缩写 :(");
     BasicTool::echoJson(1, "获取大楼信息成功 :)", $locationModel->getLocationByInit($init));
+}
+
+function getLocationByFullName() {
+    global $locationModel;
+    $init = BasicTool::get("init", "请输入正确的大楼 :(");
+    BasicTool::echoJson(1, "获取大楼信息成功 :)", $locationModel->getLocationByFullName($init));
 }
 
 // Maybe unnecessary, but just in case...
