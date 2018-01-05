@@ -64,7 +64,7 @@ if ($approved_solution){
                             <td><?php echo $question['id']?></td>
                             <td><?php echo $questioner['alias']?></td>
                             <td><img width="36" height="36" src="<?php echo $questioner["img"]?>"></td>
-                            <td><?php echo $question['description']?></td>
+                            <td style="max-width:200px"><?php echo $question['description']?></td>
                             <td><?php echo $question['reward_amount']?></a></td>
                             <td><?php echo $question['count_solutions'] ?></td>
                             <td><?php echo $question['count_views'] ?></td>
@@ -124,7 +124,7 @@ if ($approved_solution){
                         <td><?php echo $approved_solution['id']?></td>
                         <td><?php echo $approved_solution_answerer['alias']?></td>
                         <td><img width="36" height="36" src="<?php echo $approved_solution_answerer["img"]?>"></td>
-                        <td><?php echo $approved_solution['description']?></td>
+                        <td style="max-width:200px"><?php echo $approved_solution['description']?></td>
                         <td><img  width="100" height="70" src="<?php echo $approved_solution_img_url_1?>" <?php echo $display_img_1 ?>"></td>
                         <td><img  width="100" height="70" src="<?php echo $approved_solution_img_url_2?>" <?php echo $display_img_2 ?>"></td>
                         <td><img  width="100" height="70" src="<?php echo $approved_solution_img_url_3?>" <?php echo $display_img_3 ?>"></td>
@@ -158,7 +158,7 @@ if ($approved_solution){
                         <td><?php echo $solution['id']?></td>
                         <td><?php echo $answerer['alias']?></td>
                         <td><img width="36" height="36" src="<?php echo $answerer["img"]?>"></td>
-                        <td><?php echo $solution['description']?></td>
+                        <td style="max-width:200px"><?php echo $solution['description']?></td>
                         <td><img <?php echo $display_img_1?> width="100" height="70" src="<?php echo $img_url_1?>"></td>
                         <td><img <?php echo $display_img_2?> width="100" height="70" src="<?php echo $img_url_2?>"></td>
                         <td><img <?php echo $display_img_3?> width="100" height="70" src="<?php echo $img_url_3?>"></td>

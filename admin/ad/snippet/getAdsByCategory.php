@@ -61,7 +61,7 @@ else{
                             <td><?php echo $row['id']?></td>
                             <td><img <?php echo $display_img_1?> width="120" height="60" src="<?php echo $img_url_1?>"></a></td>
                             <td><?php echo $row['title']?></td>
-                            <td><?php echo $row['description']?></a></td>
+                            <td style="max-width:300px"><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>
                             <td><?php echo $row['ad_url']?></td>
                             <td><?php echo $row['view_count'] ?></td>

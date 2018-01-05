@@ -123,6 +123,7 @@ class CourseQuestionModel extends Model
     /**根据course_code_id和教授id查询提问
      * flag=1查询已解决的提问
      * flag=0查询未解决的提问
+     * 如果prof_id=0则只根据course_code_id查询
      * @param int $course_code_id
      * @param int $prof_id 教授id
      * @param int $flag
@@ -130,12 +131,14 @@ class CourseQuestionModel extends Model
      */
     function getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id, $flag = 1)
     {
+        $condition = $prof_id ? "AND prof_id = {$prof_id}" : "";
+
         if ($flag == 0) {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id = 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id = 0 ORDER BY time_posted DESC";
+            $sql = "SELECT course_question.*, image.url as img_url_1 FROM (SELECT course_question.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_question WHERE course_code_id = {$course_code_id} {$condition} AND solution_id = 0) AS course_question INNER JOIN user on course_question.questioner_user_id = user.id) AS course_question LEFT JOIN image ON course_question.img_id_1 = image.id ORDER BY course_question.time_posted DESC";
+            $countSql = "SELECT COUNT(*) FROM (SELECT course_question.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_question WHERE course_code_id = {$course_code_id} {$condition} AND solution_id = 0) AS course_question INNER JOIN user on course_question.questioner_user_id = user.id) AS course_question LEFT JOIN image ON course_question.img_id_1 = image.id ORDER BY course_question.time_posted DESC";
         } else {
-            $sql = "SELECT * FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id != 0 ORDER BY time_posted DESC";
-            $countSql = "SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id = {$prof_id} AND solution_id != 0 ORDER BY time_posted DESC";
+            $sql = "SELECT course_question.*,image.url AS solution_img_url_1 FROM (SELECT course_question.*, course_solution.img_id_1 AS solution_img_id_1, course_solution.description AS solution_description FROM (SELECT course_question.*,user.alias,user.gender,user.enroll_year,user.img AS profile_img_url, user.major FROM (SELECT * FROM course_question WHERE course_code_id = {$course_code_id} {$condition} AND solution_id != 0) AS course_question INNER JOIN user on user.id = course_question.answerer_user_id) AS course_question INNER JOIN course_solution ON course_solution.id = course_question.solution_id) AS course_question LEFT JOIN image ON image.id = course_question.solution_img_id_1 ORDER BY course_question.time_posted DESC";
+            $countSql = "SELECT COUNT(*) FROM (SELECT course_question.*, course_solution.img_id_1 AS solution_img_id_1, course_solution.description AS solution_description FROM (SELECT course_question.*,user.alias,user.gender,user.enroll_year,user.img AS profile_img_url, user.major FROM (SELECT * FROM course_question WHERE course_code_id = {$course_code_id} {$condition} AND solution_id != 0) AS course_question INNER JOIN user on user.id = course_question.answerer_user_id) AS course_question INNER JOIN course_solution ON course_solution.id = course_question.solution_id) AS course_question LEFT JOIN image ON image.id = course_question.solution_img_id_1 ORDER BY course_question.time_posted DESC";
         }
 
         return $this->getListWithPage("course_question", $sql, $countSql, 20);

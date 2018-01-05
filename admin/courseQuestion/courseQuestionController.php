@@ -320,7 +320,7 @@ function getQuestionsByCourseCodeIdWithJson(){
  * @param prof_id
  * @param flag 0=为解决的提问，1=已解决的提问
  * @param page 页数
- * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdWithJson&page=1&flag=1&course_code_id=1&prof_id=1
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdProfIdWithJson&page=1&flag=1&course_code_id=1&prof_id=1
  */
 function getQuestionsByCourseCodeIdProfIdWithJson(){
     global $questionModel;
@@ -329,9 +329,15 @@ function getQuestionsByCourseCodeIdProfIdWithJson(){
         $course_code_id = BasicTool::get("course_code_id","Missing Course Code Id");
         $prof_id = BasicTool::get("prof_id","missing prof id");
         $result = $questionModel->getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id,$flag);
-        if ($result)
-            BasicTool::echoJson(1,"查询成功",$result);
-
+        $results = [];
+        if ($result){
+            foreach ($result as $question){
+            $question["time_posted"] = BasicTool::translateTime($question["time_posted"]);
+            $question["enroll_year"] = BasicTool::translateEnrollYear($question["enroll_year"]);
+            array_push($results,$question);
+            }
+            BasicTool::echoJson(1,"查询成功",$results);
+        }
         else
             BasicTool::echoJson(0,"空");
     }
