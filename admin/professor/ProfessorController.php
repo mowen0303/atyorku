@@ -35,7 +35,7 @@ function getProfessorByIdWithJson() {
 function getListOfProfessorWithJson() {
     global $professorModel;
     try {
-        $result = $professorModel->getListOfProfessor(BasicTool::get("query"));
+        $result = $professorModel->getListOfProfessor(BasicTool::get("query"),BasicTool::get("pageSize"));
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
         } else {
