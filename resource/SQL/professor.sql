@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: 2017-12-28 22:38:56
--- 服务器版本： 10.1.25-MariaDB
--- PHP Version: 7.1.7
+-- Host: localhost:3306
+-- Generation Time: Jan 07, 2018 at 04:15 PM
+-- Server version: 5.6.38
+-- PHP Version: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -25,18 +25,18 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- 表的结构 `professor`
+-- Table structure for table `professor`
 --
 
 CREATE TABLE `professor` (
   `id` int(11) UNSIGNED NOT NULL,
-  `firstname` char(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lastname` char(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `firstname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lastname` char(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `view_count` int(11) UNSIGNED NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- 转存表中的数据 `professor`
+-- Dumping data for table `professor`
 --
 
 INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
@@ -67,7 +67,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (25, 'David', 'Stamos', 0),
 (26, 'Vera', 'Pavri', 0),
 (27, 'Igor', 'Poliakov', 0),
-(28, 'Paul', 'Kashiyama', 0),
+(28, 'Paul', 'Kashiyama', 3),
 (29, 'Stan', 'Jerzak', 0),
 (30, 'Len', 'Karakowsky', 0),
 (31, 'Neil', 'Smith', 0),
@@ -1279,7 +1279,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1237, 'Youness', 'Lamzouri', 0),
 (1238, 'Fernando', 'Leibovici', 0),
 (1239, 'Marina', 'Saccon', 0),
-(1240, ' Alireza  Rafiee', '', 0),
+(1240, 'Alireza', 'Rafiee', 0),
 (1241, 'Romi Lee', 'Sevel', 0),
 (1242, 'Orlando', 'Lopez', 0),
 (1243, 'Jodi', 'Martin', 0),
@@ -1327,7 +1327,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1285, 'Philip', 'Harland', 0),
 (1286, 'Melissa', 'Turkstra', 0),
 (1287, 'Marc', 'Weinstein', 0),
-(1288, '', 'Alagurajah', 0),
 (1289, 'Mark', 'Cummings', 0),
 (1290, 'Andy', 'Weaver', 0),
 (1291, 'Teresa', 'Macias', 0),
@@ -1661,7 +1660,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1619, 'Hannah', 'Wong', 0),
 (1620, 'Jill', 'Cumby', 0),
 (1621, 'Emilie  Emilie', 'Roudier', 0),
-(1622, 'Ã–zgÃ¼n', 'Topak', 0),
+(1622, 'Aaida', 'Topak', 0),
 (1623, 'Barbara', 'Ackerman', 0),
 (1624, 'Ester', 'Reiter', 0),
 (1625, 'Heather', 'Lotherington', 0),
@@ -1771,9 +1770,9 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1729, 'Michelle', 'Johnson', 0),
 (1730, 'John', 'Dingley', 0),
 (1731, 'Govind', 'Rao', 0),
-(1732, 'Penelope', 'Stewart', 0);
+(1732, 'Penelope', 'Stewart', 0),
+(1733, 'Syed', 'Basher', 0);
 INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
-(1733, 'Syed', 'Basher', 0),
 (1734, 'Leo', 'Davids', 0),
 (1735, 'Elie', 'Appelbaum', 0),
 (1736, 'Colleen', 'Bell', 0),
@@ -2038,7 +2037,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (1995, 'Mary', 'Goitom', 0),
 (1996, 'Simone', 'Pisana', 0),
 (1997, 'Xing', 'Tan', 0),
-(1998, 'Ian  Patton', '', 0),
+(1998, 'Ian', 'Patton', 0),
 (1999, 'John', 'Lam', 0),
 (2000, 'Michael', 'Rotondi', 0),
 (2001, 'Siu Ning Sunny', 'Leung', 0),
@@ -2165,10 +2164,10 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2122, 'Alfred', 'Abadir', 0),
 (2123, 'Rebecca', 'Hanson', 0),
 (2124, 'Jill', 'Prindiville', 0),
-(2125, 'Jing Wang', '', 0),
+(2125, 'Jing', 'Wang', 0),
 (2126, 'Alex', 'Czekanski', 0),
 (2127, 'Rozhan', 'Sheykhani', 0),
-(2128, ' Matthew  Tegelberg', '', 0),
+(2128, ' Matthew', 'Tegelberg', 0),
 (2129, 'Emanoil', 'Theodorescu', 0),
 (2130, 'Jodie', 'Whelan', 0),
 (2131, 'Mansour', 'Safdari', 0),
@@ -2396,8 +2395,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2353, 'John', 'O\'Neil', 0),
 (2354, 'Henny', 'Westra', 0),
 (2355, 'Paul', 'Mazzocchi', 0),
-(2356, '', 'Wintres', 0),
-(2357, '', 'Pat', 0),
 (2358, 'Chris', 'Sanders', 0),
 (2359, 'Joshua', 'Fogel', 0),
 (2360, 'Patrick', 'Parson', 0),
@@ -2486,12 +2483,12 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2443, 'Mohafiqul', 'Kader', 0),
 (2444, 'Hany', 'Farag', 0),
 (2445, 'Patrick', 'Connor', 0),
-(2446, 'Declan Williams', '', 0),
+(2446, 'Declan', 'Williams', 0),
 (2447, 'Tsvetanka', 'Karagyozova', 0),
 (2448, 'Andrew', 'Medeiros', 0),
 (2449, 'Marnina', 'Norys', 0),
 (2450, 'Heather', 'Edgell', 0),
-(2451, 'Andrew  Maxwell', '', 0),
+(2451, 'Andrew', 'Maxwell', 0),
 (2452, 'William', 'Colgan', 0),
 (2453, 'Douglas', 'Clarke', 0),
 (2454, 'Alexander', 'Dahl', 0),
@@ -2652,8 +2649,8 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2609, 'Boyd', 'Cothran', 0),
 (2610, 'Susan', 'Owen', 0),
 (2611, 'Rashid', 'Bashir', 0),
-(2612, 'Khatereh  Sheibani', '', 0),
-(2613, 'Mavoy Bertram', '', 0),
+(2612, 'Khatereh', 'Sheibani', 0),
+(2613, 'Mavoy', 'Bertram', 0),
 (2614, 'Janet', 'Boekhorst', 0),
 (2615, 'Jonathan', 'Mendelsohn', 0),
 (2616, 'Wenjing', 'Zhang', 0),
@@ -2773,9 +2770,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2730, 'John', 'Lennox', 0),
 (2731, 'Emma', 'Pavlov', 0),
 (2732, 'Eddie', 'Sturman', 0),
-(2733, '', 'Kispal-Kovacs/', 0),
 (2734, 'Ellen', 'Auster', 0),
-(2735, '', 'Lukac', 0),
 (2736, 'Idris', 'Mercer', 0),
 (2737, 'Gladie', 'Lui', 0),
 (2738, 'Navneet', 'Alang', 0),
@@ -2786,7 +2781,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2743, 'Robert', 'Lawerence', 0),
 (2744, 'Ute', 'Lehrer', 0),
 (2745, 'Jinjun', 'Shan', 0),
-(2746, '', 'Shamsi', 0),
 (2747, 'Jamie', 'Pratt', 0),
 (2748, 'Gigi', 'Luk', 0),
 (2749, 'Marlis', 'Schweitzer', 0),
@@ -2904,7 +2898,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2861, 'Peter', 'Vandergeest', 0),
 (2862, 'Lynne', 'Angus', 0),
 (2863, 'Frederick', 'Zemans', 0),
-(2864, '', 'Sieburth', 0),
 (2865, 'Pauline', 'Head', 0),
 (2866, 'Sandra', 'Polifroni', 0),
 (2867, 'Yifang', 'Ban', 0),
@@ -2963,7 +2956,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (2920, 'Benson', 'Agi', 0),
 (2921, 'Ebenezer', 'Lartey', 0),
 (2922, 'Elizabeth(liz)', 'Newbery', 0),
-(2923, ' Wai-Ming', 'Ho', 0),
+(2923, 'Wai-Ming', 'Ho', 0),
 (2924, 'Marilyn', 'Redfern', 0),
 (2925, 'Rade', 'Zinaic', 0),
 (2926, 'Dan', 'Mariani', 0),
@@ -3046,7 +3039,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3003, 'Russell', 'Belk', 0),
 (3004, 'Young', 'Yoo', 0),
 (3005, 'Kristian', 'Weihs', 0),
-(3006, 'Anastasios T', 'Adamopoulos', 0),
 (3007, 'Don', 'Sinclair', 0),
 (3008, 'Bohdan', 'Gluch', 0),
 (3009, 'Morgan', 'Poteet', 0),
@@ -3109,7 +3101,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3066, 'Kenneth', 'Rogers', 0),
 (3067, 'Antonio', 'Sorge', 0),
 (3068, 'Benjamin', 'Sand', 0),
-(3069, 'Mike  Mokhtar', '', 0),
+(3069, 'Mike', 'Mokhtar', 0),
 (3070, 'Sul Gi', 'Kim', 0),
 (3071, 'Ahmed', 'Eldyasti', 0),
 (3072, 'Soma', 'Chatterjee', 0),
@@ -3142,7 +3134,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3099, 'Jeff', 'Cupchik', 0),
 (3100, 'Sukhram', 'Jakhinder', 0),
 (3101, 'Martijn', 'Konings', 0),
-(3102, '', 'Witmer', 0),
 (3103, 'Joe', 'Sawada', 0),
 (3104, 'Jim', 'Burgess', 0),
 (3105, 'Evan', 'Thompson', 0),
@@ -3337,7 +3328,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3294, 'Andrew', 'Dickens', 0),
 (3295, 'Joseph', 'Tohill', 0),
 (3296, 'Chima', 'Osakwe', 0),
-(3297, 'Annemarie  Barnes', '', 0),
+(3297, 'Annemarie', 'Barnes', 0),
 (3298, 'John', 'Moores', 0),
 (3299, 'Marija', 'Cetinic', 0),
 (3300, 'Brian', 'Katz', 0),
@@ -3350,7 +3341,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3307, 'Dan', 'Georgescu', 0),
 (3308, 'Stephan', 'Dobson', 0),
 (3309, 'Jan', 'Anderson', 0),
-(3310, 'Margaret Meg Gibson', '', 0),
+(3310, 'Margaret Meg', 'Gibson', 0),
 (3311, 'Terrance', 'Kubiseski', 0),
 (3312, 'Yadollah', 'Maham', 0),
 (3313, 'Patricia', 'Bradley', 0),
@@ -3462,8 +3453,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3419, 'Jim', 'Maloney', 0),
 (3420, 'Aubie', 'Golombek', 0),
 (3421, 'Carolina', 'Bereinstein', 0),
-(3422, 'Jackie', 'Robinson', 0);
-INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
+(3422, 'Jackie', 'Robinson', 0),
 (3423, 'Steve', 'Ledrew', 0),
 (3424, 'Yael', 'Selinger', 0),
 (3425, 'Denise', 'Nuttall', 0),
@@ -3471,7 +3461,8 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3427, 'Michelle', 'Metraux', 0),
 (3428, 'Dominique', 'O\'Neill', 0),
 (3429, 'John', 'Baig', 0),
-(3430, 'Diane Beelen', 'Woody', 0),
+(3430, 'Diane Beelen', 'Woody', 0);
+INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3431, 'Avrum', 'Lieberman', 0),
 (3432, 'Harmeet', 'Sandhu', 0),
 (3433, 'Bob', 'Menzies', 0),
@@ -3531,7 +3522,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3487, 'Finlayson', 'Neil', 0),
 (3488, 'Robert', 'Wager', 0),
 (3489, 'Karen', 'Travers', 0),
-(3490, 'Irene Kosmas', '(kouretsos)', 0),
+(3490, 'Irene', 'Kosmas', 0),
 (3491, 'Lisa', 'Farley', 0),
 (3492, 'Jane', 'MacNaughton', 0),
 (3493, 'Ira', 'Jacobs', 0),
@@ -3640,13 +3631,13 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3596, 'Richard', 'Wilde', 0),
 (3597, 'Rui', 'Zhang', 0),
 (3598, 'MIKE', 'O\'CONNOR', 0),
-(3599, 'Rebecca  Ring', '', 0),
+(3599, 'Rebecca', 'Ring', 0),
 (3600, 'Alejandro', 'Sinner', 0),
 (3601, 'Masoud', 'Shadnam', 0),
 (3602, 'Dagomar', 'Degroot', 0),
 (3603, 'Victoria', 'Freeman', 0),
-(3604, 'Rushde  Akbar', '', 0),
-(3605, 'Alexandra  Widmer', '', 0),
+(3604, 'Rushde', 'Akbar', 0),
+(3605, 'Alexandra', 'Widmer', 0),
 (3606, 'Lana', 'Parker', 0),
 (3607, 'Donna', 'Rex', 0),
 (3608, 'Tina', 'Weston', 0),
@@ -3660,7 +3651,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3616, 'Lorian', 'Hardcastle', 0),
 (3617, 'Alessandro', 'Vignati', 0),
 (3618, 'Felipe', 'Montoya', 0),
-(3619, 'Shari  Geller', '', 0),
+(3619, 'Shari', 'Geller', 0),
 (3620, 'Selom', 'Chapman-Nyaho', 0),
 (3621, 'Anna', 'Kornilova', 0),
 (3622, 'Charles', 'Dreezer', 0),
@@ -3749,7 +3740,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3705, 'Andrew', 'Dorelayers', 0),
 (3706, 'S.H.', 'Osman', 0),
 (3707, 'Debbie', 'Meraram', 0),
-(3708, ' Stewart-', 'Ajamu', 0),
+(3708, 'Stewart.', 'Ajamu', 0),
 (3709, 'Laura', 'Westra', 0),
 (3710, 'Patricia', 'Williams', 0),
 (3711, 'Brad', 'King', 0),
@@ -3778,7 +3769,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3734, 'Stan', 'Li', 0),
 (3735, 'James', 'Crowe', 0),
 (3736, 'Erica', 'Barbuto', 0),
-(3737, '', 'Xiaofei', 0),
 (3738, 'Pallavi', 'Das', 0),
 (3739, 'Ralph', 'Kuhn', 0),
 (3740, 'Rosanna', 'Saracino', 0),
@@ -3816,7 +3806,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3772, 'Eric', 'Newstand', 0),
 (3773, 'Peter', 'Mallory', 0),
 (3774, 'Ross', 'Arthur', 0),
-(3775, '', 'Ragagopal', 0),
 (3776, 'Shawn', 'Gates', 0),
 (3777, 'Damon', 'Lazzara', 0),
 (3778, 'Grace', 'Troje', 0),
@@ -4022,7 +4011,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (3978, 'Karen', 'Morrison', 0),
 (3979, 'Olga', 'Rubino', 0),
 (3980, 'Laine', 'Hughes', 0),
-(3981, 'Angela Robinson', '', 0),
+(3981, 'Angela', 'Robinson', 0),
 (3982, 'Mary', 'Franks', 0),
 (3983, 'Sangay', 'Bhutia', 0),
 (3984, 'Stephanie', 'Miliken', 0),
@@ -4252,7 +4241,6 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (4208, 'Karl Andrew', 'White', 0),
 (4209, 'Harman', 'Tiwana', 0),
 (4210, 'Anastasios T', 'Adamopoulos', 0),
-(4211, 'Anastasios T', 'Tadamopoulos', 0),
 (4212, 'Kimble', 'Ainslie', 0),
 (4213, 'Matthew', 'Crippen', 0),
 (4214, 'Franca', 'Young', 0),
@@ -4350,7 +4338,7 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (4306, 'Jonathan', 'Luke', 0),
 (4307, 'Derrick', 'Hrynyshyn', 0),
 (4308, 'David', 'Gelb', 0),
-(4309, ' Consuelo', 'Perez', 0),
+(4309, 'Consuelo', 'Perez', 0),
 (4310, 'Ibrahim', 'Sohail', 0),
 (4311, 'Niki', 'D\'Amore', 0),
 (4312, 'Christian', 'Sanchez', 0),
@@ -4375,8 +4363,8 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 (4331, 'Thomas', 'salisbury', 0),
 (4332, 'Gabrielle', 'Neves', 0),
 (4333, 'Cassandra', 'Silverio', 0),
-(4334, ' Sul Gi Kim', 'Kim', 0),
-(4335, 'Mateusz Brzozowski', '', 0),
+(4334, 'Sul Gi Kim', 'Kim', 0),
+(4335, 'Mateusz', 'Brzozowski', 0),
 (4336, 'christopher', 'walsh', 0),
 (4337, 'Charlotte', 'Gratton', 0),
 (4338, 'Rushdie', 'Akbar', 0),
@@ -4489,14 +4477,16 @@ INSERT INTO `professor` (`id`, `firstname`, `lastname`, `view_count`) VALUES
 -- Indexes for table `professor`
 --
 ALTER TABLE `professor`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique` (`firstname`,`lastname`) USING BTREE,
+  ADD KEY `index` (`firstname`,`lastname`) USING BTREE;
 
 --
--- 在导出的表使用AUTO_INCREMENT
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- 使用表AUTO_INCREMENT `professor`
+-- AUTO_INCREMENT for table `professor`
 --
 ALTER TABLE `professor`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4439;COMMIT;
