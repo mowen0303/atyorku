@@ -28,21 +28,13 @@ class ProfessorModel extends Model
     * @param pageSize 分页功能，每一页query数量
     * @return 二维数组
     */
-    public function getListOfProfessor($str=false, $pageSize=60) {
+    public function getListOfProfessor($str=false, $pageSize) {
+        $pageSize = $pageSize?:60;
         $sql = "SELECT * FROM {$this->table}";
         $condition = "";
         if ($str){
             $str = ucwords($str);
-            $fullName = explode(" ", $str);
-            $nameSize = count($fullName);
-            if($nameSize==1){
-                $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
-            } else {
-                $firstName = array_slice($fullName,0,$nameSize-1);
-                $firstName = implode(" ",$firstName);
-                $lastName = array_slice($fullName,-1,1)[0];
-                $condition = " WHERE firstname LIKE '{$firstName}' AND lastname LIKE '{$lastName}%'";
-            }
+            $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
         }
         $sql .= "{$condition} ORDER BY view_count DESC, firstname ASC, lastname ASC, view_count DESC";
         $countSql = "SELECT COUNT(*) FROM {$this->table}{$condition}";
