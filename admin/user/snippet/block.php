@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_header.html";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_header.html";
 
 $currentUser = new \admin\user\UserModel();
 $currentUser->isUserHasAuthority('ADMIN') or BasicTool::echoMessage("权限不足");
@@ -113,5 +113,5 @@ $row = $currentUser->getProfileOfUserById($uid);
     </form>
 </article>
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/templete/article/_footer.html";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_footer.html";
 ?>

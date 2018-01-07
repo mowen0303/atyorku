@@ -43,9 +43,10 @@ class CommentModel extends Model
         //更新统计
         self::updateCountNumber($section_name,$section_id);
         //获取新插入的评论及评论人信息
-        $sql = "SELECT comment.*, user.id AS uid, user.alias,img,gender,major,enroll_year FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id";
+        $sql = "SELECT comment.*,user_class.is_admin,title FROM (SELECT comment.*, user.id AS uid, user.alias,img,gender,major,enroll_year,degree FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id) AS comment LEFT JOIN user_class ON comment.uid = user_class.id";
         $arr = $this->sqltool->getRowBySql($sql);
         $arr['time'] = BasicTool::translateTime($arr['time']);
+        $arr['enroll_year'] = BasicTool::translateEnrollYear($arr['enroll_year']);
         return $arr;
     }
 

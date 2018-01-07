@@ -15,6 +15,7 @@ $adCategoryModel = new \admin\adCategory\AdCategoryModel();
                 <thead>
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
+                    <th>ID</th>
                     <th>类别</th>
                     <th>大小</th>
                     <th>描述</th>
@@ -30,6 +31,7 @@ $adCategoryModel = new \admin\adCategory\AdCategoryModel();
                     ?>
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>">
+                        <td><?php echo $row["id"] ?></td>
                         <td><?php echo $row["title"] ?></td>
                         <td><?php echo $row['size']?></td>
                         <td><?php echo $row['description']?></td>

@@ -549,14 +549,30 @@ function userRegisterWithJson() {
         strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
         $alias = explode('@', $name)[0];
         //可以为空的字段
-        $user_class_id = 7; //普通用户
+        $user_class_id = $currentUser->enableEmailVerify ? 6 : 7; //普通用户
         $degree  = BasicTool::post('degree');
         $major =  BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException($currentUser->errorMsg);
+        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException("注册失败");
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1, "注册成功", $userInfo);
+        $msg = "注册成功";
+        if($currentUser->enableEmailVerify){
+            //邮箱验证
+            $code = md5(rand(999,999999));
+            $arr2['email'] = $name;
+            $arr2['code'] = $code;
+            $arr2['is_valid'] = "1";
+            $currentUser->addRow('user_code',$arr2) or BasicTool::throwException("账号注册成功,但激活码配置出错,不能正常激活,请联系管理员");
+            $id = $currentUser->idOfInsert;
+            $mailBody = '<p>亲爱的用户:</p><p>您AtYorkU的账户已经注册成功,请点击下面链接进行激活:</p><p><a href="http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email='.$arr2['email'].'&code='.$code.'&id='.$id.'" target="_blank">http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email='.$arr2['email'].'&code='.$code.'&id='.$id.'</a></p>';
+            if(BasicTool::mailTo($arr2['email'],"AtYorkU 账号激活邮件",$mailBody)){
+                $msg = "注册成功，为了保证账号正常使用，请尽快到邮箱激活账号";
+            } else {
+                $msg = "注册成功，可以登录了! (当前邮件服务器压力过大，激活邮件发送失败，请稍登录账号后重新发送)";
+            }
+        }
+        BasicTool::echoJson(1, $msg, $userInfo);
 
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());

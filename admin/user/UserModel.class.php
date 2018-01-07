@@ -11,6 +11,9 @@ class UserModel extends Model
     //秘钥
     private static $key = KEY;
 
+    //是否开启注册邮箱验证
+    public $enableEmailVerify = false;
+
     //user->|id|user_class_id|name|img|pwd|alias|gender|blocktime|blockreason|registertime|is_del|
     public $userId = null;
     public $userClassId = null;
@@ -607,21 +610,6 @@ class UserModel extends Model
         $arr['description'] = $description?$description:"";
         $arr['registertime']=time();
         return $this->addRow('user',$arr);
-
-//邮箱验证
-//        $code = md5(rand(999,999999));
-//        $arr2 = [];
-//        $arr2['email'] = $username;
-//        $arr2['code'] = $code;
-//        $arr2['is_valid'] = "1";
-//        $currentUser->addRow('user_code',$arr2) or BasicTool::throwException("账号注册成功,但激活码配置出错,不能正常激活,请联系管理员");
-//        $id = $currentUser->idOfInsert;
-//        $mailBody = '<p>AtYorkU账号注册成功,请点击下面链接进行激活:</p><p><a href="http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email='.$username.'&code='.$code.'&id='.$id.'" target="_blank">http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email='.$username.'&code='.$code.'&id='.$id.'</a></p>';
-//        if(BasicTool::mailTo($username,"AtYorkU账号激活邮件",$mailBody)){
-//            $msg = "注册成功，可以登录了! (为了保证账号正常使用，请尽快到邮箱激活账号)";
-//        } else {
-//            $msg = "注册成功，可以登录了! (当前邮件服务器压力过大，激活邮件发送失败，请稍登录账号后重新发送)";
-//        }
     }
 
     public function updateUserByAdmin($targetUserId,$alias,$user_class_id,$gender,$blocktime,$blockreason,$major,$enroll_year,$description,$wechat){
