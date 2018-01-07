@@ -1,64 +1,26 @@
- *{
-        padding:0;
-        margin:0;
-        font-family:"Heiti SC","Microsoft YaHei", "WenQuanYi Micro Hei", SimHei, tahoma, sans-serif;
-    }
-    html{
-        font-size:14px;
-        overflow:hidden;
-    }
-    body{
-        height:100vh
-    }
-    a{
-        text-decoration:none;
-    }
-    ul{
-        list-style-type:none;
-    }
-    a:hover{
-        text-decoration:none;
-    }
-    .img{
-        width:100%;
-        padding-top:50%;
-        background-size:cover;
-        background-position:center center;
-        background-repeat:no-repeat;
-    }
-    #container{
-        width:100vw;
-        padding:0 2rem;
-        position:relative
-    }
-    #title{
-        font-weight:bold
-    }
-    #profile_container{
-        position:relative;
-    }
-    #profile_picture{
-        background-size:cover;
-        height:4.1rem;
-        width:4.1rem;
-        border-radius: 100px;
-        position:relative;
-        margin-top:1.5rem;
-    }
-    #sponsor_info{
-        position:absolute;
-        top:50%;
-        -webkit-transform: translate3d(0,-50%,0);
-        left:5rem;
-    }
-    #event_info_container{
-        border:solid 1px #e2e2e2;
-        padding:1.7rem 1.7rem;
-    }
-    .event_info_subcontainer{
-        display:inline-block;
-        width:49.2%;
-        font-size:0.95rem;
-    }
+/*格式化*/
+* {margin:0; padding:0}
+*:focus{outline:none}
+body {background: #f4f4f4}
+body,pre {color: #484848;font-size: 14px;line-height: 25px;font-family: PingFangSC-light,Heiti SC,San Francisco,Helvetica;word-wrap: break-word;}
+#container{max-width:700px;margin:0 auto;overflow:hidden;white-space:normal;}
+a{color:#c91448;text-decoration:none;word-wrap:break-word;word-break:break-all}
+a:hover{text-decoration:none}
+h1,h2,h3,h4,h5,h6{font-weight:normal}
+h1{font-size:1.4em;color:#2a2a2a;line-height:1.4em; margin-bottom: 0.5em; margin-top: 0.5em}
+pre {white-space: pre-wrap;  word-wrap: break-word;}
 
+article i { opacity: 0.6;font-style: normal}
+.infoTable th,.infoTable td{ vertical-align: top;padding-top: 5px}
+.infoTable th { width: 80px;font-weight: normal; color: #727272}
+
+.titleBlock { background: #fff; padding: 1em}
+.infoBlock { margin-top: 1em; background: #fff; overflow: hidden; margin-top: 1em}
+    .infoBlock header {border-bottom: 1px solid #f8f8f8;}
+        .infoBlock header div { display: inline-block; margin: 1em 0 0 1em}
+        .infoBlock header * { display: block}
+        .infoBlock header h2 {font-size: 1.2em; padding:0 2px; color:#333}
+        .infoBlock header i {background: #c83c45; border-radius: 10px; height: 2px;}
+    .infoBlock article {margin: 1em; font-size: 1em}
+        .infoBlock .imgContainer img {width: 100%}
 

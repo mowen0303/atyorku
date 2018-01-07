@@ -8,7 +8,7 @@ a { color:  #c91448}
 b {color:#333}
 h1,h2,h3,h4,h5,h6 { font-weight: normal}
 h3,h4,h5,h6 { margin-top:2em}
-h1{font-size:1.6em; color: #2a2a2a;line-height:1.6em}
+h1{font-size:1.4em; color: #2a2a2a;line-height:1.4em}
 h2{font-size:1.2em; display:block; background:#c83c46; color: #fff; text-align: center; padding: 0.6em; line-height: 1.2em; margin-top:3em; margin-bottom: 1.5em; position: relative; border-radius: 6px}
 h2 em { position:absolute; display: block; width: 10px; height:10px; transform: rotate(45deg); background: #c83c46; bottom: -5px; left: 50%; margin-left:-5px}
 /*h3{font-size:1.2em; line-height: 1.8em; font-weight: bold; margin-left: 25px; margin-right: 25px; border-left: 4px solid #c83c46;border-right: 4px solid #c91448; padding-left: 4px;padding-right: 4px; background: #efefef; text-align: center; font-weight: normal; margin-top: 3em}*/

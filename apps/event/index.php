@@ -10,72 +10,88 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
 <!doctype html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <meta charset="UTF-8"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style>#profile_picture,.img{background-size:cover}#container,#profile_container,#profile_picture{position:relative}*{padding:0;margin:0;font-family:"Heiti SC","Microsoft YaHei","WenQuanYi Micro Hei",SimHei,tahoma,sans-serif}html{font-size:14px;overflow:hidden}body{height:100vh}a,a:hover{text-decoration:none}ul{list-style-type:none}.img{width:100%;padding-top:50%;background-position:center center;background-repeat:no-repeat}#container{width:100vw;padding:0 2rem}#title{font-weight:700}#profile_picture{height:4.1rem;width:4.1rem;border-radius:100px;margin-top:1.5rem}#sponsor_info{position:absolute;top:50%;-webkit-transform:translate3d(0,-50%,0);left:5rem}#event_info_container{border:1px solid #e2e2e2;padding:1.7rem}.event_info_subcontainer{display:inline-block;width:49.2%;font-size:.95rem}</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
-        <?php
-        if ($event["img_id_1"]){
-            $img_url_1 = $imageModel->getImageById($event["img_id_1"])["url"];
-            echo "<div class='img' style='background-image:url(${img_url_1})'></div>";
-        }
-            ?>
-        </div>
-        <div id = "container">
-            <h3 id="title"><?php echo $event["title"]?></h3>
-            <p style="font-weight:bold;font-size:0.93rem"><?php echo BasicTool::translateTime($event["publish_time"])?>&nbsp;&nbsp;<?php echo $event["count_views"]?>&nbsp;<span style="font-weight:normal">浏览</span>&nbsp;<span style="font-weight:normal">&middot;</span>&nbsp;<?php echo $event["count_comments"]?>&nbsp;<span style="font-weight:normal">回复</span></p>
-            <div id="profile_container">
-                <div id="profile_picture" style="background-image:<?php echo "url({$sponsor["img"]})"?>"></div>
-                <p id="sponsor_info">
-                    <span style="margin-right:0.2rem;font-size:1.15rem"><?php echo $sponsor["alias"]?></span>
-                    <img height="15" width="15" src="<?php echo "/resource/img/course_icon/{$sponsor["gender"]}g.png"?>"/>
-                    <br/>
-                    <span style="color:#aaaaaa;font-size:0.90rem;margin-right:0.2rem"><?php echo BasicTool::translateEnrollYear($sponsor["enroll_year"])?></span>
-                    <span style="color:#aaaaaa;font-size:0.90rem"><?php echo $sponsor["major"]?></span>
-                </p>
-            </div>
-            <div style="margin-top:0.7rem">
-                <span style="font-size:0.7rem;color:#9a9a9a; background-color:white;position:relative;top:0.67rem;left:1.5rem">活动信息</span>
-                <div id="event_info_container">
-                    <div class="event_info_subcontainer">
-                        <span>活动时间&nbsp;<?php echo BasicTool::translateTime($event["event_time"])?></span>
-                        <br/>
-                        <br/>
-                        <span>截止时间&nbsp;<?php echo BasicTool::translateTime($event["expiration_time"])?></span>
-                    </div>
-                    <div class="event_info_subcontainer">
-                        <span>人均费用&nbsp;$<?php echo $event["registration_fee"]?></span>
-                        <br/>
-                        <br/>
-                        <span>报名人数&nbsp;<?php echo "{$event["count_participants"]}/{$event["max_participants"]}"?></span>
-                    </div>
+<div id="container">
+    <section class="titleBlock">
+        <h1><?php echo $event["title"] ?></h1>
+        <article>
+            <table class="infoTable">
+                <tr>
+                    <th>参与费用：</th>
+                    <td><?php echo $event["registration_fee"]?:"免费" ?></td>
+                </tr>
+                <tr>
+                    <th>参与方式：</th>
+                    <td><?php echo $event["registration_fee"]?:"免费" ?></td>
+                </tr>
+                <tr>
+                    <th>人数限制：</th>
+                    <td><?php echo $event["max_participants"]?:"不限人数"?></td>
+                </tr>
+                <tr>
+                    <th>活动地点：</th>
+                    <td><?php echo $event["location_link"]?"<a href='{$event[location_link]}'>{$event[location]}</a>":$event["location"] ?></td>
+                </tr>
+                <tr>
+                    <th>开始时间：</th>
+                    <td><?php echo date("Y-m-d H:m",$event["event_time"]) ?></td>
+                </tr>
+                <tr>
+                    <th>结束时间：</th>
+                    <td><?php echo date("Y-m-d H:m",$event["event_time"]) ?></td>
+                </tr>
+            </table>
+        </article>
+    </section>
+    <?php if($event["img_id_2"]||$event["img_id_3"]){?>
+        <section class="infoBlock">
+            <header>
+                <div><h2>活动图片</h2><i></i></div>
+            </header>
+            <article>
+                <div class="imgContainer">
+                    <?php
+                    if ($event["img_id_2"]) {
+                        $img2 = $imageModel->getImageById($event["img_id_2"])["url"];
+                        echo '<p><img src="' . $img2 . '"/></p>';
+                    }
+                    if ($event["img_id_3"]) {
+                        $img3 = $imageModel->getImageById($event["img_id_3"])["url"];
+                        echo '<p><img src="' . $img3 . '"/></p>';
+                    }
+                    ?>
                 </div>
-            </div>
-            <div id="event_description_container" style="margin-top:2rem">
-                <p style="font-size:1.15rem;margin-bottom:0">
-                    <?php echo $event["description"]?>
-                </p>
-            </div>
-        </div>
-        <?php
-        if ($event["img_id_2"]){
-            $img_url_2 = $imageModel->getImageById($event["img_id_2"])["url"];
-            echo "<div class='img' style='margin-top:1.75rem;background-image:url(${img_url_2})'></div>";
-        }
-        ?>
-        <?php
-        if ($event["img_id_3"]){
-            $img_url_3 = $imageModel->getImageById($event["img_id_3"])["url"];
-            echo "<div class='img' style='margin-top:1.75rem;background-image:url(${img_url_3})'></div>";
-        }
-        ?>
-    </div>
-
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+            </article>
+        </section>
+    <?php }?>
+    <section class="infoBlock">
+        <header>
+            <div><h2>活动简介</h2><i></i></div>
+        </header>
+        <article>
+            <pre><?php echo $event["description"] ?></pre>
+        </article>
+    </section>
+    <section class="infoBlock">
+        <header>
+            <div><h2>活动负责人</h2><i></i></div>
+        </header>
+        <article>
+            <table class="infoTable">
+                <tr>
+                    <th>联系人：</th>
+                    <td><?php echo $event["sponsor_name"]?:$event["alias"] ?></td>
+                </tr>
+                <?php echo $event["sponsor_telephone"]!=""?"<tr><th>电 话：</th><td>{$event["sponsor_telephone"]}</td></tr>":null ?>
+                <?php echo $event["sponsor_wechat"]!=""?"<tr><th>微 信：</th><td>{$event["sponsor_wechat"]}</td></tr>":null ?>
+                <?php echo $event["sponsor_email"]!=""?"<tr><th>Email：</th><td>{$event["sponsor_email"]}</td></tr>":null ?>
+            </table>
+        </article>
+    </section>
+</div>
 </body>
 </html>
