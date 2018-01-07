@@ -696,6 +696,19 @@ class UserModel extends Model
     {
         return self::updateRowById('user', $this->userId, ['pwd' => $val]);
     }
+
+    /**
+     * 随机修改密码,并将新密码返回
+     * @param $username
+     * @return int
+     */
+    public function changePasswordRandomly($username){
+        $pwd = rand(100000, 999999);
+        $md5pwd = md5($pwd);
+        $sql = "UPDATE user SET pwd = '{$md5pwd}' WHERE name in ('{$username}')";
+        $this->sqltool->query($sql);
+        return $pwd;
+    }
 }
 
 
