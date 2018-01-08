@@ -369,35 +369,21 @@ function updateAliasWithJson()
 }
 
 /**
- * JSON - 激活账号
- * @param userId -POST
- * @param profile -POST 要修改的字段名
- * @param profileVal -POST 字段的值
+ * 激活用户
  * http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email=mowen0303@gmail.com&code=7403a6e115abb8d4e0dfce29919fc8ae&id=5
  */
 function activateAccount()
 {
-
     global $currentUser;
-
     try {
-        $email = BasicTool::get("email");
-        $code = BasicTool::get("code");
-        $id = BasicTool::get("id");
-
-        $row = $currentUser->getRowById('user_code', $id);
-        $email == $row['email'] && $code == $row['code'] && $row['is_valid'] == 1 or BasicTool::throwException("验证码已经失效");
+        $email = BasicTool::get("email","email不能为空");
+        $code = BasicTool::get("code","code不能为空");
+        $id = BasicTool::get("id","id不能为空");
+        $userCodeModel = new \admin\userCode\UserCodeModel();
+        $userCodeModel->validateUserCode($id,$email,$code);
         $currentUser->changeUserClassToNormal($email) or BasicTool::throwException($currentUser->errorMsg);
-
-        $arr = [];
-        $arr['is_valid'] = 0;
-        $currentUser->updateRowById('user_code', $id, $arr);
-
         $currentUser->updateCookie($email);
-
         BasicTool::echoWapMessage("恭喜,AtYorkU账号激活成功", 0);
-
-
     } catch (Exception $e) {
         BasicTool::echoWapMessage($e->getMessage(), 0);
     }
@@ -549,15 +535,26 @@ function userRegisterWithJson() {
         strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
         $alias = explode('@', $name)[0];
         //可以为空的字段
-        $user_class_id = 7; //普通用户
+        $user_class_id = $currentUser->enableEmailVerify ? 6 : 7; //普通用户
         $degree  = BasicTool::post('degree');
         $major =  BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException($currentUser->errorMsg);
+        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException("注册失败");
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1, "注册成功", $userInfo);
-
+        $msg = "注册成功";
+        if($currentUser->enableEmailVerify){
+            //邮箱验证
+            $userCodeModel = new \admin\userCode\UserCodeModel();
+            $url = $userCodeModel->generateUserCode($name,"activateAccount");
+            $mailBody = "<p>亲爱的用户:</p><p>您AtYorkU的账户已经注册成功,请点击下面链接进行激活:</p><p>{$url}</p>";
+            if(BasicTool::mailTo($name,"AtYorkU 账号激活邮件",$mailBody)){
+                $msg = "注册成功，为了保证账号正常使用，请尽快到邮箱激活账号";
+            } else {
+                $msg = "注册成功，可以登录了! (当前邮件服务器压力过大，激活邮件发送失败，请稍登录账号后重新发送)";
+            }
+        }
+        BasicTool::echoJson(1, $msg, $userInfo);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
@@ -631,9 +628,47 @@ function updateUser()
 }
 
 /**
+ * retrievePasswordByEmailWithJson - 通过用户名在邮箱找回密码
+ * [post] http://www.atyorku.ca/admin/user/userController.php?action=retrievePasswordByEmailWithJson
+ * @param email : string
+ * return json
+ */
+function retrievePasswordByEmailWithJson(){
+    try {
+        $name = BasicTool::post('email',"Email不能为空");
+        $userCodeModel = new \admin\userCode\UserCodeModel();
+        $url = $userCodeModel->generateUserCode($name,"getNewPasswordByEmail");
+        $time =date("Y-m-d H:i:s");
+        $mailBody = "<p>亲爱的用户:</p><p>您在{$time}进行了密码找回操作</p><p>请点击下面连接，获取新的临时密码，:</p><p>{$url}</p>";
+        BasicTool::mailTo($name,"AtYorkU 密码找回",$mailBody) or BasicTool::throwException("系统错误,请联系官方微信客服号: atyorku666");
+        BasicTool::echoJson(1,"密码找回成功,请到{$name}的邮箱中查询新密码,若5分钟内未收到邮件,请检查你的垃圾邮件. 若持续收不到邮件,请联系官方客服微信号: atyorku666");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+/**
+ * 通过邮箱验证码生成临时密码
+ */
+function getNewPasswordByEmail(){
+    global $currentUser;
+    try {
+        $email = BasicTool::get("email","email不能为空");
+        $code = BasicTool::get("code","code不能为空");
+        $id = BasicTool::get("id","id不能为空");
+        $userCodeModel = new \admin\userCode\UserCodeModel();
+        $userCodeModel->validateUserCode($id,$email,$code);
+        $newPwd = $currentUser->changePasswordRandomly($email) or BasicTool::throwException($currentUser->errorMsg);
+        BasicTool::echoWapMessage("你的新密码为 {$newPwd} ,请牢记并尽快修改.", 0);
+    } catch (Exception $e) {
+        BasicTool::echoWapMessage($e->getMessage(), 0);
+    }
+}
+
+
+/**
  * userUpdateHeadImgWithJson - 更新头像
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=userUpdateHeadImgWithJson
- *
  */
 function userUpdateHeadImgWithJson()
 {

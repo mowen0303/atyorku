@@ -41,6 +41,7 @@ function addEvent($echoType = "normal"){
         $description = BasicTool::post("description", "missing description");
         $expiration_time = BasicTool::post("expiration_time", "活动过期时间不能为空");
         $event_time = BasicTool::post("event_time", "活动时间不能为空");
+        $location = BasicTool::post("location");
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee", "活动费用不能为空");
         $max_participants = BasicTool::post("max_participants", "活动名额不能为空");
@@ -57,8 +58,7 @@ function addEvent($echoType = "normal"){
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
-        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("添加失败");
+        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location,$location_link, $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
@@ -292,7 +292,7 @@ function updateEvent($echoType = "normal"){
 
         $expiration_time = BasicTool::post("expiration_time");
         $event_time = BasicTool::post("event_time");
-
+        $location = BasicTool::post("location");
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee");
         $max_participants = BasicTool::post("max_participants");
@@ -322,7 +322,7 @@ function updateEvent($echoType = "normal"){
         $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
 
-        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location_link,
+        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location,$location_link,
             $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {

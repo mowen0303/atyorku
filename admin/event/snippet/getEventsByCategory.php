@@ -61,7 +61,7 @@ else{
                             <td><?php echo $row['id']?></td>
                             <td><a href="index.php?s=getEventWithParticipants&event_id=<?php echo $row["id"] ?>"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
                             <td><?php echo $row['title']?></td>
-                            <td><?php echo $row['sponsor_user_id']?></a></td>
+                            <td><?php echo $row['sponsor_user_id']?></td>
                             <td><?php echo $row['registration_fee'] ?></td>
                             <td><?php echo $row['max_participants'] ?></td>
                             <td><?php echo $row['count_participants']?></td>
@@ -71,7 +71,7 @@ else{
                             <td><?php echo $row['count_comments']?></td>
                             <td><?php echo $row['count_views']?></td>
                             <td><?php echo $row["sort"]?></td>
-                            <td><a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
+                            <td><a href="/apps/event/index.php?event_id=<?php echo $row['id'] ?>">预览</a> | <a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
                         </tr>
                         <?php
                     }

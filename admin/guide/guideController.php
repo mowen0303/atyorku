@@ -164,8 +164,8 @@ function getGuideClassListVisibleWithJson(){
 function getGuideListWithJson(){
 
     global $guideModel;
-
-    $arr = $guideModel->getListOfGuideByGuideClassId(BasicTool::get("guide_class_id"),20);
+    $pageSize = BasicTool::get("pageSize")?:20;
+    $arr = $guideModel->getListOfGuideByGuideClassId(BasicTool::get("guide_class_id"),$pageSize);
     if($arr){
         setcookie("guideRequest", 1, time() + 3600,'/');
         BasicTool::echoJson(1,"获取成功",$arr);

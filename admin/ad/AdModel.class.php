@@ -44,30 +44,25 @@ class AdModel extends Model
 
 
     /**调出一分类下的广告
-     * flag=1查询生效的广告
-     * flag=0查询未生效的广告
+     * $adOption=1查询生效的广告
+     * $adOption=0查询未生效的广告
      * @param int $ad_category_id 广告分类id
      * @param int $flag
      * @return array
      */
-    public function getAdsByCategory($ad_category_id,$flag){
+    public function getAdsByCategory($ad_category_id,$adOption=1){
         $currentTime = time();
-        if ($ad_category_id){
-            $condition = "ad_category_id = {$ad_category_id} and";
+        $condition="";
+        if($adOption==1){
+            $condition .= "WHERE {$currentTime} > publish_time and {$currentTime} < expiration_time";
+        }else{
+            $condition .= "WHERE ({$currentTime} < publish_time or {$currentTime} > expiration_time)";
         }
-        else{
-            $condition="";
-        }
-        if ($flag == 1) {
-            $sql = "SELECT * FROM ad WHERE {$condition} {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
-            $countSql = "SELECT COUNT(*) FROM ad WHERE {$condition} {$currentTime}>publish_time and {$currentTime} <expiration_time ORDER BY sort DESC, publish_time DESC";
-            return $this->getListWithPage("ad", $sql, $countSql, 20);
-        }
-        else{
-            $sql = "SELECT * FROM ad WHERE {$condition} ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
-            $countSql = "SELECT count(*) FROM ad WHERE {$condition} ({$currentTime} < publish_time or {$currentTime}>expiration_time) ORDER BY sort DESC, publish_time DESC";
-            return $this->getListWithPage("ad", $sql, $countSql, 20);
-        }
+        if($ad_category_id) $condition .= " AND ad_category_id = {$ad_category_id}";
+
+        $sql = "SELECT ad.*,image.url AS img_url FROM (SELECT * FROM ad  {$condition} ) AS ad LEFT JOIN image ON ad.img_id_1 = image.id ORDER BY sort DESC, publish_time DESC";
+        $countSql = "SELECT COUNT(*) FROM ad {$condition} ORDER BY sort DESC, publish_time DESC";
+        return $this->getListWithPage("ad", $sql, $countSql, 20);
     }
 
     public function getAd($id){

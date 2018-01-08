@@ -147,6 +147,10 @@ if($flag=='add'){
                 </div>
                 <div>
                     <label>活动地点</label>
+                    <input type="text" class="input input-size30" name="location" value="<?php echo $row['location'] ?>"/>
+                </div>
+                <div>
+                    <label>活动地点连接</label>
                     <input type="text" class="input input-size30" name="location_link" value="<?php echo $row['location_link'] ?>"/>
                 </div>
                 <div>

@@ -5,6 +5,7 @@ $solutionModel = new \admin\courseSolution\CourseSolutionModel();
 $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
 $transactionModel = new \admin\transaction\TransactionModel();
+$profModel = new \admin\professor\ProfessorModel();
 call_user_func(BasicTool::get('action'));
 
 /**添加一个提问
@@ -320,18 +321,25 @@ function getQuestionsByCourseCodeIdWithJson(){
  * @param prof_id
  * @param flag 0=为解决的提问，1=已解决的提问
  * @param page 页数
- * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdWithJson&page=1&flag=1&course_code_id=1&prof_id=1
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdProfNameWithJson&page=1&flag=1&course_code_id=1&prof_name=1
  */
-function getQuestionsByCourseCodeIdProfIdWithJson(){
-    global $questionModel;
+function getQuestionsByCourseCodeIdProfNameWithJson(){
+    global $questionModel,$profModel;
     try{
         $flag = BasicTool::get("flag");
         $course_code_id = BasicTool::get("course_code_id","Missing Course Code Id");
-        $prof_id = BasicTool::get("prof_id","missing prof id");
+        $prof_name = BasicTool::get("prof_name");
+        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $result = $questionModel->getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id,$flag);
-        if ($result)
-            BasicTool::echoJson(1,"查询成功",$result);
-
+        $results = [];
+        if ($result){
+            foreach ($result as $question){
+            $question["time_posted"] = BasicTool::translateTime($question["time_posted"]);
+            $question["enroll_year"] = BasicTool::translateEnrollYear($question["enroll_year"]);
+            array_push($results,$question);
+            }
+            BasicTool::echoJson(1,"查询成功",$results);
+        }
         else
             BasicTool::echoJson(0,"空");
     }

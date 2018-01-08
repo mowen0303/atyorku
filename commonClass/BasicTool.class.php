@@ -234,13 +234,8 @@ class BasicTool
         throw new Exception($message, $code);
     }
 
-    public static function mailTo($mailAddress, $mailTitle, $mailBody, $index = 1)
+    public static function mailTo($mailAddress, $mailTitle, $mailBody)
     {
-
-        if ($index == 7) {
-            return false;
-        }
-
         require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/resource/tools/email/class.phpmailer.php";
         $mail = new PHPMailer(); //建立邮件发送类
         $mail->CharSet = "UTF-8";                             // 设置邮件编码
@@ -248,14 +243,15 @@ class BasicTool
 
         //配置邮局GODADDY
         $mail->IsSMTP();                        // 使用SMTP方式发送
-        $mail->Host = "smtpout.secureserver.net";          // 您的企业邮局域名
+        $mail->Host = "smtp.office365.com";          // 您的企业邮局域名
         $mail->SMTPAuth = true;                 // 启用SMTP验证功能
-        $mail->Username = "support" . $index . "@atyorku.ca"; // 邮局用户名(请填写完整的email地址)
-        $mail->Password = "miss0226";          // 邮局密码
-        $mail->SMTPSecure = 'SSL';
-        $mail->Port = 80;                        //发送端口
-        $mail->From = "support@atyorku.ca";     //邮件发送者email地址
-        $mail->FromName = "AtYorkU Support";
+        $mail->Username = "admin@atyorku.ca"; // 邮局用户名(请填写完整的email地址)
+        $mail->Password = "Mowen9373!";          // 邮局密码
+        //$mail->SMTPSecure = 'SSL';
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;                        //发送端口
+        $mail->From = "admin@atyorku.ca";     //邮件发送者email地址
+        $mail->FromName = "AtYorkU App";
 
         //配置邮件内容
         //$mail->AddAddress($mailAddress, "AtYorkU User");
@@ -265,11 +261,7 @@ class BasicTool
         $mail->Body = $mailBody;               //邮件内容
 
         //$mail->AltBody = "This is the body in plain text for non-HTML mail clients"; //附加信息，可以省略
-        if ($mail->Send()) {
-            return true;
-        }
-
-        return self::mailTo($mailAddress, $mailTitle, $mailBody, $index + 1);
+        return $mail->Send();
     }
 
     /**

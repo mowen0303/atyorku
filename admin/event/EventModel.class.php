@@ -30,8 +30,10 @@ class EventModel extends Model
      * @param int $sort 排序值 0或1
      * @return bool
      */
-    public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
-                             $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
+    public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location,
+                             $location_link,$registration_fee,$img_id_1,$img_id_2,$img_id_3,
+                             $max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,
+                             $sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -43,6 +45,7 @@ class EventModel extends Model
         $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
         $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
         $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["location"] = $location ? $location : "";
         $arr["location_link"] = $location_link ? $location_link : "";
         $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
         $arr["max_participants"]=$max_participants ? $max_participants : 0;
@@ -119,7 +122,7 @@ class EventModel extends Model
      * @param int $sort 排序值 0或1
      * @return bool
      */
-    public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location_link,
+    public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link,
                                 $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
@@ -131,6 +134,7 @@ class EventModel extends Model
         $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
         $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
         $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
+        $arr["location"] = $location ? $location : "";
         $arr["location_link"] = $location_link ? $location_link : "";
         $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
         $arr["max_participants"]=$max_participants ? $max_participants : 0;
