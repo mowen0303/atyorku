@@ -18,7 +18,7 @@ class BookModel extends Model
      * 添加一本书
      * @return $bool
      */
-    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term)
+    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $isEDocument, $eLink)
     {
         $arr = [];
         $arr["name"] = $name;
@@ -39,6 +39,9 @@ class BookModel extends Model
         $arr["professor_id"] = $profId;
         $arr["term_year"] = $year;
         $arr["term_semester"] = $term;
+        $arr["pay_with_points"] = $payWithPoints ? 1 : 0;
+        $arr["is_e_document"] = $isEDocument ? 1 : 0;
+        $arr["e_link"] = $eLink;
         $arr["publish_time"] = time();
         $arr["last_modified_time"] = time();
         $bool = $this->addRow($this->table, $arr);
@@ -179,11 +182,11 @@ class BookModel extends Model
      * 更改一本书
      * @return bool
      */
-    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term)
+    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $isEDocument, $eLink)
     {
         $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
         $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
-        
+
         $arr = [];
         $arr["name"] = $name;
         $arr["price"] = $price;
@@ -197,6 +200,9 @@ class BookModel extends Model
         $arr["professor_id"] = $profId;
         $arr["term_year"] = $year;
         $arr["term_semester"] = $term;
+        $arr["pay_with_points"] = $payWithPoints ? 1 : 0;
+        $arr["is_e_document"] = $isEDocument ? 1 : 0;
+        $arr["e_link"] = $eLink;
         $arr["last_modified_time"] = time();
 
         // check if book category is changed
