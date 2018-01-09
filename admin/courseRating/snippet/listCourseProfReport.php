@@ -22,6 +22,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                     <th width="80px">作业难度</th>
                     <th width="80px">考试难度</th>
                     <th width="80px">综合难度</th>
+                    <th width="80px">平均成绩</th>
                     <th width="80px">推荐比例</th>
                     <th width="80px">评论数</th>
                     <th width="80px">问题数</th>
@@ -46,6 +47,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo $row["homework_diff"] ?></td>
                         <td><?php echo $row["test_diff"] ?></td>
                         <td><?php echo $row["overall_diff"] ?></td>
+                        <td><?php echo $row["avg_grade"] ?></td>
                         <td><?php echo number_format(100*$row["recommendation_ratio"],2) . '%' ?></td>
                         <td><?php echo $row["rating_count"] ?></td>
                         <td><?php echo $row["count_questions"] ?></td>

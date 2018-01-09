@@ -357,7 +357,7 @@ class CourseRatingModel extends Model
     * @param profId 指定的教授ID
     */
     private function updateReports($courseCodeId, $profId) {
-        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
+        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,1))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
         // Update course_prof_report
         $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
 
@@ -417,6 +417,9 @@ class CourseRatingModel extends Model
             $arr["rating_count"] = $result["sum_rating"] ?: 0;
             if($table=='course_prof_report' || $table=='professor_report') {
                 $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
+            }
+            if($table=='course_prof_report' || $table=='course_report') {
+                $arr["avg_grade"] = $result["avg_grade"] ?: 1;
             }
         }
     }
