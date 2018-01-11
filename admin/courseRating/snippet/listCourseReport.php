@@ -54,6 +54,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                 ?>
                 </tbody>
             </table>
+            <?php echo $courseRatingModel->echoPageList()?>
         </section>
         <footer class="buttonBox">
             <input type="submit" value="删除" class="btn" onclick="return confirm('确认删除吗?')">

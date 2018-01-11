@@ -92,9 +92,9 @@ $flag = BasicTool::get("flag");
                     </select>
                 </div>
                 <div class="col-3">
-                    <label>是否推荐此门课<i>*</i></label>
+                    <label>是否推荐此教授<i>*</i></label>
                     <select class="input input-select selectDefault" name="recommendation" defvalue="<?php echo BasicTool::get('recommendation') ?>">
-                        <option value="">选择是否推荐此门课</option>
+                        <option value="">选择是否推荐此教授</option>
                         <option value="0">不推荐</option>
                         <option value="1">推荐</option>
                     </select>
