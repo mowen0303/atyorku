@@ -66,8 +66,8 @@ if ($approved_solution){
                             <td><img width="36" height="36" src="<?php echo $questioner["img"]?>"></td>
                             <td style="max-width:200px"><?php echo $question['description']?></td>
                             <td><?php echo $question['reward_amount']?></a></td>
-                            <td><?php echo $question['count_solutions'] ?></td>
                             <td><?php echo $question['count_views'] ?></td>
+                            <td><?php echo $question['count_solutions'] ?></td>
                             <td><?php echo BasicTool::translateTime($question['time_posted'])?></td>
                             <td><?php echo ($question["time_solved"] == 0) ? "未解决": BasicTool::translateTime($question["time_solved"]) ?></td>
                         </tr>

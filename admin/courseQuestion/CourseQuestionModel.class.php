@@ -13,7 +13,7 @@ class CourseQuestionModel extends Model
      * @param int $img_id_2
      * @param int $img_id_3
      * @param int $reward_amount 积分奖励
-     * @return bool
+     * @return false|insert_id
      */
     function addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $img_id_1, $img_id_2, $img_id_3, $reward_amount)
     {
@@ -38,13 +38,14 @@ class CourseQuestionModel extends Model
         $arr["answerer_user_id"] = 0;
 
         $bool = $this->addRow("course_question", $arr);
+        $insertId = $this->getInsertId();
         if ($bool) {
             $sql = "UPDATE course_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND solution_id =0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id}";
             $this->sqltool->query($sql);
             $sql = "UPDATE course_prof_report SET count_questions = (SELECT COUNT(*) FROM course_question WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id} AND solution_id=0), count_solved_questions=(SELECT COUNT(*) FROM course_question WHERE course_code_id={$course_code_id} AND prof_id={$prof_id} AND solution_id !=0) WHERE course_code_id = {$course_code_id} AND prof_id={$prof_id}";
             $this->sqltool->query($sql);
         }
-        return $bool;
+        return $bool?$insertId:false;
     }
 
     /**更改一个提问
@@ -116,7 +117,8 @@ class CourseQuestionModel extends Model
 
     function getQuestionById($id)
     {
-        return $this->getRowById("course_question", $id);
+        $sql ="SELECT course_question.*, image.url as img_url_1 FROM (SELECT course_question.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_question WHERE id = {$id}) AS course_question INNER JOIN user on course_question.questioner_user_id = user.id) AS course_question LEFT JOIN image ON course_question.img_id_1 = image.id";
+        return $this->sqltool->getRowBySql($sql);
 
     }
 

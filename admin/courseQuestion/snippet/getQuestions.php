@@ -6,11 +6,12 @@ $courseCodeModel = new \admin\courseCode\CourseCodeModel();
 $profModel = new \admin\professor\ProfessorModel();
 /*
 $course_code_id = BasicTool::get('course_code_id');
-$prof_id = BasicTool::get("prof_id");
+$prof_name = BasicTool::get("prof_name");
 */
 $flag = BasicTool::get("flag");
 $course_code_id = 188;
-$prof_id=1;
+$prof_name = "Rebecca Jubis";
+$prof_id=$profModel->getProfessorIdByFullName($prof_name);
 $course_code = $courseCodeModel->getCourseCodeById($course_code_id);
 $questions = $questionModel->getQuestionsByCourseCodeIdProfId($course_code_id,$prof_id,$flag);
 if(!$flag){
@@ -37,8 +38,8 @@ else{
         <!-- fix the link-->
         <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
         <!-- fix the link-->
-        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getQuestions&course_code_id=<?php echo $course_code_id ?>&flag=0&prof_id=<?php echo $prof_id?>">未解决的问题</a>
-        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getQuestions&course_code_id=<?php echo $course_code_id ?>&flag=1&prof_id=<?php echo $prof_id?>">已解决的问题</a>
+        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getQuestions&course_code_id=<?php echo $course_code_id ?>&flag=0&prof_name=<?php echo $prof_name?>">未解决的问题</a>
+        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getQuestions&course_code_id=<?php echo $course_code_id ?>&flag=1&prof_name=<?php echo $prof_name?>">已解决的问题</a>
         <a <?php echo $add_button_display ?>  class="btn" href="index.php?s=addQuestion&course_code_id=<?php echo $course_code_id?>&prof_id=<?php echo $prof_id?>">发布新提问</a>
     </nav>
     <article class="mainBox">

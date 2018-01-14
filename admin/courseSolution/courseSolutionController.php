@@ -28,13 +28,14 @@ function addSolution($echoType = "normal"){
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
-        $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]) or BasicTool::throwException("添加失败");
+        $insertId = $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]);
+        $insertId or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");
         }
         else {
-            $result=$solutionModel->getSolutionById($solutionModel->getInsertId());
+            $result=$solutionModel->getSolutionById($insertId);
             BasicTool::echoJson(1, "添加成功",$result);
         }
     }
@@ -58,7 +59,7 @@ function addSolution($echoType = "normal"){
  * localhost/admin/courseSolution/courseSolutionnController.php?action=addSolutionWithJson
  */
 function addSolutionWithJson(){
-    addQuestion("normal");
+    addSolution("json");
 }
 
 /**更改答案
@@ -114,29 +115,41 @@ function updateSolutionWithJson(){
 }
 /**查询某个提问下被采纳的答案
  * GET,JSON接口
- * @param question_id 答案id
- * localhost/admin/courseSolution/courseSolutionnController.php?action=getApprovedSolutionByQuestionIdWithJson&question_id=1
+ * @param question_id
+ * localhost/admin/courseSolution/courseSolutionController.php?action=getApprovedSolutionByQuestionIdWithJson&question_id=1
  */
 function getApprovedSolutionByQuestionIdWithJson(){
     global $solutionModel;
     $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getApprovedSolutionByQuestionId($question_id);
-    if ($result)
+    if ($result){
+        $result["time_approved"] = BasicTool::translateTime($result["time_approved"]);
+        $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
+        $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
         BasicTool::echoJson(1,"查询成功",$result);
+    }
     else
         BasicTool::echoJson(0,"空");
 }
-/**查询某个提问下位被采纳的答案
+/**查询某个提问的一页答案
  * GET,JSON接口
- * @param question_id 答案id
- * localhost/admin/courseSolution/courseSolutionnController.php?action=getSolutionsByQuestionIdWithJson&question_id=1
+ * @param question_id
+ * @param page
+ * localhost:8080/admin/courseSolution/courseSolutionController.php?action=getSolutionsByQuestionIdWithJson&question_id=1
  */
 function getSolutionsByQuestionIdWithJson(){
     global $solutionModel;
     $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getSolutionsByQuestionId($question_id);
-    if ($result)
-        BasicTool::echoJson(1,"查询成功",$result);
+    if ($result){
+        $results = [];
+        foreach ($result as $solution){
+            $solution["time_posted"] = BasicTool::translateTime($solution["time_posted"]);
+            $solution["enroll_year"] = BasicTool::translateEnrollYear($solution["enroll_year"]);
+            array_push($results,$solution);
+        }
+        BasicTool::echoJson(1,"查询成功",$results);
+    }
     else
         BasicTool::echoJson(0,"空");
 }

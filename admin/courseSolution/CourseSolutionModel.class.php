@@ -25,11 +25,12 @@ class CourseSolutionModel extends Model
         $arr["answerer_user_id"] = $answerer_user_id;
         $arr["count_views"] = 0;
         $bool = $this->addRow("course_solution",$arr);
+        $insertId = $this->getInsertId();
         if ($bool) {
             $sql = "UPDATE course_question SET count_solutions = (SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id}) WHERE id = {$question_id}";
             $this->sqltool->query($sql);
         }
-        return $bool;
+        return $bool?$insertId:false;
     }
 
     /**更改答案
@@ -90,7 +91,7 @@ class CourseSolutionModel extends Model
      * @return \一维关联数组
      */
     function getApprovedSolutionByQuestionId($question_id){
-        $sql = "SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved !=0";
+        $sql = "SELECT course_solution.*, image.url as img_url_1 FROM (SELECT course_solution.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved !=0) AS course_solution INNER JOIN user on course_solution.answerer_user_id = user.id) AS course_solution LEFT JOIN image ON course_solution.img_id_1 = image.id";
         $solution = $this->sqltool->getRowBySql($sql);
         return $solution;
     }
@@ -100,7 +101,7 @@ class CourseSolutionModel extends Model
      * @return array
      */
     function getSolutionsByQuestionId($question_id){
-        $sql = "SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";
+        $sql = "SELECT course_solution.*, image.url as img_url_1 FROM (SELECT course_solution.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0) AS course_solution INNER JOIN user on course_solution.answerer_user_id = user.id) AS course_solution LEFT JOIN image ON course_solution.img_id_1 = image.id ORDER BY time_posted DESC";
         $countSql = "SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";
         return $this->getListWithPage("course_solution", $sql, $countSql,20);
     }
