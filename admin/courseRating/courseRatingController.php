@@ -290,16 +290,20 @@ function getListOfProfReportWithJson() {
 }
 
 /**
- * JSON -  获取某一页科目教授报告
+ * JSON -  获取某一页科目教授报告 (Note: 提供教授Id 或/和 科目Id 来获取对应科目报告列表, 教授报告列表)
  * @param pageSize 每一页科目教授报告获取量，默认值=20
- * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseProfReportWithJson&pageSize=20
+ * @param profId 可以指定一个教授id
+ * @param courseId 可以指定一个科目id
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseProfReportWithJson&pageSize=20&profId=313&courseId=1323
  */
 function getListOfCourseProfReportWithJson() {
     global $courseRatingModel;
     try {
         $pageSize = BasicTool::get('pageSize') ?: 20;
+        $profId = BasicTool::get('profId') ?: false;
+        $courseId = BasicTool::get('courseId') ?: false;
 
-        $result = $courseRatingModel->getListOfCourseProfessorReports($pageSize);
+        $result = $courseRatingModel->getListOfCourseProfessorReports($pageSize,$courseId,$profId);
 
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
@@ -310,7 +314,6 @@ function getListOfCourseProfReportWithJson() {
         BasicTool::echoJson(0,$e->getMessage());
     }
 }
-
 
 
 
