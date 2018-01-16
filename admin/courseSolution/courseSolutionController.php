@@ -36,6 +36,12 @@ function addSolution($echoType = "normal"){
         }
         else {
             $result=$solutionModel->getSolutionById($insertId);
+            $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
+            $result["enroll_year"] = BasicTool::translateTime($result["enroll_year"]);
+            $result["img_urls"] = [];
+            !$result["img_id_1"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_1"])["url"]);
+            !$result["img_id_2"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_2"])["url"]);
+            !$result["img_id_3"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_3"])["url"]);
             BasicTool::echoJson(1, "添加成功",$result);
         }
     }

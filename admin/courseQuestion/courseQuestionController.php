@@ -82,6 +82,9 @@ function addQuestion($echoType = "normal"){
         }
         else {
             $result = $questionModel->getQuestionById($insertId);
+            $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
+            $result["time_solved"] = BasicTool::translateTime($result["time_solved"]);
+            $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
             BasicTool::echoJson(1,"添加成功", $result);
             }
 

@@ -83,7 +83,8 @@ class CourseSolutionModel extends Model
     }
 
     function getSolutionById($id){
-        return $this->getRowById("course_solution",$id);
+        $sql = "SELECT course_solution.*,user.alias,user.gender,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_solution WHERE id = {$id}) AS course_solution INNER JOIN user on course_solution.answerer_user_id = user.id";
+        return $this->sqltool->getRowBySql($sql);
     }
 
     /**查询被采纳的答案
