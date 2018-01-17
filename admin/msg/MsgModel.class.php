@@ -8,7 +8,7 @@ use \Exception as Exception;
 
 class MsgModel extends Model
 {
-    private $enablePush = false; //测试阶段，禁用信息推送
+    private $enablePush = false; //测试阶段，禁用信息推送, 新版本删除原始推送
 
     /**
      * 给指定用户推送一条信息
@@ -30,7 +30,9 @@ class MsgModel extends Model
         if($this->enablePush==false) return false;
         //苹果
         if($receiverUser->deviceToken == '0') return false;
+        //重要:v2中弃用applePush方法,启用applePushRN
         self::applePush($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
+        self::applePushRN($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
     }
 
     /**
@@ -162,6 +164,42 @@ class MsgModel extends Model
             $this->errorMsg = 'Message successfully delivered' . $deviceToken . PHP_EOL;
             return true;
         }
+    }
+
+    private function applePushRN($deviceToken,$senderAlias = false,$msgType, $msgTypeId, $content, $badge, $silent = false){
+        if($deviceToken == '0') return false;
+        $senderAlias = $senderAlias?$senderAlias.": ":"";
+
+        //config APNs
+        $tHost = 'gateway.sandbox.push.apple.com';
+        $tPort = 2195;
+        $tCert = $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem';
+        $tPassphrase = 'miss0226';
+        $tToken = $deviceToken;
+
+        //Content
+        $tBody['aps'] = array (
+            'alert' => $senderAlias.$content,
+            'badge' => (int)$badge,
+            'sound' => 'default',
+        );
+
+        $tBody ['payload'] = array(
+            'type' => $msgType,
+            'typeId' => $msgTypeId,
+        );
+
+        // Encode the body to JSON.
+        $tBody = json_encode ($tBody);
+        $tContext = stream_context_create ();
+        stream_context_set_option ($tContext, 'ssl', 'local_cert', $tCert);
+        stream_context_set_option ($tContext, 'ssl', 'passphrase', $tPassphrase);
+        $tSocket = stream_socket_client ('ssl://'.$tHost.':'.$tPort, $error, $errstr, 30, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $tContext);
+        if (!$tSocket) exit ("APNS Connection Failed: $error $errstr" . PHP_EOL);
+        $tMsg = chr (0) . chr (0) . chr (32) . pack ('H*', $tToken) . pack ('n', strlen ($tBody)) . $tBody;
+        $tResult = fwrite ($tSocket, $tMsg, strlen ($tMsg));
+        fclose ($tSocket);
+        return $tResult?true:false;
     }
 
     /**
