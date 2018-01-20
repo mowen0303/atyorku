@@ -422,8 +422,6 @@ function blockUserByUserId()
 
 function topStudentToHTML()
 {
-
-
     try {
         ob_start();
         include($_SERVER['DOCUMENT_ROOT'] . "/apps/topStudentList/index.php");
@@ -446,24 +444,24 @@ function topStudentToHTML()
 
 function updateDevice()
 {
-
     global $currentUser;
-
-    $deviceToken = BasicTool::post('device');
-
-    if ($currentUser->isLogin() && $deviceToken != null) {
-        $id = $currentUser->userId;
-        $arr = [];
+    try {
+        $deviceToken = BasicTool::post('device')?:"0";
+        $deviceType = BasicTool::post('device_type')?:'ios';
+        $currentUser->isLogin() or BasicTool::throwException("未登录");
         $arr['device'] = $deviceToken;
-        if ($arr['device'] == "") {
-            $arr['device'] = "0";
-        }
+        $arr['device_type'] = $deviceType;
         //修改用户
-        $currentUser->updateRowById('user', $id, $arr);
+        $currentUser->updateRowById('user', $currentUser->userId, $arr);
+        $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
+        //以下方法v2弃用
         setcookie("cc_de", $deviceToken, time() + 3600 * 24 * 2, '/');
         setcookie("cc_dev", $deviceToken, time() + 3600 * 24 * 2, '/');
+
+        BasicTool::echoJson(1,"修改成功",$userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
-    BasicTool::echoJson(1, "写入成功");
 }
 
 /**

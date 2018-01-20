@@ -34,6 +34,7 @@ class UserModel extends Model
     public $activist = null;
     public $wechat = null;
     public $deviceToken = 0;
+    public $deviceType = null;
 
 
     public $row = null;
@@ -95,7 +96,7 @@ class UserModel extends Model
             $this->activist = $arr['activist'];;
             $this->wechat = $arr['wechat'];
             $this->deviceToken = $arr['device'];
-
+            $this->deviceType = $arr['device_type'];
         }
     }
 
@@ -112,7 +113,7 @@ class UserModel extends Model
 
         $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u.registertime,u_c.is_admin,u_c.authority";
 
-        $sql = "SELECT u.id,u.degree,u.wechat,u.user_class_id,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
+        $sql = "SELECT u.id,u.degree,u.device,u.wechat,u.user_class_id,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
 
         $arr = $this->sqltool->getRowBySql($sql);
 
@@ -305,11 +306,8 @@ class UserModel extends Model
     {
         $encodeKey = md5($_COOKIE['cc_id'] . $_COOKIE['cc_uc'] . $_COOKIE['cc_na'] . $_COOKIE['cc_ia'] . $_COOKIE['cc_au'] . $_COOKIE['cc_bl'] . self::$key);
         //return $encodeKey == $_COOKIE['cc_cc'] ? true : false;
-
         if ($encodeKey !== $_COOKIE['cc_cc']) {
-
             return false;
-
         }
         return true;
 
@@ -339,7 +337,7 @@ class UserModel extends Model
     public function login($name, $pwd, $usertype = 'user')
     {
         //user->|id|user_class_id|name|img|pwd|alias|gender|blocktime|blockreason|registertime|is_del|
-        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE name in ('{$name}')";
+        $sql = "SELECT u.*,u_c.title,is_admin,authority,device FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE name in ('{$name}')";
         if ($usertype == 'admin') {
             $sql .= "AND is_admin in (1)";
         }
@@ -367,6 +365,7 @@ class UserModel extends Model
                 $arr['cc_rt'] = $row['registertime'];
                 $arr['cc_ye'] = BasicTool::translateEnrollYear($row['enroll_year']);
                 $arr['cc_cc'] = $encodeKey;//验证码
+                $arr['device'] = $row['device'];
 
                 foreach ($arr as $k => $v) {
                     setcookie($k, $v, $time, '/');
@@ -455,7 +454,7 @@ class UserModel extends Model
         }
 
         $userId = $this->userId;
-        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ('{$userId}')";
+        $sql = "SELECT u.*,u_c.title,is_admin,device,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ('{$userId}')";
 
         if ($row = $this->sqltool->getRowBySql($sql)) {
             //编码秘钥
@@ -478,6 +477,7 @@ class UserModel extends Model
             $arr['cc_rt'] = $row['registertime'];
             $arr['cc_ye'] = BasicTool::translateEnrollYear($row['enroll_year']);
             $arr['cc_cc'] = $encodeKey;//验证码
+            $arr['device'] = $row['device'];
 
             foreach ($arr as $k => $v) {
                 setcookie($k, $v, $time, '/');
