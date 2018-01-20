@@ -29,8 +29,8 @@ class CourseRatingModel extends Model
     * @return 2维数组
     */
     public function getListOfCourseRating($query=false, $pageSize=20) {
-        $sql = "SELECT cr.*, u.id AS user_id, u.name AS user, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM {$this->table} cr, user u, course_code cc, course_code cc2, professor p WHERE cr.user_id=u.id AND cr.course_code_id=cc.id AND cc.parent_id=cc2.id AND cr.prof_id=p.id";
-        $countSql = "SELECT COUNT(*) FROM {$this->table} cr, user u, course_code cc, professor p WHERE cr.user_id=u.id AND cr.course_code_id=cc.id AND cr.prof_id=p.id";
+        $sql = "SELECT cr.*,u.id AS user_id,u.name AS user_name,u.user_class_id,u.img AS user_img,u.alias AS user_alise,u.gender AS user_gender,u.major AS user_major,u.enroll_year AS user_enroll_year,u.degree AS user_degree,uc.is_admin,cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM {$this->table} cr, user u, user_class uc, course_code cc, course_code cc2, professor p WHERE cr.user_id=u.id AND cr.user_id=uc.id AND cr.course_code_id=cc.id AND cc.parent_id=cc2.id AND cr.prof_id=p.id";
+        $countSql = "SELECT COUNT(*) FROM {$this->table} cr, user u, user_class uc, course_code cc, professor p WHERE cr.user_id=u.id AND cr.user_id=uc.id AND cr.course_code_id=cc.id AND cr.prof_id=p.id";
         if ($query) {
             $sql = "{$sql} AND ({$query})";
             $countSql = "{$countSql} AND ({$query})";
@@ -40,7 +40,9 @@ class CourseRatingModel extends Model
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
             $t = $v["publish_time"];
+            $enrollYear = $v["user_enroll_year"];
             if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
+            if($enrollYear) $arr[$k]["user_enroll_year"] = BasicTool::translateEnrollYear($enrollYear);
         }
         return $arr;
     }

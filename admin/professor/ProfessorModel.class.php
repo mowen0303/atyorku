@@ -33,8 +33,13 @@ class ProfessorModel extends Model
         $sql = "SELECT * FROM {$this->table}";
         $condition = "";
         if ($str){
-            $str = ucwords($str);
-            $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
+            $fullName = explode(" ",$str);
+            $nameSize = count($fullName);
+            if($nameSize==1){
+                $condition = " WHERE firstname LIKE '{$str}%' OR lastname LIKE '{$str}%'";
+            } else {
+                $condition = " WHERE CONCAT(firstname,' ',lastname) LIKE '{$str}%'";
+            }
         }
         $sql .= "{$condition} ORDER BY view_count DESC, firstname ASC, lastname ASC, view_count DESC";
         $countSql = "SELECT COUNT(*) FROM {$this->table}{$condition}";
