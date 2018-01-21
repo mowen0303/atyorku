@@ -125,13 +125,17 @@ function updateSolutionWithJson(){
  * localhost/admin/courseSolution/courseSolutionController.php?action=getApprovedSolutionByQuestionIdWithJson&question_id=1
  */
 function getApprovedSolutionByQuestionIdWithJson(){
-    global $solutionModel;
+    global $solutionModel,$imageModel;
     $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getApprovedSolutionByQuestionId($question_id);
     if ($result){
         $result["time_approved"] = BasicTool::translateTime($result["time_approved"]);
         $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
         $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
+        $result["img_urls"] = [];
+        !$result["img_id_1"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_1"])["url"]);
+        !$result["img_id_2"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_2"])["url"]);
+        !$result["img_id_3"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_3"])["url"]);
         BasicTool::echoJson(1,"查询成功",$result);
     }
     else
@@ -152,6 +156,10 @@ function getSolutionsByQuestionIdWithJson(){
         foreach ($result as $solution){
             $solution["time_posted"] = BasicTool::translateTime($solution["time_posted"]);
             $solution["enroll_year"] = BasicTool::translateEnrollYear($solution["enroll_year"]);
+            $solution["img_urls"] = [];
+            !$solution["img_id_1"] or array_push($solution["img_urls"],$solution["img_url_1"]);
+            !$solution["img_id_2"] or array_push($solution["img_urls"],$solution["img_url_2"]);
+            !$solution["img_id_3"] or array_push($solution["img_urls"],$solution["img_url_3"]);
             array_push($results,$solution);
         }
         BasicTool::echoJson(1,"查询成功",$results);

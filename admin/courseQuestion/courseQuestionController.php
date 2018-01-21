@@ -65,7 +65,7 @@ function addQuestion($echoType = "normal"){
         $questioner_user_id = $currentUser->userId;
         $description = BasicTool::post("description","Missing Description");
         $reward_amount=BasicTool::post("reward_amount","Missing reward_amount");
-        $reward_amount>0 or BasicTool::throwException("请输入有效的积分数");
+        $reward_amount>= 0 or BasicTool::throwException("请输入有效的积分数");
         //验证积分
         $transactionModel->isCreditDeductible($currentUser->userId,$reward_amount) or BasicTool::throwException("积分不足");
         //图片上传
@@ -132,7 +132,7 @@ function updateQuestion($echoType = "normal"){
         $id = BasicTool::post("id", "Missing id");
         $description = BasicTool::post("description");
         $reward_amount = BasicTool::post("reward_amount");
-        $reward_amount > 0 or BasicTool::throwException("请输入有效的积分");
+        $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分");
         $question = $questionModel->getQuestionById($id);
         //确认问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("更改失败,提问已经被解决");
@@ -312,9 +312,9 @@ function deleteQuestion($echoType="normal"){
 /**删除提问
  * POST,JSON接口
  * @param id 提问id
- * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestionWithJson
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestionByIdWithJson
  */
-function deleteQuestionWithJson(){
+function deleteQuestionByIdWithJson(){
     deleteQuestion("json");
 }
 
@@ -385,7 +385,7 @@ function updateRewardAmount($echoType="normal"){
 
         $id = BasicTool::post("id","Missing Id");
         $reward_amount = BasicTool::post("reward_amount","missing reward_amount");
-        $reward_amount>0 or BasicTool::throwException("请输入有效的积分数");
+        $reward_amount>= 0 or BasicTool::throwException("请输入有效的积分数");
         $question = $questionModel->getQuestionById($id);
         $question or BasicTool::throwException("question_id不存在");
         $questioner_user_id = $question["questioner_user_id"];
