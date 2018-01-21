@@ -30,9 +30,13 @@ class MsgModel extends Model
         if($this->enablePush==false) return false;
         //苹果
         if($receiverUser->deviceToken == '0') return false;
-        //重要:v2中弃用applePush方法,启用applePushRN
-        self::applePush($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
-        self::applePushRN($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
+        if($receiverUser->deviceType=="ios"){
+            //重要:v2中弃用applePush方法,启用applePushRN
+            self::applePush($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
+            self::applePushRN($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
+        }else if($receiverUser->deviceType=="android"){
+            self::androidPushRN($receiverUser->deviceToken,$senderUser->aliasName,$msgType,$msgTypeId,$content,$receiverBadge);
+        }
     }
 
     /**
@@ -200,6 +204,49 @@ class MsgModel extends Model
         $tResult = fwrite ($tSocket, $tMsg, strlen ($tMsg));
         fclose ($tSocket);
         return $tResult?true:false;
+    }
+
+    private function androidPushRN($deviceToken,$senderAlias = false,$msgType, $msgTypeId, $content, $badge, $silent = false){
+        if($deviceToken == '0') return false;
+        $senderAlias = $senderAlias?$senderAlias.": ":"";
+
+        //config
+        // API access key from Google API's Console
+        define("API_ACCESS_KEY","AIzaSyC2fX0_SQ20jY7Ov0HeS7P3xFuYqFCvX8E");
+        $registrationIds = $deviceToken;
+        // prep the bundle
+        $msg = array
+        (
+            'message' 	=> $senderAlias.$content,
+            'title'		=> 'AtYorkU',
+            'badge' => (int)$badge,
+            'type' => $msgType,
+            'typeId' => $msgTypeId,
+            'vibrate'	=> 1,
+            'sound'		=> 1,
+            'largeIcon'	=> 'large_icon',
+            'smallIcon'	=> 'small_icon'
+        );
+        $fields = array
+        (
+            'registration_ids'  => array($registrationIds),
+            'data'			=> $msg
+        );
+        $headers = array
+        (
+            'Authorization:key=' . API_ACCESS_KEY,
+            'Content-Type:application/json'
+        );
+        $ch = curl_init();
+        curl_setopt( $ch,CURLOPT_URL, 'https://android.googleapis.com/gcm/send' );
+        curl_setopt( $ch,CURLOPT_POST, true );
+        curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+        curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+        $result = curl_exec($ch );
+        curl_close( $ch );
+        //echo $result;
     }
 
     /**
