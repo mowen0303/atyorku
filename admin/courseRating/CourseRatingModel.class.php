@@ -30,14 +30,13 @@ class CourseRatingModel extends Model
     * @return 2维数组
     */
     public function getListOfCourseRating($query=false, $pageSize=20) {
-        $select = "SELECT cr.*,u.id AS user_id,u.name AS user_name,u.user_class_id,u.img AS user_img,u.alias AS user_alise,u.gender AS user_gender,u.major AS user_major,u.enroll_year AS user_enroll_year,u.degree AS user_degree,uc.is_admin,cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
-        $from = "FROM {$this->table} cr, user u, user_class uc, course_code cc, course_code cc2, professor p";
-        $where = "WHERE cr.user_id=u.id AND cr.user_id=uc.id AND cr.course_code_id=cc.id AND cc.parent_id=cc2.id AND cr.prof_id=p.id";
-        $sql = "{$select} {$from} {$where}";
-        $countSql = "SELECT COUNT(*) {$from} {$where}";
+        $select = "SELECT cr.*, u.id AS user_id, u.name AS user_name, u.user_class_id, u.img AS user_img, u.alias AS user_alise, u.gender AS user_gender, u.major AS user_major, u.enroll_year AS user_enroll_year, u.degree AS user_degree, uc.is_admin, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        $from = "FROM (course_rating cr INNER JOIN course_code cc ON cr.course_code_id = cc.id INNER JOIN course_code cc2 ON cc.parent_id = cc2.id INNER JOIN professor p ON cr.prof_id = p.id INNER JOIN `user` u ON cr.user_id = u.id LEFT JOIN user_class uc ON u.id = uc.id)";
+        $sql = "{$select} {$from}";
+        $countSql = "SELECT COUNT(*) {$from}";
         if ($query) {
-            $sql = "{$sql} AND ({$query})";
-            $countSql = "{$countSql} AND ({$query})";
+            $sql = "{$sql} WHERE ({$query})";
+            $countSql = "{$countSql} WHERE ({$query})";
         }
         $sql = "{$sql} ORDER BY `year` DESC, `term`, `publish_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
