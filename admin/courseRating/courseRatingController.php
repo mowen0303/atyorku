@@ -248,14 +248,17 @@ function getCourseProfReportByCourseIdProfIdWithJson() {
 /**
  * JSON -  获取某一页科目报告
  * @param pageSize 每一页科目报告获取量，默认值=20
+ * @param course_code_parent_title 科目类别 EECS
+ * @param course_code_child_title 科目编号 2030
  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseReportWithJson&pageSize=20
  */
 function getListOfCourseReportWithJson() {
     global $courseRatingModel;
     try {
         $pageSize = BasicTool::get('pageSize') ?: 20;
-
-        $result = $courseRatingModel->getListOfCourseReports($pageSize);
+        $courseParentTitle = BasicTool::get('course_code_parent_title') ?: false;
+        $courseChildTitle = BasicTool::get('course_code_child_title') ?: false;
+        $result = $courseRatingModel->getListOfCourseReports($pageSize,$courseParentTitle,$courseChildTitle);
 
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
@@ -270,14 +273,16 @@ function getListOfCourseReportWithJson() {
 /**
  * JSON -  获取某一页教授报告
  * @param pageSize 每一页教授报告获取量，默认值=20
+ * @param prof_name 教授名
  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfProfReportWithJson&pageSize=20
  */
 function getListOfProfReportWithJson() {
     global $courseRatingModel;
     try {
         $pageSize = BasicTool::get('pageSize') ?: 20;
+        $professorTitle = BasicTool::get('prof_name') ?: false;
 
-        $result = $courseRatingModel->getListOfProfessorReports($pageSize);
+        $result = $courseRatingModel->getListOfProfessorReports($pageSize,$professorTitle);
 
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
