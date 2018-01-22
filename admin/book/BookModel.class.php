@@ -46,7 +46,7 @@ class BookModel extends Model
         $arr["last_modified_time"] = time();
         $bool = $this->addRow($this->table, $arr);
         if ($bool) {
-            $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+            $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId}) AND NOT is_deleted AND is_available) WHERE id in ({$bookCategoryId})";
             $this->sqltool->query($sql);
         }
         return $bool;
@@ -68,12 +68,18 @@ class BookModel extends Model
     * @param String $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
     * @return 返回二维数组
     */
-    public function getListOfBooks($pageSize=20, $query=false) {
-        $sql = "SELECT b.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON b.user_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
-        $countSql = "SELECT COUNT(*) FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON b.user_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true) {
+        $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON b.user_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+        $where = "WHERE NOT b.is_deleted";
+        if($availableOnly){
+            $where .= " AND b.is_available";
+        }
+        $sql = "{$select} {$from} {$where}";
+        $countSql = "SELECT COUNT(*) {$from} {$where}";
         if ($query) {
-            $sql = "{$sql} WHERE ({$query})";
-            $countSql = "{$countSql} WHERE ({$query})";
+            $sql = "{$sql} AND ({$query})";
+            $countSql = "{$countSql} AND ({$query})";
         }
         $sql = "{$sql} ORDER BY `sort` DESC,`last_modified_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
@@ -94,7 +100,7 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getBooksByCategoryId($bookCategoryId, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "book_category_id = {$bookCategoryId}");
+        return $this->getListOfBooks($pageSize, "book_category_id={$bookCategoryId}");
     }
 
     /**
@@ -182,7 +188,7 @@ class BookModel extends Model
      * 更改一本书
      * @return bool
      */
-    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $isEDocument, $eLink)
+    public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink)
     {
         $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
         $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
@@ -201,6 +207,7 @@ class BookModel extends Model
         $arr["term_year"] = $year;
         $arr["term_semester"] = $term;
         $arr["pay_with_points"] = $payWithPoints ? 1 : 0;
+        $arr["is_available"] = $available ? 1 : 0;
         $arr["is_e_document"] = $isEDocument ? 1 : 0;
         $arr["e_link"] = $eLink;
         $arr["last_modified_time"] = time();
@@ -213,7 +220,7 @@ class BookModel extends Model
 
             $bool = $this->updateRowById($this->table, $id, $arr);
             if ($bool && $bookCategoryId != $oldBookCategoryId) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId}, {$oldBookCategoryId})";
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId}) AND NOT is_deleted AND is_available) WHERE id in ({$bookCategoryId}, {$oldBookCategoryId})";
                 $this->sqltool->query($sql);
             }
 
@@ -245,6 +252,27 @@ class BookModel extends Model
         return false;
     }
 
+
+    /**
+    * 逻辑删除二手书 by ID
+    * @param id book id
+    * @return 成功返回删除数据一维数组，失败返回false
+    */
+    public function deleteBookLogicallyById($id) {
+        $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if ($result) {
+            $bookCategoryId = $result["book_category_id"];
+            $sql = "UPDATE {$this->table} SET is_deleted=1 WHERE id in ({$id})";
+            $bool = $this->sqltool->query($sql);
+            if ($bool) {
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+                $this->sqltool->query($sql);
+                return $result;
+            }
+        }
+        return false;
+    }
 
     /**
     * validate year
