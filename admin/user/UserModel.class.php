@@ -6,8 +6,7 @@ use \Exception as Exception;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/key.php";
 
-class UserModel extends Model
-{
+class UserModel extends Model {
     //秘钥
     private static $key = KEY;
 
@@ -39,8 +38,7 @@ class UserModel extends Model
 
     public $row = null;
 
-    public function __construct($userId = false)
-    {
+    public function __construct($userId = false) {
         parent::__construct();
         $this->setUserInfo($userId);
 
@@ -58,8 +56,7 @@ class UserModel extends Model
      * blockreason|registertime|is_del|title|is_admin|authority
      *
      */
-    private function setUserInfo($userId = false)
-    {
+    private function setUserInfo($userId = false) {
 
         if ($userId === false) {
             $this->userId = @$_COOKIE['cc_id'];
@@ -108,17 +105,12 @@ class UserModel extends Model
      * id|user_class_id|name|img|pwd|alias|gender|blocktime
      * blockreason|registertime|is_del|title|is_admin|authority
      */
-    public function getProfileOfUserById($id, $onlyShowBasic = false)
-    {
-
-        $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u.registertime,u_c.is_admin,u_c.authority";
-
-        $sql = "SELECT u.id,u.degree,u.device,u.wechat,u.user_class_id,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
-
+    public function getProfileOfUserById($id, $onlyShowBasic = false) {
+        $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u_c.is_admin,u_c.authority";
+        $sql = "SELECT u.id,u.degree,u.device,u.wechat,u.user_class_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
         $arr = $this->sqltool->getRowBySql($sql);
 
         foreach ($arr as $k => $v) {
-
             if ($k == "enroll_year") {
                 $arr['enrollYearTranslate'] = BasicTool::translateEnrollYear($v);
             }
@@ -146,8 +138,7 @@ class UserModel extends Model
      * user_class        | id | user_class_id | name | pwd | alias  | gender | blocktime  | blockreason |
      *
      */
-    public function getListOfUser($isAdmin, $userClass = false, $pageSize = 40)
-    {
+    public function getListOfUser($isAdmin, $userClass = false, $pageSize = 40) {
         // user * user_class          | id | user_class_id | name | img | pwd |alias | gender | blocktime | blockreason |title | is_admin | authority |
 
         $condition = "";
@@ -166,8 +157,7 @@ class UserModel extends Model
      * @param int $pageSize
      * @return 二维数组
      */
-    public function getListOfUserClass($pageSize = 50)
-    {
+    public function getListOfUserClass($pageSize = 50) {
         $table = 'user_class';
         $sql = "SELECT * FROM {$table}";
         $countSql = null;
@@ -178,8 +168,7 @@ class UserModel extends Model
     /**
      * 输出用户分类的option列表
      */
-    public function echoUserClassOption()
-    {
+    public function echoUserClassOption() {
         $arr = $this->getListOfUserClass();
 
         //die();
@@ -198,8 +187,7 @@ class UserModel extends Model
      * @param $targetUserId
      * @return bool
      */
-    public function isAuthorityToManageUserByTargetUserId($targetUserId)
-    {
+    public function isAuthorityToManageUserByTargetUserId($targetUserId) {
         //安全验证 s---
         if ($this->isUserHasAuthority('GOD')) {
             //上帝,可以修改
@@ -234,8 +222,7 @@ class UserModel extends Model
      * @param $key 如果不填参数,就只检查账号是否被禁言和删除,不检测权限
      * @return bool
      */
-    public function isUserHasAuthority($key = false)
-    {
+    public function isUserHasAuthority($key = false) {
         global $_AUT;
         if (!self::isLogin()) {
             BasicTool::echoJson(0, "账号验证失败，请重新登录");
@@ -283,8 +270,7 @@ class UserModel extends Model
      * @param $int
      * @return string
      */
-    public function translateGender($int)
-    {
+    public function translateGender($int) {
         switch ($int) {
             case 0:
                 return "女";
@@ -302,8 +288,7 @@ class UserModel extends Model
      * 判断用户是否登录以及cookie是否合法
      * @return bool
      */
-    public function isLogin()
-    {
+    public function isLogin() {
         $encodeKey = md5($_COOKIE['cc_id'] . $_COOKIE['cc_uc'] . $_COOKIE['cc_na'] . $_COOKIE['cc_ia'] . $_COOKIE['cc_au'] . $_COOKIE['cc_bl'] . self::$key);
         //return $encodeKey == $_COOKIE['cc_cc'] ? true : false;
         if ($encodeKey !== $_COOKIE['cc_cc']) {
@@ -317,8 +302,7 @@ class UserModel extends Model
      * 判断管理员是否登录以及cookie是否合法
      * @return bool
      */
-    public function isAdminLogin()
-    {
+    public function isAdminLogin() {
         if (self::isLogin()) {
             if ($this->isAdmin) {
                 return true;
@@ -334,8 +318,7 @@ class UserModel extends Model
      * @param  string $password
      * @return user<json> | false
      */
-    public function login($name, $pwd, $usertype = 'user')
-    {
+    public function login($name, $pwd, $usertype = 'user') {
         //user->|id|user_class_id|name|img|pwd|alias|gender|blocktime|blockreason|registertime|is_del|
         $sql = "SELECT u.*,u_c.title,is_admin,authority,device FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE name in ('{$name}')";
         if ($usertype == 'admin') {
@@ -382,8 +365,7 @@ class UserModel extends Model
     /**
      * 用户登出
      */
-    public function logout()
-    {
+    public function logout() {
 
         foreach ($_COOKIE as $k => $v) {
             setcookie($k, "", time() - 10000000, '/');
@@ -392,8 +374,7 @@ class UserModel extends Model
     }
 
     //增加积分
-    public function addCredit($value, $userId)
-    {
+    public function addCredit($value, $userId) {
 
         if (!$this->isUserHasAuthority('GOD')) {
             $this->errorMsg = "没有权限";
@@ -416,8 +397,7 @@ class UserModel extends Model
 
 
     //更改用户为普通用户
-    public function changeUserClassToNormal($username)
-    {
+    public function changeUserClassToNormal($username) {
         $sql = "UPDATE user SET user_class_id = 7 WHERE name in ('{$username}')";
         $this->sqltool->query($sql);
         if ($this->sqltool->getAffectedRows() > 0) {
@@ -427,8 +407,7 @@ class UserModel extends Model
         return false;
     }
 
-    public function blockUser($userId, $days, $reason)
-    {
+    public function blockUser($userId, $days, $reason) {
         $time = time() + (3600 * 24) * $days;
         $sql = "UPDATE user SET blocktime = {$time},blockreason = '{$reason}' WHERE id IN ($userId)";
         $this->sqltool->query($sql);
@@ -445,8 +424,7 @@ class UserModel extends Model
      * @param $userId
      * @return bool
      */
-    public function updateCookie()
-    {
+    public function updateCookie() {
 
         if ($this->isLogin() == false) {
             $this->errorMsg = "当前没有用户登录";
@@ -494,8 +472,7 @@ class UserModel extends Model
      * 增加用户活跃度
      * @return bool
      */
-    public function addActivity()
-    {
+    public function addActivity() {
 
         $userId = $this->userId;
         $sql = "UPDATE user SET activist = activist + 1 WHERE id = '{$userId}'";
@@ -508,14 +485,11 @@ class UserModel extends Model
     }
 
 
-
-
     /**
      * 统计已经注册设备的数量
      * @return mixed
      */
-    public function getCountOfDevice()
-    {
+    public function getCountOfDevice() {
         $sql = "SELECT count(device) FROM user WHERE device <> '0'";
         return $this->sqltool->getCountBySql($sql);
     }
@@ -524,8 +498,7 @@ class UserModel extends Model
      * 统计有效用户
      * @return mixed
      */
-    public function getCountOfUserForValid()
-    {
+    public function getCountOfUserForValid() {
         $sql = "SELECT count(activist) FROM user WHERE activist > '0'";
         return $this->sqltool->getCountBySql($sql);
     }
@@ -533,8 +506,7 @@ class UserModel extends Model
     /**
      * 退出登录清空设备
      */
-    public function logoutDevice()
-    {
+    public function logoutDevice() {
         $uid = $this->userId;
         $sql = "UPDATE user SET device = '0' WHERE id = {$uid}";
         $this->sqltool->query($sql);
@@ -543,9 +515,8 @@ class UserModel extends Model
     /**
      * @return array
      */
-    public function getListOfMsgReceive()
-    {
-        $uid = $this->userId;
+    public function getListOfMsgReceive() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
         $table = 'msg';
         $sql = "SELECT M.*,user.img,user.alias,user.gender FROM (SELECT * FROM {$table} WHERE receiver_id = {$uid} OR alert = 1) AS M INNER JOIN user ON sender_id = user.id ORDER BY id DESC";
         $countSql = "SELECT COUNT(*) FROM {$table} WHERE receiver_id = {$uid} ORDER BY id DESC";
@@ -560,30 +531,14 @@ class UserModel extends Model
         return $result;
     }
 
-    public function getListOfMsgSend()
-    {
-        $uid = $this->userId;
+    public function getListOfMsgSend() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
         $sql = "SELECT * FROM msg WHERE sender_id = {$uid}";
         return $this->sqltool->getListBySql($sql);
     }
 
 
-    public function getBadge()
-    {
-        $uid = $this->userId;
-        $sql = "UPDATE user SET badge = badge + 1 WHERE id = {$uid}";
-        $this->sqltool->query($sql);
-        $sql = "SELECT badge FROM user WHERE id = {$uid}";
-        $row = $this->sqltool->getRowBySql($sql);
-        return $row['badge'];
-    }
 
-    public function clearBadge()
-    {
-        $uid = $this->userId;
-        $sql = "UPDATE user SET badge = 0 WHERE id = {$uid}";
-        return $this->sqltool->query($sql);
-    }
 
     /**
      * --------------------------------------------------------
@@ -598,21 +553,20 @@ class UserModel extends Model
      * @param $password
      * @return user|bool
      */
-    public function register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description)
-    {
+    public function register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) {
         $arr['name'] = $name;
         $arr['pwd'] = md5($pwd);
         $arr['user_class_id'] = $user_class_id ? $user_class_id : 7;
-        $arr['degree'] = $degree?$degree:"";
-        $arr['alias'] = $alias?$alias:"";
-        $arr['major'] = $major?$major:"";
-        $arr['wechat'] = $wechat?$wechat:"";
-        $arr['description'] = $description?$description:"";
-        $arr['registertime']=time();
-        return $this->addRow('user',$arr);
+        $arr['degree'] = $degree ? $degree : "";
+        $arr['alias'] = $alias ? $alias : "";
+        $arr['major'] = $major ? $major : "";
+        $arr['wechat'] = $wechat ? $wechat : "";
+        $arr['description'] = $description ? $description : "";
+        $arr['registertime'] = time();
+        return $this->addRow('user', $arr);
     }
 
-    public function updateUserByAdmin($targetUserId,$alias,$user_class_id,$gender,$blocktime,$blockreason,$major,$enroll_year,$description,$wechat){
+    public function updateUserByAdmin($targetUserId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat) {
         $sql = "UPDATE user SET alias='{$alias}',user_class_id='{$user_class_id}',gender='{$gender}',blocktime='{$blocktime}',blockreason='{$blockreason}',major='{$major}',enroll_year='{$enroll_year}',description='{$description}',wechat='{$wechat}' WHERE id in ({$targetUserId})";
         return $this->sqltool->query($sql);
     }
@@ -622,8 +576,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateAlias($val)
-    {
+    public function updateAlias($val) {
         return self::updateRowById('user', $this->userId, ['alias' => $val]);
     }
 
@@ -632,8 +585,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateGender($val)
-    {
+    public function updateGender($val) {
         return self::updateRowById('user', $this->userId, ['gender' => $val]);
     }
 
@@ -642,8 +594,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateMajor($val)
-    {
+    public function updateMajor($val) {
         return self::updateRowById('user', $this->userId, ['major' => $val]);
     }
 
@@ -652,8 +603,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateWechat($val)
-    {
+    public function updateWechat($val) {
         return self::updateRowById('user', $this->userId, ['wechat' => $val]);
     }
 
@@ -662,8 +612,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateDescription($val)
-    {
+    public function updateDescription($val) {
         return self::updateRowById('user', $this->userId, ['description' => $val]);
     }
 
@@ -672,8 +621,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateEnrollYear($val)
-    {
+    public function updateEnrollYear($val) {
         return self::updateRowById('user', $this->userId, ['enroll_year' => $val]);
     }
 
@@ -682,8 +630,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updateDegree($val)
-    {
+    public function updateDegree($val) {
         return self::updateRowById('user', $this->userId, ['degree' => $val]);
     }
 
@@ -692,8 +639,7 @@ class UserModel extends Model
      * @param $val
      * @return bool
      */
-    public function updatePassword($val)
-    {
+    public function updatePassword($val) {
         return self::updateRowById('user', $this->userId, ['pwd' => $val]);
     }
 
@@ -702,12 +648,49 @@ class UserModel extends Model
      * @param $username
      * @return int
      */
-    public function changePasswordRandomly($username){
+    public function changePasswordRandomly($username) {
         $pwd = rand(100000, 999999);
         $md5pwd = md5($pwd);
         $sql = "UPDATE user SET pwd = '{$md5pwd}' WHERE name in ('{$username}')";
         $this->sqltool->query($sql);
         return $pwd;
+    }
+
+    /**
+     * 获取用户badge
+     * @return mixed
+     * @throws Exception
+     */
+    public function getBadge() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
+        $sql = "SELECT badge FROM user WHERE id = {$uid}";
+        $row = $this->sqltool->getRowBySql($sql);
+        return $row['badge'];
+    }
+
+    /**
+     * badge + 1 且 返回新的badge结果
+     * @return mixed
+     * @throws Exception
+     */
+    public function addOnceCountInBadge() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
+        $sql = "UPDATE user SET badge = badge + 1 WHERE id = {$uid}";
+        $this->sqltool->query($sql);
+        $sql = "SELECT badge FROM user WHERE id = {$uid}";
+        $row = $this->sqltool->getRowBySql($sql);
+        return $row['badge'];
+    }
+
+    /**
+     * 清楚badge
+     * @return bool|\mysqli_result
+     * @throws Exception
+     */
+    public function clearBadge() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
+        $sql = "UPDATE user SET badge = 0 WHERE id = {$uid}";
+        return $this->sqltool->query($sql);
     }
 }
 

@@ -78,16 +78,30 @@ function getCommentsWithJson(){
 }
 
 /**
- *
+ * 根据评论id删除评论及其子评论
+ * [GET] http://www.atyorku.ca/admin/comment/commentController.php?action=deleteCommentByIdWithJson&commentId=1
+ * @param commentId
  */
 function deleteCommentByIdWithJson(){
     global $commentModel;
     try{
         $commentId = BasicTool::get("commentId","commentId不能为空");
-        $result = $commentModel->deleteCommentById($commentId);
+        $commentModel->deleteCommentById($commentId);
         BasicTool::echoJson(1,"删除成功");
     }catch (Exception $e){
         BasicTool::echoJson(0, $e->getMessage());
     }
 }
+
+
+function test(){
+    global $commentModel;
+    try{
+        $commentModel->deleteComment('event',19);
+        BasicTool::echoJson(1,"删除成功");
+    }catch (Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 

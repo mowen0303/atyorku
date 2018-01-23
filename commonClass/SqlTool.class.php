@@ -6,6 +6,7 @@ class SqlTool
     //保存一个类的实例
     public static $sqltool = false;
     public $mysqli;
+    private $devModel = ture; //开发模式
 
     private function __construct()
     {
@@ -40,7 +41,7 @@ class SqlTool
         if ($result) {
             return $result;
         } else {
-            BasicTool::echoJson(0, $this->mysqli->error ." <===SQL===> ".$sql);
+            $this->devModel?BasicTool::echoJson(0, $this->mysqli->error ." <===SQL===> ".$sql):BasicTool::echoJson(0,"sql出错");
             exit();
         }
     }

@@ -111,6 +111,19 @@ class CommentModel extends Model
 
 
     /**
+     * 根据产品表名和产品id删除评论
+     * @param $sectionName
+     * @param $sectionId    可以是数组
+     * @throws Exception
+     */
+    public function deleteComment($sectionName,$sectionIds){
+        $sectionIds = !is_array($sectionIds)?:implode(",",$sectionIds);
+        $sql = "DELETE FROM comment WHERE section_name in ('{$sectionName}') AND section_id in ({$sectionIds})";
+        return $this->sqltool->query($sql);
+    }
+
+
+    /**
      * 更新评论数量的统计
      * @param $section_name
      * @param $section_id
