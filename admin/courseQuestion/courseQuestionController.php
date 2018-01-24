@@ -6,6 +6,7 @@ $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
 $transactionModel = new \admin\transaction\TransactionModel();
 $profModel = new \admin\professor\ProfessorModel();
+$courseCodeModel = new \admin\courseCode\CourseCodeModel();
 call_user_func(BasicTool::get('action'));
 
 
@@ -48,20 +49,16 @@ function getQuestionByIdWithJson(){
  * localhost/admin/courseQuestion/courseQuestionController.php?action=addQuestion
  */
 function addQuestion($echoType = "normal"){
-    global $questionModel,$imageModel,$currentUser,$transactionModel,$profModel;
+    global $questionModel,$imageModel,$currentUser,$transactionModel,$profModel,$courseCodeModel;
     try{
         //权限验证
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) || $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足");
         //验证fields
-        $course_code_id = BasicTool::post("course_code_id","Missing course_code_id");
-        if (BasicTool::post("prof_id")){
-            $prof_id = BasicTool::post("prof_id");
-        }
-        else{
-            $prof_name = BasicTool::post("prof_name","Missing prof_name");
-            $prof_id = $profModel->getProfessorIdByFullName($prof_name);
-            $prof_id or BasicTool::throwException("教授ID不存在");
-        }
+        $courseCodeParent = BasicTool::post("courseCodeParent","courseCodeParent 不能为空");
+        $courseCodeChild = BasicTool::post("courseCodeChild","courseCodeChild 不能为空");
+        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($courseCodeParent,$courseCodeChild);
+        $prof_name = BasicTool::post("prof_name","Missing prof_name");
+        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $questioner_user_id = $currentUser->userId;
         $description = BasicTool::post("description","Missing Description");
         $reward_amount=BasicTool::post("reward_amount","Missing reward_amount");
