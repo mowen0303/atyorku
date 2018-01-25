@@ -78,9 +78,9 @@ class LocationModel extends Model
     /**
      * @return bool|\mysqli_result
      */
-    public function getListOfLocation()
+    public function getAllLocations()
     {
-        $sql = "SELECT * FROM {$this->table}";
+        $sql = "SELECT * FROM {$this->table} WHERE id > 0";
 
         return $this->sqltool->getListBySql($sql);
     }
@@ -154,6 +154,7 @@ class LocationModel extends Model
     public function getMapDataVersion() {
         // TODO - why does it return nothing???
         $sql = "SELECT * FROM {$this->table} WHERE id = 0";
-        return $this->sqltool->query($sql);
+
+        return $this->sqltool->getListBySql($sql);
     }
 }

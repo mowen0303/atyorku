@@ -44,8 +44,6 @@ function updateLocation() {
         $info = BasicTool::post("info");
         $shape = BasicTool::post("shape");
 
-        // doesLocationExist($fullName, $init);
-
         $locationModel->updateLocation($id, $init, $fullName, $info, $lat, $lng, $shape);
         BasicTool::echoMessage("大楼信息更新成功 :)");
     }
@@ -56,7 +54,7 @@ function updateLocation() {
 
 function getAllLocations() {
     global $locationModel;
-    BasicTool::echoJson(1, "获取大楼信息成功 :)", $locationModel->getListOfLocation());
+    BasicTool::echoJson(1, "获取大楼信息成功 :)", $locationModel->getAllLocations());
 }
 
 function getLocationById() {
@@ -111,5 +109,6 @@ function deleteLocationById() {
 
 function getMapDataVersion() {
     global $locationModel;
-    BasicTool::echoJson(1, "获取数据库版本成功", $locationModel->getMapDataVersion());
+    echo json_encode($locationModel->getMapDataVersion());
+//    BasicTool::echoJson(1, "获取数据库版本成功", $locationModel->getMapDataVersion());
 }

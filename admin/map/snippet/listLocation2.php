@@ -44,7 +44,7 @@ if ($flag=='listResult') {
                 <tbody>
                 <?php
                 if ($flag == 'listAll') {
-                    $arr = $locationModel->getListOfLocation();
+                    $arr = $locationModel->getAllLocations();
                 } elseif ($flag == 'listResult') {
                     $arr = $locationModel->getLocationsByFullNameKeyword($keyword);
                 }

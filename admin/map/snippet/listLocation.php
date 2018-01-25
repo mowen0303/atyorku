@@ -29,7 +29,7 @@ $userModel = new \admin\user\UserModel();
                 </thead>
                 <tbody>
                 <?php
-                $arr = $locationModel->getListOfLocation();
+                $arr = $locationModel->getAllLocations();
                 foreach ($arr as $row) {
                     ?>
                     <tr>
