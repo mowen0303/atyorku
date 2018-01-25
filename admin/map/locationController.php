@@ -108,3 +108,8 @@ function deleteLocationById() {
         BasicTool::echoMessage($e->getMessage(),-1);
     }
 }
+
+function getMapDataVersion() {
+    global $locationModel;
+    BasicTool::echoJson(1, "获取数据库版本成功", $locationModel->getMapDataVersion());
+}

@@ -135,12 +135,8 @@ class LocationModel extends Model
      */
     public function getLocationsByInitKeyword($str) {
         $sql = "SELECT * FROM {$this->table} WHERE init LIKE '%{$str}%'";
-        return $this->sqltool->query();
+        return $this->sqltool->query($sql);
     }
-
-//    public function getLocationPolygonById($id)
-
-//    public function getLocationPolygonByInit($init)
 
     /**
      * 删除$id的大楼
@@ -148,5 +144,16 @@ class LocationModel extends Model
      */
     public function deleteLocationById($id) {
         $this->realDeleteByFieldIn($this->table, 'id', $id) or \BasicTool::throwException("删除大楼失败");
+    }
+
+    /**
+     * 返回数据库版本条目(id 0)
+     * @return bool|\mysqli_result
+     *
+     */
+    public function getMapDataVersion() {
+        // TODO - why does it return nothing???
+        $sql = "SELECT * FROM {$this->table} WHERE id = 0";
+        return $this->sqltool->query($sql);
     }
 }
