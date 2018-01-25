@@ -13,8 +13,7 @@ call_user_func(BasicTool::get('action'));
  * @param page 第几页的数据
  * http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListOfSpecificUserWithJson&forum_class_id=0&userId=1&page=1
  */
-function getForumListOfSpecificUserWithJson()
-{
+function getForumListOfSpecificUserWithJson() {
 
     global $forumModel;
     try {
@@ -45,8 +44,7 @@ function getForumListOfSpecificUserWithJson()
  * @param page 第几页的数据
  * http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListOfSpecificUserToCommentWithJson&forum_class_id=0&userId=1&page=1
  */
-function getForumListOfSpecificUserToCommentWithJson()
-{
+function getForumListOfSpecificUserToCommentWithJson() {
 
     global $forumModel;
     try {
@@ -73,13 +71,13 @@ function getForumListOfSpecificUserToCommentWithJson()
 
 
 /**
+ * v2 弃用
  * JSON -  获取某一分类下的帖子列表
  * @param forum_class_id 论坛分类id
  * @param page 第几页的数据
  * http://www.atyorku.ca/admin/forum/forumController.php?action=getOneForumAndCommentWithJson&forum_id=1
  */
-function getOneForumAndCommentWithJson()
-{
+function getOneForumAndCommentWithJson() {
 
     global $forumModel;
 
@@ -95,31 +93,15 @@ function getOneForumAndCommentWithJson()
     } else {
         BasicTool::echoJson(0, "帖子已经被删除", $result1, $result2);
     }
-
-
 }
 
 
-
-
-
+//---------------------------------------------------------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-//---------------------------------------------------------------------------------------------------------------------
-
-function modifyForumClass()
-{
+function modifyForumClass() {
     //增加或修改论坛分类
 
     global $forumModel;
@@ -166,8 +148,7 @@ function modifyForumClass()
 //---------------------------------------------------------------------------------------------------------------------
 
 
-function deleteForumClass()
-{
+function deleteForumClass() {
     //删除论坛
 
     global $currentUser;
@@ -194,8 +175,7 @@ function deleteForumClass()
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function addLike()
-{
+function addLike() {
     //点赞
 
     global $forumModel;
@@ -216,8 +196,7 @@ function addLike()
 
 //增加一次阅读量  http://www.atyorku.ca/admin/forum/forumController.php?action=countViewOfForumByIdWithJson&id=26
 
-function countViewOfForumByIdWithJson()
-{
+function countViewOfForumByIdWithJson() {
 
     global $forumModel;
 
@@ -232,8 +211,7 @@ function countViewOfForumByIdWithJson()
 
 }
 
-function countViewCheat()
-{
+function countViewCheat() {
     //点赞
 
     global $forumModel;
@@ -287,7 +265,7 @@ function getForumClassListWithJson() {
 function getForumListWithJson() {
     global $forumModel;
     $pageSize = BasicTool::get('pageSize');
-    if(!$pageSize){
+    if (!$pageSize) {
         $pageSize = 40;
     }
     $result = $forumModel->getListOfForumByForumClassId(BasicTool::get("forum_class_id"), $pageSize);
@@ -312,7 +290,7 @@ function getForumListWithJson() {
  *
  *
  */
-function addForumWithJson(){
+function addForumWithJson() {
     modifyForum("json");
 }
 
@@ -351,11 +329,11 @@ function modifyForum($echoType = "normal") {
                 //更新今日数据
                 $forumModel->updateCountData($forumModel->idOfInsert);
                 //获取刚增加的forum信息
-                $newForum = $forumModel->getListOfForumByForumClassId(0,1,false,false,$forumModel->idOfInsert)[0];
+                $newForum = $forumModel->getListOfForumByForumClassId(0, 1, false, false, $forumModel->idOfInsert)[0];
                 if ($echoType == "normal") {
                     BasicTool::echoMessage("新信息添加成功", "/admin/forum/index.php?s=listForum&forum_class_id=" . $arr['forum_class_id']);
                 } else {
-                    BasicTool::echoJson(1, "新信息添加成功",$newForum);
+                    BasicTool::echoJson(1, "新信息添加成功", $newForum);
                 }
 
             }
@@ -392,6 +370,7 @@ function modifyForum($echoType = "normal") {
 function deleteForumWithJson() {
     deleteForum("json");
 }
+
 function deleteForum($echoType = "normal") {
     //删除论坛信息
     global $forumModel;
@@ -430,21 +409,21 @@ function deleteForum($echoType = "normal") {
  * @param pageSize
  * @param page 第几页的数据
  */
-function getForumCommentListWithJson(){
+function getForumCommentListWithJson() {
     global $forumModel;
     //执行逻辑处理
-    try{
-        $pageSize = BasicTool::get('pageSize')?:40;
+    try {
+        $pageSize = BasicTool::get('pageSize') ?: 40;
         $result = $forumModel->getListOfForumCommentByForumId(BasicTool::get("forum_id"), $pageSize);
         $totalPage = $forumModel->getTotalPage();
-        if($result){
+        if ($result) {
             BasicTool::echoJson(1, "成功", "", $result, $totalPage);
-        }else{
+        } else {
             BasicTool::echoJson(0, "没有更多数据了", "", $result, $totalPage);
         }
 
-    }catch(Exception $e){
-        BasicTool::echoJson(0, $e->getMessage(),$totalPage);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage(), $totalPage);
     }
 }
 
@@ -453,11 +432,11 @@ function getForumCommentListWithJson(){
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=deleteCommentWithJson&id=26
  * @param  id 评论ID
  */
-function deleteCommentWithJson(){
+function deleteCommentWithJson() {
     deleteComment($echoType = "json");
 }
 
-function deleteComment($echoType = "normal"){
+function deleteComment($echoType = "normal") {
     //删除评论
     global $forumModel;
     global $currentUser;
@@ -493,14 +472,11 @@ function deleteComment($echoType = "normal"){
  * @param forum_id
  * @param receiveUserId 如果不是@某个特定用户，receiverUserId 为forum作者id
  */
-function addCommentWithJson()
-{
+function addCommentWithJson() {
     addComment("json");
 }
 
-function addComment($echoType = "normal")
-{
-    //增加评论
+function addComment($echoType = "normal") {
     global $currentUser;
     global $forumModel;
     global $msgModel;
@@ -526,15 +502,12 @@ function addComment($echoType = "normal")
         $newComment['enroll_year'] = BasicTool::translateEnrollYear($newComment['enroll_year']);
 
         //推送信息
-        $msgModel->pushMsgToUser($ownerUserId,"forumComment", $forumId, $arr['content_comment']);
-        if($ownerUserId!=$receiveUserId){
-            $msgModel->pushMsgToUser($receiveUserId,"forumComment", $forumId, $arr['content_comment']);
-        }
+        $msgModel->pushMsgToUser($receiveUserId, "forumComment", $forumId, $arr['content_comment']);
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("评论添加成功", "/admin/forum/index.php?s=listForumComment&forum_id=" . $arr['forum_id'] . "&forum_class_id=" . $arr['forum_class_id']);
         } else {
-            BasicTool::echoJson(1, "评论添加成功",$newComment);
+            BasicTool::echoJson(1, "评论添加成功", $newComment);
         }
     } catch (Exception $e) {
         if ($echoType == "normal") {
@@ -550,8 +523,7 @@ function addComment($echoType = "normal")
  * 获取report的数量
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getAmountOfReport
  */
-function getAmountOfReport()
-{
+function getAmountOfReport() {
     global $forumModel;
     try {
         $result = $forumModel->getAmountOfReport();
@@ -563,12 +535,10 @@ function getAmountOfReport()
 
 /**
  * 获取举报的列表
- * http://www.atyorku.ca/admin/forum/forumController.php?action=getReportedListWithJson&page=1
+ * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getReportedListWithJson&page=1
  */
-function getReportedListWithJson()
-{
+function getReportedListWithJson() {
     global $forumModel;
-
     try {
         $result1 = $forumModel->getListOfForumByForumClassId(0, 20, true);
         $result2 = $forumModel->getListOfForumCommentByForumId(0, 20, true);
@@ -583,8 +553,7 @@ function getReportedListWithJson()
  * 举报一个forum
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=reportForumWithJson&forumId=20
  */
-function reportForumWithJson()
-{
+function reportForumWithJson() {
     global $forumModel;
     try {
         $forumId = BasicTool::get('forumId', "ForumId不能为空");
@@ -600,8 +569,7 @@ function reportForumWithJson()
  * 举报一个Comment
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=reportForumCommentWithJson&forumCommentId=40
  */
-function reportForumCommentWithJson()
-{
+function reportForumCommentWithJson() {
     global $forumModel;
     try {
         $forumCommentId = BasicTool::get('forumCommentId', "ForumId不能为空");
@@ -616,8 +584,7 @@ function reportForumCommentWithJson()
  * 还原举报的forum
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=reportForumRestoreWithJson&$forumId=40
  */
-function reportForumRestoreWithJson()
-{
+function reportForumRestoreWithJson() {
     global $forumModel;
     try {
         $forumId = BasicTool::get('forumId', "ForumId不能为空");
@@ -628,17 +595,12 @@ function reportForumRestoreWithJson()
     }
 }
 
-
-
-
 /**
  * 还原forumComment
  * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=reportForumCommentRestoreWithJson&forumCommentId=40
  */
-function reportForumCommentRestoreWithJson()
-{
+function reportForumCommentRestoreWithJson() {
     global $forumModel;
-
     try {
         $forumCommentId = BasicTool::get('forumCommentId', "forumCommentId不能为空");
         $forumModel->reportedForumCommentRestore($forumCommentId) or BasicTool::throwException($forumModel->errorMsg);
@@ -648,7 +610,20 @@ function reportForumCommentRestoreWithJson()
     }
 }
 
-
+/**
+ * 通过帖子id获取帖子信息
+ * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getForumByIdWithJson&forumId=232
+ */
+function getForumByIdWithJson() {
+    global $forumModel;
+    try {
+        $forumId = BasicTool::get("forumId", "forum id 不能为空");
+        $result1 = $forumModel->getOneRowOfForumById($forumId) or BasicTool::throwException("无数据");
+        BasicTool::echoJson(1, "获取成功", $result1);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
 
 
 ?>

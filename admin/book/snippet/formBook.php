@@ -37,6 +37,14 @@ $flag = BasicTool::get("flag");
                 <input class="input" type="text" name="name" value="<?php echo BasicTool::get('name') ?>">
             </div>
             <div>
+                <label>积分付款<input type="checkbox" name="pay_with_points" <?php echo (BasicTool::get('pay_with_points') ? "checked" : "") ?>></label>
+                <label>电子书<input type="checkbox" name="is_e_document" <?php echo (BasicTool::get('is_e_document') ? "checked" : "") ?>></label>
+            </div>
+            <div>
+                <label>电子书链接</label>
+                <textarea class="input input-textarea" name="e_link"><?php echo BasicTool::get('e_link') ?></textarea>
+            </div>
+            <div>
                 <label>所属分类<i>*</i></label>
                 <select class="input input-select input-size50 selectDefault" name="book_category_id" defvalue="<?php echo BasicTool::get('book_category_id') ?>">
                     <?php

@@ -58,6 +58,18 @@ class CourseCodeModel extends Model
 
     }
 
+    /**
+     * 通过科目类别名称查询科目类别ID
+     * @param $parentCode
+     * @return int | 查询失败返回 0
+     */
+    public function getCourseParentIdByCourseCode($parentCode) {
+        $sql = "SELECT id FROM course_code WHERE title='{$parentCode}'";
+        $row = $this->sqltool->getRowBySql($sql);
+
+        return intval($row['id']);
+    }
+
 
     /**
     * 添加一行Course Code

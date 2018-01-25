@@ -177,16 +177,25 @@ function deleteBookWithJson() {
 }
 
 /**
+* JSON - 添加或修改一本二手书
+* @param id 删除二手书的id
+* [POST] http://www.atyorku.ca/admin/book/bookController.php?action=deleteBookLogicallyWithJson
+*/
+function deleteBookLogicallyWithJson() {
+    deleteBookLogically("json");
+}
+
+/**
  * http://www.atyorku.ca/admin/book/bookController.php?action=uploadImgWithJson
  * 上传图片,成功返回图片路径
  * $_FILES的inputname 为 imgFile
  * @return JSON 新图片ID一维数组
  */
 function uploadImgWithJson() {
+    global $bookModel;
+    global $imageModel;
+    global $currentUser;
     try {
-        global $bookModel;
-        global $imageModel;
-        global $currentUser;
         $uploadArr = $imageModel->uploadImg("imgFile", $currentUser->userId, "book") or BasicTool::throwException($imageModel->errorMsg);
         BasicTool::echoJson(1, "上传成功", $uploadArr);
     } catch (Exception $e) {
@@ -195,13 +204,14 @@ function uploadImgWithJson() {
 }
 
 /**
- * http://www.atyorku.ca/admin/book/bookController.php?action=getImagesByBookId&id=3
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getImagesByBookIdWithJson&id=3
  * 获取该二手书ID的所有关联图片
+ * 同时二手书浏览数 + 1
  * @return JSON 二维数组
  */
-function getImagesByBookId() {
+function getImagesByBookIdWithJson() {
+    global $bookModel;
     try {
-        global $bookModel;
         $id = BasicTool::get('id','请提供二手书ID');
         $result = $bookModel->getImagesByBookId($id);
         if ($result) {
@@ -209,10 +219,12 @@ function getImagesByBookId() {
         } else {
             BasicTool::echoJson(0, '未找到图片');
         }
+        $bookModel->incrementCountViewByBookId($id);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
 }
+
 
 //=========== END Function with JSON ============//
 
@@ -244,6 +256,13 @@ function modifyBook($echoType = "normal") {
 
         // 验证 Fields
         $name = BasicTool::post("name", "二手书标题不能为空", 100);
+        $available = BasicTool::post("is_available") ?: 1;
+        $payWithPoints = BasicTool::post("pay_with_points") ?: 0;
+        $isEDocument = BasicTool::post("is_e_document") ?: 0;
+        $eLink = "";
+        if($isEDocument){
+            $eLink = BasicTool::post("e_link", "电子书链接不能为空 ".$isEDocument);
+        }
         $description = BasicTool::post("description") or "";
         $bookCategoryId = BasicTool::post("book_category_id", "二手书所属分类不能为空");
         $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
@@ -278,7 +297,7 @@ function modifyBook($echoType = "normal") {
         // 执行
         if ($flag=='update') {
             $userId = $bookUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
-            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/book/index.php?listBook");
             } else {
@@ -286,7 +305,7 @@ function modifyBook($echoType = "normal") {
             }
         } else if ($flag=='add') {
             $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
-            $bookModel->addBook($name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->addBook($name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/book/index.php?listBook");
             } else {
@@ -305,7 +324,7 @@ function modifyBook($echoType = "normal") {
 
 /**
 * 删除1个或多本二手书
-* @param $id 要删除的二手书id或id array
+* @param id 要删除的二手书id或id array
 */
 function deleteBook($echoType = "normal") {
     global $bookModel;
@@ -346,7 +365,44 @@ function deleteBook($echoType = "normal") {
 }
 
 
-
+/**
+* 逻辑删除1个或多本二手书
+* @param id 要删除的二手书id或id array
+*/
+function deleteBookLogically($echoType="normal") {
+    global $bookModel;
+    global $currentUser;
+    try {
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除二手书ID");
+        $i = 0;
+        if (is_array($id)) {
+            foreach ($id as $v) {
+                $i++;
+                if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
+                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的二手书");
+                }
+                $bookModel->deleteBookLogicallyById($v) or BasicTool::throwException("删除多本失败");
+            }
+        } else {
+            $i++;
+            if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
+                $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的二手书");
+            }
+            $bookModel->deleteBookLogicallyById($id) or BasicTool::throwException("删除1本失败");
+        }
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功删除{$i}本二手书", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功删除{$i}本二手书");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
 
 function searchBooks($bookModel, $pageSize=40) {
     try {

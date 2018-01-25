@@ -46,7 +46,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
                         <td><?php echo $row["course_code_parent_title"] . " " . $row["course_code_child_title"] ?></td>
-                        <td><?php echo $row["user"] ?></td>
+                        <td><?php echo $row["user_name"] ?></td>
                         <td><?php echo $row["prof_name"] ?></td>
                         <td><?php echo $row["content_diff"] ?></td>
                         <td><?php echo $row["homework_diff"] ?></td>
@@ -63,6 +63,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                 ?>
                 </tbody>
             </table>
+            <?php echo $courseRatingModel->echoPageList()?>
         </section>
         <footer class="buttonBox">
             <input type="submit" value="删除" class="btn" onclick="return confirm('确认删除吗?')">

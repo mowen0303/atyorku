@@ -84,7 +84,7 @@ function updateGuide(){
         $title = BasicTool::post('title', '标题不能为空',100);
         $content = $_POST['content'];
         $contentLength = strlen($content);
-        $contentLength < 65500 or BasicTool::throwException("内容超出字符限制{$contentLength}/65500");
+        $contentLength < 16777215 or BasicTool::throwException("内容超出字符限制{$contentLength}/65500");
         $introduction = BasicTool::post('introduction',false,65535);
         $cover = BasicTool::post('cover',false,60);
         $order = BasicTool::post('guide_order',false,4);

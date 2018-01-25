@@ -171,7 +171,7 @@ function deleteEvent($echoType="normal"){
         }
 
         //删除评论
-        $commentModel->deleteCommentsBySection("event", $id) or BasicTool::throwException("删除失败,评论删除失败");
+        $commentModel->deleteComment("event", $id) or BasicTool::throwException("删除失败,评论删除失败");
 
         //删除图片
         if (is_array($id)) {

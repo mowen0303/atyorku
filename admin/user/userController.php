@@ -422,8 +422,6 @@ function blockUserByUserId()
 
 function topStudentToHTML()
 {
-
-
     try {
         ob_start();
         include($_SERVER['DOCUMENT_ROOT'] . "/apps/topStudentList/index.php");
@@ -446,24 +444,24 @@ function topStudentToHTML()
 
 function updateDevice()
 {
-
     global $currentUser;
-
-    $deviceToken = BasicTool::post('device');
-
-    if ($currentUser->isLogin() && $deviceToken != null) {
-        $id = $currentUser->userId;
-        $arr = [];
+    try {
+        $deviceToken = BasicTool::post('device')?:"0";
+        $deviceType = BasicTool::post('device_type')?:'ios';
+        $currentUser->isLogin() or BasicTool::throwException("未登录");
         $arr['device'] = $deviceToken;
-        if ($arr['device'] == "") {
-            $arr['device'] = "0";
-        }
+        $arr['device_type'] = $deviceType;
         //修改用户
-        $currentUser->updateRowById('user', $id, $arr);
+        $currentUser->updateRowById('user', $currentUser->userId, $arr);
+        $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
+        //以下方法v2弃用
         setcookie("cc_de", $deviceToken, time() + 3600 * 24 * 2, '/');
         setcookie("cc_dev", $deviceToken, time() + 3600 * 24 * 2, '/');
+
+        BasicTool::echoJson(1,"修改成功",$userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
-    BasicTool::echoJson(1, "写入成功");
 }
 
 /**
@@ -478,34 +476,23 @@ function logoutDevice()
     BasicTool::echoJson(1, "退出成功");
 }
 
-/**
- * http://www.atyorku.ca/admin/user/userController.php?action=getListOfMsgReceive
- * 获取小纸条
- */
-function getListOfMsgReceive()
-{
 
-    global $currentUser;
-    $arr = $currentUser->getListOfMsgReceive();
-
-    if ($arr) {
-        BasicTool::echoJson(1, "成功", $arr);
-    } else {
-        BasicTool::echoJson(0, "没有更多消息了");
-    }
-}
 
 
 /**
+ * ---- v2 弃用 -----
  * http://www.atyorku.ca/admin/user/userController.php?action=clearBadge
  * 重置badge
  */
 function clearBadge()
 {
     global $currentUser;
-    $currentUser->clearBadge();
-    BasicTool::echoJson(1, "成功");
-
+    try{
+        $currentUser->clearBadge();
+        BasicTool::echoJson(1,"成功");
+    } catch(Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
 }
 
 
@@ -855,4 +842,42 @@ function updatePasswordWithJson() {
         BasicTool::echoJson(0,$e->getMessage());
     }
 }
+
+/**
+ * getBadgeWithJson - 获取badge
+ * [post] http://www.atyorku.ca/admin/user/userController.php?action=getBadgeWithJson
+ * return json
+ */
+function getBadgeWithJson() {
+    global $currentUser;
+    try{
+        $badge = $currentUser->getBadge();
+        BasicTool::echoJson(1,"获取成功",$badge);
+    }
+    catch(Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+
+/**
+ * getListOfMsgReceive - 获取当前用户的小纸条,并清空badge
+ * [post] http://www.atyorku.ca/admin/user/userController.php?action=getListOfMsgReceive&page=1
+ * @param oldPassword : string
+ * @param newPassword : string
+ * return json
+ */
+function getListOfMsgReceive()
+{
+    global $currentUser;
+    try{
+        $arr = $currentUser->getListOfMsgReceive() or BasicTool::throwException("没有消息");
+        $currentUser->clearBadge();
+        BasicTool::echoJson(1,"获取成功",$arr);
+    }
+    catch(Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
 ?>

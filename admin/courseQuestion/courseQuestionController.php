@@ -6,12 +6,41 @@ $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
 $transactionModel = new \admin\transaction\TransactionModel();
 $profModel = new \admin\professor\ProfessorModel();
+$courseCodeModel = new \admin\courseCode\CourseCodeModel();
 call_user_func(BasicTool::get('action'));
+
+
+/**根据ID查询一则提问
+ * @param question_id
+ * localhost:8080/admin/courseQuestion/courseQuestionController.php?action=getQuestionByIdWithJson&question_id=19
+ */
+function getQuestionByIdWithJson(){
+    global $questionModel,$imageModel;
+    try{
+        $question_id = BasicTool::get("question_id","Require question_id");
+        $question = $questionModel->getQuestionById($question_id);
+        $question or BasicTool::throwException("提问不存在");
+        $question["img_urls"] = [];
+        !$question["img_id_1"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_1"])["url"]);
+        !$question["img_id_2"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_2"])["url"]);
+        !$question["img_id_3"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_3"])["url"]);
+        //$question["img_url_1"] = $question["img_id_1"] ? $imageModel->getImageById($question["img_id_1"])["url"]:"";
+        //$question["img_url_2"] = $question["img_id_2"] ? $imageModel->getImageById($question["img_id_2"])["url"]:"";
+        //$question["img_url_3"] = $question["img_id_3"] ? $imageModel->getImageById($question["img_id_3"])["url"]:"";
+        $question["time_posted"] = BasicTool::translateTime($question["time_posted"]);
+        $question["time_solved"] = BasicTool::translateTime($question["time_solved"]);
+        $question["enroll_year"] = BasicTool::translateEnrollYear($question["enroll_year"]);
+        BasicTool::echoJson(1,"查询成功",$question);
+    }
+    catch (Exception $e){
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
 
 /**添加一个提问
  * POST
  * @param course_code_id
- * @param prof_id
+ * @param prof_id or prof_name
  * @param description 问题描述
  * @param reward_amount 积分奖励
  * @param img_id_1
@@ -20,17 +49,20 @@ call_user_func(BasicTool::get('action'));
  * localhost/admin/courseQuestion/courseQuestionController.php?action=addQuestion
  */
 function addQuestion($echoType = "normal"){
-    global $questionModel,$imageModel,$currentUser,$transactionModel;
+    global $questionModel,$imageModel,$currentUser,$transactionModel,$profModel,$courseCodeModel;
     try{
         //权限验证
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) || $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足");
         //验证fields
-        $course_code_id = BasicTool::post("course_code_id","Missing course_code_id");
-        $prof_id = BasicTool::post("prof_id","Missing prof_id");
+        $courseCodeParent = BasicTool::post("courseCodeParent","courseCodeParent 不能为空");
+        $courseCodeChild = BasicTool::post("courseCodeChild","courseCodeChild 不能为空");
+        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($courseCodeParent,$courseCodeChild);
+        $prof_name = BasicTool::post("prof_name","Missing prof_name");
+        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $questioner_user_id = $currentUser->userId;
         $description = BasicTool::post("description","Missing Description");
         $reward_amount=BasicTool::post("reward_amount","Missing reward_amount");
-        $reward_amount>0 or BasicTool::throwException("请输入有效的积分数");
+        $reward_amount>= 0 or BasicTool::throwException("请输入有效的积分数");
         //验证积分
         $transactionModel->isCreditDeductible($currentUser->userId,$reward_amount) or BasicTool::throwException("积分不足");
         //图片上传
@@ -40,26 +72,16 @@ function addQuestion($echoType = "normal"){
         //扣除积分
         $transactionModel->deductCredit($currentUser->userId,$reward_amount,"发布提问");
 
-        $questionModel->addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount) or BasicTool::throwException("添加失败");
+        $insertId = $questionModel->addQuestion($course_code_id,$prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
+        $insertId or BasicTool::throwException("添加失败");
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功","/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         }
         else {
-            $result["id"] = $questionModel->getInsertId();
-            $result["course_code_id"] = $course_code_id;
-            $result["prof_id"] = $prof_id;
-            $result["description"] = $description;
-            $result["img_id_1"] = $imgArr[0];
-            $result["img_id_2"] = $imgArr[1];
-            $result["img_id_3"] = $imgArr[2];
-            $result["questioner_user_id"] = $currentUser->userId;
-            $result["answerer_user_id"] = 0;
-            $result["time_posted"] = time();
-            $result["time_solved"] = 0;
-            $result["solution_id"] = 0;
-            $result["reward_amount"] = $reward_amount;
-            $result["count_solutions"] = 0;
-            $result["count_views"] = 0;
+            $result = $questionModel->getQuestionById($insertId);
+            $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
+            $result["time_solved"] = BasicTool::translateTime($result["time_solved"]);
+            $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
             BasicTool::echoJson(1,"添加成功", $result);
             }
 
@@ -85,7 +107,7 @@ function addQuestion($echoType = "normal"){
  * localhost/admin/courseQuestion/courseQuestionController.php?action=addQuestionWithJson
  */
 function addQuestionWithJson(){
-    addQuestion("normal");
+    addQuestion("json");
 }
 
 /**更改一个提问
@@ -107,7 +129,7 @@ function updateQuestion($echoType = "normal"){
         $id = BasicTool::post("id", "Missing id");
         $description = BasicTool::post("description");
         $reward_amount = BasicTool::post("reward_amount");
-        $reward_amount > 0 or BasicTool::throwException("请输入有效的积分");
+        $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分");
         $question = $questionModel->getQuestionById($id);
         //确认问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("更改失败,提问已经被解决");
@@ -287,9 +309,9 @@ function deleteQuestion($echoType="normal"){
 /**删除提问
  * POST,JSON接口
  * @param id 提问id
- * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestionWithJson
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=deleteQuestionByIdWithJson
  */
-function deleteQuestionWithJson(){
+function deleteQuestionByIdWithJson(){
     deleteQuestion("json");
 }
 
@@ -335,6 +357,7 @@ function getQuestionsByCourseCodeIdProfNameWithJson(){
         if ($result){
             foreach ($result as $question){
             $question["time_posted"] = BasicTool::translateTime($question["time_posted"]);
+            $question["time_solved"] = BasicTool::translateTime($question["time_solved"]);
             $question["enroll_year"] = BasicTool::translateEnrollYear($question["enroll_year"]);
             array_push($results,$question);
             }
@@ -359,7 +382,7 @@ function updateRewardAmount($echoType="normal"){
 
         $id = BasicTool::post("id","Missing Id");
         $reward_amount = BasicTool::post("reward_amount","missing reward_amount");
-        $reward_amount>0 or BasicTool::throwException("请输入有效的积分数");
+        $reward_amount>= 0 or BasicTool::throwException("请输入有效的积分数");
         $question = $questionModel->getQuestionById($id);
         $question or BasicTool::throwException("question_id不存在");
         $questioner_user_id = $question["questioner_user_id"];

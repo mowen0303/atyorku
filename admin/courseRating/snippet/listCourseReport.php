@@ -21,6 +21,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                     <th width="80px">作业难度</th>
                     <th width="80px">考试难度</th>
                     <th width="80px">综合难度</th>
+                    <th width="80px">平均成绩</th>
                     <th width="80px">评论数</th>
                     <th width="80px">问题数</th>
                     <th width="120px">已解决问题数</th>
@@ -43,6 +44,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo $row["homework_diff"] ?></td>
                         <td><?php echo $row["test_diff"] ?></td>
                         <td><?php echo $row["overall_diff"] ?></td>
+                        <td><?php echo $row["avg_grade"] ?></td>
                         <td><?php echo $row["rating_count"] ?></td>
                         <td><?php echo $row["count_questions"] ?></td>
                         <td><?php echo $row["count_solved_questions"] ?></td>
@@ -52,6 +54,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                 ?>
                 </tbody>
             </table>
+            <?php echo $courseRatingModel->echoPageList()?>
         </section>
         <footer class="buttonBox">
             <input type="submit" value="删除" class="btn" onclick="return confirm('确认删除吗?')">

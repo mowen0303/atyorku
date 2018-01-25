@@ -22,6 +22,7 @@ class CourseRatingModel extends Model
         return $this->getRowById($this->table,$id);
     }
 
+
     /**
     * 获取一页课评
     * @param query additional query
@@ -29,20 +30,46 @@ class CourseRatingModel extends Model
     * @return 2维数组
     */
     public function getListOfCourseRating($query=false, $pageSize=20) {
-        $sql = "SELECT cr.*, u.id AS user_id, u.name AS user, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM {$this->table} cr, user u, course_code cc, course_code cc2, professor p WHERE cr.user_id=u.id AND cr.course_code_id=cc.id AND cc.parent_id=cc2.id AND cr.prof_id=p.id";
-        $countSql = "SELECT COUNT(*) FROM {$this->table} cr, user u, course_code cc, professor p WHERE cr.user_id=u.id AND cr.course_code_id=cc.id AND cr.prof_id=p.id";
+        $select = "SELECT cr.*, u.id AS user_id, u.name AS user_name, u.user_class_id, u.img AS user_img, u.alias AS user_alise, u.gender AS user_gender, u.major AS user_major, u.enroll_year AS user_enroll_year, u.degree AS user_degree, uc.is_admin, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        $from = "FROM (course_rating cr INNER JOIN course_code cc ON cr.course_code_id = cc.id INNER JOIN course_code cc2 ON cc.parent_id = cc2.id INNER JOIN professor p ON cr.prof_id = p.id INNER JOIN `user` u ON cr.user_id = u.id LEFT JOIN user_class uc ON u.id = uc.id)";
+        $sql = "{$select} {$from}";
+        $countSql = "SELECT COUNT(*) {$from}";
         if ($query) {
-            $sql = "{$sql} AND ({$query})";
-            $countSql = "{$countSql} AND ({$query})";
+            $sql = "{$sql} WHERE ({$query})";
+            $countSql = "{$countSql} WHERE ({$query})";
         }
         $sql = "{$sql} ORDER BY `year` DESC, `term`, `publish_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
             $t = $v["publish_time"];
+            $enrollYear = $v["user_enroll_year"];
             if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
+            if($enrollYear) $arr[$k]["user_enroll_year"] = BasicTool::translateEnrollYear($enrollYear);
         }
         return $arr;
+    }
+
+
+    /**
+    * 获取一页课评
+    * @param parentTitle course code parent title
+    * @param childTitle course code child title
+    * @param pageSize 每页query数量
+    * @return 2维数组
+    */
+    public function getListOfCourseRatingByCourseTitle($pageSize=20,$parentTitle=false,$childTitle=false) {
+        $q = "";
+        if($parentTitle){
+            $q .= "cc2.title='{$parentTitle}'";
+        }
+        if($childTitle){
+            if($parentTitle){
+                $q .= " AND ";
+            }
+            $q .= "cc.title='{$childTitle}'";
+        }
+        return $this->getListOfCourseRating($q,$pageSize);
     }
 
     /**
@@ -219,9 +246,12 @@ class CourseRatingModel extends Model
     * 获取一页科目报告
     * @return 二维数组
     */
-    public function getListOfCourseReports($pageSize=20) {
-        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id";
-        $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id";
+    public function getListOfCourseReports($pageSize=20,$courseParentTitle=false,$courseChildTitle=false) {
+        $q = "";
+        if($courseParentTitle) $q .= " AND c2.title='{$courseParentTitle}'";
+        if($courseChildTitle) $q .= " AND c1.title='{$courseChildTitle}'";
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
+        $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
         $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
         return $arr;
     }
@@ -230,9 +260,11 @@ class CourseRatingModel extends Model
     * 获取一页教授报告
     * @return 二维数组
     */
-    public function getListOfProfessorReports($pageSize=20) {
-        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id";
-        $countSql = "SELECT COUNT(*) FROM professor_report pr, professor p WHERE pr.prof_id=p.id";
+    public function getListOfProfessorReports($pageSize=20,$profName=false) {
+        $q = "";
+        if($profName) $q .= " AND CONCAT(p.firstname, ' ', p.lastname)='{$profName}'";
+        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
+        $countSql = "SELECT COUNT(*) FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
         $arr = parent::getListWithPage("professor_report", $sql, $countSql, $pageSize);
         return $arr;
     }
@@ -241,9 +273,16 @@ class CourseRatingModel extends Model
     * 获取一页科目教授报告
     * @return 二维数组
     */
-    public function getListOfCourseProfessorReports($pageSize=20) {
-        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id";
-        $countSql = "SELECT COUNT(*) FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id";
+    public function getListOfCourseProfessorReports($pageSize=20,$courseId=false,$profId=false) {
+        $query = "";
+        if($courseId) {
+            $query .= " AND cp.course_code_id={$courseId}";
+        }
+        if($profId) {
+            $query .= " AND cp.prof_id={$profId}";
+        }
+        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id{$query}";
+        $countSql = "SELECT COUNT(*) FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id{$query}";
         $arr = parent::getListWithPage("course_prof_report", $sql, $countSql, $pageSize);
         return $arr;
     }
@@ -357,7 +396,7 @@ class CourseRatingModel extends Model
     * @param profId 指定的教授ID
     */
     private function updateReports($courseCodeId, $profId) {
-        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
+        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,1))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
         // Update course_prof_report
         $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
 
@@ -417,6 +456,9 @@ class CourseRatingModel extends Model
             $arr["rating_count"] = $result["sum_rating"] ?: 0;
             if($table=='course_prof_report' || $table=='professor_report') {
                 $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
+            }
+            if($table=='course_prof_report' || $table=='course_report') {
+                $arr["avg_grade"] = $result["avg_grade"] ?: 1;
             }
         }
     }

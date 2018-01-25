@@ -6,8 +6,7 @@ use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
-class ForumModel extends Model
-{
+class ForumModel extends Model {
 
 
     /**
@@ -15,8 +14,7 @@ class ForumModel extends Model
      * @param $date 表中所记录时间
      * v2.0
      */
-    private function resetCountOfToday($today)
-    {
+    private function resetCountOfToday($today) {
         $currentDate = date("Y-m-d");
         //判断今天是否是新的一天
         if ($today != $currentDate) {
@@ -26,8 +24,7 @@ class ForumModel extends Model
     }
 
 
-    public function getIdOfForumOfUserToCommentByUserId($userId)
-    {
+    public function getIdOfForumOfUserToCommentByUserId($userId) {
 
         $sql = "SELECT forum_id FROM forum_comment WHERE user_id = {$userId}";
 
@@ -47,98 +44,32 @@ class ForumModel extends Model
     }
 
 
-    public function getRowOfForumClassById($id)
-    {
+    public function getRowOfForumClassById($id) {
         // id|title|is_del|description|
         $sql = "SELECT f_c.* FROM `forum_class` AS f_c WHERE f_c.id in ({$id})";
         return $this->sqltool->getRowBySql($sql);
     }
 
 
-    public function getOneRowOfForumById($id)
-    {
-        $this->countViewOfForumById($id);
-
-
-        $sql = "SELECT F.*,FC.title AS classTitle, type AS classType FROM (select F.*,u.img,u.alias,u.gender,u.major,u.enroll_year from `forum` as F INNER JOIN `user` as u on F.user_id = u.id WHERE F.id in ({$id})) AS F INNER JOIN forum_class AS FC ON F.forum_class_id = FC.id";
-
-        $arr = $this->sqltool->getRowBySql($sql);
-
-        $currentUser = new UserModel();
-
-        foreach ($arr as $k1 => $v1) {
-
-
-            if ($k1 == "img1") {
-
-                $imgWidth = "";
-                $imgHeight = "";
-                if ($v1 != null) {
-                    $imgSize = getimagesize($_SERVER['DOCUMENT_ROOT'] . $v1);
-                    $imgWidth = $imgSize[0];
-                    $imgHeight = $imgSize[1];
-                }
-
-                $arr['img1Width'] = "{$imgWidth}";
-                $arr['img1Height'] = "{$imgHeight}";
-
-
-            }
-
-            if ($k1 == "time") {
-                $arr[$k1] = BasicTool::translateTime($v1);
-            }
-
-            if ($k1 == "enroll_year") {
-                $arr[$k1] = BasicTool::translateEnrollYear($v1);
-            }
-
-            if ($k1 == "user_id") {
-
-                $arr['editable'] = "no";
-
-                if ($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) {
-
-                    $arr['editable'] = "yes";
-
-                } else {
-
-                    if (v1 == $currentUser->userId) {
-                        $arr['editable'] = "yes";
-                    } else {
-                        $arr['editable'] = "no";
-                    }
-                }
-            }
-        }
-
-        return $arr;
-    }
-
-
-    public function addLikeByForumId($id)
-    {
+    public function addLikeByForumId($id) {
         $sql = "UPDATE forum SET `like`=`like`+1 WHERE id IN ({$id})";
         $this->sqltool->query($sql);
     }
 
-    public function countViewOfForumById($forumId)
-    {
+    public function countViewOfForumById($forumId) {
         $sql = "UPDATE forum SET count_view = count_view+1 WHERE id in ($forumId)";
         $this->sqltool->query($sql);
 
     }
 
     //作弊刷forum阅读量
-    public function countViewCheat()
-    {
+    public function countViewCheat() {
         $sql = "UPDATE forum SET count_view = count_view+20";
         return $this->sqltool->query($sql);
     }
 
 
-    public function echoImage($img)
-    {
+    public function echoImage($img) {
 
         if ($img) {
             echo '<img width="40" src="' . $img . '">';
@@ -152,8 +83,7 @@ class ForumModel extends Model
      * @param $forumId
      * @return bool
      */
-    public function getUserIdOfForumByForumId($forumId)
-    {
+    public function getUserIdOfForumByForumId($forumId) {
 
         if (is_array($forumId)) {
             $forumId = $forumId[0];
@@ -174,8 +104,7 @@ class ForumModel extends Model
      * @param $forumId
      * @return bool
      */
-    public function getUserIdOfForumCommentByCommentId($commentId)
-    {
+    public function getUserIdOfForumCommentByCommentId($commentId) {
 
         if (is_array($commentId)) {
             $commentId = $commentId[0];
@@ -193,8 +122,7 @@ class ForumModel extends Model
     }
 
 
-    public function deleteOneForumById($forumId)
-    {
+    public function deleteOneForumById($forumId) {
 
         $currentUser = new UserModel();
 
@@ -223,8 +151,7 @@ class ForumModel extends Model
     }
 
 
-    public function getForumIdOfCommentId($commentId)
-    {
+    public function getForumIdOfCommentId($commentId) {
 
         $sql = "SELECT forum_id FROM forum_comment WHERE id = $commentId";
         $result = $this->sqltool->getRowBySql($sql);
@@ -237,8 +164,7 @@ class ForumModel extends Model
      * 执行添加和删除操作时, 重新计算留言数量
      * @param $courseNumberId
      */
-    public function updateCountData($forumId)
-    {
+    public function updateCountData($forumId) {
 
         //根据forum的id获取forum class id
         $sql = "SELECT forum_class_id FROM forum WHERE id in ({$forumId})";
@@ -276,8 +202,7 @@ class ForumModel extends Model
      * @param $forumId
      * @return bool
      */
-    public function reportForum($forumId)
-    {
+    public function reportForum($forumId) {
 
         $sql = "UPDATE forum SET report = report + 1 WHERE id = {$forumId}";
         $this->sqltool->query($sql);
@@ -290,8 +215,7 @@ class ForumModel extends Model
 
     }
 
-    public function reportForumComment($forumCommentId)
-    {
+    public function reportForumComment($forumCommentId) {
 
         $sql = "UPDATE forum_comment SET report = report + 1 WHERE id = {$forumCommentId}";
         $this->sqltool->query($sql);
@@ -304,8 +228,7 @@ class ForumModel extends Model
 
     }
 
-    public function reportedForumRestore($forumId)
-    {
+    public function reportedForumRestore($forumId) {
         $sql = "UPDATE forum SET report = 0 WHERE id = {$forumId}";
         $this->sqltool->query($sql);
         if ($this->sqltool->getAffectedRows() > 0) {
@@ -316,8 +239,7 @@ class ForumModel extends Model
         }
     }
 
-    public function reportedForumCommentRestore($forumCommentId)
-    {
+    public function reportedForumCommentRestore($forumCommentId) {
         $sql = "UPDATE forum_comment SET report = 0 WHERE id = {$forumCommentId}";
         $this->sqltool->query($sql);
         if ($this->sqltool->getAffectedRows() > 0) {
@@ -332,8 +254,7 @@ class ForumModel extends Model
      * 获取被举报贴的数量
      * @return int
      */
-    public function getAmountOfReport()
-    {
+    public function getAmountOfReport() {
 
         $sql = "SELECT COUNT(*) as c FROM forum WHERE report > 0";
         $result = $this->sqltool->getRowBySql($sql);
@@ -346,8 +267,7 @@ class ForumModel extends Model
         return $count;
     }
 
-    public function updateForumTime($forumId)
-    {
+    public function updateForumTime($forumId) {
         $time = time();
         $sql = "UPDATE forum SET update_time = {$time} WHERE id in ({$forumId})";
         $this->sqltool->query($sql);
@@ -366,8 +286,7 @@ class ForumModel extends Model
      * @param int $pageSize 每页展示的条数
      * @return array|bool
      */
-    public function getListOfForumClass($displayHidedFormClass)
-    {
+    public function getListOfForumClass($displayHidedFormClass) {
         $table = 'forum_class';
         if ($displayHidedFormClass == true) {
             //显示所有分类,包含隐藏分类
@@ -424,8 +343,7 @@ class ForumModel extends Model
      * @param bool $onlyShowSpecificForumId
      * @return array
      */
-    public function getListOfForumByForumClassId($forum_classId, $pageSize = 20, $onlyShowReportList = false, $onlyShowForumOfUserByUserId = false, $onlyShowSpecificForumId = false)
-    {
+    public function getListOfForumByForumClassId($forum_classId, $pageSize = 20, $onlyShowReportList = false, $onlyShowForumOfUserByUserId = false, $onlyShowSpecificForumId = false) {
 
         $userIsLogin = false;
         $currentUser = new UserModel();
@@ -491,7 +409,7 @@ class ForumModel extends Model
                     if ($k2 == "user_id") {
                         if (($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) || ($v2 == $currentUser->userId)) {
                             $editable = 'yes';
-                        }else{
+                        } else {
                             $editable = 'no';
                         }
                     }
@@ -511,8 +429,7 @@ class ForumModel extends Model
         return $result;
     }
 
-    public function getListOfForumCommentByForumId($forumId, $pageSize = 40, $onlyShowReportList = false)
-    {
+    public function getListOfForumCommentByForumId($forumId, $pageSize = 40, $onlyShowReportList = false) {
         $statisticsModel = new StatisticsModel();
         $statisticsModel->countStatistics(1);
         $currentUser = new UserModel();
@@ -529,7 +446,7 @@ class ForumModel extends Model
         if ($onlyShowReportList == true) {
             $condition .= " AND f_c.report > 0";
         }
-        $sql ="select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
+        $sql = "select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition} ORDER BY time ASC";
         $countSql = "SELECT count(*) FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE {$condition}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id ORDER BY time ASC";
         $arr = parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
@@ -545,7 +462,7 @@ class ForumModel extends Model
                     if ($k2 == "user_id") {
                         if (($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) || ($v2 == $currentUser->userId)) {
                             $editable = "yes";
-                        }else{
+                        } else {
                             $editable = 'no';
                         }
                     }
@@ -557,15 +474,63 @@ class ForumModel extends Model
     }
 
 
-    public function getCommentById($id){
+    public function getCommentById($id) {
         //$sql = "SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}";
-        $sql ="select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
+        $sql = "select f.*,u_c.title as userTitle,u_c.is_admin FROM (SELECT f_c.*,u.img,u.enroll_year,u.major,u.alias,u.gender,u.degree,u.user_class_id FROM `forum_comment` AS f_c INNER JOIN `user` AS u ON f_c.user_id = u.id WHERE f_c.id = {$id}) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id";
         $result = $this->sqltool->getRowBySql($sql);
-        foreach($result as $k => $v){
-            if($k == 'time'){
+        foreach ($result as $k => $v) {
+            if ($k == 'time') {
                 $result[$k] = BasicTool::translateTime($v);
             }
         }
         return $result;
+    }
+
+    /**
+     *
+     * @param $id
+     * @return \一维关联数组
+     */
+    public function getOneRowOfForumById($id) {
+        $this->countViewOfForumById($id);
+        $sql = "SELECT F.*,FC.title AS classTitle, type AS classType FROM (select F.*,u.img,u.alias,u.gender,u.major,u.enroll_year from `forum` as F INNER JOIN `user` as u on F.user_id = u.id WHERE F.id in ({$id})) AS F INNER JOIN forum_class AS FC ON F.forum_class_id = FC.id";
+        $arr = $this->sqltool->getRowBySql($sql);
+        $currentUser = new UserModel();
+        $userIsLogin = $currentUser->isLogin();
+        foreach ($arr as $k1 => $v1) {
+            if ($k1 == "img1") {
+                $imgWidth = "";
+                $imgHeight = "";
+                if ($v1 != null) {
+                    $imgSize = getimagesize($_SERVER['DOCUMENT_ROOT'] . $v1);
+                    $imgWidth = $imgSize[0];
+                    $imgHeight = $imgSize[1];
+                }
+                $arr['img1Width'] = "{$imgWidth}";
+                $arr['img1Height'] = "{$imgHeight}";
+            }
+
+            if ($k1 == "time") {
+                $arr[$k1] = BasicTool::translateTime($v1);
+            }
+
+            if ($k1 == "enroll_year") {
+                $arr[$k1] = BasicTool::translateEnrollYear($v1);
+            }
+
+            if ($k1 == "user_id" && $userIsLogin) {
+                $arr['editable'] = "no";
+                if ($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) {
+                    $arr['editable'] = "yes";
+                } else {
+                    if (v1 == $currentUser->userId) {
+                        $arr['editable'] = "yes";
+                    } else {
+                        $arr['editable'] = "no";
+                    }
+                }
+            }
+        }
+        return $arr;
     }
 }
