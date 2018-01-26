@@ -622,12 +622,14 @@ function updateUser()
  */
 function retrievePasswordByEmailWithJson(){
     try {
+
         $name = BasicTool::post('email',"Email不能为空");
+        BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
         $userCodeModel = new \admin\userCode\UserCodeModel();
         $url = $userCodeModel->generateUserCode($name,"getNewPasswordByEmail");
         $time =date("Y-m-d H:i:s");
         $mailBody = "<p>亲爱的用户:</p><p>您在{$time}进行了密码找回操作</p><p>请点击下面连接，获取新的临时密码，:</p><p>{$url}</p>";
-        BasicTool::mailTo($name,"AtYorkU 密码找回",$mailBody) or BasicTool::throwException("系统错误,请联系官方微信客服号: atyorku666");
+        BasicTool::mailTo($name,"AtYorkU 密码找回",$mailBody) or BasicTool::throwException("密码找回失败,请联系官方微信客服号: atyorku666");
         BasicTool::echoJson(1,"密码找回成功,请到{$name}的邮箱中查询新密码,若5分钟内未收到邮件,请检查你的垃圾邮件. 若持续收不到邮件,请联系官方客服微信号: atyorku666");
     } catch (Exception $e) {
         BasicTool::echoJson(0,$e->getMessage());

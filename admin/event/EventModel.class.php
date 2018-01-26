@@ -73,31 +73,22 @@ class EventModel extends Model
         return $result;
     }
 
-    /**查询一个活动类下的活动
-     * flag=1 查询生效的活动
-     * flag=0 查询未生效的活动
-     * @param int $event_category_id
-     * @param int $flag
-     * @return array 二维数组
+    /**
+     * 查询一个活动类下的活动
+     * @param $event_category_id
+     * @param int $pageSize
+     * @return array    二维数组
      */
-    public function getEventsByCategory($event_category_id,$flag = 1){
-        $currentTime = time();
+    public function getEventsByCategory($event_category_id,$pageSize=20){
         if($event_category_id){
-            $condition = "event_category_id = {$event_category_id} and";
+            $condition = "WHERE event_category_id = {$event_category_id}";
         }else{
             $condition = "";
         }
 
-        if ($flag == 1) {
-            $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
-            $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition} {$currentTime}>event_time and {$currentTime} <expiration_time) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
-            return $this->getListWithPage("event", $sql, $countSql, 20);
-        }
-        else{
-            $sql = "SELECT * FROM event WHERE {$condition} ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
-            $countSql = "SELECT count(*) FROM event WHERE {$condition} ({$currentTime} < event_time or {$currentTime}>expiration_time) ORDER BY sort DESC, event_time DESC";
-            return $this->getListWithPage("event", $sql, $countSql, 20);
-        }
+        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+        return $this->getListWithPage("event", $sql, $countSql, $pageSize);
     }
 
     /**

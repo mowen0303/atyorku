@@ -61,7 +61,7 @@ function addEvent($echoType = "normal"){
         $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location,$location_link, $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
+            BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
         } else {
             BasicTool::echoJson(1, "添加成功");
         }
@@ -105,18 +105,17 @@ function addEventWithJson(){
 
 /**根据分类ID查询一页活动
  * GET
- * @param event_category_id 分类id
- * @param flag 0查询未生效,1查询生效广告
+ * @param event_category_id 分类id 0查询全部
  * @param page 页数
- * localhost/admin/event/eventController.php?action=getEventsByCategory&flag=1&page=1$event_category_id=2
+ * localhost/admin/event/eventController.php?action=getEventsByCategory&event_category_id=2&pageSize=3&page=1
  */
 function getEventsByCategory($echoType="normal")
 {
     global $eventModel;
     try{
         $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
-        $flag = BasicTool::get("flag");
-        $result = $eventModel->getEventsByCategory($event_category_id, $flag) or BasicTool::throwException("查询失败");
+        $pageSize = BasicTool::get("pageSize")?:10;
+        $result = $eventModel->getEventsByCategory($event_category_id,$pageSize) or BasicTool::throwException("查询失败");
         $results = [];
         foreach ($result as $event){
             $event["event_time"] = BasicTool::translateTime($event["event_time"]);
@@ -143,9 +142,8 @@ function getEventsByCategory($echoType="normal")
  * GET
  * JSON接口
  * @param event_category_id 分类id
- * @param flag 0查询未生效,1查询生效广告
  * @param page 页数
- * localhost/admin/event/eventController.php?action=getEventsByCategoryWithJson&flag=1&page=1$event_category_id=2
+ * localhost/admin/event/eventController.php?action=getEventsByCategoryWithJson&event_category_id=2&pageSize=3&page=1
  */
 function getEventsByCategoryWithJson(){
     getEventsByCategory("json");
@@ -326,7 +324,7 @@ function updateEvent($echoType = "normal"){
             $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}&flag=1");
+            BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
         }
         else {
             BasicTool::echoJson(1, "更改成功");

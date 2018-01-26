@@ -5,17 +5,7 @@ $imageModel = new \admin\image\ImageModel();
 
 $event_category_id = BasicTool::get('event_category_id');
 $event_category_title = $eventModel->getEventsByCategory($event_category_id)["title"];
-$flag = BasicTool::get("flag");
-$arr = $eventModel->getEventsByCategory($event_category_id,$flag);
-if($flag == 0){
-   $display_option_0 = "style='display:none'";
-   $display_option_1 = "";
-}
-else{
-    $display_option_0="";
-    $display_option_1 = "style='display:none'";
-}
-
+$arr = $eventModel->getEventsByCategory($event_category_id);
 
 ?>
     <header class="topBox">
@@ -23,8 +13,6 @@ else{
     </header>
     <nav class="mainNav">
         <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
-        <a class="btn" <?php echo $display_option_0 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&flag=0">未生效或过期的活动</a>
-        <a class="btn" <?php echo $display_option_1 ?> href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&flag=1">生效的活动</a>
         <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>">发布新活动</a>
     </nav>
     <article class="mainBox">
