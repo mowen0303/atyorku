@@ -6,6 +6,9 @@ $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
 $courseCodeModel = new \admin\courseCode\CourseCodeModel();
 $professorModel = new \admin\professor\ProfessorModel();
+$transactionModel = new \admin\transaction\TransactionModel();
+$msgModel = new \admin\msg\MsgModel();
+
 call_user_func(BasicTool::get('action'));
 
 //============ Function with JSON ===============//
@@ -153,6 +156,84 @@ function getListOfBooksWithJson($queryType=NULL, $queryValue=NULL) {
 
 
 /**
+ * JSON -  获取某一页二手书
+ * @param pageSize 每一页二手书获取量，默认值=40
+ * @param q $query string 搜索条件
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksWithJsonV2&pageSize=20
+ */
+function getListOfBooksWithJsonV2() {
+    global $bookModel;
+    try {
+        $pageSize = BasicTool::get('pageSize');
+        if(!$pageSize){
+            $pageSize = 40;
+        }
+        $result = false;
+
+        $categoryId = BasicTool::get('book_category_id');
+        $courseParentId = BasicTool::get('course_code_parent_id');
+        $courseChildId = BasicTool::get('course_code_child_id');
+        $year = BasicTool::get('year');
+        $term = BasicTool::get('term');
+        $isEDocument = BasicTool::get('is_e_document');
+        $payWithPoints = BasicTool::get('pay_with_points');
+        $profName = BasicTool::get('prof_name');
+
+        if(!$categoryId && !$courseParentId && !$isEDocument && !$payWithPoints && !$profName && !$year){
+            $result = $bookModel->getListOfBooks($pageSize);
+        } else {
+            $qArr = array_filter(array(
+                'book_category_id'=>intval($categoryId),
+                'c2.id'=>intval($courseParentId),
+                'c1.id'=>intval($courseChildId),
+                'b.term_year'=>intval($year),
+                'b.term_semester'=>$term,
+                "CONCAT(p.firstname, ' ', p.lastname)"=>$profName)
+            );
+
+            if($term){
+                $qArr["b.term_semester"] = "'{$term}'";
+            }
+
+            if($profName){
+                $qArr["CONCAT(p.firstname, ' ', p.lastname)"] = "'{$profName}'";
+            }
+
+            if($payWithPoints==="on"){
+                $qArr["pay_with_points"] = "1";
+            } else if ($payWithPoints==="off"){
+                $qArr["pay_with_points"] = "0";
+            }
+
+            if($isEDocument==="on"){
+                $qArr["is_e_document"] = "1";
+            } else if($isEDocument==="off"){
+                $qArr["is_e_document"] = "0";
+            }
+
+            $q = implode(' AND ', array_map(
+                function ($v, $k) { return sprintf("%s=%s", $k, $v); },
+                $qArr,
+                array_keys($qArr)
+            ));
+
+            $result = $bookModel->getListOfBooks($pageSize,$q);
+        }
+
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+
+}
+
+
+
+/**
 * JSON - 添加或修改一本二手书
 * @param flag 添加or修改 [add/update]
 * @param name 二手书名
@@ -225,6 +306,52 @@ function getImagesByBookIdWithJson() {
     }
 }
 
+
+/**
+* http://www.atyorku.ca/admin/book/bookController.php?action=purchaseBookWithJson&book_id=3
+* 购买一本二手书
+* @param bookId 二手书ID
+* @return JSON
+*/
+function purchaseBookWithJson() {
+    global $bookModel;
+    global $currentUser;
+    global $transactionModel;
+    global $msgModel;
+    try {
+        $bookId = BasicTool::post('book_id','请指定二手书ID');
+        $buyerId = $currentUser->userId;
+        $buyerId or BasicTool::throwException("请先登录");
+        $result = $bookModel->getBookById($bookId);
+        if ($result) {
+            (intval($result["is_available"]) and !intval($result["is_deleted"])) or BasicTool::throwException("二手书已下架");
+            intval($result["pay_with_points"]) or BasicTool::throwException("不支持积分支付");
+            $sellerId = intval($result["user_id"]);
+            $sellerId !== intval($buyerId) or BasicTool::throwException("无法购买自己的产品");
+            $price = floatval($result["price"]);
+            $userCredit = floatval($transactionModel->getCredit($buyerId));
+            $newUserCredit = $userCredit - $price;
+            $newUserCredit >= 0.0 or BasicTool::throwException("用户积分不足 ".$userCredit." ".$price);
+            $buyerDescription = "购买二手书: " . $result["name"] . " ID: " . $result["id"];
+            $sellerDescription = "售出二手书: " . $result["name"] . " ID: " . $result["id"];
+            $elink = $bookModel->getELinkById($bookId);
+            $elink or BasicTool::throwException("电子书链接消失。。");
+            $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription);
+            if ($result) {
+                // TODO: send message to users
+                $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $elink);
+                $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "您的二手书: ".$result["name"]." 已售出");
+                BasicTool::echoJson(1, "购买成功", $result);
+            } else {
+                BasicTool::echoJson(0, '购买失败');
+            }
+        } else {
+            BasicTool::throwException("二手书不存在");
+        }
+    } catch(Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
 
 //=========== END Function with JSON ============//
 

@@ -3,6 +3,7 @@ namespace admin\book;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
+use admin\transaction\TransactionModel as TransactionModel;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
@@ -272,6 +273,11 @@ class BookModel extends Model
             }
         }
         return false;
+    }
+
+    function getELinkById($id){
+        $sql = "SELECT e_link FROM {$this->table} WHERE id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
     }
 
     /**
