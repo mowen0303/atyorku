@@ -250,7 +250,7 @@ class MsgModel extends Model {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         $result = curl_exec($ch);
-        echo $result;
+        //echo $result;
         curl_close($ch);
         $arr = json_decode($result);
         return $arr->success==1?true:false;
