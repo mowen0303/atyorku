@@ -338,7 +338,6 @@ function purchaseBookWithJson() {
             $elink or BasicTool::throwException("电子书链接消失。。");
             $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription);
             if ($result) {
-                // TODO: send message to users
                 $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $elink);
                 $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "您的二手书: ".$result["name"]." 已售出");
                 BasicTool::echoJson(1, "购买成功", $result);
