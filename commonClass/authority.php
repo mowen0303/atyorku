@@ -16,7 +16,6 @@ $_AUT = [
     'FORUM_UPDATE'=>getAuthorityNum(14),
     'FORUM_DELETE'=>getAuthorityNum(15),
     'GUIDE_ADD'=>getAuthorityNum(17),
-    'GUIDE_COMMENT'=>getAuthorityNum(18),
     'GUIDE_UPDATE'=>getAuthorityNum(19),
     'GUIDE_DELETE'=>getAuthorityNum(20),
     'BOOK'=>getAuthorityNum(6),
@@ -26,6 +25,7 @@ $_AUT = [
     'COURSE_RATING'=>getAuthorityNum(22),
     'COURSE_RECALL'=>getAuthorityNum(23),
     'COMMENT'=>getAuthorityNum(24),
+    'TASK_DESIGN'=>getAuthorityNum(18),
 ];
 function getAuthorityNum($int){return pow(2,$int);}
 ?>
