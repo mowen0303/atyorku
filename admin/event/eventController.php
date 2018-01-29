@@ -118,16 +118,16 @@ function getEventsByCategory($echoType = "normal") {
         $pageSize = BasicTool::get("pageSize") ?: 10;
         $result = $eventModel->getEventsByCategory($event_category_id, $pageSize) or BasicTool::throwException("查询失败");
         $currentTime = time();
+//        echo date("Y-m-d H:m:s",time());
+
 
         foreach($result as $key => $item){
-            date_default_timezone_set("America/Toronto");
             if($currentTime<$item['event_time']){
                 //还未开始
-                echo date("Y-m-d h:m:s");
                 $time = $item['event_time']-$currentTime;
-                $day = floor($time/(60*60*24));
-                $hour = floor(($time%(60*60*24))/(60*60));
-                $minute = floor(($time%$day*(60*60))/60);
+                $day = ceil($time/(60*60*24));
+                $hour = ceil(($time%(60*60*24))/(60*60));
+                $minute = ceil(($time%(60*60))/60);
                 $result[$key]['state_code'] = "1";
                 if($day){
                     $result[$key]['state'] = "倒计时:{$day}天";
@@ -136,7 +136,6 @@ function getEventsByCategory($echoType = "normal") {
                 }else{
                     $result[$key]['state'] = "倒计时:{$minute}分钟";
                 }
-
             }else if ($currentTime<$item['expiration_time']){
                 //进行中
                 $result[$key]['state'] = "活动进行中";
