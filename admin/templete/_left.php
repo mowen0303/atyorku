@@ -46,6 +46,8 @@ if(!$userModel->isAdminLogin()){
                 <li><a href="/admin/transaction/index.php" target="mainFrame">积分记录</a ></li>
                 <li><a href="/admin/comment/index.php" target="mainFrame">评论管理</a></li>
 				<li><a href="/admin/msg/index.php" target="mainFrame">小纸条</a></li>
+                <li><a href="/admin/taskTransaction/index.php?s=listTaskTransaction" target="mainFrame">成就记录管理</a></li>
+                <li><a href="/admin/taskDesign/index.php?s=listTaskDesign" target="mainFrame">成就设计管理</a></li>
 			</ul>
 		</article>
 	</section>
