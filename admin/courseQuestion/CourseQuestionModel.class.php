@@ -193,5 +193,32 @@ class CourseQuestionModel extends Model
     function getInsertId(){
         return $this->sqltool->getInsertId();
     }
+
+    /**根据course_code_id和教授id提问数
+     * flag=1查询已解决的提问数
+     * flag=0查询未解决的提问数
+     * 如果prof_id=0则只根据course_code_id查询
+     * @param int $course_code_id
+     * @param int $prof_id 教授id
+     * @param int $flag
+     * @return int
+     */
+    function getQuestionCount($course_code_id, $prof_id, $flag){
+        $condition1 = $course_code_id ? "course_code_id = {$course_code_id}" : "course_code_id > 0";
+        $condition2 = $prof_id ? "AND prof_id = {$prof_id}" : "";
+
+        if ($flag){
+            $sql = "SELECT COUNT(*) AS count FROM course_question WHERE {$condition1} {$condition2} AND solution_id != 0";
+        }
+        else{
+            $sql = "SELECT COUNT(*) AS count FROM course_question WHERE {$condition1} {$condition2} AND solution_id = 0";
+        }
+        return $this->sqltool->getRowBySql($sql);
+    }
+    //添加浏览量
+    function addViewById($id){
+        $sql = "UPDATE course_question SET `count_views`=`count_views`+1 WHERE id IN ({$id})";
+        $this->sqltool->query($sql);
+    }
 }
 ?>

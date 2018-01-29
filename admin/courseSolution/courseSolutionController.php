@@ -129,7 +129,6 @@ function getApprovedSolutionByQuestionIdWithJson(){
     $question_id = BasicTool::get("question_id","请指定question_id");
     $result = $solutionModel->getApprovedSolutionByQuestionId($question_id);
     if ($result){
-        $result["time_approved"] = BasicTool::translateTime($result["time_approved"]);
         $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
         $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
         $result["img_urls"] = [];

@@ -20,6 +20,7 @@ function getQuestionByIdWithJson(){
         $question_id = BasicTool::get("question_id","Require question_id");
         $question = $questionModel->getQuestionById($question_id);
         $question or BasicTool::throwException("提问不存在");
+        $questionModel->addViewById($question_id);
         $question["img_urls"] = [];
         !$question["img_id_1"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_1"])["url"]);
         !$question["img_id_2"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_2"])["url"]);
@@ -54,11 +55,18 @@ function addQuestion($echoType = "normal"){
         //权限验证
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("GOD")) || $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足");
         //验证fields
-        $courseCodeParent = BasicTool::post("courseCodeParent","courseCodeParent 不能为空");
-        $courseCodeChild = BasicTool::post("courseCodeChild","courseCodeChild 不能为空");
-        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($courseCodeParent,$courseCodeChild);
-        $prof_name = BasicTool::post("prof_name","Missing prof_name");
-        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
+        if ($echoType == "json")
+        {
+            $courseCodeParent = BasicTool::post("courseCodeParent","courseCodeParent 不能为空");
+            $courseCodeChild = BasicTool::post("courseCodeChild","courseCodeChild 不能为空");
+            $course_code_id = $courseCodeModel->getCourseIdByCourseCode($courseCodeParent,$courseCodeChild);
+            $prof_name = BasicTool::post("prof_name","Missing prof_name");
+            $prof_id = $profModel->getProfessorIdByFullName($prof_name);
+        }
+        else{
+            $course_code_id = BasicTool::post("course_code_id","course_code_id missing");
+            $prof_id = BasicTool::post("prof_id","missing prof_id");
+        }
         $questioner_user_id = $currentUser->userId;
         $description = BasicTool::post("description","Missing Description");
         $reward_amount=BasicTool::post("reward_amount","Missing reward_amount");
@@ -340,7 +348,7 @@ function getQuestionsByCourseCodeIdWithJson(){
 /**根据course_code_id和prof_id查询一页提问
  * GET,JSON接口
  * @param course_code_id
- * @param prof_id
+ * @param prof_name
  * @param flag 0=为解决的提问，1=已解决的提问
  * @param page 页数
  * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdProfNameWithJson&page=1&flag=1&course_code_id=1&prof_name=1
@@ -362,6 +370,31 @@ function getQuestionsByCourseCodeIdProfNameWithJson(){
             array_push($results,$question);
             }
             BasicTool::echoJson(1,"查询成功",$results);
+        }
+        else
+            BasicTool::echoJson(0,"空");
+    }
+    catch (Exception $e){
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+/**根据course_code_id和prof_id查询提问量
+ * GET,JSON接口
+ * @param course_code_id
+ * @param prof_name
+ * @param flag 0=为解决的提问，1=已解决的提问
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionCountWithJson&flag=1&course_code_id=1&prof_name=fdsa
+ */
+function getQuestionCountWithJson(){
+    global $questionModel,$profModel;
+    try{
+        $flag = BasicTool::get("flag");
+        $course_code_id = BasicTool::get("course_code_id");
+        $prof_name = BasicTool::get("prof_name");
+        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
+        $result = $questionModel->getQuestionCount($course_code_id,$prof_id,$flag);
+        if ($result){
+            BasicTool::echoJson(1,"查询成功",$result);
         }
         else
             BasicTool::echoJson(0,"空");
