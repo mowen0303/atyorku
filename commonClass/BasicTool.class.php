@@ -321,6 +321,15 @@ class BasicTool
         return true;
     }
 
+    //将html时间转成php时间戳
+    //2018-01-29T01:01:00 (HTML时间戳)
+    static function translateHTMLTimeToPHPStaple($htmlTime){
+        $timeArr = explode("T",$htmlTime);
+        $ymdArr = explode("-",$timeArr[0]);
+        $hms = explode(":",$timeArr[1]);
+        return mktime($hms[0],$hms[1],$hms[2],$ymdArr[1],$ymdArr[2],$ymdArr[0]);
+    }
+
 }
 
 

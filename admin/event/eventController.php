@@ -4,6 +4,7 @@ $eventModel = new admin\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $commentModel = new \admin\comment\CommentModel();
+date_default_timezone_set("America/Toronto");
 call_user_func(BasicTool::get('action'));
 
 
@@ -28,7 +29,7 @@ call_user_func(BasicTool::get('action'));
  * @param img_id_3
  * localhost/admin/event/eventController.php?action=addEvent
  */
-function addEvent($echoType = "normal"){
+function addEvent($echoType = "normal") {
     global $eventModel;
     global $currentUser;
     global $imageModel;
@@ -52,26 +53,27 @@ function addEvent($echoType = "normal"){
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
+
+        $event_time = BasicTool::translateHTMLTimeToPHPStaple($event_time);
+        $expiration_time = BasicTool::translateHTMLTimeToPHPStaple($expiration_time);
+
         $sort = BasicTool::post("sort");
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
-
-        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
+        $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
         $currImgArr = false;
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
-        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location,$location_link, $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("添加失败");
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
+        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link, $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("添加成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
+            BasicTool::echoMessage("添加成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
         } else {
             BasicTool::echoJson(1, "添加成功");
         }
-    }
-    catch (Exception $e){
-        if ($echoType == "normal"){
-            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
-        }
-        else{
-            BasicTool::echoJson(0,$e->getMessage());
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
         }
     }
 }
@@ -99,7 +101,7 @@ function addEvent($echoType = "normal"){
  * @param img_id_3
  * localhost/admin/event/eventController.php?action=addEventWithJson
  */
-function addEventWithJson(){
+function addEventWithJson() {
     addEvent("json");
 }
 
@@ -109,35 +111,60 @@ function addEventWithJson(){
  * @param page 页数
  * localhost/admin/event/eventController.php?action=getEventsByCategory&event_category_id=2&pageSize=3&page=1
  */
-function getEventsByCategory($echoType="normal")
-{
+function getEventsByCategory($echoType = "normal") {
     global $eventModel;
-    try{
+    try {
         $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
-        $pageSize = BasicTool::get("pageSize")?:10;
-        $result = $eventModel->getEventsByCategory($event_category_id,$pageSize) or BasicTool::throwException("查询失败");
-        $results = [];
-        foreach ($result as $event){
-            $event["event_time"] = BasicTool::translateTime($event["event_time"]);
-            array_push($results,$event);
+        $pageSize = BasicTool::get("pageSize") ?: 10;
+        $result = $eventModel->getEventsByCategory($event_category_id, $pageSize) or BasicTool::throwException("查询失败");
+        $currentTime = time();
+
+        foreach($result as $key => $item){
+            date_default_timezone_set("America/Toronto");
+            if($currentTime<$item['event_time']){
+                //还未开始
+                echo date("Y-m-d h:m:s");
+                $time = $item['event_time']-$currentTime;
+                $day = floor($time/(60*60*24));
+                $hour = floor(($time%(60*60*24))/(60*60));
+                $minute = floor(($time%$day*(60*60))/60);
+                $result[$key]['state_code'] = "1";
+                if($day){
+                    $result[$key]['state'] = "倒计时:{$day}天";
+                }else if($hour){
+                    $result[$key]['state'] = "倒计时:{$hour}小时";
+                }else{
+                    $result[$key]['state'] = "倒计时:{$minute}分钟";
+                }
+
+            }else if ($currentTime<$item['expiration_time']){
+                //进行中
+                $result[$key]['state'] = "活动进行中";
+                $result[$key]['state_code'] = "2";
+            }else{
+                //已结束
+                $result[$key]['state'] = "活动已结束";
+                $result[$key]['state_code'] = "0";
+            }
+            $result[$key]['event_time'] = date("Y-m-d H:i",$item['event_time']);
+            $result[$key]['expiration_time'] = date("Y-m-d H:i",$item['expiration_time']);
+            $result[$key]['publish_time'] = date("Y-m-d H:i",$item['publish_time']);
+
         }
         if ($echoType == "normal") {
             BasicTool::echoMessage("查询成功");
+        } else {
+            BasicTool::echoJson(1, "查询成功", $result);
         }
-        else
-        {
-            BasicTool::echoJson(1, "查询成功",$results);
-        }
-    }
-    catch (Exception $e){
-        if ($echoType == "normal"){
-            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
-        }
-        else{
-            BasicTool::echoJson(0,$e->getMessage());
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
         }
     }
 }
+
 /**根据分类ID查询一页活动
  * GET
  * JSON接口
@@ -145,7 +172,7 @@ function getEventsByCategory($echoType="normal")
  * @param page 页数
  * localhost/admin/event/eventController.php?action=getEventsByCategoryWithJson&event_category_id=2&pageSize=3&page=1
  */
-function getEventsByCategoryWithJson(){
+function getEventsByCategoryWithJson() {
     getEventsByCategory("json");
 }
 
@@ -154,7 +181,7 @@ function getEventsByCategoryWithJson(){
  * @param id int或者一维数组
  *  localhost/admin/event/eventController.php?action=deleteEvent
  */
-function deleteEvent($echoType="normal"){
+function deleteEvent($echoType = "normal") {
     global $eventModel;
     global $currentUser;
     global $commentModel;
@@ -195,8 +222,7 @@ function deleteEvent($echoType="normal"){
                 }
             }
 
-        }
-        else {
+        } else {
             $event = $eventModel->getEvent($id);
             $img_ids = array();
             if ($event["img_id_1"]) {
@@ -226,30 +252,28 @@ function deleteEvent($echoType="normal"){
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("删除成功");
-        }
-        else
-        {
+        } else {
             BasicTool::echoJson(1, "删除成功");
         }
-    }
-    catch (Exception $e){
-        if ($echoType == "normal"){
-            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
-        }
-        else{
-            BasicTool::echoJson(0,$e->getMessage());
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
         }
     }
 }
+
 /**根据活动ID删除活动
  * POST
  * JSON接口
  * @param id int或者一维数组
  *  localhost/admin/event/eventController.php?action=deleteEventWithJson
  */
-function deleteEventWithJson(){
+function deleteEventWithJson() {
     deleteEvent("json");
 }
+
 /**更改活动
  * POST
  * @param id 活动ID
@@ -272,14 +296,14 @@ function deleteEventWithJson(){
  * @param img_id_3
  *  localhost/admin/event/eventController.php?action=updateEvent
  */
-function updateEvent($echoType = "normal"){
+function updateEvent($echoType = "normal") {
     global $eventModel;
     global $currentUser;
     global $imageModel;
-    $id = BasicTool::post("id","必须填写id");
+    $id = BasicTool::post("id", "必须填写id");
     try {
         //判断权限
-        if(!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))){
+        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))) {
             $sponsor_user_id = $eventModel->getEvent($id)["sponsor_user_id"];
             $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,更改失败");
         }
@@ -303,42 +327,44 @@ function updateEvent($echoType = "normal"){
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
         $sort = BasicTool::post("sort");
+
+        $event_time = BasicTool::translateHTMLTimeToPHPStaple($event_time);
+        $expiration_time = BasicTool::translateHTMLTimeToPHPStaple($expiration_time);
+
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
 
         $event = $eventModel->getEvent($id);
         $event or BasicTool::throwException("event_id不存在");
-        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
-        if ($event["img_id_1"] == 0){
+        $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
+        if ($event["img_id_1"] == 0) {
             $event["img_id_1"] = NULL;
         }
-        if ($event["img_id_2"] == 0){
+        if ($event["img_id_2"] == 0) {
             $event["img_id_2"] = NULL;
         }
-        if ($event["img_id_3"] == 0){
+        if ($event["img_id_3"] == 0) {
             $event["img_id_3"] = NULL;
         }
-        $currImgArr = array($event["img_id_1"],$event["img_id_2"],$event["img_id_3"]);
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"event");
+        $currImgArr = array($event["img_id_1"], $event["img_id_2"], $event["img_id_3"]);
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
 
-        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location,$location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone,$sort) or BasicTool::throwException("更改失败");
+        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link,
+            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("更改成功","index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
-        }
-        else {
+            BasicTool::echoMessage("更改成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
+        } else {
             BasicTool::echoJson(1, "更改成功");
         }
-    }
-    catch (Exception $e){
-        if ($echoType == "normal"){
-            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
-        }
-        else{
-            BasicTool::echoJson(0,$e->getMessage());
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
         }
     }
 }
+
 /**更改活动
  * POST
  * JSON接口
@@ -362,38 +388,27 @@ function updateEvent($echoType = "normal"){
  * @param img_id_3
  *  localhost/admin/event/eventController.php?action=updateEventWithJson
  */
-function updateEventWithJson(){
-   updateEvent("json");
+function updateEventWithJson() {
+    updateEvent("json");
 
 }
 
-function delete($path)
-{
-    if (is_dir($path) === true)
-    {
+function delete($path) {
+    if (is_dir($path) === true) {
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
 
-        foreach ($files as $file)
-        {
-            if (in_array($file->getBasename(), array('.', '..')) !== true)
-            {
-                if ($file->isDir() === true)
-                {
+        foreach ($files as $file) {
+            if (in_array($file->getBasename(), array('.', '..')) !== true) {
+                if ($file->isDir() === true) {
                     rmdir($file->getPathName());
-                }
-
-                else if (($file->isFile() === true) || ($file->isLink() === true))
-                {
+                } else if (($file->isFile() === true) || ($file->isLink() === true)) {
                     unlink($file->getPathname());
                 }
             }
         }
 
         return rmdir($path);
-    }
-
-    else if ((is_file($path) === true) || (is_link($path) === true))
-    {
+    } else if ((is_file($path) === true) || (is_link($path) === true)) {
         return unlink($path);
     }
 

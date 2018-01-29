@@ -3,6 +3,7 @@ namespace admin\book;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
+use admin\transaction\TransactionModel as TransactionModel;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
@@ -70,7 +71,7 @@ class BookModel extends Model
     */
     public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true) {
         $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
-        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON b.user_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
         $where = "WHERE NOT b.is_deleted";
         if($availableOnly){
             $where .= " AND b.is_available";
@@ -272,6 +273,11 @@ class BookModel extends Model
             }
         }
         return false;
+    }
+
+    function getELinkById($id){
+        $sql = "SELECT e_link FROM {$this->table} WHERE id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
     }
 
     /**
