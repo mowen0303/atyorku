@@ -19,7 +19,7 @@ function addSolution($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
         //权限验证
-        ($currentUser->isUserHasAuthority("ADMIN") ||  $currentUser->isUserHasAuthority("COURSE_SOLUTION")) or BasicTool::throwException("权限不足");
+        ($currentUser->isUserHasAuthority("ADMIN") ||  $currentUser->isUserHasAuthority("COURSE_QUESTION")) or BasicTool::throwException("权限不足");
 
         $question_id= BasicTool::post("question_id","missing q_id");
         $answerer_user_id = $currentUser->userId;
