@@ -2,6 +2,7 @@
 namespace admin\taskTransaction;   //-- 注意 --//
 use admin\user\UserModel;
 use admin\taskDesign\TaskDesignModel;
+use admin\transaction\TransactionModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -123,10 +124,12 @@ class TaskTransactionModel extends Model
         $taskId = intval($taskId);
         $result = $this->getListOfAvailableTaskDesignsByUserId($userId);
         $bool = false;
+        $task = null;
         if($result){
             foreach ($result as $v) {
                 if($v['id'] && intval($v['id'])===intval($taskId)){
                     $bool = true;
+                    $task = $v;
                     break;
                 }
             }
@@ -138,6 +141,10 @@ class TaskTransactionModel extends Model
             $arr['task_design_id'] = intval($taskId);
             $arr['time'] = time();
             $bool = parent::addRow("task_received",$arr);
+            if($bool){
+                $transactionModel = new TransactionModel();
+                $transactionModel->addCredit($userId,$task['bonus'],"成就奖励: ".$task['title']);
+            }
         }
 
         return $bool;
