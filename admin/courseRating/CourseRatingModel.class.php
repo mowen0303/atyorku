@@ -463,6 +463,17 @@ class CourseRatingModel extends Model
         }
     }
 
+
+    public function updateAllReports(){
+        $sql = "SELECT cr.course_code_id, cr.prof_id FROM course_rating cr GROUP BY cr.course_code_id, cr.prof_id";
+        $result = $this->sqltool->query($sql);
+        if($result){
+            foreach($result as $row){
+                $this->updateReports($row['course_code_id'],$row['prof_id']);
+            }
+        }
+    }
+
 }
 
 
