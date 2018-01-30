@@ -1,12 +1,15 @@
 <?php
 $taskTransactionModel = new \admin\taskTransaction\TaskTransactionModel();
 $userModel = new \admin\user\UserModel();
+$userId = BasicTool::get("user_id");
 ?>
 <header class="topBox">
     <h1>成就总结</h1>
 </header>
 <nav class="mainNav">
     <a class="btn" href="index.php?s=listTaskTransaction">返回</a>
+    <a class="btn" href="index.php?s=listTaskObtained&user_id=<?php echo $userId ?>">已领取的成就</a>
+    <a class="btn" href="index.php?s=listTaskNotObtained&user_id=<?php echo $userId ?>">未领取的成就</a>
 </nav>
 <article class="mainBox">
     <header><h2>成就交易总结</h2></header>
@@ -19,7 +22,7 @@ $userModel = new \admin\user\UserModel();
         </thead>
         <tbody>
         <?php
-        $arr = $taskTransactionModel->getSummaryOfTaskTransactionsByUserId(BasicTool::get('user_id'));
+        $arr = $taskTransactionModel->getSummaryOfTaskTransactionsByUserId($userId);
         foreach($arr as $k=>$v){
             ?>
             <tr>

@@ -36,6 +36,14 @@ function getMyTaskTransactionSummaryWithJson(){
 }
 
 
+function getListOfAvailableTaskDesignsWithJson(){
+    getListOfAvailableTaskDesigns("json");
+}
+
+function obtainTaskDesignByIdWithJson(){
+    obtainTaskDesign("json");
+}
+
 /************** END JSON API *************/
 
 /**
@@ -84,9 +92,9 @@ function getListOfMyTaskTransactions($echoType="normal"){
         $result = $taskTransactionModel->getListOfTaskTransactionsByUserId($userId,$q,$pageSize);
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("添加成功",$_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功",$_SERVER['HTTP_REFERER']);
         } else {
-            BasicTool::echoJson(1,"添加成功",$result);
+            BasicTool::echoJson(1,"成功",$result);
         }
     }catch(Exception $e){
         if ($echoType == "normal") {
@@ -109,9 +117,9 @@ function getMyTaskTransactionSummary($echoType="normal"){
         $result = $taskTransactionModel->getSummaryOfTaskTransactionsByUserId($userId);
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("添加成功",$_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功",$_SERVER['HTTP_REFERER']);
         } else {
-            BasicTool::echoJson(1,"添加成功",$result);
+            BasicTool::echoJson(1,"成功",$result);
         }
     }catch(Exception $e){
         if ($echoType == "normal") {
@@ -156,5 +164,61 @@ function deleteTaskTransaction($echoType = "normal") {
     }
 }
 
+
+/************** Task Received ***************/
+
+function getListOfAvailableTaskDesigns($echoType="normal"){
+    global $taskTransactionModel;
+    global $currentUser;
+    try {
+        $currentUserId = $currentUser->userId or BasicTool::throwException("请先登录");
+        $userId = BasicTool::get("user_id");
+        if(intval($userId)!==intval($currentUserId) && !$currentUser->isUserHasAuthority("ADMIN")){
+            BasicTool::throwException("无权限");
+        }
+        $userId = $userId ?: $currentUserId;
+        $result = $taskTransactionModel->getListOfAvailableTaskDesignsByUserId($userId);
+
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, $result);
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+function obtainTaskDesign($echoType="normal"){
+    global $taskTransactionModel;
+    global $currentUser;
+    try {
+        $currentUserId = $currentUser->userId or BasicTool::throwException("请先登录");
+        $userId = BasicTool::post("user_id");
+        if(intval($userId)!==intval($currentUserId) && !$currentUser->isUserHasAuthority("ADMIN")){
+            BasicTool::throwException("无权限");
+        }
+        $userId = $userId ?: $currentUserId;
+
+        $taskId = BasicTool::post("task_id",'成就ID不能为空');
+        $result = $taskTransactionModel->obtainTaskDesign($userId,$taskId);
+
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, $result);
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
 
 

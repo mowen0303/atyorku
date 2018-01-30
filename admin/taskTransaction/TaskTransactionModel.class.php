@@ -1,6 +1,7 @@
 <?php
 namespace admin\taskTransaction;   //-- 注意 --//
 use admin\user\UserModel;
+use admin\taskDesign\TaskDesignModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -84,6 +85,77 @@ class TaskTransactionModel extends Model
             }
         }
         return $arr;
+    }
+
+    /**
+     * 返回指定用户可以获取的所有成就设计
+     * @param $userId
+     * @return array
+     * @throws Exception
+     */
+    public function getListOfAvailableTaskDesignsByUserId($userId){
+        $result = $this->getSummaryOfTaskTransactionsByUserId($userId) or BasicTool::throwException("获取用户成就失败");
+
+        // current user task summary
+        $book = $result['book']['total'] ?: 0;
+        $courseRating = $result['course_rating']['total'] ?: 0;
+        $courseQuestion = $result['course_question']['total'] ?: 0;
+        $forum = $result['forum']['total'] ?: 0;
+        $knowledge = $result['knowledge']['total'] ?: 0;
+
+        $select = "SELECT td.*, img.url AS icon_url FROM task_design td LEFT JOIN image img ON td.icon_id=img.id";
+        $received = "SELECT task_design_id FROM task_received WHERE user_id={$userId}";
+        $achieved = "book<={$book} AND course_rating<={$courseRating} AND course_question<={$courseQuestion} AND forum<={$forum} AND knowledge<={$knowledge}";
+        $sql = "{$select} WHERE {$achieved} AND td.id NOT IN ({$received})";
+        return $this->sqltool->getListBySql($sql);
+    }
+
+
+    /**
+     * 指定一个用户获得一个成就设计
+     * @param $userId
+     * @param $taskId
+     * @return bool
+     * @throws Exception
+     */
+    public function obtainTaskDesign($userId,$taskId){
+        $userId = intval($userId);
+        $taskId = intval($taskId);
+        $result = $this->getListOfAvailableTaskDesignsByUserId($userId);
+        $bool = false;
+        if($result){
+            foreach ($result as $v) {
+                if($v['id'] && intval($v['id'])===intval($taskId)){
+                    $bool = true;
+                    break;
+                }
+            }
+        }
+
+        if($bool) {
+            $arr = [];
+            $arr['user_id'] = intval($userId);
+            $arr['task_design_id'] = intval($taskId);
+            $arr['time'] = time();
+            $bool = parent::addRow("task_received",$arr);
+        }
+
+        return $bool;
+    }
+
+    /**
+     * @param $userId
+     * @return array
+     * @throws Exception
+     */
+    public function getListOfReceivedTaskDesignByUserId($userId){
+        $userId = intval($userId) or BasicTool::throwException("请先登录");
+        $currentUser = new UserModel();
+        if($currentUser->userId!==intval($userId) && !$currentUser->isUserHasAuthority("ADMIN")){
+            BasicTool::throwException("无权限查看他人成就总结");
+        }
+        $sql = "SELECT td.*, img.url AS icon_url FROM task_received tr INNER JOIN task_design td ON tr.task_design_id=td.id LEFT JOIN image img ON td.icon_id=img.id WHERE tr.user_id={$userId}";
+        return $this->sqltool->getListBySql($sql);
     }
 
 
