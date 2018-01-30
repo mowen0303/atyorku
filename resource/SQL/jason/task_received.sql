@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 29, 2018 at 02:16 PM
+-- Generation Time: Jan 30, 2018 at 03:13 AM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -43,8 +43,19 @@ CREATE TABLE `task_received` (
 -- Indexes for table `task_received`
 --
 ALTER TABLE `task_received`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_task_received_user_id` (`user_id`),
   ADD KEY `fk_task_received_task_design_id` (`task_design_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `task_received`
+--
+ALTER TABLE `task_received`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
