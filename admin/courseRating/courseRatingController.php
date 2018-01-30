@@ -294,47 +294,6 @@ function getListOfProfReportWithJson() {
     }
 }
 
-// /**
-//  * JSON -  获取某一页科目教授报告 (Note: 提供教授名 或/和 科目名 来获取对应科目报告列表, 教授报告列表)
-//  * @param pageSize 每一页科目教授报告获取量，默认值=20
-//  * @param prof_name 可以指定一个教授名
-//  * @param course_code_parent_title 可以指定一个科目类别Title
-//  * @param course_code_child_title 可以指定一个科目编号Title
-//  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseProfReportByTitlesWithJson&pageSize=20&prof_name=jason%20wang&course_code_parent_title=EECS&course_code_child_title=2300
-//  */
-// function getListOfCourseProfReportByTitlesWithJson() {
-//     global $courseRatingModel;
-//     global $courseCodeModel;
-//     global $professorModel;
-//
-//     try {
-//         $pageSize = BasicTool::get('pageSize') ?: 20;
-//         $profId = false;
-//         $profName = BasicTool::post("prof_name");
-//         if($profName){
-//             $profId = $professorModel->getProfessorIdByFullName($profName);
-//             $profId or BasicTool::throwException("教授名称格式错误");
-//         }
-//         $courseCodeId = false;
-//         $parentCode = BasicTool::post("course_code_parent_title");
-//         $childCode = BasicTool::post("course_code_child_title");
-//         if($parentCode && $childCode) {
-//             $courseCodeId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode);
-//             $courseCodeId or BasicTool::throwException("未找到指定科目");
-//         }
-//
-//         $result = $courseRatingModel->getListOfCourseProfessorReports($pageSize,$courseCodeId,$profId);
-//
-//         if ($result) {
-//             BasicTool::echoJson(1, "成功", $result);
-//         } else {
-//             BasicTool::echoJson(0, "没有更多内容");
-//         }
-//     } catch(Exception $e) {
-//         BasicTool::echoJson(0,$e->getMessage());
-//     }
-// }
-
 
 /**
  * JSON -  获取某一页科目教授报告
@@ -361,49 +320,6 @@ function getListOfCourseProfReportWithJson() {
         BasicTool::echoJson(0,$e->getMessage());
     }
 }
-
-
-// /**
-//  * JSON -  获取某一科目(父类或子类)Id
-//  * @param parentTitle 可以指定一个科目类别Title
-//  * @param childTitle 可以指定一个科目编号Title (选填)
-//  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseCodeIdByTitleWithJson&course_code_parent_title=1&course_code_child_title=5
-//  */
-// function getCourseCodeIdByTitleWithJson($parentTitle, $childTitle) {
-//     global $courseCodeModel;
-//     try {
-//         $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
-//         $courseCodeId = 0;
-//         if($childTitle){
-//             $childCode = BasicTool::post("course_code_child_title", "子类课评不能为空");
-//             $courseCodeId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode);
-//         } else {
-//             $courseCodeId = $courseCodeModel->getCourseParentIdByCourseCode($parentCode);
-//         }
-//
-//         $courseCodeId or BasicTool::throwException("未找到指定科目Id");
-//     } catch(Exception $e) {
-//         BasicTool::echoJson(0,$e->getMessage());
-//     }
-// }
-//
-// /**
-//  * JSON -  获取某一教授Id
-//  * @param name 教授名称
-//  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getProfessorIdByNameWithJson&prof_name=Jason%20Wang
-//  */
-// function getProfessorIdByNameWithJson($name) {
-//     global $professorModel;
-//     try {
-//         $profName = BasicTool::post("prof_name", "教授名称不能为空");
-//         $profId = $professorModel->getProfessorIdByFullName($profName);
-//         $profId or BasicTool::throwException("教授名称格式错误");
-//     } catch(Exception $e) {
-//         BasicTool::echoJson(0,$e->getMessage());
-//     }
-// }
-
-
 
 // =============== End Function with JSON ================= //
 
@@ -630,5 +546,29 @@ function deleteCourseProfessorReport($echoType="normal") {
         } else {
             BasicTool::echoJson(0, $e->getMessage());
         }
+    }
+}
+
+
+function updateAllReports(){
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("权限不足");
+        $result = $courseRatingModel->updateAllReports();
+        $response = "# update = {$result['total']};  # succeed = {$result['succeed']};  # failed = {$result['failed']}\n";
+        if(intval($result['failed'])>0){
+            $response.="Log: \n";
+            foreach($result['log'] as $row){
+                $response.="courseCodeId={$row['course_code_id']};  profId={$row['prof_id']}\n";
+                foreach($row as $k=>$v){
+                    $response.="{$k}: {$v}\n";
+                }
+            }
+        }
+        BasicTool::echoMessage($response, $_SERVER['HTTP_REFERER']);
+    } catch(Exception $e){
+        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
     }
 }

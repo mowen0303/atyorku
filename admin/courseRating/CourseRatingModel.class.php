@@ -1,6 +1,5 @@
 <?php
 namespace admin\courseRating;   //-- 注意 --//
-use admin\statistics\StatisticsModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -149,7 +148,7 @@ class CourseRatingModel extends Model
         $arr["recommendation"] = $recommendation;
         $arr["year"] = $year;
         $arr["term"] = $term;
-        $bool;
+        $bool = false;
         if($flag=='add') {
             $arr["publish_time"] = time();
             $bool = $this->addRow($this->table, $arr);
@@ -391,56 +390,76 @@ class CourseRatingModel extends Model
     }
 
     /**
-    * 更新报告 (指定科目ID和教授ID)
-    * @param courseCodeId 指定的科目ID
-    * @param profId 指定的教授ID
-    */
+     * 更新报告 (指定科目ID和教授ID)
+     * @param $courseCodeId 指定的科目ID
+     * @param $profId 指定的教授ID
+     * @return array|bool 返回true如果成功, 失败则返回 [course_code_id=>[[course code id]], prof_id=>[[professor id]], log=>[[ error stack]]]
+     */
     private function updateReports($courseCodeId, $profId) {
+        $errorStack = array("course_code_id"=>$courseCodeId,"prof_id"=>$profId,"log"=>array());
         $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,1))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
         // Update course_prof_report
         $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
 
         $result = $this->sqltool->getRowBySql($sql);
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_prof_report: ".$this->errorMsg);}
+
         $arr = array("course_code_id"=>$courseCodeId, "prof_id"=>$profId);
         $this->parseUpdateReportArray($result, $arr, 'course_prof_report');
 
         $sql = "SELECT * FROM course_prof_report WHERE course_code_id={$courseCodeId} AND prof_id={$profId}";
         $courseProfReport = $this->sqltool->getRowBySql($sql);
+        $result = null;
         if($courseProfReport){
-            parent::updateRowById("course_prof_report", $courseProfReport["id"], $arr);
+            $result = parent::updateRowById("course_prof_report", $courseProfReport["id"], $arr);
         } else {
-            parent::addRow("course_prof_report", $arr);
+            $result = parent::addRow("course_prof_report", $arr);
         }
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_prof_report: ".$this->errorMsg);}
 
 
         // Update course_report
         $sql = "{$querySql} cr.course_code_id={$courseCodeId}";
 
         $result = $this->sqltool->getRowBySql($sql);
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_report: ".$this->errorMsg);}
+
         $arr = array("course_code_id"=>$courseCodeId);
         $this->parseUpdateReportArray($result, $arr, 'course_report');
 
         $sql = "SELECT * FROM course_report WHERE course_code_id={$courseCodeId}";
         $courseReport = $this->sqltool->getRowBySql($sql);
+        $result = null;
         if($courseReport){
-            parent::updateRowById("course_report", $courseReport["id"], $arr);
+            $result = parent::updateRowById("course_report", $courseReport["id"], $arr);
         } else {
-            parent::addRow("course_report", $arr);
+            $result = parent::addRow("course_report", $arr);
         }
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_report: ".$this->errorMsg);}
 
         // Update professor_report
         $sql = "{$querySql} cr.prof_id={$profId}";
 
         $result = $this->sqltool->getRowBySql($sql);
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for prof_report: ".$this->errorMsg);}
+
         $arr = array("prof_id"=>$profId);
         $this->parseUpdateReportArray($result, $arr, 'professor_report');
 
         $sql = "SELECT * FROM professor_report WHERE prof_id={$profId}";
         $profReport = $this->sqltool->getRowBySql($sql);
+        $result = null;
         if($profReport){
-            parent::updateRowById("professor_report", $profReport["id"], $arr);
+            $result = parent::updateRowById("professor_report", $profReport["id"], $arr);
         } else {
-            parent::addRow("professor_report", $arr);
+            $result = parent::addRow("professor_report", $arr);
+        }
+        if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update prof_report: ".$this->errorMsg);}
+
+        if(sizeof($errorStack['log'])===0){
+            return true;
+        }else{
+            return $errorStack;
         }
     }
 
@@ -464,13 +483,29 @@ class CourseRatingModel extends Model
     }
 
 
+    /**
+     * 更新全部报告
+     * @return array
+     * @throws Exception
+     */
     public function updateAllReports(){
         $sql = "SELECT cr.course_code_id, cr.prof_id FROM course_rating cr GROUP BY cr.course_code_id, cr.prof_id";
         $result = $this->sqltool->query($sql);
         if($result){
+            $log = [];
+            $count = mysqli_num_rows($result);
+            $succeed = 0;
             foreach($result as $row){
-                $this->updateReports($row['course_code_id'],$row['prof_id']);
+                $result = $this->updateReports($row['course_code_id'],$row['prof_id']);
+                if($result===true){
+                    $succeed += 1;
+                }else {
+                    array_push($log, $result);
+                }
             }
+            return array("total"=>$count,"succeed"=>$succeed,"failed"=>($count-$succeed),"log"=>$log);
+        }else{
+            BasicTool::throwException("获取课评失败");
         }
     }
 

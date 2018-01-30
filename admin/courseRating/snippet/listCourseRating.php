@@ -1,5 +1,7 @@
 <?php
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
+$userModel = new \admin\user\UserModel();
+$isGod = $userModel->isUserHasAuthority("GOD");
 ?>
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
@@ -10,7 +12,13 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
     <a class="btn" href="index.php?s=listProfReport">教授报告表</a>
     <a class="btn" href="index.php?s=formCourseRating&flag=add">添加新课评</a>
 </nav>
+
 <article class="mainBox">
+    <?php
+        if($isGod){
+            echo "<form action=\"courseRatingController.php?action=updateAllReports\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"更新全部报告\" class=\"btn\" onclick=\"return confirm('确认更新全部报告?')\"></footer></form>";
+        }
+    ?>
     <header><h2><?php echo $typeStr ?>课评列表</h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
