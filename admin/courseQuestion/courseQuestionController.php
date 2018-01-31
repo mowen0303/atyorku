@@ -73,6 +73,9 @@ function addQuestion($echoType = "normal"){
         $reward_amount>= 0 or BasicTool::throwException("请输入有效的积分数");
         //验证积分
         $transactionModel->isCreditDeductible($currentUser->userId,$reward_amount) or BasicTool::throwException("积分不足");
+        //验证course_report和course_prof_report表里是否已有对应的报告
+        $questionModel->getCourseReportByCourseCodeId($course_code_id) or $questionModel->addCourseReport($course_code_id);
+        $questionModel->getCourseProfReportByCourseCodeIdProfId($course_code_id,$prof_id) or $questionModel->addCourseProfReport($course_code_id,$prof_id);
         //图片上传
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;

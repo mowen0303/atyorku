@@ -220,5 +220,44 @@ class CourseQuestionModel extends Model
         $sql = "UPDATE course_question SET `count_views`=`count_views`+1 WHERE id IN ({$id})";
         $this->sqltool->query($sql);
     }
+
+
+    function getCourseReportByCourseCodeId($course_code_id){
+        $sql = "SELECT * FROM course_report WHERE course_code_id IN ({$course_code_id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+    function getCourseProfReportByCourseCodeIdProfId($course_code_id,$prof_id){
+        $sql = "SELECT * FROM course_prof_report WHERE course_code_id IN ({$course_code_id}) AND prof_id in ({$prof_id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
+    function addCourseReport($course_code_id){
+        $arr = [];
+        $arr["course_code_id"] = $course_code_id;
+        $arr["homework_diff"] = 0;
+        $arr["test_diff"] = 0;
+        $arr["content_diff"] = 0;
+        $arr["overall_diff"] = 0;
+        $arr["rating_count"] = 0;
+        $arr["count_questions"] = 0;
+        $arr["count_solved_questions"] = 0;
+        return $this->addRow("course_report", $arr);
+
+    }
+    function addCourseProfReport($course_code_id,$prof_id){
+        $arr = [];
+        $arr["course_code_id"] = $course_code_id;
+        $arr["prof_id"] = $prof_id;
+        $arr["homework_diff"] = 0;
+        $arr["test_diff"] = 0;
+        $arr["content_diff"] = 0;
+        $arr["overall_diff"] = 0;
+        $arr["recommendation_ratio"] = 0;
+        $arr["rating_count"] = 0;
+        $arr["count_questions"] = 0;
+        $arr["count_solved_questions"] = 0;
+        return $this->addRow("course_prof_report", $arr);
+
+    }
+
 }
 ?>
