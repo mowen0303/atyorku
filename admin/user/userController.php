@@ -41,17 +41,16 @@ function modifyCredit()
 {
     global $currentUser;
     try {
-        $currentCredit = BasicTool::post('currentCredit', '当前点券值不能为空');
-        $credit = BasicTool::post('credit', '点券值不能为空');
+        $transactionModel = new \admin\transaction\TransactionModel();
         $userId = BasicTool::post('userId', '用户ID不能为空');
-
-        $currentCredit + $credit >= 0 or BasicTool::throwException("没有足够的点券用于消费");
-
-
-        $currentUser->addCredit($credit, $userId) or BasicTool::throwException($currentUser->errorMsg);
-
+        $credit = BasicTool::post('credit', '点券值不能为空');
+        $alias = $currentUser->aliasName;
+        if($credit>0){
+            $transactionModel->addCredit($userId,$credit,"管理员{$alias}手动给你增加了{$credit}点积分") or BasicTool::throwException("操作失败");
+        }else{
+            $transactionModel->deductCredit($userId,$credit,"管理员{$alias}手动给你减掉了{$credit}点积分") or BasicTool::throwException("操作失败");;
+        }
         BasicTool::echoMessage("成功");
-
     } catch (Exception $e) {
 
         BasicTool::echoMessage($e->getMessage());

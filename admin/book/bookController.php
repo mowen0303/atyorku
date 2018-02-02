@@ -319,12 +319,12 @@ function purchaseBookWithJson() {
     global $transactionModel;
     global $msgModel;
     try {
-        $bookId = BasicTool::post('book_id','请指定二手书ID');
+        $bookId = BasicTool::post('book_id','请指定资料ID');
         $buyerId = $currentUser->userId;
         $buyerId or BasicTool::throwException("请先登录");
         $result = $bookModel->getBookById($bookId);
         if ($result) {
-            (intval($result["is_available"]) and !intval($result["is_deleted"])) or BasicTool::throwException("二手书已下架");
+            (intval($result["is_available"]) and !intval($result["is_deleted"])) or BasicTool::throwException("资料已下架");
             intval($result["pay_with_points"]) or BasicTool::throwException("不支持积分支付");
             $sellerId = intval($result["user_id"]);
             $sellerId !== intval($buyerId) or BasicTool::throwException("无法购买自己的产品");
@@ -332,20 +332,20 @@ function purchaseBookWithJson() {
             $userCredit = floatval($transactionModel->getCredit($buyerId));
             $newUserCredit = $userCredit - $price;
             $newUserCredit >= 0.0 or BasicTool::throwException("用户积分不足 ".$userCredit." ".$price);
-            $buyerDescription = "购买二手书: " . $result["name"] . " ID: " . $result["id"];
-            $sellerDescription = "售出二手书: " . $result["name"] . " ID: " . $result["id"];
+            $buyerDescription = "购买资料: " . $result["name"] . " ID: " . $result["id"];
+            $sellerDescription = "售出资料: " . $result["name"] . " ID: " . $result["id"];
             $elink = $bookModel->getELinkById($bookId);
-            $elink or BasicTool::throwException("电子书链接消失。。");
+            $elink or BasicTool::throwException("资料链接消失。。");
             $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription);
             if ($result) {
-                $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $elink);
-                $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "您的二手书: ".$result["name"]." 已售出");
+                $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $elink, true);
+                $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "您的资料: ".$result["name"]." 已售出",true);
                 BasicTool::echoJson(1, "购买成功", $result);
             } else {
                 BasicTool::echoJson(0, '购买失败');
             }
         } else {
-            BasicTool::throwException("二手书不存在");
+            BasicTool::throwException("资料不存在");
         }
     } catch(Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
@@ -389,7 +389,7 @@ function modifyBook($echoType = "normal") {
         if($isEDocument){
             $eLink = BasicTool::post("e_link", "电子书链接不能为空 ".$isEDocument);
         }
-        $description = BasicTool::post("description") or "";
+        $description = BasicTool::post("description",false,255) or "";
         $bookCategoryId = BasicTool::post("book_category_id", "二手书所属分类不能为空");
         $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
         $childCode = BasicTool::post("course_code_child_title", "子类课评不能为空");

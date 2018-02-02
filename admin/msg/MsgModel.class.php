@@ -7,7 +7,7 @@ use \BasicTool as BasicTool;
 use \Exception as Exception;
 
 class MsgModel extends Model {
-    private $enablePush = false; //测试阶段，禁用信息推送, 新版本删除原始推送
+    private $enablePush = true; //测试阶段，禁用信息推送, 新版本删除原始推送
 
     /**
      * 给指定用户推送一条信息
@@ -17,12 +17,17 @@ class MsgModel extends Model {
      * @param $content      消息内容
      * @return bool
      */
-    public function pushMsgToUser($receiverId, $msgType, $msgTypeId, $content) {
+    public function pushMsgToUser($receiverId, $msgType, $msgTypeId, $content,$isSystemAsSender=false) {
         $receiverId or BasicTool::throwException("缺少 receiverId");
         $senderUser = new UserModel();
         $senderUser->userId or BasicTool::throwException("请先登录");
         $receiverUser = new UserModel($receiverId);
-        if ($senderUser->userId == $receiverUser->userId) return false;
+        if ($isSystemAsSender==true){
+            $senderUser = new UserModel(28);
+        }else if($senderUser->userId == $receiverUser->userId) {
+            return false;
+        }
+
         $receiverBadge = $receiverUser->addOnceCountInBadge();
         self::addMsg($senderUser->userId, $receiverUser->userId, $msgType, $msgTypeId, $content);
         //推送

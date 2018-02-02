@@ -692,6 +692,13 @@ class UserModel extends Model {
         $sql = "UPDATE user SET badge = 0 WHERE id = {$uid}";
         return $this->sqltool->query($sql);
     }
+
+    public function getCredit() {
+        $uid = $this->userId or BasicTool::throwException("未登录");
+        $sql = "SELECT credit from user WHERE id IN ({$uid})";
+        $row = $this->sqltool->query($sql);
+        return $row['credit'];
+    }
 }
 
 

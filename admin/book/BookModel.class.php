@@ -19,7 +19,7 @@ class BookModel extends Model
      * 添加一本书
      * @return $bool
      */
-    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $isEDocument, $eLink)
+    public function addBook($name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints,$available, $isEDocument, $eLink)
     {
         $arr = [];
         $arr["name"] = $name;
@@ -38,6 +38,7 @@ class BookModel extends Model
             $arr["image_id_three"] = $img3;
         }
         $arr["professor_id"] = $profId;
+        $arr["is_available"] = $available;
         $arr["term_year"] = $year;
         $arr["term_semester"] = $term;
         $arr["pay_with_points"] = $payWithPoints ? 1 : 0;
@@ -277,7 +278,8 @@ class BookModel extends Model
 
     function getELinkById($id){
         $sql = "SELECT e_link FROM {$this->table} WHERE id in ({$id})";
-        return $this->sqltool->getRowBySql($sql);
+        $row = $this->sqltool->getRowBySql($sql);
+        return $row['e_link'];
     }
 
     /**
