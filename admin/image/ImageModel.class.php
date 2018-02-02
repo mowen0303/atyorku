@@ -104,7 +104,7 @@ class ImageModel extends Model
      *
      * @return int[] array of new image id
      */
-    public function uploadImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 200, $maxFileSize = 1000000, $maxLength = 1000) {
+    public function uploadImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 600000, $maxThumbnailLength = 350, $maxFileSize = 1000000, $maxLength = 1000) {
 
         try {
             $file = $_FILES[$inputName];
