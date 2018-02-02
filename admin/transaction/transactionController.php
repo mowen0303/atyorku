@@ -1,8 +1,25 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$transactionModel = new admin\transaction\transactionModel();
+$transactionModel = new \admin\transaction\TransactionModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
+
+
+/**
+ * JSON -  获取当前用户积分(需要先登录)
+ * http://www.atyorku.ca/admin/transaction/transactionController.php?action=getCurrentUserCredit
+ */
+function getCurrentUserCredit() {
+    global $transactionModel,$currentUser;
+    try {
+        $currentUser->isLogin() or BasicTool::throwException("未登录");
+        $credit = $transactionModel->getCredit($currentUser->userId);
+        BasicTool::echoJson(1,"获取成功",['credit'=>$credit]);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
 
 function getTransactionsWithJson(){
     global $transactionModel;
@@ -25,6 +42,8 @@ function getTransactionsByUserIdWithJson(){
         BasicTool::echoJson(0,"空");
     }
 }
+
+
 function addCredit(){
     global $transactionModel;
     $user_id = BasicTool::post("user_id","");
