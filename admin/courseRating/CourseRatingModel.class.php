@@ -477,7 +477,7 @@ class CourseRatingModel extends Model
                 $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
             }
             if($table=='course_prof_report' || $table=='course_report') {
-                $arr["avg_grade"] = $result["avg_grade"] ?: 1;
+                $arr["avg_grade"] = $result["avg_grade"] ?: 11;
             }
         }
     }
