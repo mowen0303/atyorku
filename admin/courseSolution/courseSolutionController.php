@@ -132,9 +132,9 @@ function getApprovedSolutionByQuestionIdWithJson(){
         $result["time_posted"] = BasicTool::translateTime($result["time_posted"]);
         $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
         $result["img_urls"] = [];
-        !$result["img_id_1"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_1"])["url"]);
-        !$result["img_id_2"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_2"])["url"]);
-        !$result["img_id_3"] or array_push($result["img_urls"],$imageModel->getImageById($result["img_id_3"])["url"]);
+        !$result["img_id_1"] or array_push($result["img_urls"],$result["img_url_1"]);
+        !$result["img_id_2"] or array_push($result["img_urls"],$result["img_url_2"]);
+        !$result["img_id_3"] or array_push($result["img_urls"],$result["img_url_3"]);
         BasicTool::echoJson(1,"查询成功",$result);
     }
     else

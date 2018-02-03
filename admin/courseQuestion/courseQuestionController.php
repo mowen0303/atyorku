@@ -21,13 +21,12 @@ function getQuestionByIdWithJson(){
         $question = $questionModel->getQuestionById($question_id);
         $question or BasicTool::throwException("提问不存在");
         $questionModel->addViewById($question_id);
+
         $question["img_urls"] = [];
-        !$question["img_id_1"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_1"])["url"]);
-        !$question["img_id_2"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_2"])["url"]);
-        !$question["img_id_3"] or array_push($question["img_urls"],$imageModel->getImageById($question["img_id_3"])["url"]);
-        //$question["img_url_1"] = $question["img_id_1"] ? $imageModel->getImageById($question["img_id_1"])["url"]:"";
-        //$question["img_url_2"] = $question["img_id_2"] ? $imageModel->getImageById($question["img_id_2"])["url"]:"";
-        //$question["img_url_3"] = $question["img_id_3"] ? $imageModel->getImageById($question["img_id_3"])["url"]:"";
+        !$question["img_id_1"] or array_push($question["img_urls"],$question["img_url_1"]);
+        !$question["img_id_2"] or array_push($question["img_urls"],$question["img_url_2"]);
+        !$question["img_id_3"] or array_push($question["img_urls"],$question["img_url_3"]);
+
         $question["time_posted"] = BasicTool::translateTime($question["time_posted"]);
         $question["time_solved"] = BasicTool::translateTime($question["time_solved"]);
         $question["enroll_year"] = BasicTool::translateEnrollYear($question["enroll_year"]);
@@ -354,7 +353,7 @@ function getQuestionsByCourseCodeIdWithJson(){
  * @param prof_name
  * @param flag 0=为解决的提问，1=已解决的提问
  * @param page 页数
- * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdProfNameWithJson&page=1&flag=1&course_code_id=1&prof_name=1
+ * localhost/admin/courseQuestion/courseQuestionController.php?action=getQuestionsByCourseCodeIdProfNameWithJson&flag=2&course_code_id=0&prof_name=0&page=1
  */
 function getQuestionsByCourseCodeIdProfNameWithJson(){
     global $questionModel,$profModel;
