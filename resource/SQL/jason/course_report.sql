@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 09, 2018 at 06:36 AM
+-- Generation Time: Feb 04, 2018 at 07:09 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.0.23
 
@@ -31,11 +31,11 @@ SET time_zone = "+00:00";
 CREATE TABLE `course_report` (
   `id` int(11) UNSIGNED NOT NULL,
   `course_code_id` int(11) UNSIGNED NOT NULL,
-  `homework_diff` tinyint(4) NOT NULL,
-  `test_diff` tinyint(4) NOT NULL,
-  `content_diff` tinyint(4) NOT NULL,
-  `overall_diff` tinyint(4) NOT NULL,
-  `avg_grade` enum('','A+','A','B+','B','C+','C','D+','D','E','F') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `homework_diff` decimal(4,1) NOT NULL,
+  `test_diff` decimal(4,1) NOT NULL,
+  `content_diff` decimal(4,1) NOT NULL,
+  `overall_diff` decimal(4,1) NOT NULL,
+  `avg_grade` enum('A+','A','B+','B','C+','C','D+','D','E','F','') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `rating_count` int(11) NOT NULL DEFAULT '0',
   `count_questions` int(11) NOT NULL DEFAULT '0',
   `count_solved_questions` int(11) NOT NULL DEFAULT '0'

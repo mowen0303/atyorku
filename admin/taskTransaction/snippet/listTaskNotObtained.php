@@ -69,6 +69,7 @@ $userId = BasicTool::get("user_id");
     $(document).ready(function() {
         // 注册领取按钮
         $(".obtainBtn").click(function (e) {
+            var that = this;
             $(this).addClass('isDisabled');
             var taskId = e.target.dataset.id;
             var userId = <?php echo $userId ?>;

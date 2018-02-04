@@ -397,7 +397,7 @@ class CourseRatingModel extends Model
      */
     private function updateReports($courseCodeId, $profId) {
         $errorStack = array("course_code_id"=>$courseCodeId,"prof_id"=>$profId,"log"=>array());
-        $querySql = "SELECT AVG(cr.content_diff) AS avg_content, AVG(cr.homework_diff) AS avg_hw, AVG(cr.test_diff) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
+        $querySql = "SELECT ROUND(AVG(cr.content_diff),1) AS avg_content, ROUND(AVG(cr.homework_diff),1) AS avg_hw, ROUND(AVG(cr.test_diff),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
         // Update course_prof_report
         $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
 
@@ -468,10 +468,10 @@ class CourseRatingModel extends Model
     */
     private function parseUpdateReportArray($result, &$arr, $table) {
         if ($result) {
-            $arr["homework_diff"] = $result["avg_hw"] ?: 0;
-            $arr["test_diff"] = $result["avg_test"] ?: 0;
-            $arr["content_diff"] = $result["avg_content"] ?: 0;
-            $arr["overall_diff"] = intval(round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/3));
+            $arr["homework_diff"] = $result["avg_hw"] ?: 0.0;
+            $arr["test_diff"] = $result["avg_test"] ?: 0.0;
+            $arr["content_diff"] = $result["avg_content"] ?: 0.0;
+            $arr["overall_diff"] = round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/3,1);
             $arr["rating_count"] = $result["sum_rating"] ?: 0;
             if($table=='course_prof_report' || $table=='professor_report') {
                 $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
