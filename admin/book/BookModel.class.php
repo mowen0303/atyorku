@@ -64,35 +64,37 @@ class BookModel extends Model
         return $this->sqltool->getRowBySql($sql);
     }
 
+
     /**
-    * 调出一页二手书
-    * @param int $pageSize 每页显示数
-    * @param String $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
-    * @return 返回二维数组
-    */
+     * 获取一页二手书（非删除）
+     * @param int $pageSize 每页显示数
+     * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
+     * @param bool $availableOnly
+     * @return array
+     */
     public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true) {
-        $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
-        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
-        $where = "WHERE NOT b.is_deleted";
+        $q = "NOT b.is_deleted";
         if($availableOnly){
-            $where .= " AND b.is_available";
+            $q .= " AND b.is_available";
         }
-        $sql = "{$select} {$from} {$where}";
-        $countSql = "SELECT COUNT(*) {$from} {$where}";
-        if ($query) {
-            $sql = "{$sql} AND ({$query})";
-            $countSql = "{$countSql} AND ({$query})";
+        if($query){
+            $q .= " AND ({$query})";
         }
-        $sql = "{$sql} ORDER BY `sort` DESC,`last_modified_time` DESC";
-        $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
-         // Format publish time and enroll year
-        foreach ($arr as $k => $v) {
-            $t = $v["publish_time"];
-            $y = $v["enroll_year"];
-            if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
-            if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
+        return $this->getBooks($pageSize,$q);
+    }
+
+    /**
+     * 获取一页已删除的二手书
+     * @param int $pageSize
+     * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
+     * @return array
+     */
+    public function getListOfDeletedBooks($pageSize=20, $query=false){
+        $q = "b.is_deleted";
+        if($query){
+            $q .= " AND ({$query})";
         }
-        return $arr;
+        return $this->getBooks($pageSize,$q);
     }
 
     /**
@@ -283,6 +285,36 @@ class BookModel extends Model
     }
 
     /**
+     * 恢复一本已删除的二手书
+     * @param $id 二手书ID
+     * @throws Exception
+     */
+    function restoreBookById($id){
+        $id = intval($id) or BasicTool::throwException("无效二手书ID");
+        $result = $this->getBookById($id) or BasicTool::throwException("二手书不存在");
+        $result["is_deleted"] = 0;
+        $bool = $this->updateRowById($this->table,$id,$result);
+        if(!$bool) {BasicTool::throwException($this->errorMsg);}
+    }
+
+    /**
+     * 清空所有已删除的二手书
+     * @return array [code=> {1,0}, result=> {成功返回删除数量 | 失败返回错误信息}]
+     */
+    function emptyAllDeletedBooks(){
+        $sql = "DELETE FROM {$this->table} WHERE is_deleted=1";
+        $bool = $this->sqltool->query($sql);
+        $result = ["code"=>intval($bool),"result"=>($bool?($this->sqltool->getAffectedRows()):($this->errorMsg))];
+        return $result;
+    }
+
+
+    /**=====================**/
+    /*** Private Functions ***/
+    /**=====================**/
+
+
+    /**
     * validate year
     * @param year 用户提供的year
     * @return bool
@@ -299,6 +331,33 @@ class BookModel extends Model
     */
     private function isValidTerm($term) {
         return in_array($term, array('','Winter','Summer','Summer 1','Summer 2','Year','Fall'));
+    }
+
+    /**
+     * 获取一页二手书
+     * @param int $pageSize 每页数量
+     * @param bool $query additional query
+     * @return array
+     */
+    private function getBooks($pageSize=20, $query=false) {
+        $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+
+        $where = $query ? ("WHERE " . "({$query})") : "";
+        $order = "ORDER BY `sort` DESC,`last_modified_time` DESC";
+
+        $sql = "{$select} {$from} {$where} {$order}";
+        $countSql = "SELECT COUNT(*) {$from} {$where}";
+
+        $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
+        // Format publish time and enroll year
+        foreach ($arr as $k => $v) {
+            $t = $v["publish_time"];
+            $y = $v["enroll_year"];
+            if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
+            if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
+        }
+        return $arr;
     }
 }
 

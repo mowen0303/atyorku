@@ -2,42 +2,22 @@
 $bookModel = new \admin\book\BookModel();
 $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
 $userModel = new \admin\user\UserModel();
+$isGod = $userModel->isUserHasAuthority("GOD");
 ?>
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=listDeletedBook">回收站</a>
-    <a class="btn" href="\admin\bookCategory\index.php?s=listBookCategory">二手书分类</a>
-    <a class="btn" href="index.php?s=formBook&flag=add">添加新二手书</a>
+    <a class="btn" href="index.php?listBook">返回</a>
 </nav>
 <article class="mainBox">
-    <form action="\admin\book\index.php?s=searchBook" method="post">
-        <section>
-            <table width="100%">
-                <tbody>
-                    <tr>
-                        <td width="180px">
-                            <select class="input input-select input-50 selectDefault" name="search_type" defvalue="keywords">
-                                <option value="keywords">二手书信息</option>
-                                <option value="user_id">用户ID</option>
-                                <option value="username">用户名</option>
-                                <option value="book_category_id">二手书分类ID</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input class="input" type="text" name="search_value" placeholder="输入对应搜索信息" style="margin-left:16px;" />
-                        </td>
-                        <td width="100px">
-                            <a><input type="submit" value="搜索" class="btn" style="float:right;"></a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </form>
-    <header><h2>二手书列表</h2></header>
-    <form action="bookController.php?action=deleteBookLogically" method="post">
+    <?php
+    if($isGod){
+        echo "<form action=\"bookController.php?action=emptyAllDeletedBooks\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"清空回收站\" class=\"btn\" onclick=\"return confirm('确认清空回收站?')\"></footer></form>";
+    }
+    ?>
+    <header><h2>已删除的二手书列表</h2></header>
+    <form action="bookController.php?action=deleteBook" method="post">
         <section>
             <table class="tab">
                 <thead>
@@ -57,14 +37,14 @@ $userModel = new \admin\user\UserModel();
                 </thead>
                 <tbody>
                 <?php
-                $arr = $bookModel->getListOfBooks();
+                $arr = $bookModel->getListOfDeletedBooks();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
                         $argument .= "&{$key}={$value}";
                     }
                 ?>
-                    <tr>
+                    <tr id="book<? echo $row['id'] ?>">
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
                         <td><img width="60px" height="auto" src="<?php echo $row['thumbnail_url'] ?>"></td>
@@ -75,7 +55,7 @@ $userModel = new \admin\user\UserModel();
                         <td><?php echo $row['course_code_parent_title'] . $row['course_code_child_title'] ?></td>
                         <td><?php echo $row['alias'] ?></td>
                         <td><?php echo $row['publish_time'] ?></td>
-                        <td><a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a></td>
+                        <td><a class="btn restoreBtn" href="#" data-id="<?php echo $row['id']?>">恢复</a></td>
                     </tr>
                 <?php
                 }
@@ -89,3 +69,40 @@ $userModel = new \admin\user\UserModel();
         </footer>
     </form>
 </article>
+
+<script>
+    $(document).ready(function() {
+        // 注册恢复按钮
+        $(".restoreBtn").click(function (e) {
+            var that = this;
+            $(this).addClass('isDisabled');
+            var $bookId = e.target.dataset.id;
+            if ($bookId) {
+                $.ajax({
+                    url: "/admin/book/bookController.php?action=restoreDeletedBookByIdWithJson",
+                    type: "POST",
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {"book_id":$bookId},
+                    dataType: "json",
+                }).done(function (json) {
+                    console.log(json);
+                    if (json.code === 1) {
+                        alert("恢复成功");
+                        var td = "#book" + $bookId;
+                        $(td).remove();
+                    }else{
+                        alert("恢复失败");
+                        $(that).removeClass('isDisabled');
+                    }
+                }).fail(function (data) {
+                    console.log(data);
+                    alert("恢复失败");
+                    $(that).removeClass('isDisabled');
+                });
+            } else {
+                alert("缺失用户ID或二手书ID");
+                $(that).removeClass('isDisabled');
+            }
+        });
+    });
+</script>

@@ -352,6 +352,25 @@ function purchaseBookWithJson() {
     }
 }
 
+
+/**
+ * 恢复一本已删除的二手书 [ADMIN]操作
+ */
+function restoreDeletedBookByIdWithJson() {
+    global $bookModel;
+    global $currentUser;
+    try {
+        if (!($currentUser->isUserHasAuthority('ADMIN'))) {
+            BasicTool::throwException("无权限");
+        }
+        $bookId = BasicTool::post('book_id','二手书ID不能为空');
+        $bookModel->restoreBookById($bookId);
+        BasicTool::echoJson(1, "恢复成功", true);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 //=========== END Function with JSON ============//
 
 
@@ -583,4 +602,26 @@ function deleteBookImagesByBookId($id) {
         BasicTool::echoMessage($e->getMessage(),-1);
     }
 }
+
+/**
+ * 清空已删除的二手书 [GOD权限]
+ */
+function emptyAllDeletedBooks() {
+    global $bookModel;
+    global $currentUser;
+    try {
+        if (!($currentUser->isUserHasAuthority('GOD'))) {
+            BasicTool::throwException("无权限");
+        }
+        $result = $bookModel->emptyAllDeletedBooks();
+        if($result['code']===1){
+            BasicTool::echoMessage("成功删除{$result['result']}个二手书", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::throwException($result['result']);
+        }
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+    }
+}
+
 ?>
