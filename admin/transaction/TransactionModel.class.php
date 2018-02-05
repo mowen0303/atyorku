@@ -21,7 +21,7 @@ class TransactionModel extends Model {
     function getCredit($user_id) {
         $sql = "SELECT SUM(amount) AS credit FROM transaction WHERE user_id = {$user_id}";
         $result = $this->sqltool->getRowBySql($sql)["credit"];
-        return $result;
+        return (int)$result;
     }
 
     /**给用户添加积分
