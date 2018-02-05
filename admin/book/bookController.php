@@ -429,8 +429,12 @@ function modifyBook($echoType = "normal") {
         $term = BasicTool::post("term_semester") ?: "";
 
         // validate and format price
-        $price = (float)BasicTool::post("price", "二手书价格不能为空", 9999999999);
-        ($price >= 0) or BasicTool::throwException("价格必须大于或等于0");
+        $price = (float)BasicTool::post("price", "二手书价格不能为空", 99999999.99);
+        if($payWithPoints){
+            $price>=150 or BasicTool::throwException("积分销售最低价位必须大于等于150积分");
+        } else {
+            $price>=6 or BasicTool::throwException("现金销售最低价位必须大于等于6加元");
+        }
         $price = number_format($price, 2, '.', '');
 
         $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("此二手书所属分类不存在");
