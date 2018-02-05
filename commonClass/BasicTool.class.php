@@ -330,6 +330,16 @@ class BasicTool
         return mktime($hms[0],$hms[1],$hms[2],$ymdArr[1],$ymdArr[2],$ymdArr[0]);
     }
 
+    /**
+     * 获取今日凌晨与午夜两个节点的时间戳
+     * @return array
+     */
+    static function getTodayTimestamp(){
+        $startTime = strtotime(date("Y-m-d")." 00:00:01");
+        $endTime = $startTime+3600*24;
+        return ["startTime"=>$startTime,"endTime"=>$endTime];
+    }
+
 }
 
 

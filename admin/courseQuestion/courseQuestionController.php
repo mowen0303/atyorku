@@ -67,8 +67,7 @@ function addQuestion($echoType = "normal") {
         $description = BasicTool::post("description", "Missing Description");
         $reward_amount = BasicTool::post("reward_amount", "Missing reward_amount");
         $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分数");
-        //当设置了积分悬赏的时候,从用户账户中扣除
-        $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问") or BasicTool::throwException($transactionModel->errorMsg);
+        if(!($reward_amount > 0 && $transactionModel->isCreditDeductible($questioner_user_id,$reward_amount))) BasicTool::throwException($transactionModel->errorMsg);
         //验证course_report和course_prof_report表里是否已有对应的报告
         $questionModel->getCourseReportByCourseCodeId($course_code_id) or $questionModel->addCourseReport($course_code_id);
         $questionModel->getCourseProfReportByCourseCodeIdProfId($course_code_id, $prof_id) or $questionModel->addCourseProfReport($course_code_id, $prof_id);
@@ -76,12 +75,15 @@ function addQuestion($echoType = "normal") {
         $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "course_question");
-
+        //插入数据
+        $insertId = $questionModel->addQuestion($course_code_id, $prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
+        $insertId or BasicTool::throwException("添加失败");
+        //插入成功
+        //当设置了积分悬赏的时候,从用户账户中扣除
+        $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问") or BasicTool::throwException($transactionModel->errorMsg);
         //增加系统奖励积分
         $transactionModel->systemAdjustCredit($currentUser->userId,Credit::$addCourseQuestion);
 
-        $insertId = $questionModel->addQuestion($course_code_id, $prof_id, $questioner_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount);
-        $insertId or BasicTool::throwException("添加失败");
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功", "/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         } else {
@@ -203,7 +205,7 @@ function deleteQuestion($echoType = "normal") {
         if (is_array($id)) {
 
             //判断管理员权限
-            $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,删除失败");
+            $currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足,删除失败");
 
             $concat = null;
             foreach ($id as $i) {
@@ -289,7 +291,7 @@ function deleteQuestion($echoType = "normal") {
         if (is_array($id))
             $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问") or BasicTool::throwException("删除失败，退还积分失败");
         else {
-            $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败，退还积分失败");
+            $reward_amount<=0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
         }
         //退还积分成功,删除图片
         $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");

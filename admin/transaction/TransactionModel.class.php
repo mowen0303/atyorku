@@ -93,7 +93,7 @@ class TransactionModel extends Model {
                 return false;
             }
         }else{
-            $this->errorMsg = "积分不足,你的当前积分:{$amount}";
+            $this->errorMsg = "积分不足,你的当前积分:{$credit}";
             return false;
         }
     }
@@ -142,9 +142,14 @@ class TransactionModel extends Model {
      * @param int $amount 扣除的积分
      * @return bool
      */
-    private function isCreditDeductible($user_id, $amount) {
+    public function isCreditDeductible($user_id, $amount) {
         $credit = $this->getCredit($user_id);
-        return $credit - $amount >= 0;
+        if($credit - $amount >= 0){
+            return true;
+        }else{
+            $this->errorMsg = "积分不足, 你的当前积分为[{$credit}]点,需要消耗的积分为[{$amount}]点";
+            return false;
+        }
     }
 
     /**把积分写进user表
