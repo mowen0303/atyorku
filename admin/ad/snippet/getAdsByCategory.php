@@ -49,17 +49,11 @@ else{
                     <tbody>
                     <?php
                     foreach ($arr as $row) {
-                        $display_img_1 = "style=display:none";
-                        if($row["img_id_1"]){
-                            $img_url_1 = $imageModel->getImageById($row["img_id_1"])["url"];
-                            $display_img_1 = "style=display:inline-block";
-                        }
-
                         ?>
                         <tr>
                             <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                             <td><?php echo $row['id']?></td>
-                            <td><img <?php echo $display_img_1?> width="120" height="60" src="<?php echo $img_url_1?>"></a></td>
+                            <td><img width="120" height="60" src="<?php echo $row[img_url]?>"></a></td>
                             <td><?php echo $row['title']?></td>
                             <td style="max-width:300px"><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>

@@ -4,6 +4,7 @@ $questionModel = new \admin\courseQuestion\CourseQuestionModel();
 $solutionModel = new \admin\courseSolution\CourseSolutionModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
+
 call_user_func(BasicTool::get('action'));
 
 /**添加答案
@@ -19,17 +20,19 @@ function addSolution($echoType = "normal"){
     global $imageModel,$currentUser,$solutionModel;
     try{
         //权限验证
-        ($currentUser->isUserHasAuthority("ADMIN") ||  $currentUser->isUserHasAuthority("COURSE_QUESTION")) or BasicTool::throwException("权限不足");
-
-        $question_id= BasicTool::post("question_id","missing q_id");
+        $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足");
         $answerer_user_id = $currentUser->userId;
+        $questioner_user_id = BasicTool::post("questioner_user_id","缺少问题发布者UID");
+        $question_id= BasicTool::post("question_id","missing q_id");
         $description = BasicTool::post("description","Missing Description");
-
         $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
         $insertId = $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]);
         $insertId or BasicTool::throwException("添加失败");
+        //推送
+        $msgModel = new \admin\msg\MsgModel();
+        $msgModel->pushMsgToUser($questioner_user_id,'course_question',$question_id,"[作业问答]".substr($description,0,80));
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");

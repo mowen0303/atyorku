@@ -7,7 +7,7 @@ use \BasicTool as BasicTool;
 use \Exception as Exception;
 
 class MsgModel extends Model {
-    private $enablePush = false; //测试阶段，禁用信息推送, 新版本删除原始推送
+    private $enablePush = true; //测试阶段，禁用信息推送, 新版本删除原始推送
 
     /**
      * 给指定用户推送一条信息

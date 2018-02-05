@@ -12,20 +12,16 @@ if($flag=='add'){
     $publish_time = time();
     $expiration_time = time();
     $form_action = "/admin/ad/adController.php?action=addAd";
-
-}
-
-else {
+} else {
     $row = $adModel->getAd($id);
-     $img1 = $row["img_id_1"];
-     $publish_time = $row["publish_time"];
-     $expiration_time = $row["expiration_time"];
-     $form_action = "/admin/ad/adController.php?action=updateAd";
+    $img1 = $row["img_id_1"];
+    $publish_time = $row["publish_time"];
+    $expiration_time = $row["expiration_time"];
+    $form_action = "/admin/ad/adController.php?action=updateAd";
 }
-
+//var_dump($img1);
+//var_dump($imageModel->getImageById($img1));
 ?>
-<script src="/admin/resource/tools/ckeditor/ckeditor.js"></script>
-<script src="/admin/resource/tools/ckfinder/ckfinder.js"></script>
 <script>
     //删除已上传图片 (点击更新后生效)
     function removeImg(i) {

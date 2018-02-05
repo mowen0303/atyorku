@@ -662,7 +662,7 @@ class UserModel extends Model {
      * @throws Exception
      */
     public function getBadge() {
-        $uid = $this->userId or BasicTool::throwException("未登录");
+        $uid = $this->userId or BasicTool::throwException("UID获取失败:#1");
         $sql = "SELECT badge FROM user WHERE id = {$uid}";
         $row = $this->sqltool->getRowBySql($sql);
         return $row['badge'];
@@ -674,7 +674,7 @@ class UserModel extends Model {
      * @throws Exception
      */
     public function addOnceCountInBadge() {
-        $uid = $this->userId or BasicTool::throwException("未登录");
+        $uid = $this->userId or BasicTool::throwException("UID获取失败:#2");
         $sql = "UPDATE user SET badge = badge + 1 WHERE id = {$uid}";
         $this->sqltool->query($sql);
         $sql = "SELECT badge FROM user WHERE id = {$uid}";
@@ -688,13 +688,13 @@ class UserModel extends Model {
      * @throws Exception
      */
     public function clearBadge() {
-        $uid = $this->userId or BasicTool::throwException("未登录");
+        $uid = $this->userId or BasicTool::throwException("UID获取失败:#3");
         $sql = "UPDATE user SET badge = 0 WHERE id = {$uid}";
         return $this->sqltool->query($sql);
     }
 
     public function getCredit() {
-        $uid = $this->userId or BasicTool::throwException("未登录");
+        $uid = $this->userId or BasicTool::throwException("UID获取失败:#4");
         $sql = "SELECT credit from user WHERE id IN ({$uid})";
         $row = $this->sqltool->query($sql);
         return $row['credit'];

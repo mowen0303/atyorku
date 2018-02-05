@@ -14,6 +14,7 @@ require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/SqlTool.class.php";
 require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/BasicTool.class.php";
 require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/Model.class.php";
 require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/authority.php";
+require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/Credit.class.php";
 use \admin\user\UserModel as UserModel;
 
 function __autoload($name){
