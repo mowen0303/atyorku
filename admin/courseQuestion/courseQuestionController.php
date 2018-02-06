@@ -288,18 +288,23 @@ function deleteQuestion($echoType = "normal") {
         $currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("COURSE_QUESTION") || !$is_questions_solved or BasicTool::throwException("删除失败:禁止删除已经解决的问题. 若有任何疑问,请联系官方客服,微信号: atyorku666");
 
         //退还积分
-        if (is_array($id))
+        if (is_array($id)) {
             $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问") or BasicTool::throwException("删除失败，退还积分失败");
+            foreach ($questioner_user_ids as $questioner_user_id){
+                //减去系统奖励积分
+                $transactionModel->systemAdjustCredit($questioner_user_id,Credit::$deleteCourseQuestion);
+            }
+        }
         else {
             $reward_amount<=0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
+            //减去系统奖励积分
+            $transactionModel->systemAdjustCredit($questioner_user_id,Credit::$deleteCourseQuestion);
         }
         //退还积分成功,删除图片
         $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
         //图片删除成功,删除提问
         $questionModel->deleteQuestion($id) or BasicTool::throwException("删除失败");
 
-        //减去系统奖励积分
-        $transactionModel->systemAdjustCredit($currentUser->userId,Credit::$deleteCourseQuestion);
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("删除成功");

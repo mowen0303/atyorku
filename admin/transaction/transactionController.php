@@ -69,3 +69,9 @@ function buy(){
     $seller_user_id = BasicTool::post("seller_user_id","");
     $transactionModel->buy($buyer_user_id,$seller_user_id,$amount,$buyer_description,$seller_description);
 }
+
+function clearCredit(){
+    global $transactionModel;
+    $user_id = BasicTool::post("user_id");
+    $transactionModel->clearCredit($user_id);
+}
