@@ -265,6 +265,16 @@ class CourseQuestionModel extends Model {
 
     }
 
+    function shouldRewardAddQuestion($user_id){
+        $timestamps = \BasicTool::getTodayTimestamp();
+        $sql = "SELECT COUNT(*) AS count FROM course_question WHERE questioner_user_id = {$user_id} AND time_posted >= {$timestamps["startTime"]} AND time_posted < {$timestamps["endTime"]}";
+        $count = $this->sqltool->getRowBySql($sql)["count"];
+        if ($count > 5)
+            return false;
+        else
+            return true;
+    }
+
 }
 
 ?>

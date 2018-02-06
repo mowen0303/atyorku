@@ -4,7 +4,7 @@ $questionModel = new \admin\courseQuestion\CourseQuestionModel();
 $solutionModel = new \admin\courseSolution\CourseSolutionModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-
+$transactionModel = new \admin\transaction\TransactionModel();
 call_user_func(BasicTool::get('action'));
 
 /**添加答案
@@ -17,7 +17,7 @@ call_user_func(BasicTool::get('action'));
  * localhost/admin/courseSolution/courseSolutionnController.php?action=addSolution
  */
 function addSolution($echoType = "normal"){
-    global $imageModel,$currentUser,$solutionModel;
+    global $imageModel,$currentUser,$solutionModel,$transactionModel;
     try{
         //权限验证
         $currentUser->isUserHasAuthority("COURSE_QUESTION") or BasicTool::throwException("权限不足");
@@ -30,6 +30,8 @@ function addSolution($echoType = "normal"){
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"course_solution");
         $insertId = $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]);
         $insertId or BasicTool::throwException("添加失败");
+        //每日发布的前5个答案加积分
+        !$solutionModel->shouldRewardAddSolution($questioner_user_id) or $transactionModel->systemAdjustCredit($answerer_user_id,Credit::$addCourseSolution);
         //推送
         $msgModel = new \admin\msg\MsgModel();
         $msgModel->pushMsgToUser($questioner_user_id,'course_question',$question_id,"[作业问答]".substr($description,0,80));

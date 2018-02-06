@@ -20,5 +20,10 @@ class Credit {
         description=>"在课评系统中发布课评",
         credit=>"10"
     ];
+
+    public static $addCourseSolution = [
+        description=>"在问答系统中发布答案",
+        credit=>"4"
+    ];
 }
 ?>

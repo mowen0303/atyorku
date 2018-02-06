@@ -72,6 +72,7 @@ else{
         <section class="formBox">
             <input type="number" name = "question_id" value="<?php echo $question['id']?>" hidden/>
             <input type = "number" name="id" value="<?php echo $solution['id']?>" hidden/>
+            <input type="number" name="questioner_user_id" value="<?php echo $question['questioner_user_id']?>" hidden/>
             <h4 style="padding-left:5px;color:#555;">提问ID:&nbsp;<?php echo $question["id"] ?></h4>
             <h4 style="padding-left:5px;color:#555;">提问者:<?php echo $questioner["alias"]?></h4>
             <div>

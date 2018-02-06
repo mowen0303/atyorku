@@ -151,6 +151,10 @@ class TransactionModel extends Model {
             return false;
         }
     }
+    function clearCredit($user_id){
+        $amount = $this->getCredit($user_id);
+        return $this->deductCredit($user_id,$amount,"清零");
+    }
 
     /**把积分写进user表
      * @param int $user_id 用户id
