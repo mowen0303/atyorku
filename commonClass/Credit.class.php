@@ -10,5 +10,15 @@ class Credit {
         description=>"删除了在问答系统中发布的问题",
         credit=>"-4"
     ];
+
+    public static $addBook = [
+        description=>"在资料市场中发布资料",
+        credit=>"2"
+    ];
+
+    public static $addCourseRating = [
+        description=>"在课评系统中发布课评",
+        credit=>"10"
+    ];
 }
 ?>

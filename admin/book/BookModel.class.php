@@ -3,6 +3,7 @@ namespace admin\book;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
+use \Credit as Credit;
 use admin\transaction\TransactionModel as TransactionModel;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -50,6 +51,10 @@ class BookModel extends Model
         if ($bool) {
             $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId}) AND NOT is_deleted AND is_available) WHERE id in ({$bookCategoryId})";
             $this->sqltool->query($sql);
+            if($this->shouldRewardAddBook($userId)){
+                $transactionModel = new TransactionModel();
+                $transactionModel->systemAdjustCredit($userId,Credit::$addBook);
+            }
         }
         return $bool;
     }
@@ -358,6 +363,16 @@ class BookModel extends Model
             if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
         }
         return $arr;
+    }
+
+    private function shouldRewardAddBook($userId) {
+        $userId = intval($userId);
+        $t = BasicTool::getTodayTimestamp();
+        $startTime = $t['startTime'];
+        $endTime = $t['endTime'];
+        $sql = "SELECT COUNT(*) AS count FROM {$this->table} WHERE user_id in ({$userId}) AND publish_time>=({$startTime}) AND publish_time<=({$endTime})";
+        $count = $this->sqltool->getRowBySql($sql)["count"];
+        return $count<6;
     }
 }
 
