@@ -283,6 +283,27 @@ class BookModel extends Model
         return false;
     }
 
+    /**
+     * 下架一本二手书
+     * @param $id
+     * @return bool|\一维关联数组
+     */
+    public function unLaunchBook($id){
+        $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if ($result) {
+            $bookCategoryId = $result["book_category_id"];
+            $sql = "UPDATE {$this->table} SET is_available=0 WHERE id in ({$id})";
+            $bool = $this->sqltool->query($sql);
+            if ($bool) {
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+                $this->sqltool->query($sql);
+                return $result;
+            }
+        }
+        return false;
+    }
+
     function getELinkById($id){
         $sql = "SELECT e_link FROM {$this->table} WHERE id in ({$id})";
         $row = $this->sqltool->getRowBySql($sql);

@@ -14,7 +14,7 @@ function getCurrentUserCredit() {
     try {
         $currentUser->isLogin() or BasicTool::throwException("未登录");
         $credit = $transactionModel->getCredit($currentUser->userId);
-        BasicTool::echoJson(1,"获取成功",['credit'=>$credit]);
+        BasicTool::echoJson(1,"获取成功",['credit'=>"{$credit}"]);
     } catch (Exception $e) {
         BasicTool::echoJson(0,$e->getMessage());
     }
