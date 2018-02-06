@@ -23,13 +23,49 @@ class CourseCodeModel extends Model
         return $this->getRowById($this->table,$id);
     }
 
+
     /**
-    * 通过 Parent ID 来获取 Course code, 获取父类Course Code, $id=0
-    * @param id course code parent id
-    * @return 一维数组
-    */
+     * 通过 Parent ID 来获取 Course code, 获取父类Course Code, $id=0
+     * @param int $id course code parent id
+     * @return array 一维数组
+     */
     public function getListOfCourseCodeByParentId($id=0) {
         $sql = "SELECT * FROM course_code c WHERE c.parent_id={$id}";
+        return $this->sqltool->getListBySql($sql);
+    }
+
+    /**
+     * 通过字段索引科目类匹配
+     * @param $str [ParentTitle ChildTitle] 空格可有可无
+     * @return array
+     */
+    public function getListOfCourseCodeByString($str) {
+        $sql = "";
+        if(!$str) {
+            // 无任何输入, 返回全部父类科目
+            $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 ORDER BY c1.title";
+        } else {
+            // 分析获取父类子类搜索字段
+            $str = trim($str);
+            $parentTitle = "";
+            $childTitle = "";
+            for($i=0;$i<strlen($str);$i++){
+                if(ctype_alpha($str[$i])){
+                    $parentTitle .= $str[$i];
+                }else {
+                    $childTitle = trim(substr($str,$i));
+                    break;
+                }
+            }
+
+            if(!$childTitle){
+                // 暂无子类科目输入, 返回匹配的父类科目
+                $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 AND c1.title LIKE '{$parentTitle}%' ORDER BY c1.title";
+            } else {
+                // 已确定父类字段, 搜索对应子类科目
+                $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND c1.title='{$parentTitle}' AND c2.title LIKE '{$childTitle}%' ORDER BY c1.title, c2.title";
+            }
+        }
         return $this->sqltool->getListBySql($sql);
     }
 
