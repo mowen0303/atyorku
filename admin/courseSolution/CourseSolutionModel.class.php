@@ -102,8 +102,9 @@ class CourseSolutionModel extends Model
      * @return array
      */
     function getSolutionsByQuestionId($question_id){
-        $sql = "SELECT course_solution.*,user_class.is_admin,user_class.title AS user_title FROM (SELECT course_solution.*, image.url as img_url_3 FROM (SELECT course_solution.*, image.url as img_url_2 FROM (SELECT course_solution.*, image.url as img_url_1 FROM (SELECT course_solution.*,user.alias,user.degree,user.gender,user.user_class_id,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0) AS course_solution INNER JOIN user on course_solution.answerer_user_id = user.id) AS course_solution LEFT JOIN image ON course_solution.img_id_1 = image.id) AS course_solution LEFT JOIN image ON course_solution.img_id_2 = image.id) AS course_solution LEFT JOIN image ON course_solution.img_id_3 = image.id) AS course_solution LEFT JOIN user_class ON course_solution.user_class_id = user_class.id ORDER BY time_posted DESC";
-        $countSql = "SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_posted DESC";
+
+        $sql = "SELECT course_solution.*,user_class.is_admin,user_class.title AS user_title FROM (SELECT course_solution.*, image.url as img_url_3 FROM (SELECT course_solution.*, image.url as img_url_2 FROM (SELECT course_solution.*, image.url as img_url_1 FROM (SELECT course_solution.*,user.alias,user.degree,user.gender,user.user_class_id,user.enroll_year,user.img as profile_img_url,user.major FROM (SELECT * FROM course_solution WHERE question_id = {$question_id}) AS course_solution INNER JOIN user on course_solution.answerer_user_id = user.id) AS course_solution LEFT JOIN image ON course_solution.img_id_1 = image.id) AS course_solution LEFT JOIN image ON course_solution.img_id_2 = image.id) AS course_solution LEFT JOIN image ON course_solution.img_id_3 = image.id) AS course_solution LEFT JOIN user_class ON course_solution.user_class_id = user_class.id ORDER BY time_approved DESC, time_posted DESC";
+        $countSql = "SELECT COUNT(*) FROM course_solution WHERE question_id = {$question_id} AND time_approved = 0 ORDER BY time_approved DESC, time_posted DESC";
         return $this->getListWithPage("course_solution", $sql, $countSql,20);
     }
 

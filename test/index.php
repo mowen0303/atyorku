@@ -7,8 +7,12 @@ $msgModel = new \admin\msg\MsgModel();
 
 //var_dump($msgModel->pushMsgToUser(1,"good","1","good"));
 
-$time = BasicTool::getTodayTimestamp();
-print_r($time);
+//$time = BasicTool::getTodayTimestamp();
+//print_r($time);
+
+$user = new \admin\user\UserModel();
+
+$user->getDailyCredit() or BasicTool::throwException($user->errorMsg);
 
 //邮箱验证
 ?>

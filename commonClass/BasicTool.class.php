@@ -332,7 +332,7 @@ class BasicTool
 
     /**
      * 获取今日凌晨与午夜两个节点的时间戳
-     * @return array
+     * @return array ["startTime"=>timeStamp,"endTime"=>timeStamp]
      */
     static function getTodayTimestamp(){
         $startTime = strtotime(date("Y-m-d")." 00:00:01");

@@ -1,5 +1,7 @@
 <?php
 namespace admin\user;   //-- 注意 --//
+use admin\transaction\TransactionModel;
+use \Credit as Credit;
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
@@ -698,6 +700,39 @@ class UserModel extends Model {
         $sql = "SELECT credit from user WHERE id IN ({$uid})";
         $row = $this->sqltool->query($sql);
         return $row['credit'];
+    }
+
+    public function getDailyCredit(){
+        $uid = $this->userId or BasicTool::throwException("请先登录账号");
+        $time = BasicTool::getTodayTimestamp();
+        $currentTime = time();
+        $sql = "SELECT checkin_last_time,checkin_count FROM user WHERE id IN ({$uid})";
+        $row = $this->sqltool->getRowBySql($sql);
+        $checkinTime = $row["checkin_last_time"];
+        $checkinCount = $row["checkin_count"];
+        if($checkinTime>$time['startTime'] && $checkinTime <$time['endTime']){
+            $this->errorMsg = "领取失败: 你今日已领取过积分了, 请明天再来领取.";
+            return false;
+        }else{
+            $sql = "UPDATE user SET checkin_last_time = '{$currentTime}', checkin_count = checkin_count+1 WHERE id IN ({$uid})";
+            if($this->sqltool->query($sql)){
+                $transactionModel = new TransactionModel();
+                $creditAwardCount = count(Credit::$dailyCredit);
+                $creditAward = [];
+                if($checkinCount<$creditAwardCount-1){
+                    $creditAward = Credit::$dailyCredit[$checkinCount];
+                }else{
+                    $creditAward = Credit::$dailyCredit[$creditAwardCount-1];
+                }
+                $checkinCount++;
+                $credit = $creditAward['credit'];
+                return $transactionModel->addCredit($uid,$credit,"恭喜你,成功领取{$credit}点积分! 今天是你连续领取积分的第{$checkinCount}天.");
+            }else{
+                $this->errorMsg = "更新用户领取状态出错";
+                return false;
+            }
+        }
+
     }
 }
 
