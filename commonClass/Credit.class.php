@@ -11,6 +11,11 @@ class Credit {
         credit=>"-4"
     ];
 
+    public static $addCourseSolution = [
+        description=>"在问答系统中发布答案",
+        credit=>"4"
+    ];
+
     public static $addBook = [
         description=>"在资料市场中发布资料",
         credit=>"2"
@@ -21,9 +26,6 @@ class Credit {
         credit=>"10"
     ];
 
-    public static $addCourseSolution = [
-        description=>"在问答系统中发布答案",
-        credit=>"4"
-    ];
+
 }
 ?>
