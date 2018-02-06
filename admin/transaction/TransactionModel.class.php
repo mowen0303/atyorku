@@ -31,9 +31,12 @@ class TransactionModel extends Model {
      * @return bool
      */
     function addCredit($user_id, $amount, $description) {
-        if($amount==0){
+        $amount = (float)$amount;
+        if($amount < 0){
             $this->errorMsg = "积分值无效:{$amount}";
             return false;
+        }else if($amount==0){
+            return true;
         }
         if($this->addTransaction($user_id, $amount, $description)){
             return $this->setCredit($user_id, $this->getCredit($user_id));
@@ -78,11 +81,13 @@ class TransactionModel extends Model {
      * @return bool
      */
     function deductCredit($user_id, $amount, $description) {
-        if($amount == 0){
-            $this->errorMsg = "积分值无效: {$amount}";
+        $amount = (float)$amount;
+        if($amount < 0){
+            $this->errorMsg = "积分值无效:{$amount}";
             return false;
+        }else if($amount==0){
+            return true;
         }
-
         $credit = $this->getCredit($user_id);
         if($credit - $amount >= 0){
             $amount = -$amount;
@@ -107,6 +112,7 @@ class TransactionModel extends Model {
      * @return bool|\mysqli_result
      */
     function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description) {
+        $amount = (float)$amount;
         if($amount<=0){
             $this->errorMsg = "积分值错误:{$amount}";
             return false;
@@ -143,6 +149,13 @@ class TransactionModel extends Model {
      * @return bool
      */
     public function isCreditDeductible($user_id, $amount) {
+        $amount = (float)$amount;
+        if($amount < 0){
+            $this->errorMsg = "积分值无效:{$amount}";
+            return false;
+        }else if($amount==0){
+            return true;
+        }
         $credit = $this->getCredit($user_id);
         if($credit - $amount >= 0){
             return true;

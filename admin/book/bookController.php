@@ -331,18 +331,18 @@ function purchaseBookWithJson() {
             $sellerId = intval($result["user_id"]);
             $sellerId !== intval($buyerId) or BasicTool::throwException("无法购买自己的产品");
             $price = floatval($result["price"]);
-            if(!($price > 0 && $transactionModel->isCreditDeductible($buyerId))) BasicTool::throwException($transactionModel->errorMsg);
+            $transactionModel->isCreditDeductible($buyerId,$price) || BasicTool::throwException($transactionModel->errorMsg);
             $buyerDescription = "购买资料: " . $result["name"] . " ID: " . $result["id"];
             $sellerDescription = "售出资料: " . $result["name"] . " ID: " . $result["id"];
             $elink = $bookModel->getELinkById($bookId);
             if(!$elink){
                 $bookModel->unLaunchBook($bookId);
-                $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.");
+                $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.",true);
                 BasicTool::throwException("购买失败: 资料链接不存在, 此资料将被自动下架.");
             }
             $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription) or BasicTool::throwException($transactionModel->errorMsg);
-            $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $elink, true);
-            $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "您的资料: ".$result["name"]." 已售出",true);
+            $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $name.": ".$elink, $sellerId);
+            $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "我花了[{$price}]点积分,购买了你的资料[{$name}]",$buyerId);
             BasicTool::echoJson(1, "购买成功", $result);
         } else {
             BasicTool::throwException("资料不存在");

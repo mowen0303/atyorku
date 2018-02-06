@@ -63,11 +63,14 @@ function addQuestion($echoType = "normal") {
             $course_code_id = BasicTool::post("course_code_id", "course_code_id missing");
             $prof_id = BasicTool::post("prof_id", "missing prof_id");
         }
+
         $questioner_user_id = $currentUser->userId;
         $description = BasicTool::post("description", "Missing Description");
         $reward_amount = BasicTool::post("reward_amount", "Missing reward_amount");
         $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分数");
-        if(!($reward_amount > 0 && $transactionModel->isCreditDeductible($questioner_user_id,$reward_amount))) BasicTool::throwException($transactionModel->errorMsg);
+
+        $reward_amount <= 0 || $transactionModel->isCreditDeductible($questioner_user_id,$reward_amount) || BasicTool::throwException($transactionModel->errorMsg);
+
         //验证course_report和course_prof_report表里是否已有对应的报告
         $questionModel->getCourseReportByCourseCodeId($course_code_id) or $questionModel->addCourseReport($course_code_id);
         $questionModel->getCourseProfReportByCourseCodeIdProfId($course_code_id, $prof_id) or $questionModel->addCourseProfReport($course_code_id, $prof_id);
@@ -83,7 +86,6 @@ function addQuestion($echoType = "normal") {
         $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问") or BasicTool::throwException($transactionModel->errorMsg);
         //增加系统奖励积分
         $transactionModel->systemAdjustCredit($currentUser->userId,Credit::$addCourseQuestion);
-
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功", "/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         } else {

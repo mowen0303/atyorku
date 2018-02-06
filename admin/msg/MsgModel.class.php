@@ -17,14 +17,17 @@ class MsgModel extends Model {
      * @param $content      消息内容
      * @return bool
      */
-    public function pushMsgToUser($receiverId, $msgType, $msgTypeId, $content,$isSystemAsSender=false) {
+    public function pushMsgToUser($receiverId, $msgType, $msgTypeId, $content,$specifySenderId=0) {
         $receiverId or BasicTool::throwException("缺少 receiverId");
-        $senderUser = new UserModel();
-        $senderUser->userId or BasicTool::throwException("请先登录");
         $receiverUser = new UserModel($receiverId);
-        if ($isSystemAsSender==true){
-            $senderUser = new UserModel(28);
-        }else if($senderUser->userId == $receiverUser->userId) {
+        if ((int)$specifySenderId>0){
+            $senderUser = new UserModel($specifySenderId);
+        }else{
+            $senderUser = new UserModel();
+            $senderUser->userId or BasicTool::throwException("请先登录");
+        }
+
+        if($senderUser->userId == $receiverUser->userId) {
             return false;
         }
 
