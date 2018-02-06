@@ -89,13 +89,15 @@ function getListOfChildCourseCodeByParentIdWithJson() {
 /**
  * JSON -  通过搜索字段获取科目列表
  * @param q 搜索字段
+ * @param parent_only 容许只搜索父类 默认false
  * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=getListOfCourseCodeByStringWithJson&q=
  */
 function getListOfCourseCodeByStringWithJson(){
     global $courseCodeModel;
     try{
         $str = BasicTool::get("q") ?: "";
-        $result = $courseCodeModel->getListOfCourseCodeByString($str);
+        $allowParentOnly = BasicTool::get("parent_only") ?: false;
+        $result = $courseCodeModel->getListOfCourseCodeByString($str, $allowParentOnly);
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
         } else {
