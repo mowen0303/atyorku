@@ -5,8 +5,7 @@ call_user_func(BasicTool::get('action'));
 
 
 //管理员->增加或修改用户分类
-function modifyUserClass()
-{
+function modifyUserClass() {
     global $currentUser;
     try {
         //判断用户是否有"上帝"权限
@@ -37,18 +36,17 @@ function modifyUserClass()
     }
 }
 
-function modifyCredit()
-{
+function modifyCredit() {
     global $currentUser;
     try {
         $transactionModel = new \admin\transaction\TransactionModel();
         $userId = BasicTool::post('userId', '用户ID不能为空');
         $credit = BasicTool::post('credit', '点券值不能为空');
         $alias = $currentUser->aliasName;
-        if($credit>0){
-            $transactionModel->addCredit($userId,$credit,"管理员{$alias}手动给你增加了{$credit}点积分") or BasicTool::throwException("操作失败");
-        }else{
-            $transactionModel->deductCredit($userId,$credit,"管理员{$alias}手动给你减掉了{$credit}点积分") or BasicTool::throwException("操作失败");;
+        if ($credit > 0) {
+            $transactionModel->addCredit($userId, $credit, "管理员{$alias}手动给你增加了{$credit}点积分") or BasicTool::throwException("操作失败");
+        } else {
+            $transactionModel->deductCredit($userId, $credit, "管理员{$alias}手动给你减掉了{$credit}点积分") or BasicTool::throwException("操作失败");;
         }
         BasicTool::echoMessage("成功");
     } catch (Exception $e) {
@@ -61,8 +59,7 @@ function modifyCredit()
 
 
 //管理员->修改密码
-function updatePwd()
-{
+function updatePwd() {
 
     global $currentUser;
 
@@ -102,8 +99,7 @@ function updatePwd()
 }
 
 //管理员->删除用户
-function deleteUser()
-{
+function deleteUser() {
 
     global $currentUser;
 
@@ -133,8 +129,7 @@ function deleteUser()
 }
 
 //管理员->删除用户
-function deleteClassOfUser()
-{
+function deleteClassOfUser() {
 
     global $currentUser;
 
@@ -160,8 +155,7 @@ function deleteClassOfUser()
  * JSON - 获取用户列表
  * http://www.atyorku.ca/admin/user/userController.php?action=getListOfUserClassWithJson
  */
-function getListOfUserClassWithJson()
-{
+function getListOfUserClassWithJson() {
 
     global $currentUser;
 
@@ -176,8 +170,7 @@ function getListOfUserClassWithJson()
  * @param userId 用户id
  * http://www.atyorku.ca/admin/user/userController.php?action=getRowOfUserWithJson&userId=1
  */
-function getRowOfUserWithJson()
-{
+function getRowOfUserWithJson() {
 
     global $currentUser;
 
@@ -205,8 +198,7 @@ function getRowOfUserWithJson()
  * @param userId 用户id
  * http://www.atyorku.ca/admin/user/userController.php?action=getRowOfUserBasicInfoWithJson&userId=1
  */
-function getRowOfUserBasicInfoWithJson()
-{
+function getRowOfUserBasicInfoWithJson() {
 
     global $currentUser;
 
@@ -233,8 +225,7 @@ function getRowOfUserBasicInfoWithJson()
  * @param password2 确认密码
  * http://www.atyorku.ca/admin/user/userController.php?action=userIsLoginWithJson
  */
-function userIsLoginWithJson()
-{
+function userIsLoginWithJson() {
 
     global $currentUser;
 
@@ -253,8 +244,7 @@ function userIsLoginWithJson()
  * http://www.atyorku.ca/admin/user/userController.php?action=userSentActiveEmailWithJson
  * @throws Exception
  */
-function userSentActiveEmailWithJson()
-{
+function userSentActiveEmailWithJson() {
 
     global $currentUser;
 
@@ -293,8 +283,7 @@ function userSentActiveEmailWithJson()
     }
 }
 
-function userRegisterStateWithJson()
-{
+function userRegisterStateWithJson() {
 
     try {
 
@@ -319,8 +308,7 @@ function userRegisterStateWithJson()
  * @param profileVal -POST 字段的值
  * http://www.atyorku.ca/admin/user/userController.php?action=updateAliasWithJson
  */
-function updateAliasWithJson()
-{
+function updateAliasWithJson() {
 
     global $currentUser;
 
@@ -371,15 +359,14 @@ function updateAliasWithJson()
  * 激活用户
  * http://www.atyorku.ca/admin/user/userController.php?action=activateAccount&email=mowen0303@gmail.com&code=7403a6e115abb8d4e0dfce29919fc8ae&id=5
  */
-function activateAccount()
-{
+function activateAccount() {
     global $currentUser;
     try {
-        $email = BasicTool::get("email","email不能为空");
-        $code = BasicTool::get("code","code不能为空");
-        $id = BasicTool::get("id","id不能为空");
+        $email = BasicTool::get("email", "email不能为空");
+        $code = BasicTool::get("code", "code不能为空");
+        $id = BasicTool::get("id", "id不能为空");
         $userCodeModel = new \admin\userCode\UserCodeModel();
-        $userCodeModel->validateUserCode($id,$email,$code);
+        $userCodeModel->validateUserCode($id, $email, $code);
         $currentUser->changeUserClassToNormal($email) or BasicTool::throwException($currentUser->errorMsg);
         $currentUser->updateCookie($email);
         BasicTool::echoWapMessage("恭喜,AtYorkU账号激活成功", 0);
@@ -393,8 +380,7 @@ function activateAccount()
  * http://www.atyorku.ca/admin/user/userController.php?action=blockUserByUserId
  * 禁言一个用户, 解禁(days = 0)
  */
-function blockUserByUserId()
-{
+function blockUserByUserId() {
     global $currentUser;
     try {
         $currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('USER_UPDATE') or BasicTool::throwException("你无权操作");
@@ -419,8 +405,7 @@ function blockUserByUserId()
 }
 
 
-function topStudentToHTML()
-{
+function topStudentToHTML() {
     try {
         ob_start();
         include($_SERVER['DOCUMENT_ROOT'] . "/apps/topStudentList/index.php");
@@ -441,12 +426,11 @@ function topStudentToHTML()
  * @throws Exception
  */
 
-function updateDevice()
-{
+function updateDevice() {
     global $currentUser;
     try {
-        $deviceToken = BasicTool::post('device')?:"0";
-        $deviceType = BasicTool::post('device_type')?:'ios';
+        $deviceToken = BasicTool::post('device') ?: "0";
+        $deviceType = BasicTool::post('device_type') ?: 'ios';
         $currentUser->isLogin() or BasicTool::throwException("未登录");
         $arr['device'] = $deviceToken;
         $arr['device_type'] = $deviceType;
@@ -457,7 +441,7 @@ function updateDevice()
         setcookie("cc_de", $deviceToken, time() + 3600 * 24 * 2, '/');
         setcookie("cc_dev", $deviceToken, time() + 3600 * 24 * 2, '/');
 
-        BasicTool::echoJson(1,"修改成功",$userArray);
+        BasicTool::echoJson(1, "修改成功", $userArray);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
@@ -466,8 +450,7 @@ function updateDevice()
 /**
  * 退出时删除设备号
  */
-function logoutDevice()
-{
+function logoutDevice() {
 
     global $currentUser;
     //修改用户
@@ -476,21 +459,18 @@ function logoutDevice()
 }
 
 
-
-
 /**
  * ---- v2 弃用 -----
  * http://www.atyorku.ca/admin/user/userController.php?action=clearBadge
  * 重置badge
  */
-function clearBadge()
-{
+function clearBadge() {
     global $currentUser;
-    try{
+    try {
         $currentUser->clearBadge();
-        BasicTool::echoJson(1,"成功");
-    } catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "成功");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -522,19 +502,19 @@ function userRegisterWithJson() {
         $alias = explode('@', $name)[0];
         //可以为空的字段
         $user_class_id = $currentUser->enableEmailVerify ? 6 : 7; //普通用户
-        $degree  = BasicTool::post('degree');
-        $major =  BasicTool::post('major');
+        $degree = BasicTool::post('degree');
+        $major = BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException("注册失败");
+        $currentUser->register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException("注册失败");
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
         $msg = "注册成功";
-        if($currentUser->enableEmailVerify){
+        if ($currentUser->enableEmailVerify) {
             //邮箱验证
             $userCodeModel = new \admin\userCode\UserCodeModel();
-            $url = $userCodeModel->generateUserCode($name,"activateAccount");
+            $url = $userCodeModel->generateUserCode($name, "activateAccount");
             $mailBody = "<p>亲爱的用户:</p><p>您AtYorkU的账户已经注册成功,请点击下面链接进行激活:</p><p>{$url}</p>";
-            if(BasicTool::mailTo($name,"AtYorkU 账号激活邮件",$mailBody)){
+            if (BasicTool::mailTo($name, "AtYorkU 账号激活邮件", $mailBody)) {
                 $msg = "注册成功，为了保证账号正常使用，请尽快到邮箱激活账号";
             } else {
                 $msg = "注册成功，可以登录了! (当前邮件服务器压力过大，激活邮件发送失败，请稍登录账号后重新发送)";
@@ -545,11 +525,12 @@ function userRegisterWithJson() {
         BasicTool::echoJson(0, $e->getMessage());
     }
 }
+
 //管理员直接添加用户
 function addUser() {
     global $currentUser;
     try {
-        $currentUser->isUserHasAuthority("ADMIN")&&$currentUser->isUserHasAuthority("USER_ADD") or BasicTool::throwException("权限不足");
+        $currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("USER_ADD") or BasicTool::throwException("权限不足");
         //不能为空,需要验证的字段
         $name = BasicTool::post('username', '请填写用户名', 80);
         $pwd = BasicTool::post('password', '请填写密码');
@@ -559,24 +540,24 @@ function addUser() {
         $alias = explode('@', $name)[0];
         //可以为空的字段
         $user_class_id = BasicTool::post('user_class_id');
-        $degree  = BasicTool::post('degree');
-        $major =  BasicTool::post('major');
+        $degree = BasicTool::post('degree');
+        $major = BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id,$name,$pwd,$degree,$alias,$major,$wechat,$description) or BasicTool::throwException($currentUser->errorMsg);
+        $currentUser->register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException($currentUser->errorMsg);
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoMessage("注册成功");
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage());
     }
 }
+
 //管理员->添加或修改一个用户
-function updateUser()
-{
+function updateUser() {
     global $currentUser;
     try {
         //判断当前用户是否有"用户修改","用户添加"权限
-        $currentUser->isUserHasAuthority('ADMIN')&&$currentUser->isUserHasAuthority('USER_UPDATE') or BasicTool::throwException($currentUser->errorMsg);
+        $currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('USER_UPDATE') or BasicTool::throwException($currentUser->errorMsg);
 
         $alias = BasicTool::post('alias', false, 28);
         $user_class_id = BasicTool::post('user_class_id', '所属用户组不能为空');
@@ -600,13 +581,13 @@ function updateUser()
         }
         if ($blocktime > 0) {
             //设置禁言
-            $blocktime= time() + 3600 * 24 * $blocktime;
+            $blocktime = time() + 3600 * 24 * $blocktime;
         } else if ($blocktime == 0) {
             //解除禁言
             $blocktime = 0;
         }
         //修改用户
-        $currentUser->updateUserByAdmin($targetUserId,$alias,$user_class_id,$gender,$blocktime,$blockreason,$major,$enroll_year,$description,$wechat);
+        $currentUser->updateUserByAdmin($targetUserId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat);
         BasicTool::echoMessage("修改成功");
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage());
@@ -619,33 +600,33 @@ function updateUser()
  * @param email : string
  * return json
  */
-function retrievePasswordByEmailWithJson(){
+function retrievePasswordByEmailWithJson() {
     try {
 
-        $name = BasicTool::post('email',"Email不能为空");
+        $name = BasicTool::post('email', "Email不能为空");
         BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
         $userCodeModel = new \admin\userCode\UserCodeModel();
-        $url = $userCodeModel->generateUserCode($name,"getNewPasswordByEmail");
-        $time =date("Y-m-d H:i:s");
+        $url = $userCodeModel->generateUserCode($name, "getNewPasswordByEmail");
+        $time = date("Y-m-d H:i:s");
         $mailBody = "<p>亲爱的用户:</p><p>您在{$time}进行了密码找回操作</p><p>请点击下面连接，获取新的临时密码，:</p><p>{$url}</p>";
-        BasicTool::mailTo($name,"AtYorkU 密码找回",$mailBody) or BasicTool::throwException("密码找回失败,请联系官方微信客服号: atyorku666");
-        BasicTool::echoJson(1,"密码找回成功,请到{$name}的邮箱中查询新密码,若5分钟内未收到邮件,请检查你的垃圾邮件. 若持续收不到邮件,请联系官方客服微信号: atyorku666");
+        BasicTool::mailTo($name, "AtYorkU 密码找回", $mailBody) or BasicTool::throwException("密码找回失败,请联系官方微信客服号: atyorku666");
+        BasicTool::echoJson(1, "密码找回成功,请到{$name}的邮箱中查询新密码,若5分钟内未收到邮件,请检查你的垃圾邮件. 若持续收不到邮件,请联系官方客服微信号: atyorku666");
     } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
 /**
  * 通过邮箱验证码生成临时密码
  */
-function getNewPasswordByEmail(){
+function getNewPasswordByEmail() {
     global $currentUser;
     try {
-        $email = BasicTool::get("email","email不能为空");
-        $code = BasicTool::get("code","code不能为空");
-        $id = BasicTool::get("id","id不能为空");
+        $email = BasicTool::get("email", "email不能为空");
+        $code = BasicTool::get("code", "code不能为空");
+        $id = BasicTool::get("id", "id不能为空");
         $userCodeModel = new \admin\userCode\UserCodeModel();
-        $userCodeModel->validateUserCode($id,$email,$code);
+        $userCodeModel->validateUserCode($id, $email, $code);
         $newPwd = $currentUser->changePasswordRandomly($email) or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoWapMessage("你的新密码为 {$newPwd} ,请牢记并尽快修改.", 0);
     } catch (Exception $e) {
@@ -658,11 +639,10 @@ function getNewPasswordByEmail(){
  * userUpdateHeadImgWithJson - 更新头像
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=userUpdateHeadImgWithJson
  */
-function userUpdateHeadImgWithJson()
-{
+function userUpdateHeadImgWithJson() {
     global $currentUser;
     try {
-        $imgDir = $currentUser->uploadImg("file", $currentUser->userId,80000,200) or BasicTool::throwException($currentUser->errorMsg);
+        $imgDir = $currentUser->uploadImg("file", $currentUser->userId, 80000, 200) or BasicTool::throwException($currentUser->errorMsg);
         $arr = ["img" => $imgDir];
         $oldImg = $currentUser->getRowById("user", $currentUser->userId);
         $oldImg = $oldImg["img"];
@@ -671,7 +651,7 @@ function userUpdateHeadImgWithJson()
             unlink($_SERVER["DOCUMENT_ROOT"] . $oldImg);
         }
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1, $imgDir,$userArray);
+        BasicTool::echoJson(1, $imgDir, $userArray);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
@@ -687,13 +667,13 @@ function updateNicknameWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('alias','请输入新的别名',36);
+    try {
+        $val = BasicTool::post('alias', '请输入新的别名', 36);
         $currentUser->updateAlias($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    } catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -707,14 +687,13 @@ function updateGenderWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('gender','输入性别',1);
+    try {
+        $val = BasicTool::post('gender', '输入性别', 1);
         $currentUser->updateGender($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -728,14 +707,13 @@ function updateMajorWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('major',false,30);
+    try {
+        $val = BasicTool::post('major', false, 30);
         $currentUser->updateMajor($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -749,14 +727,13 @@ function updateWechatWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('wechat',false,40);
+    try {
+        $val = BasicTool::post('wechat', false, 40);
         $currentUser->updateWechat($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -770,14 +747,13 @@ function updateDescriptionWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('description',false,90);
+    try {
+        $val = BasicTool::post('description', false, 90);
         $currentUser->updateDescription($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -791,14 +767,13 @@ function updateEnrollYearWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('enrollYear',false,90);
+    try {
+        $val = BasicTool::post('enrollYear', false, 90);
         $currentUser->updateEnrollYear($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -812,14 +787,13 @@ function updateDegreeWithJson() {
 
     global $currentUser;
 
-    try{
-        $val = BasicTool::post('degree',false,60);
+    try {
+        $val = BasicTool::post('degree', false, 60);
         $currentUser->updateDegree($val) or BasicTool::throwException($currentUser->errorMsg);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"修改成功",$userArray);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "修改成功", $userArray);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -832,15 +806,14 @@ function updateDegreeWithJson() {
  */
 function updatePasswordWithJson() {
     global $currentUser;
-    try{
-        $oldPassword = BasicTool::post('oldPassword',false);
-        $newPassword = BasicTool::post('newPassword',false);
-        $currentUser->login($currentUser->userName,$oldPassword) or BasicTool::throwException('原密码错误');
+    try {
+        $oldPassword = BasicTool::post('oldPassword', false);
+        $newPassword = BasicTool::post('newPassword', false);
+        $currentUser->login($currentUser->userName, $oldPassword) or BasicTool::throwException('原密码错误');
         $currentUser->updatePassword(md5($newPassword)) or BasicTool::throwException($currentUser->errorMsg);
-        BasicTool::echoJson(1,"密码修改成功");
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "密码修改成功");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -851,12 +824,11 @@ function updatePasswordWithJson() {
  */
 function getBadgeWithJson() {
     global $currentUser;
-    try{
+    try {
         $badge = $currentUser->getBadge();
-        BasicTool::echoJson(1,"获取成功",$badge);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "获取成功", $badge);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
@@ -868,17 +840,31 @@ function getBadgeWithJson() {
  * @param newPassword : string
  * return json
  */
-function getListOfMsgReceive()
-{
+function getListOfMsgReceive() {
     global $currentUser;
-    try{
+    try {
         $arr = $currentUser->getListOfMsgReceive() or BasicTool::throwException("没有消息");
         $currentUser->clearBadge();
-        BasicTool::echoJson(1,"获取成功",$arr);
-    }
-    catch(Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
+        BasicTool::echoJson(1, "获取成功", $arr);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
+
+/**
+ * getDailyCredit - 领取每日积分
+ * [GET] http://www.atyorku.ca/admin/user/userController.php?action=getDailyCredit
+ * return json
+ */
+function getDailyCredit(){
+    global $currentUser;
+    try {
+        $result = $currentUser->getDailyCredit() or BasicTool::throwException($currentUser->errorMsg);
+        BasicTool::echoJson(1, $result[0], $result[1]);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 
 ?>

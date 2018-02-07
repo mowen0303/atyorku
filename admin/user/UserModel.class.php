@@ -702,6 +702,11 @@ class UserModel extends Model {
         return $row['credit'];
     }
 
+    /**
+     * 获取用户每日积分
+     * @return bool|string          成功返回array["积分描述",积分值];,失败返回false
+     * @throws Exception
+     */
     public function getDailyCredit(){
         $uid = $this->userId or BasicTool::throwException("请先登录账号");
         $time = BasicTool::getTodayTimestamp();
@@ -711,7 +716,7 @@ class UserModel extends Model {
         $checkinTime = $row["checkin_last_time"];
         $checkinCount = $row["checkin_count"];
         if($checkinTime>$time['startTime'] && $checkinTime <$time['endTime']){
-            $this->errorMsg = "领取失败: 你今日已领取过积分了, 请明天再来领取.";
+            $this->errorMsg = "你今日已领取过积分了哦 ^_^";
             return false;
         }else{
             $sql = "UPDATE user SET checkin_last_time = '{$currentTime}', checkin_count = checkin_count+1 WHERE id IN ({$uid})";
@@ -726,7 +731,12 @@ class UserModel extends Model {
                 }
                 $checkinCount++;
                 $credit = $creditAward['credit'];
-                return $transactionModel->addCredit($uid,$credit,"恭喜你,成功领取{$credit}点积分! 今天是你连续领取积分的第{$checkinCount}天.");
+                $description = "恭喜你,领取成功! 今天是你连续领取积分的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
+                if($transactionModel->addCredit($uid,$credit,$description)){
+                    return [$description,$credit];
+                }else{
+                    return false;
+                }
             }else{
                 $this->errorMsg = "更新用户领取状态出错";
                 return false;
