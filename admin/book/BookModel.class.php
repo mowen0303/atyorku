@@ -374,7 +374,6 @@ class BookModel extends Model
 
         $sql = "{$select} {$from} {$where} {$order}";
         $countSql = "SELECT COUNT(*) {$from} {$where}";
-
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
         // Format publish time and enroll year
         foreach ($arr as $k => $v) {

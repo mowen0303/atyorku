@@ -183,7 +183,6 @@ function getListOfBooksWithJsonV2() {
             $result = $bookModel->getListOfBooks($pageSize);
         } else {
             $qArr = array_filter(array(
-                'book_category_id'=>intval($categoryId),
                 'c2.id'=>intval($courseParentId),
                 'c1.id'=>intval($courseChildId),
                 'b.term_year'=>intval($year),
@@ -216,6 +215,12 @@ function getListOfBooksWithJsonV2() {
                 $qArr,
                 array_keys($qArr)
             ));
+            if($categoryId){
+                if($q){
+                    $q .= " AND ";
+                }
+                $q .= "b.book_category_id in ($categoryId)";
+            }
 
             $result = $bookModel->getListOfBooks($pageSize,$q);
         }
