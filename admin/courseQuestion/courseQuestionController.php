@@ -69,7 +69,7 @@ function addQuestion($echoType = "normal") {
         $reward_amount = BasicTool::post("reward_amount", "Missing reward_amount");
         $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分数");
 
-        $reward_amount <= 0 || $transactionModel->isCreditDeductible($questioner_user_id,$reward_amount) || BasicTool::throwException($transactionModel->errorMsg);
+        $reward_amount <= 0 || $transactionModel->isCreditDeductible($questioner_user_id, $reward_amount) || BasicTool::throwException($transactionModel->errorMsg);
 
         //验证course_report和course_prof_report表里是否已有对应的报告
         $questionModel->getCourseReportByCourseCodeId($course_code_id) or $questionModel->addCourseReport($course_code_id);
@@ -85,7 +85,7 @@ function addQuestion($echoType = "normal") {
         //当设置了积分悬赏的时候,从用户账户中扣除
         $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问") or BasicTool::throwException($transactionModel->errorMsg);
         //增加系统奖励积分
-        $transactionModel->systemAdjustCredit($currentUser->userId,Credit::$addCourseQuestion);
+        $transactionModel->systemAdjustCredit($currentUser->userId, Credit::$addCourseQuestion);
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功", "/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         } else {
@@ -292,15 +292,14 @@ function deleteQuestion($echoType = "normal") {
         //退还积分
         if (is_array($id)) {
             $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问") or BasicTool::throwException("删除失败，退还积分失败");
-            foreach ($questioner_user_ids as $questioner_user_id){
+            foreach ($questioner_user_ids as $questioner_user_id) {
                 //减去系统奖励积分
-                $transactionModel->systemAdjustCredit($questioner_user_id,Credit::$deleteCourseQuestion);
+                $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion);
             }
-        }
-        else {
-            $reward_amount<=0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
+        } else {
+            $reward_amount <= 0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
             //减去系统奖励积分
-            $transactionModel->systemAdjustCredit($questioner_user_id,Credit::$deleteCourseQuestion);
+            $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion);
         }
         //退还积分成功,删除图片
         $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
@@ -365,10 +364,11 @@ function getQuestionsByCourseCodeIdProfNameWithJson() {
     global $questionModel, $profModel;
     try {
         $flag = BasicTool::get("flag");
+        $uid = BasicTool::get("uid");
         $course_code_id = BasicTool::get("course_code_id", "Missing Course Code Id");
         $prof_name = BasicTool::get("prof_name");
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
-        $result = $questionModel->getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag);
+        $result = $questionModel->getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag, $uid);
         $results = [];
         if ($result) {
             foreach ($result as $question) {

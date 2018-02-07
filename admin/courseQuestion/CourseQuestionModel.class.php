@@ -112,7 +112,7 @@ class CourseQuestionModel extends Model {
     }
 
     function getQuestionById($id) {
-        $sql = "SELECT course_question.*, course_code.title AS course_code_parent_title FROM (SELECT course_question.*,course_code.parent_id AS course_code_parent_id,course_code.title AS course_code_child_title FROM (SELECT course_question.*,user_class.is_admin,user_class.title AS user_title FROM (SELECT course_question.*,user.alias,gender,enroll_year,major,degree,user_class_id,user.img AS profile_img_url FROM (SELECT course_question.*,image.url AS img_url_3 FROM (SELECT course_question.*,image.url AS img_url_2 FROM (SELECT course_question.*,image.url AS img_url_1 FROM (SELECT * FROM course_question WHERE id in ({$id})) AS course_question LEFT JOIN image ON course_question.img_id_1 = image.id) AS course_question LEFT JOIN image ON course_question.img_id_2 = image.id) AS course_question LEFT JOIN image ON course_question.img_id_3 = image.id) AS course_question LEFT JOIN user ON course_question.questioner_user_id = user.id) AS course_question LEFT JOIN user_class ON course_question.user_class_id = user_class.id) AS course_question LEFT JOIN course_code ON course_question.course_code_id = course_code.id) AS course_question LEFT JOIN course_code ON course_question.course_code_parent_id = course_code.id";
+        $sql = "SELECT course_question.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT course_question.*, course_code.title AS course_code_parent_title FROM (SELECT course_question.*,course_code.parent_id AS course_code_parent_id,course_code.title AS course_code_child_title FROM (SELECT course_question.*,user_class.is_admin,user_class.title AS user_title FROM (SELECT course_question.*,user.alias,gender,enroll_year,major,degree,user_class_id,user.img AS profile_img_url FROM (SELECT course_question.*,image.url AS img_url_3 FROM (SELECT course_question.*,image.url AS img_url_2 FROM (SELECT course_question.*,image.url AS img_url_1 FROM (SELECT * FROM course_question WHERE id in ({$id})) AS course_question LEFT JOIN image ON course_question.img_id_1 = image.id) AS course_question LEFT JOIN image ON course_question.img_id_2 = image.id) AS course_question LEFT JOIN image ON course_question.img_id_3 = image.id) AS course_question LEFT JOIN user ON course_question.questioner_user_id = user.id) AS course_question LEFT JOIN user_class ON course_question.user_class_id = user_class.id) AS course_question LEFT JOIN course_code ON course_question.course_code_id = course_code.id) AS course_question LEFT JOIN course_code ON course_question.course_code_parent_id = course_code.id) AS course_question LEFT JOIN professor ON course_question.prof_id = professor.id";
         return $this->sqltool->getRowBySql($sql);
 
     }
@@ -126,7 +126,7 @@ class CourseQuestionModel extends Model {
      * @param int $flag
      * @return array
      */
-    function getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag = 1) {
+    function getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag = 2, $uid) {
 
         $condition = "";
         if ($flag == 0) {
@@ -136,10 +136,11 @@ class CourseQuestionModel extends Model {
         } else if ($flag == 2) {
             $condition .= "true ";
         }
-        if ($course_code_id) $condition .= "AND course_code_id in ({$course_code_id})";
-        if ($prof_id) $condition .= "AND prof_id in ({$prof_id})";
+        if ($course_code_id) $condition .= "AND course_code_id in ({$course_code_id}) ";
+        if ($prof_id) $condition .= "AND prof_id in ({$prof_id}) ";
+        if ($uid) $condition .= "AND questioner_user_id in ($uid) ";
 
-        $sql = "SELECT course_question.*, course_code.title AS course_code_parent_title FROM (SELECT course_question.*,course_code.parent_id AS course_code_parent_id,course_code.title AS course_code_child_title FROM (SELECT course_question.*,image.url AS solution_img_url_1 FROM (SELECT course_question.*, course_solution.img_id_1 AS solution_img_id_1, course_solution.description AS solution_description FROM (SELECT course_question.*,user.alias,user.degree,user.gender,user.enroll_year,user.img AS profile_img_url, user.major FROM (SELECT * FROM course_question WHERE {$condition}) AS course_question LEFT JOIN user on user.id = course_question.answerer_user_id) AS course_question LEFT JOIN course_solution ON course_solution.id = course_question.solution_id) AS course_question LEFT JOIN image ON image.id = course_question.solution_img_id_1) AS course_question LEFT JOIN course_code ON course_question.course_code_id = course_code.id) AS course_question LEFT JOIN course_code ON course_question.course_code_parent_id = course_code.id ORDER BY course_question.time_posted DESC";
+        $sql = "SELECT course_question.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT course_question.*, course_code.title AS course_code_parent_title FROM (SELECT course_question.*,course_code.parent_id AS course_code_parent_id,course_code.title AS course_code_child_title FROM (SELECT course_question.*,image.url AS solution_img_url_1 FROM (SELECT course_question.*, course_solution.img_id_1 AS solution_img_id_1, course_solution.description AS solution_description FROM (SELECT course_question.*,user.alias,user.degree,user.gender,user.enroll_year,user.img AS profile_img_url, user.major FROM (SELECT * FROM course_question WHERE {$condition}) AS course_question LEFT JOIN user on user.id = course_question.answerer_user_id) AS course_question LEFT JOIN course_solution ON course_solution.id = course_question.solution_id) AS course_question LEFT JOIN image ON image.id = course_question.solution_img_id_1) AS course_question LEFT JOIN course_code ON course_question.course_code_id = course_code.id) AS course_question LEFT JOIN course_code ON course_question.course_code_parent_id = course_code.id) AS course_question LEFT JOIN professor ON course_question.prof_id = professor.id ORDER BY course_question.time_posted DESC";
 
         $countSql = "SELECT COUNT(*) FROM course_question WHERE {$condition} ORDER BY course_question.time_posted DESC";
 

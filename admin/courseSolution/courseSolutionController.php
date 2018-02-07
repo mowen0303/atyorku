@@ -34,7 +34,7 @@ function addSolution($echoType = "normal"){
         !$solutionModel->shouldRewardAddSolution($questioner_user_id) or $transactionModel->systemAdjustCredit($answerer_user_id,Credit::$addCourseSolution);
         //推送
         $msgModel = new \admin\msg\MsgModel();
-        $msgModel->pushMsgToUser($questioner_user_id,'course_question',$question_id,"[作业问答]".substr($description,0,80));
+        $msgModel->pushMsgToUser($questioner_user_id,'course_question',$question_id,substr($description,0,80));
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功","/admin/courseSolution/index.php?action=getSolutions&question_id={$question_id}");

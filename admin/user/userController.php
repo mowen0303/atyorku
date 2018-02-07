@@ -219,27 +219,6 @@ function getRowOfUserBasicInfoWithJson() {
 
 
 /**
- * JSON - 检测用户登录状态
- * @param username 用户名
- * @param password 密码
- * @param password2 确认密码
- * http://www.atyorku.ca/admin/user/userController.php?action=userIsLoginWithJson
- */
-function userIsLoginWithJson() {
-
-    global $currentUser;
-
-    if ($currentUser->isLogin()) {
-        BasicTool::echoJson(1, "已经登录");
-    } else {
-        BasicTool::echoJson(0, "没登录");
-    }
-
-
-}
-
-
-/**
  * 重发激活邮件
  * http://www.atyorku.ca/admin/user/userController.php?action=userSentActiveEmailWithJson
  * @throws Exception
@@ -602,7 +581,6 @@ function updateUser() {
  */
 function retrievePasswordByEmailWithJson() {
     try {
-
         $name = BasicTool::post('email', "Email不能为空");
         BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
         $userCodeModel = new \admin\userCode\UserCodeModel();
@@ -778,7 +756,7 @@ function updateEnrollYearWithJson() {
 }
 
 /**
- * updateDegreeWithJson - 入学年份
+ * 入学年份
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=updateDegreeWithJson
  * @param description : string
  * return json
@@ -798,7 +776,7 @@ function updateDegreeWithJson() {
 }
 
 /**
- * updatePasswordWithJson - 更改密码
+ * 更改密码
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=updatePasswordWithJson
  * @param oldPassword : string
  * @param newPassword : string
@@ -818,7 +796,7 @@ function updatePasswordWithJson() {
 }
 
 /**
- * getBadgeWithJson - 获取badge
+ * 获取badge
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=getBadgeWithJson
  * return json
  */
@@ -834,7 +812,7 @@ function getBadgeWithJson() {
 
 
 /**
- * getListOfMsgReceive - 获取当前用户的小纸条,并清空badge
+ * 获取当前用户的小纸条,并清空badge
  * [post] http://www.atyorku.ca/admin/user/userController.php?action=getListOfMsgReceive&page=1
  * @param oldPassword : string
  * @param newPassword : string
@@ -852,7 +830,7 @@ function getListOfMsgReceive() {
 }
 
 /**
- * getDailyCredit - 领取每日积分
+ * 领取每日积分
  * [GET] http://www.atyorku.ca/admin/user/userController.php?action=getDailyCredit
  * return json
  */
@@ -861,6 +839,20 @@ function getDailyCredit(){
     try {
         $result = $currentUser->getDailyCredit() or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoJson(1, $result[0], $result[1]);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * 更新用户cookie,并返回用户数据
+ * http://www.atyorku.ca/admin/user/userController.php?action=updateCookieWithJson
+ */
+function updateCookieWithJson() {
+    global $currentUser;
+    try {
+        $row = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
+        BasicTool::echoJson(1, 'cookie更新成功',$row);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }

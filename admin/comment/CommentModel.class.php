@@ -8,7 +8,7 @@ use \Exception as Exception;
 
 /**
  * 评论Model使用指南：
- * 1. 添加一个字段 count_comments 到需要使用评论功能的数据库表中
+ * 1. 添加2个字段 count_comments,update_time 到需要使用评论功能的数据库表中
  * 2. 使用表名作为 $section_name 的值
  * 3. 使用表中的ID 作为 $section_id 的值
  */
@@ -37,13 +37,13 @@ class CommentModel extends Model
         $arr["receiver_id"] = $receiver_id;
         $arr["section_name"] = $section_name;
         $arr["section_id"] = $section_id;
-        $arr["comment"] = $comment ? $comment : "";
+        $arr["comment"] = $comment ? addslashes($comment) : "";
         $arr["time"] = time();
         $this->addRow("comment", $arr) or BasicTool::throwException($this->errorMsg);
         //更新统计
         self::updateCountNumber($section_name,$section_id);
         //获取新插入的评论及评论人信息
-        $sql = "SELECT comment.*,user_class.is_admin,title FROM (SELECT comment.*, user.id AS uid, user.alias,img,gender,major,enroll_year,degree FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id) AS comment LEFT JOIN user_class ON comment.uid = user_class.id";
+        $sql = "SELECT comment.*,user_class.is_admin,title FROM (SELECT comment.*, user.id AS uid, user.alias,user_class_id,img,gender,major,enroll_year,degree FROM (SELECT * FROM comment WHERE id = {$this->idOfInsert}) AS comment INNER JOIN user ON comment.sender_id = user.id) AS comment LEFT JOIN user_class ON comment.user_class_id = user_class.id";
         $arr = $this->sqltool->getRowBySql($sql);
         $arr['time'] = BasicTool::translateTime($arr['time']);
         $arr['enroll_year'] = BasicTool::translateEnrollYear($arr['enroll_year']);
@@ -130,9 +130,61 @@ class CommentModel extends Model
      * @return bool|\mysqli_result
      */
     private function updateCountNumber($section_name,$section_id){
+        $time = time();
+        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time} WHERE id = {$section_id}";
+        return $this->sqltool->query($sql);
+    }
+
+
+
+
+    /**
+     * 转移数据临时---------
+     */
+    public function transferDataFromForum(){
+        //验证权限
+        $currentUser = new UserModel();
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("无权操作");
+
+        $sql = "SELECT * FROM forum_comment";
+        $arr = $this->sqltool->getListBySql($sql);
+        $amount = count($arr);
+        $i = 0;
+        foreach($arr as $row){
+            $i++;
+            //插入数据
+            if($this->instert($row['user_id'],$row['forum_id'],$row['content_comment'],$row['time'])){
+                echo "{$i}/{$amount}<br>";
+            }
+        }
+    }
+    function instert($sender_id,$section_id,$comment,$time){
+        $arr["parent_id"] = 0;
+        $arr["sender_id"] = $sender_id;
+        $arr["receiver_id"] = 0;
+        $arr["section_name"] = 'forum';
+        $arr["section_id"] = $section_id;
+        $arr["comment"] = addslashes($comment);
+        $arr["time"] =  $time;
+        $bool = $this->addRow("comment", $arr) or BasicTool::throwException($this->errorMsg);
+        if($bool){
+            if(self::updateCountNumber2('forum',$section_id)) {
+                return true;
+            }else{
+                echo  "更新帖子信息失败<br>";
+            }
+        }else{
+            echo  "插入失败<br>";
+        }
+    }
+    private function updateCountNumber2($section_name,$section_id){
+        $time = time();
         $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) WHERE id = {$section_id}";
         return $this->sqltool->query($sql);
     }
+    /**
+     * 转移数据临时---------
+     */
 
 
 }

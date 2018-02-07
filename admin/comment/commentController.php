@@ -93,15 +93,12 @@ function deleteCommentByIdWithJson(){
     }
 }
 
-
-function test(){
+//http://www.atyorku.ca/admin/comment/commentController.php?action=transferData
+function transferData(){
     global $commentModel;
-    try{
-        $commentModel->deleteComment('event',19);
-        BasicTool::echoJson(1,"删除成功");
-    }catch (Exception $e){
-        BasicTool::echoJson(0, $e->getMessage());
-    }
+    $commentModel->transferDataFromForum();
 }
+
+
 
 
