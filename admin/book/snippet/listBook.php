@@ -75,7 +75,15 @@ $userModel = new \admin\user\UserModel();
                         <td><?php echo $row['course_code_parent_title'] . $row['course_code_child_title'] ?></td>
                         <td><?php echo $row['alias'] ?></td>
                         <td><?php echo $row['publish_time'] ?></td>
-                        <td><a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a></td>
+                        <td>
+                            <a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a>
+                            <?php
+                            if(intval($row['is_e_document'])){
+                                $id = $row['id'];
+                                echo '<a class="btn" href="bookController.php?action=getELinkById&id=' . $id . '">链接</a>';
+                            }
+                            ?>
+                        </td>
                     </tr>
                 <?php
                 }

@@ -633,4 +633,24 @@ function emptyAllDeletedBooks() {
     }
 }
 
+
+/**
+ * 获取一本二手书的E链接
+ * @param $id 二手书ID
+ */
+function getELinkById(){
+    global $bookModel;
+    global $currentUser;
+    try {
+        if(!$currentUser->isUserHasAuthority('ADMIN')) {
+            BasicTool::throwException("无权限查看");
+        }
+        $id = BasicTool::get("id","二手书ID不能为空");
+        $link = $bookModel->getELinkById($id) or BasicTool::throwException("未找到E-链接");
+        BasicTool::echoMessage($link, $_SERVER['HTTP_REFERER']);
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+    }
+}
+
 ?>
