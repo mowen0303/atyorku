@@ -481,6 +481,7 @@ function addComment($echoType = "normal") {
     global $forumModel;
     global $msgModel;
     try {
+        BasicTool::throwException("AtYorkU 2.0正在部署中，旧版同学圈评论功能暂停使用。");
         //判断是否有权限发帖
         $currentUser->isUserHasAuthority('FORUM_COMMENT') or BasicTool::throwException($currentUser->errorMsg);
         $currentUser->addActivity();
