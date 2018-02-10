@@ -376,6 +376,15 @@ function restoreDeletedBookByIdWithJson() {
     }
 }
 
+
+/**
+ * 下架一本二手书
+ * @param id 二手书ID
+ */
+function unLaunchBookByIdWithJson() {
+    unLaunchBookById("json");
+}
+
 //=========== END Function with JSON ============//
 
 
@@ -650,6 +659,66 @@ function getELinkById(){
         BasicTool::echoMessage($link, $_SERVER['HTTP_REFERER']);
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+    }
+}
+
+/**
+ * 上架一本二手书
+ * @param $echoType
+ * @param $id 该二手书ID
+ */
+function launchBookById($echoType = "normal"){
+    global $bookModel;
+    global $currentUser;
+    try {
+        $id = BasicTool::get("id","二手书ID不能为空");
+        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该二手书");
+        if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
+            $currentUser->userId == $book['user_id'] or BasicTool::throwException("无权限");
+        }
+        $result = $bookModel->launchBook($id) or BasicTool::throwException("上架失败");
+
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功上架该二手书", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, $result);
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+/**
+ * 下架一本二手书
+ * @param $echoType
+ * @param $id 该二手书ID
+ */
+function unLaunchBookById($echoType = "normal"){
+    global $bookModel;
+    global $currentUser;
+    try {
+        $id = BasicTool::get("id","二手书ID不能为空");
+        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该二手书");
+        if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
+            $currentUser->userId == $book['user_id'] or BasicTool::throwException("无权下架其他人的二手书");
+        }
+        $result = $bookModel->unLaunchBook($id) or BasicTool::throwException("下架失败");
+
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功下架该二手书", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, $result);
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
     }
 }
 

@@ -11,13 +11,8 @@ $isGod = $userModel->isUserHasAuthority("GOD");
     <a class="btn" href="index.php?listBook">返回</a>
 </nav>
 <article class="mainBox">
-    <?php
-    if($isGod){
-        echo "<form action=\"bookController.php?action=emptyAllDeletedBooks\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"清空回收站\" class=\"btn\" onclick=\"return confirm('确认清空回收站?')\"></footer></form>";
-    }
-    ?>
-    <header><h2>已删除的二手书列表</h2></header>
-    <form action="bookController.php?action=deleteBook" method="post">
+    <header><h2>已下架的二手书列表</h2></header>
+    <form action="bookController.php?action=deleteBookLogically" method="post">
         <section>
             <table class="tab">
                 <thead>
@@ -37,7 +32,7 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                 </thead>
                 <tbody>
                 <?php
-                $arr = $bookModel->getListOfDeletedBooks();
+                $arr = $bookModel->getListOfUnavailableBooks();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
@@ -55,7 +50,16 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                         <td><?php echo htmlspecialchars($row['course_code_parent_title'] . $row['course_code_child_title']) ?></td>
                         <td><?php echo htmlspecialchars($row['alias']) ?></td>
                         <td><?php echo htmlspecialchars($row['publish_time']) ?></td>
-                        <td><a class="btn restoreBtn" href="#" data-id="<?php echo $row['id']?>">恢复</a></td>
+                        <td>
+                            <a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a>
+                            <a class="btn" href="bookController.php?action=launchBookById&id=<?php echo $row['id']?>">上架</a>
+                            <?php
+                            if(intval($row['is_e_document'])){
+                                $id = $row['id'];
+                                echo '<a class="btn" href="bookController.php?action=getELinkById&id=' . $id . '">链接</a>';
+                            }
+                            ?>
+                        </td>
                     </tr>
                 <?php
                 }
@@ -69,41 +73,3 @@ $isGod = $userModel->isUserHasAuthority("GOD");
         </footer>
     </form>
 </article>
-
-<script>
-    $(document).ready(function() {
-        // 注册恢复按钮
-        $(".restoreBtn").click(function (e) {
-            e.preventDefault();
-            var that = this;
-            $(this).addClass('isDisabled');
-            var $bookId = e.target.dataset.id;
-            if ($bookId) {
-                $.ajax({
-                    url: "/admin/book/bookController.php?action=restoreDeletedBookByIdWithJson",
-                    type: "POST",
-                    contentType: "application/x-www-form-urlencoded",
-                    data: {"book_id":$bookId},
-                    dataType: "json",
-                }).done(function (json) {
-                    console.log(json);
-                    if (json.code === 1) {
-                        alert("恢复成功");
-                        var td = "#book" + $bookId;
-                        $(td).remove();
-                    }else{
-                        alert("恢复失败");
-                        $(that).removeClass('isDisabled');
-                    }
-                }).fail(function (data) {
-                    console.log(data);
-                    alert("恢复失败");
-                    $(that).removeClass('isDisabled');
-                });
-            } else {
-                alert("缺失用户ID或二手书ID");
-                $(that).removeClass('isDisabled');
-            }
-        });
-    });
-</script>

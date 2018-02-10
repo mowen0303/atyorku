@@ -27,30 +27,30 @@ $flag = BasicTool::get("flag");
 <article class="mainBox">
     <form action="bookController.php?action=modifyBook" method="post" enctype="multipart/form-data">
         <input name="flag" value="<?php echo $flag?>" type="hidden">
-        <input name="id" value="<?php echo BasicTool::get('id')?>" type="hidden">
+        <input name="id" value="<?php echo htmlspecialchars(BasicTool::get('id'))?>" type="hidden">
         <header>
             <h2><?php echo $flag=="update"?"修改二手书":"添加二手书"; ?></h2>
         </header>
         <section class="formBox">
             <div>
                 <label>标题<i>*</i></label>
-                <input class="input" type="text" name="name" value="<?php echo BasicTool::get('name') ?>">
+                <input class="input" type="text" name="name" value="<?php echo htmlspecialchars(BasicTool::get('name')) ?>">
             </div>
             <div>
-                <label>积分付款<input type="checkbox" name="pay_with_points" <?php echo (BasicTool::get('pay_with_points') ? "checked" : "") ?>></label>
-                <label>电子书<input type="checkbox" name="is_e_document" <?php echo (BasicTool::get('is_e_document') ? "checked" : "") ?>></label>
+                <label>积分付款<input type="checkbox" name="pay_with_points" <?php echo htmlspecialchars(BasicTool::get('pay_with_points') ? "checked" : "") ?>></label>
+                <label>电子书<input type="checkbox" name="is_e_document" <?php echo htmlspecialchars(BasicTool::get('is_e_document') ? "checked" : "") ?>></label>
             </div>
             <div>
                 <label>电子书链接</label>
-                <textarea class="input input-textarea" name="e_link"><?php echo BasicTool::get('e_link') ?></textarea>
+                <textarea class="input input-textarea" name="e_link"><?php echo htmlspecialchars(BasicTool::get('e_link')) ?></textarea>
             </div>
             <div>
                 <label>所属分类<i>*</i></label>
-                <select class="input input-select input-size50 selectDefault" name="book_category_id" defvalue="<?php echo BasicTool::get('book_category_id') ?>">
+                <select class="input input-select input-size50 selectDefault" name="book_category_id" defvalue="<?php echo htmlspecialchars(BasicTool::get('book_category_id')) ?>">
                     <?php
                         $arrOfCategory = $bookCategoryModel->getListOfBookCategory(100);
                         foreach($arrOfCategory as $rowOfCategory){
-                            echo '<option value="'.$rowOfCategory['id'].'">'.$rowOfCategory['name'].'</option>';
+                            echo '<option value="'.htmlspecialchars($rowOfCategory['id']).'">'.htmlspecialchars($rowOfCategory['name']).'</option>';
                         }
                     ?>
                 </select>
@@ -58,26 +58,26 @@ $flag = BasicTool::get("flag");
             <div id="courseCodeInputComponent" class="row">
                 <div class="col-2">
                     <label>课程类别 (例如:ADMS)<i>*</i></label>
-                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent_title" value="<?php echo BasicTool::get('course_code_parent_title')?>">
+                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent_title" value="<?php echo htmlspecialchars(BasicTool::get('course_code_parent_title'))?>">
                     <datalist id="parentCodeList"></datalist>
                 </div>
                 <div class="col-2">
                     <label>课程代码 (例如:1000)<i>*</i></label>
-                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child_title" value="<?php echo BasicTool::get('course_code_child_title')?>">
+                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child_title" value="<?php echo htmlspecialchars(BasicTool::get('course_code_child_title'))?>">
                     <datalist id="childCodeCodeList"></datalist>
                 </div>
             </div>
             <div id="professorInputComponent">
                 <div>
                     <label>教授<i>*</i></label>
-                    <input class="input" type="text" list="professorList" name="prof_name" value="<?php echo BasicTool::get('prof_name') ?>" />
+                    <input class="input" type="text" list="professorList" name="prof_name" value="<?php echo htmlspecialchars(BasicTool::get('prof_name')) ?>" />
                     <datalist id="professorList"></datalist>
                 </div>
             </div>
             <div class="row">
                 <div class="col-2">
                     <label>所修学年<i>*</i></label>
-                    <select class="input input-select selectDefault" name="term_year" defvalue="<?php echo BasicTool::get('term_year') ?>">
+                    <select class="input input-select selectDefault" name="term_year" defvalue="<?php echo htmlspecialchars(BasicTool::get('term_year')) ?>">
                         <?php
                             echo "<option value=''>请选择学年</option>";
                             for($i=date("Y");$i>1959;$i--) echo "<option value='{$i}'>{$i}</option>";
@@ -86,7 +86,7 @@ $flag = BasicTool::get("flag");
                 </div>
                 <div class="col-2">
                     <label>所修学期<i>*</i></label>
-                    <select class="input input-select selectDefault" name="term_semester" defvalue="<?php echo BasicTool::get('term_semester') ?>">
+                    <select class="input input-select selectDefault" name="term_semester" defvalue="<?php echo htmlspecialchars(BasicTool::get('term_semester')) ?>">
                         <option value="">选择学期</option>
                         <option value="Fall">Fall</option>
                         <option value="Winter">Winter</option>
@@ -103,7 +103,7 @@ $flag = BasicTool::get("flag");
             </div>
             <div>
                 <label>描述</label>
-                <textarea class="input input-textarea" name="description"><?php echo BasicTool::get('description') ?></textarea>
+                <textarea class="input input-textarea" name="description"><?php echo htmlspecialchars(BasicTool::get('description')) ?></textarea>
             </div>
             <div>
                 <label>二手书图片:</label>

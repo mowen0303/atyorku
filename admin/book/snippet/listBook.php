@@ -7,7 +7,8 @@ $userModel = new \admin\user\UserModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=listDeletedBook">回收站</a>
+    <a class="btn" href="index.php?s=listUnavailableBook">下架的二手书</a>
+    <a class="btn" href="index.php?s=listDeletedBook">删除的二手书</a>
     <a class="btn" href="\admin\bookCategory\index.php?s=listBookCategory">二手书分类</a>
     <a class="btn" href="index.php?s=formBook&flag=add">添加新二手书</a>
 </nav>
@@ -65,18 +66,19 @@ $userModel = new \admin\user\UserModel();
                     }
                 ?>
                     <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
-                        <td><?php echo $row["id"] ?></td>
-                        <td><img width="60px" height="auto" src="<?php echo $row['thumbnail_url'] ?>"></td>
-                        <td><?php echo $row["name"] ?></td>
-                        <td><?php echo "$" . $row['price'] ?></td>
-                        <td><?php echo $row['description'] ?></td>
-                        <td><?php echo $row['book_category_name'] ?></td>
-                        <td><?php echo $row['course_code_parent_title'] . $row['course_code_child_title'] ?></td>
-                        <td><?php echo $row['alias'] ?></td>
-                        <td><?php echo $row['publish_time'] ?></td>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo htmlspecialchars($row['id']) ?>"></td>
+                        <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><img width="60px" height="auto" src="<?php echo htmlspecialchars($row['thumbnail_url']) ?>"></td>
+                        <td><?php echo htmlspecialchars($row["name"]) ?></td>
+                        <td><?php echo "$" . htmlspecialchars($row['price']) ?></td>
+                        <td><?php echo htmlspecialchars($row['description']) ?></td>
+                        <td><?php echo htmlspecialchars($row['book_category_name']) ?></td>
+                        <td><?php echo htmlspecialchars($row['course_code_parent_title'] . $row['course_code_child_title']) ?></td>
+                        <td><?php echo htmlspecialchars($row['alias']) ?></td>
+                        <td><?php echo htmlspecialchars($row['publish_time']) ?></td>
                         <td>
                             <a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a>
+                            <a class="btn" href="bookController.php?action=unLaunchBookById&id=<?php echo $row['id']?>">下架</a>
                             <?php
                             if(intval($row['is_e_document'])){
                                 $id = $row['id'];

@@ -89,6 +89,20 @@ class BookModel extends Model
     }
 
     /**
+     * 获取一页未上架的二手书（非删除)
+     * @param int $pageSize
+     * @param bool $query
+     * @return array
+     */
+    public function getListOfUnavailableBooks($pageSize=20, $query=false) {
+        $q = "NOT b.is_deleted AND NOT b.is_available";
+        if($query){
+            $q .= " AND ({$query})";
+        }
+        return $this->getBooks($pageSize,$q);
+    }
+
+    /**
      * 获取一页已删除的二手书
      * @param int $pageSize
      * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
@@ -304,6 +318,27 @@ class BookModel extends Model
         return false;
     }
 
+    /**
+     * 上架一本二手书
+     * @param $id
+     * @return bool|\一维关联数组
+     */
+    public function launchBook($id){
+        $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if ($result) {
+            $bookCategoryId = $result["book_category_id"];
+            $sql = "UPDATE {$this->table} SET is_available=1 WHERE id in ({$id})";
+            $bool = $this->sqltool->query($sql);
+            if ($bool) {
+                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+                $this->sqltool->query($sql);
+                return $result;
+            }
+        }
+        return false;
+    }
+
     function getELinkById($id){
         $sql = "SELECT e_link FROM {$this->table} WHERE id in ({$id})";
         $row = $this->sqltool->getRowBySql($sql);
@@ -313,14 +348,18 @@ class BookModel extends Model
     /**
      * 恢复一本已删除的二手书
      * @param $id 二手书ID
+     * @return 回复的二手书 一维关联数组
      * @throws Exception
      */
     function restoreBookById($id){
         $id = intval($id) or BasicTool::throwException("无效二手书ID");
         $result = $this->getBookById($id) or BasicTool::throwException("二手书不存在");
         $result["is_deleted"] = 0;
-        $bool = $this->updateRowById($this->table,$id,$result);
-        if(!$bool) {BasicTool::throwException($this->errorMsg);}
+        $bookCategoryId = $result["book_category_id"];
+        $bool = $this->updateRowById($this->table,$id,$result) or BasicTool::throwException($this->errorMsg);
+        $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
+        $this->sqltool->query($sql);
+        return $result;
     }
 
     /**
