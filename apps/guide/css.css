@@ -81,7 +81,7 @@ blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  p
 .img-90 img { width: 90% }
 
 .boxWithTitle { background: #f8f8f8; padding:10px 0; padding-top: 20px; border-radius: 6px; position: relative; text-align: center; margin: 1.5em 25px; margin-top: 4em}
-.boxWithTitle .tit { display: inline-block;  background: #666; color: #fff; position: absolute;top: -10px; left:50%; transform: translate(-50%,0); padding: 2px 20px; border-radius: 6px}
+.boxWithTitle tt { display: inline-block;  background: #666; color: #fff; position: absolute;top: -10px; left:50%; transform: translate(-50%,0); padding: 2px 20px; border-radius: 6px}
 
 #coverImgBox { width: 100%;}
 

@@ -1,3 +1,12 @@
+<?php
+require_once $_SERVER["DOCUMENT_ROOT"]."/commonClass/config.php";
+$currentUser = new \admin\user\UserModel();
+$transactionModel = new \admin\transaction\TransactionModel();
+if(!$currentUser->isLogin()){
+	BasicTool::echoWapMessage("请登录AtYorkU账号");
+	die();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,85 +14,41 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-	body {
- 	 margin: 0;
- 	 display: flex;
- 	 width: 100%;
- 	 height: 100%;
- 	 background-color: #F6F9FF;
-	}
-
-	.header {
-		background-color: #F44336;
-		padding: 20px;
- 		text-align: center;
-		width: 100%;
-		height: 200px;
-	}
-
-	.info {
-		background-color: #FFF;
-		height: 180px;
-		width: 94%;
-		margin-left: 3%;
-		margin-right: 3%;
-		border-radius: 10px;
-		position: absolute;
-		top: 20%;
-		box-shadow: 0 3px 0 #EDF4FE;
-	}
-
-	.image {
-		height: 100px;
-		width: 100px;
-		border-radius: 50%;
-		background-color: white;
-		position: absolute;
-		top: -35%;
-		right: 10%;
-		margin:10px auto;
-	}
-
-
+	body { margin: 0; padding:0; background-color: #F6F9FF; font-size:16px; line-height: 25px;font-family: PingFangSC-light,Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica }
+	.info { background-color: #FFF; height: 180px; width: 94%; margin-left: 3%; margin-right: 3%; border-radius: 10px; position: absolute; top: 20%; box-shadow: 0 3px 0 #EDF4FE;  }
+	.avatar {  height: 100px;  width: 100px;  border-radius: 50%;  background-color: white;  position: absolute;  top: -35%;  right: 10%;  margin:10px auto;}
+	.head {background-color: #F44336; height: 200px;}
+	.body { padding-top: 120px; padding-left: 20px; padding-right: 20px}
 </style>
 </head>
 <body>
-
-<div class="header">
-	<p id='name' style="size: 5; color:white; margin-top: 0; justify-content: center;"></p>
-</div>
-
 <div class="info">
 	<p style="color: grey; margin-left: 5%;">总积分</p>
-	<h1 id='creditText' style="margin-left: 5%; margin-top: 1%;"></h1>
-	<img id="imgSrc" class="image" src="" />
+	<h1 style="margin-left: 5%; margin-top: 1%;"><?php echo $transactionModel->getCredit($currentUser->userId)?></h1>
+	<img class="avatar" src="<?php echo $currentUser->userHeadImg?>" />
 </div>
-
-
-<script type="text/javascript">
-
-	var userId = window.location.hash.substr(1);
-
-	fetch('http://www.atyorku.ca/admin/user/userController.php?action=getRowOfUserBasicInfoWithJson&userId=' + userId,  {
-    method: "POST",
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-    credentials:'same-origin'
-})
-	.then(response => response.json())
-	.then(data => {
-		if(data.code == 1){
-			const totalCredit = document.getElementById("creditText");
-			totalCredit.innerHTML = data.result.credit;
-
-			const name = document.getElementById("name");
-			name.innerHTML = data.result.alias;
-
-			const showImg = document.getElementById("imgSrc").src = "http://www.atyorku.ca" + data.result.img;
-		}else{
-			alert(data.message);
+<div class="container">
+	<div class="head"></div>
+	<div class="body">
+		<table>
+			<tr>
+				<th>积分值</th>
+				<th>原因</th>
+			</tr>
+		<?php
+		$transactionArr = $transactionModel->getTransactionsByUserId($currentUser->userId);
+		foreach($transactionArr as $row){
+		?>
+			<tr>
+				<td><?php echo $row['amount'] ?></td>
+				<td><?php echo $row['description'] ?></td>
+			</tr>
+		<?php
 		}
-	})
-</script>
+		?>
 
+		</table>
+	</div>
+</div>
 </body>
 </html>

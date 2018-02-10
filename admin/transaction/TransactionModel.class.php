@@ -9,8 +9,8 @@ class TransactionModel extends Model {
      * @return array
      */
     function getTransactionsByUserId($user_id) {
-        $sql = "SELECT * FROM transaction WHERE user_id = {$user_id} SORT BY time desc";
-        $countSql = "SELECT COUNT(*) FROM transaction WHERE user_id = {$user_id} SORT BY time desc";
+        $sql = "SELECT * FROM transaction WHERE user_id IN ({$user_id}) ORDER BY time desc";
+        $countSql = "SELECT COUNT(*) FROM transaction WHERE user_id IN ({$user_id}) ORDER BY time desc";
         return $this->getListWithPage("transaction", $sql, $countSql, 30);
     }
 
