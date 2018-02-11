@@ -5,6 +5,7 @@ use admin\user\UserModel;
 use \Model as Model;
 use \Credit as Credit;
 use admin\transaction\TransactionModel as TransactionModel;
+use admin\bookCategory\BookCategoryModel as BookCategoryModel;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
@@ -49,8 +50,10 @@ class BookModel extends Model
         $arr["last_modified_time"] = time();
         $bool = $this->addRow($this->table, $arr);
         if ($bool) {
-            $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId}) AND NOT is_deleted AND is_available) WHERE id in ({$bookCategoryId})";
-            $this->sqltool->query($sql);
+            $bcm = new BookCategoryModel();
+            $bcm->updateBookCategoryCount($bookCategoryId);
+            $this->updateCourseReport($courseId);
+//            $this->updateReports(intval($courseId), intval($profId));
             if($this->shouldRewardAddBook($userId)){
                 $transactionModel = new TransactionModel();
                 $transactionModel->systemAdjustCredit($userId,Credit::$addBook);
@@ -240,11 +243,31 @@ class BookModel extends Model
         $result = $this->sqltool->getRowBySql($sql);
         if ($result) {
             $oldBookCategoryId = $result["book_category_id"];
+            $oldCourseId = $result["course_id"];
+            $oldProfId = $result["professor_id"];
 
             $bool = $this->updateRowById($this->table, $id, $arr);
-            if ($bool && $bookCategoryId != $oldBookCategoryId) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId}) AND NOT is_deleted AND is_available) WHERE id in ({$bookCategoryId}, {$oldBookCategoryId})";
-                $this->sqltool->query($sql);
+            if($bool){
+                // update book category counts
+                if($bookCategoryId != $oldBookCategoryId){
+                    $bcm = new BookCategoryModel();
+                    $bcm->updateBookCategoryCount($bookCategoryId);
+                    $bcm->updateBookCategoryCount($oldBookCategoryId);
+                }
+                // update reports book counts
+                if($courseId != $oldCourseId){
+                    $this->updateCourseReport($oldCourseId);
+                    $this->updateCourseReport($courseId);
+//                    $this->updateCourseProfReport($oldCourseId,$oldProfId);
+//                    $this->updateCourseProfReport($courseId,$profId);
+                }
+//                if($profId != $oldProfId){
+//                    $this->updateProfessorReport($oldProfId);
+//                    $this->updateProfessorReport($profId);
+//                    $this->updateCourseProfReport($oldCourseId,$oldProfId);
+//                    $this->updateCourseProfReport($courseId,$profId);
+//                }
+
             }
 
             return $bool;
@@ -267,8 +290,10 @@ class BookModel extends Model
             $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
             $bool = $this->sqltool->query($sql);
             if ($bool) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-                $this->sqltool->query($sql);
+                $bcm = new BookCategoryModel();
+                $bcm->updateBookCategoryCount($bookCategoryId);
+//                $this->updateReports($result['course_id'], $result['professor_id']);
+                $this->updateCourseReport($result['course_id']);
                 return $result;
             }
         }
@@ -289,8 +314,10 @@ class BookModel extends Model
             $sql = "UPDATE {$this->table} SET is_deleted=1 WHERE id in ({$id})";
             $bool = $this->sqltool->query($sql);
             if ($bool) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-                $this->sqltool->query($sql);
+                $bcm = new BookCategoryModel();
+                $bcm->updateBookCategoryCount($bookCategoryId);
+//                $this->updateReports($result['course_id'], $result['professor_id']);
+                $this->updateCourseReport($result['course_id']);
                 return $result;
             }
         }
@@ -310,8 +337,10 @@ class BookModel extends Model
             $sql = "UPDATE {$this->table} SET is_available=0 WHERE id in ({$id})";
             $bool = $this->sqltool->query($sql);
             if ($bool) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-                $this->sqltool->query($sql);
+                $bcm = new BookCategoryModel();
+                $bcm->updateBookCategoryCount($bookCategoryId);
+//                $this->updateReports($result['course_id'], $result['professor_id']);
+                $this->updateCourseReport($result['course_id']);
                 return $result;
             }
         }
@@ -331,8 +360,10 @@ class BookModel extends Model
             $sql = "UPDATE {$this->table} SET is_available=1 WHERE id in ({$id})";
             $bool = $this->sqltool->query($sql);
             if ($bool) {
-                $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-                $this->sqltool->query($sql);
+                $bcm = new BookCategoryModel();
+                $bcm->updateBookCategoryCount($bookCategoryId);
+//                $this->updateReports($result['course_id'], $result['professor_id']);
+                $this->updateCourseReport($result['course_id']);
                 return $result;
             }
         }
@@ -357,8 +388,10 @@ class BookModel extends Model
         $result["is_deleted"] = 0;
         $bookCategoryId = $result["book_category_id"];
         $bool = $this->updateRowById($this->table,$id,$result) or BasicTool::throwException($this->errorMsg);
-        $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) from {$this->table} WHERE book_category_id in ({$bookCategoryId})) WHERE id in ({$bookCategoryId})";
-        $this->sqltool->query($sql);
+        $bcm = new BookCategoryModel();
+        $bcm->updateBookCategoryCount($bookCategoryId);
+//        $this->updateReports($result['course_id'], $result['professor_id']);
+        $this->updateCourseReport($result['course_id']);
         return $result;
     }
 
@@ -424,6 +457,11 @@ class BookModel extends Model
         return $arr;
     }
 
+    /**
+     * 是否奖励积分给此次二手书添加 Rule: [每个用户、每天前五次添加二手书奖励积分]
+     * @param $userId 用户ID
+     * @return bool 是否奖励
+     */
     private function shouldRewardAddBook($userId) {
         $userId = intval($userId);
         $t = BasicTool::getTodayTimestamp();
@@ -432,6 +470,89 @@ class BookModel extends Model
         $sql = "SELECT COUNT(*) AS count FROM {$this->table} WHERE user_id in ({$userId}) AND publish_time>=({$startTime}) AND publish_time<=({$endTime})";
         $count = $this->sqltool->getRowBySql($sql)["count"];
         return $count<6;
+    }
+
+//    /**
+//     * 更新对应courseId和profId的报告
+//     * @param bool $courseId
+//     * @param bool $profId
+//     */
+//    private function updateReports($courseId=false,$profId=false){
+//        if($courseId){
+//            $this->updateCourseReport($courseId);
+//        }
+//        if($profId){
+//            $this->updateProfessorReport($profId);
+//        }
+//        if($courseId && $profId){
+//            $this->updateCourseProfReport($courseId,$profId);
+//        }
+//    }
+
+    /**
+     * 更新 course_report 里指定的一个 course id 的二手书数量
+     * @param $courseId
+     * @return bool|\mysqli_result|\一维关联数组
+     */
+    private function updateCourseReport($courseId){
+        $courseId = intval($courseId);
+        $sql = "SELECT * FROM course_report WHERE course_code_id = {$courseId}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if($result){
+            // 有对应的报告
+            $availSql = BookModel::getCountOfAvailableBookSql();
+            $sql = "UPDATE course_report SET book_count=({$availSql} AND course_id={$courseId}) WHERE course_code_id={$courseId}";
+            $result = $this->sqltool->query($sql);
+        }
+        return $result;
+    }
+
+//    /**
+//     * 更新 course_prof_report 里指定的一个 course id 和 prof id 的二手书数量
+//     * @param $courseId
+//     * @param $profId
+//     * @return bool|\mysqli_result|\一维关联数组
+//     */
+//    private function updateCourseProfReport($courseId,$profId){
+//        $courseId = intval($courseId);
+//        $profId = intval($profId);
+//        if($courseId && $profId){
+//            $sql = "SELECT * FROM course_prof_report WHERE course_code_id = {$courseId} AND prof_id = {$profId}";
+//            $result = $this->sqltool->getRowBySql($sql);
+//            if($result){
+//                // 有对应的报告
+//                $availSql = BookModel::getCountOfAvailableBookSql();
+//                $sql = "UPDATE course_prof_report SET book_count=({$availSql} AND course_id={$courseId} AND professor_id={$profId}) WHERE course_code_id={$courseId} AND prof_id={$profId}";
+//                $result = $this->sqltool->query($sql);
+//            }
+//            return $result;
+//        }
+//        return false;
+//    }
+//
+//    /**
+//     * 更新 professor_report 里指定的一个 prof id 的二手书数量
+//     * @param $profId
+//     * @return bool|\mysqli_result|\一维关联数组
+//     */
+//    private function updateProfessorReport($profId){
+//        $profId = intval($profId);
+//        $sql = "SELECT * FROM professor_report WHERE prof_id = {$profId}";
+//        $result = $this->sqltool->getRowBySql($sql);
+//        if($result){
+//            $availSql = BookModel::getCountOfAvailableBookSql();
+//            $sql = "UPDATE professor_report SET book_count=({$availSql} AND professor_id={$profId}) WHERE prof_id={$profId}";
+//            $result = $this->sqltool->query($sql);
+//        }
+//        return $result;
+//    }
+
+    /**
+     * 获得有效二手书数量SQL字符串
+     * @return string
+     */
+    private static function getCountOfAvailableBookSql(){
+        return "SELECT COUNT(*) FROM book WHERE NOT is_deleted AND is_available";
     }
 }
 

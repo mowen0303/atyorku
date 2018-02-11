@@ -72,6 +72,17 @@ class BookCategoryModel extends Model
         }
         return false;
     }
+
+    /**
+     * 更新对应二手书类别的资料数量
+     * @param $id 二手书类别ID
+     * @return bool|\mysqli_result
+     */
+    public function updateBookCategoryCount($id){
+        $id = intval($id);
+        $sql = "UPDATE book_category SET books_count = (SELECT COUNT(*) FROM book WHERE book_category_id in ({$id}) AND NOT is_deleted AND is_available) WHERE id in ({$id})";
+        return $this->sqltool->query($sql);
+    }
 }
 
 
