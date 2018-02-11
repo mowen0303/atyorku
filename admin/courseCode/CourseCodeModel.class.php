@@ -46,8 +46,9 @@ class CourseCodeModel extends Model
         }else{
             $sql = "";
             if(!$str) {
-                // 无任何输入, 返回全部父类科目
-                $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 ORDER BY c1.title";
+                // 无任何输入, 返回空Array
+                return [];
+//                $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 ORDER BY c1.title";
             } else {
                 // 分析获取父类子类搜索字段
                 $str = trim($str);
