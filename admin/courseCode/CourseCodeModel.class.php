@@ -102,9 +102,10 @@ class CourseCodeModel extends Model
      * 通过课程名称查询课程ID,并给课程增加热度
      * @param $parentCode
      * @param $childCode
+     * @param $incrementPopular
      * @return int | 查询失败返回 0
      */
-    public function getCourseIdByCourseCode($parentCode,$childCode){
+    public function getCourseIdByCourseCode($parentCode,$childCode,$incrementPopular=true){
 
         //查询ID
         $sql = "SELECT id FROM course_code WHERE title = '{$childCode}' AND parent_id IN (SELECT id FROM course_code WHERE title = '$parentCode')";
@@ -112,7 +113,7 @@ class CourseCodeModel extends Model
 
 
         //增加热度
-        if($row){
+        if($row && $incrementPopular){
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE title = '{$parentCode}';";
             $this->sqltool->query($sql);
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id = '{$row[id]}'";
