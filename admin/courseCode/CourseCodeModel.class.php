@@ -98,14 +98,32 @@ class CourseCodeModel extends Model
         return $this->sqltool->getListBySql($sql);
     }
 
+
+    /**
+     * 获取科目ID和缩写（如果子类名称不为空，提供父类和子类的id和缩写）
+     * @param $parentCode
+     * @param $childCode
+     * @return \一维关联数组 [parent_code_id=>1, parent_code_title=>'ADMS', child_code_id=>222, child_code_title=>'1000']
+     * @throws
+     */
+    public function getCourseCodeByString($parentCode, $childCode) {
+        $sql = "";
+        if($childCode){
+            $sql = "SELECT c.id AS course_child_id, c.title AS course_child_title, p.id AS course_parent_id, p.title AS course_parent_title FROM course_code c, course_code p WHERE c.parent_id=p.id AND p.title='{$parentCode}' AND c.title='{$childCode}'";
+        } else {
+            $sql = "SELECT id AS course_parent_id, title AS course_parent_title FROM course_code WHERE title='{$parentCode}'";
+        }
+        $result = $this->sqltool->getRowBySql($sql) or BasicTool::throwException("没有匹配的科目");
+        return $result;
+    }
+
     /**
      * 通过课程名称查询课程ID,并给课程增加热度
      * @param $parentCode
      * @param $childCode
-     * @param $incrementPopular
      * @return int | 查询失败返回 0
      */
-    public function getCourseIdByCourseCode($parentCode,$childCode,$incrementPopular=true){
+    public function getCourseIdByCourseCode($parentCode,$childCode){
 
         //查询ID
         $sql = "SELECT id FROM course_code WHERE title = '{$childCode}' AND parent_id IN (SELECT id FROM course_code WHERE title = '$parentCode')";
@@ -113,7 +131,7 @@ class CourseCodeModel extends Model
 
 
         //增加热度
-        if($row && $incrementPopular){
+        if($row){
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE title = '{$parentCode}';";
             $this->sqltool->query($sql);
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id = '{$row[id]}'";

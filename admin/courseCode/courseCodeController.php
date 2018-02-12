@@ -108,12 +108,19 @@ function getListOfCourseCodeByStringWithJson(){
     }
 }
 
-function getCourseCodeIdByStringWithJson(){
+/**
+ * JSON - 通过索引来获取科目ID和Title
+ * @param parent
+ * @param child
+ * http://www.atyorku.ca/admin/courseCode/courseCodeController.php?action=getCourseCodeByStringWithJson&parent=ADMS&child=1000
+ */
+function getCourseCodeByStringWithJson(){
     global $courseCodeModel;
     try{
         $p = BasicTool::get("parent", "科目大类名称不能为空");
         $c = BasicTool::get("child") ?: "";
-        $result = $courseCodeModel->getCourseIdByTitle($p, $c);
+        $result = $courseCodeModel->getCourseCodeByString($p,$c);
+        BasicTool::echoJson(1, "找到匹配的科目", $result);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
