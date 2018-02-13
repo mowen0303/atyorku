@@ -512,6 +512,7 @@ class CourseRatingModel extends Model
      * @throws Exception
      */
     public function updateAllReports(){
+        $this->cleanEmptyReports();
         $sql = "SELECT cr.course_code_id, cr.prof_id FROM course_rating cr GROUP BY cr.course_code_id, cr.prof_id";
         $result = $this->sqltool->query($sql);
         if($result){
@@ -530,6 +531,18 @@ class CourseRatingModel extends Model
         }else{
             BasicTool::throwException("获取课评失败");
         }
+    }
+
+    /**
+     * 清除空报告
+     */
+    private function cleanEmptyReports() {
+        $sql = "DELETE FROM course_report WHERE rating_count=0";
+        $this->sqltool->query($sql);
+        $sql = "DELETE FROM professor_report WHERE rating_count=0";
+        $this->sqltool->query($sql);
+        $sql = "DELETE FROM course_prof_report WHERE rating_count=0";
+        $this->sqltool->query($sql);
     }
 
 }
