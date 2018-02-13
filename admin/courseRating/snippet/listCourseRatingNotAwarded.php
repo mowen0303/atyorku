@@ -1,26 +1,15 @@
 <?php
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
-$userModel = new \admin\user\UserModel();
-$isGod = $userModel->isUserHasAuthority("GOD");
 ?>
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=listCourseRatingNotAwarded">未奖励的课评</a>
-    <a class="btn" href="index.php?s=listCourseProfReport">科目教授报告表</a>
-    <a class="btn" href="index.php?s=listCourseReport">科目报告表</a>
-    <a class="btn" href="index.php?s=listProfReport">教授报告表</a>
-    <a class="btn" href="index.php?s=formCourseRating&flag=add">添加新课评</a>
+    <a class="btn" href="index.php?s=listCourseRating">返回</a>
 </nav>
 
 <article class="mainBox">
-    <?php
-        if($isGod){
-            echo "<form action=\"courseRatingController.php?action=updateAllReports\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"更新全部报告\" class=\"btn\" onclick=\"return confirm('确认更新全部报告?')\"></footer></form>";
-        }
-    ?>
-    <header><h2><?php echo $typeStr ?>课评列表</h2></header>
+    <header><h2><?php echo $typeStr ?>未奖励的课评列表</h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
             <table class="tab">
@@ -39,7 +28,7 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                     <th width="100px">学期</th>
                     <th width="60px">推荐</th>
                     <th width="150px">评论</th>
-                    <th width="80px">操作</th>
+                    <th width="120px">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -51,7 +40,7 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                         $argument .= "&{$key}={$value}";
                     }
                 ?>
-                    <tr>
+                    <tr id="courseRating<? echo $row['id'] ?>">
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
                         <td><?php echo $row["course_code_parent_title"] . " " . $row["course_code_child_title"] ?></td>
@@ -65,7 +54,11 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                         <td><?php echo $row["term"] . " " . $row["year"] ?></td>
                         <td><?php echo $row["recommendation"] ?></td>
                         <td><?php echo $row["comment"] ?></td>
-                        <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo $argument?>">修改</a></td>
+                        <td>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="0">奖励0积分</a>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="3">奖励3积分</a>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="5">奖励5积分</a>
+                        </td>
                     </tr>
                 <?php
                 }
@@ -79,3 +72,42 @@ $isGod = $userModel->isUserHasAuthority("GOD");
         </footer>
     </form>
 </article>
+
+<script>
+    $(document).ready(function() {
+        // 注册奖励按钮
+        $(".obtainBtn").click(function (e) {
+            var that = this;
+            $(this).addClass('isDisabled');
+            var courseRatingId = e.target.dataset.id;
+            var credit = e.target.dataset.credit;
+
+            if (courseRatingId && credit) {
+                $.ajax({
+                    url: "/admin/courseRating/courseRatingController.php?action=awardCourseRatingWithJson",
+                    type: "POST",
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {"id":courseRatingId,"credit":credit},
+                    dataType: "json",
+                }).done(function (json) {
+                    console.log(json);
+                    if (json.code === 1) {
+                        alert("奖励成功");
+                        var td = "#courseRating" + courseRatingId;
+                        $(td).remove();
+                    }else{
+                        alert("奖励失败");
+                        $(that).removeClass('isDisabled');
+                    }
+                }).fail(function (data) {
+                    console.log(data);
+                    alert("奖励失败");
+                    $(that).removeClass('isDisabled');
+                });
+            } else {
+                alert("缺失课评ID或奖励积分");
+                $(that).removeClass('isDisabled');
+            }
+        });
+    });
+</script>

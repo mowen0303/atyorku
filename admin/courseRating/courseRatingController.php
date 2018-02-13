@@ -4,6 +4,7 @@ $courseRatingModel = new admin\courseRating\CourseRatingModel();
 $courseCodeModel = new admin\courseCode\CourseCodeModel();
 $professorModel = new admin\professor\ProfessorModel();
 $currentUser = new \admin\user\UserModel();
+
 call_user_func(BasicTool::get('action'));
 
 //============ Function with JSON ===============//
@@ -321,6 +322,16 @@ function getListOfCourseProfReportWithJson() {
     }
 }
 
+/**
+ * JSON -  通过课评ID和积分来奖励课评
+ * @param id 课评ID
+ * @param credit 奖励积分
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=awardCourseRatingWithJson
+ */
+function awardCourseRatingWithJson() {
+    awardCourseRating("json");
+}
+
 // =============== End Function with JSON ================= //
 
 
@@ -570,5 +581,35 @@ function updateAllReports(){
         BasicTool::echoMessage($response, $_SERVER['HTTP_REFERER']);
     } catch(Exception $e){
         BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+    }
+}
+
+
+/**
+ * 奖励课评
+ * @param string $echoType
+ * @param id 课评ID
+ * @param credit 奖励积分
+ */
+function awardCourseRating($echoType = "normal") {
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
+        $id = intval(BasicTool::post('id',"请指定要奖励的课评ID"));
+        $credit = intval(BasicTool::post('credit', "积分奖励数额不能为空"));
+        $courseRatingModel->awardCreditById($id, $credit) or BasicTool::throwException("奖励课评失败");
+        if ($echoType == "normal") {
+            BasicTool::echoMessage("成功奖励课评", $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(1, "成功奖励课评");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
     }
 }

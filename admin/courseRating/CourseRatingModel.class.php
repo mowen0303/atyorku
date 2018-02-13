@@ -3,6 +3,8 @@ namespace admin\courseRating;   //-- 注意 --//
 use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
+use \Credit as Credit;
+use \admin\transaction\TransactionModel as TransactionModel;
 
 class CourseRatingModel extends Model
 {
@@ -385,6 +387,28 @@ class CourseRatingModel extends Model
         if($bool) {
             $sql = "DELETE FROM course_prof_report WHERE id in ({$id})";
             return $this->sqltool->query($sql);
+        }
+        return $bool;
+    }
+
+
+    /**
+     * 奖励用户课评发布
+     * @param $id 课评ID
+     * @param $credit 奖励积分
+     * @return bool|\mysqli_result
+     * @throws Exception
+     */
+    public function awardCreditById($id, $credit) {
+        ($credit===0 || key_exists($credit, Credit::$addCourseRating)) or BasicTool::throwException("积分奖励数额无效");
+        $result = $this->getCourseRatingById($id) or BasicTool::throwException("没找到该课评");
+        intval($result['award'])=== -1 or BasicTool::throwException("该课评已被奖励");
+        $userId = intval($result['user_id']) or BasicTool::throwException("课评用户ID不存在");
+        $sql = "UPDATE course_rating SET award={$credit} WHERE id in ({$id})";
+        $bool = $this->sqltool->query($sql);
+        if($bool && $credit!==0) {
+            $transactionModel = new TransactionModel();
+            $transactionModel->systemAdjustCredit($userId, \Credit::$addCourseRating[$credit]);
         }
         return $bool;
     }
