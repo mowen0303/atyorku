@@ -33,7 +33,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                 </thead>
                 <tbody>
                 <?php
-                $arr = $courseRatingModel->getListOfCourseRating();
+                $arr = $courseRatingModel->getListOfunawardedCourseRating();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

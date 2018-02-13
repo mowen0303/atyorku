@@ -5,6 +5,7 @@ use \BasicTool as BasicTool;
 use \Exception as Exception;
 use \Credit as Credit;
 use \admin\transaction\TransactionModel as TransactionModel;
+use \admin\msg\MsgModel as MsgModel;
 
 class CourseRatingModel extends Model
 {
@@ -15,12 +16,20 @@ class CourseRatingModel extends Model
     }
 
     /**
-    * 通过ID获取Course
-    * @param id 要查询的CourseRating ID
-    * @return 一维数组
-    */
-    public function getCourseRatingById($id) {
-        return $this->getRowById($this->table,$id);
+     * 通过ID获取Course
+     * @param $id 要查询的CourseRating ID
+     * @param bool $withDetail 同时query科目和教授细节
+     * @return \一维关联数组
+     */
+    public function getCourseRatingById($id, $withDetail=false) {
+        if($withDetail){
+            $select = "SELECT cr.*, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+            $from = "FROM (course_rating cr INNER JOIN course_code cc ON cr.course_code_id = cc.id INNER JOIN course_code cc2 ON cc.parent_id = cc2.id INNER JOIN professor p ON cr.prof_id = p.id)";
+            $sql = "{$select} {$from} WHERE cr.id={$id}";
+            return $this->sqltool->getRowBySql($sql);
+        }else {
+            return $this->getRowById($this->table, $id);
+        }
     }
 
 
@@ -105,6 +114,16 @@ class CourseRatingModel extends Model
     public function getListOfCourseRatingByCourseIdProfId($courseId, $profId, $pageSize=20) {
         $query = "course_code_id in ({$courseId}) AND prof_id in ({$profId})";
         return $this->getListOfCourseRating($query, $pageSize);
+    }
+
+    /**
+     * 获得一页没有奖励的课评
+     * @param int $pageSize
+     * @return array
+     */
+    public function getListOfunawardedCourseRating($pageSize=20){
+        $query = "award=-1";
+        return $this->getListOfCourseRating($query,$pageSize);
     }
 
 
@@ -401,14 +420,19 @@ class CourseRatingModel extends Model
      */
     public function awardCreditById($id, $credit) {
         ($credit===0 || key_exists($credit, Credit::$addCourseRating)) or BasicTool::throwException("积分奖励数额无效");
-        $result = $this->getCourseRatingById($id) or BasicTool::throwException("没找到该课评");
+        $result = $this->getCourseRatingById($id,true) or BasicTool::throwException("没找到该课评");
         intval($result['award'])=== -1 or BasicTool::throwException("该课评已被奖励");
         $userId = intval($result['user_id']) or BasicTool::throwException("课评用户ID不存在");
         $sql = "UPDATE course_rating SET award={$credit} WHERE id in ({$id})";
         $bool = $this->sqltool->query($sql);
         if($bool && $credit!==0) {
             $transactionModel = new TransactionModel();
-            $transactionModel->systemAdjustCredit($userId, \Credit::$addCourseRating[$credit]);
+            $transactionModel->systemAdjustCredit($userId, Credit::$addCourseRating[$credit]);
+            $msgModel = new MsgModel();
+            $title = $result['course_code_parent_title'] . " " . $result['course_code_child_title'];
+            $grade = $credit===5 ? "优秀" : "有用";
+            $msg = "恭喜，你的课评 {$title} 被评为{$grade}课评，获得奖励 +{$credit}";
+            $msgModel->pushMsgToUser($userId,"course_rating", $id, $msg);
         }
         return $bool;
     }
