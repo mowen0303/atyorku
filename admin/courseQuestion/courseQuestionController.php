@@ -291,7 +291,7 @@ function deleteQuestion($echoType = "normal") {
 
         //退还积分
         if (is_array($id)) {
-            $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问") or BasicTool::throwException("删除失败，退还积分失败");
+            $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问,退还悬赏") or BasicTool::throwException("删除失败，退还积分失败");
             foreach ($questioner_user_ids as $questioner_user_id) {
                 //减去系统奖励积分
                 $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion);

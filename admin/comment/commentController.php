@@ -2,6 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $commentModel = new admin\comment\CommentModel();
 $currentUser = new \admin\user\UserModel();
+$forumModel = new \admin\forum\ForumModel();
 $msgModel = new \admin\msg\MsgModel();
 call_user_func(BasicTool::get('action'));
 
@@ -24,6 +25,7 @@ function addComment($echoType="normal"){
     global $commentModel;
     global $currentUser;
     global $msgModel;
+    global $forumModel;
     try{
         $sender_id = $currentUser->userId;
         $parent_id = BasicTool::post("parent_id");
@@ -34,6 +36,9 @@ function addComment($echoType="normal"){
         $row = $commentModel->addComment($parent_id,$sender_id,$receiver_id,$section_name,$section_id,$comment);
         //推送
         $msgModel->pushMsgToUser($receiver_id,$section_name."Comment",$section_id,$comment);
+
+        //更新forum统计
+        if($section_name=="forum") $forumModel->updateCountData($section_id);
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功",$_SERVER['HTTP_REFERER']);

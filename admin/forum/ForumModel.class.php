@@ -160,6 +160,42 @@ class ForumModel extends Model {
     }
 
 
+//    /**
+//     * 执行添加和删除操作时, 重新计算留言数量
+//     * @param $courseNumberId
+//     */
+//    public function updateCountData($forumId) {
+//
+//        //根据forum的id获取forum class id
+//        $sql = "SELECT forum_class_id FROM forum WHERE id in ({$forumId})";
+//        $row = $this->sqltool->getRowBySql($sql);
+//        $forum_class_id = $row['forum_class_id'];
+//        //更新forum表的评论数
+//        $sql = "UPDATE forum SET comment_num = (SELECT COUNT(id) AS count FROM (SELECT * FROM forum_comment) AS fc WHERE forum_id = {$forumId}) WHERE id = {$forumId};";
+//        $this->sqltool->query($sql);
+//        //更新forum_class表的总主题数
+//        $sql = "UPDATE forum_class SET count_all = (SELECT COUNT(*)  FROM (SELECT * FROM forum) AS f WHERE forum_class_id = {$forum_class_id}) WHERE id = {$forum_class_id}";
+//        $this->sqltool->query($sql);
+//
+//        //更新forum_class表的总帖子数（forum数量+评论数量）
+//        $sql = "UPDATE forum_class set count_forum_and_comment = count_all+(SELECT COUNT(*) FROM (select * from forum_comment) as fc WHERE forum_id IN (SELECT id FROM forum WHERE forum_class_id = {$forum_class_id})) WHERE id = {$forum_class_id};";
+//        $this->sqltool->query($sql);
+//
+//        //更新今日发帖量
+//        $timeOfMidnight = strtotime(date("Y-m-d"));
+//        //获取今日发的帖子数量
+//        $sql = "SELECT COUNT(*) AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$forum_class_id}";
+//        $row = $this->sqltool->getRowBySql($sql);
+//        $amount = $row['amount'];
+//        //获取今日发的评论的数量
+//        $sql = "SELECT COUNT(*) AS amount FROM forum_comment WHERE forum_id in ((SELECT id AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$forum_class_id})) AND time > {$timeOfMidnight}";
+//        $row = $this->sqltool->getRowBySql($sql);
+//        $amount += $row['amount'];
+//        $sql = "UPDATE forum_class SET count_today = {$amount} WHERE id = {$forum_class_id}";
+//        $this->sqltool->query($sql);
+//
+//    }
+
     /**
      * 执行添加和删除操作时, 重新计算留言数量
      * @param $courseNumberId
@@ -170,15 +206,13 @@ class ForumModel extends Model {
         $sql = "SELECT forum_class_id FROM forum WHERE id in ({$forumId})";
         $row = $this->sqltool->getRowBySql($sql);
         $forum_class_id = $row['forum_class_id'];
-        //更新forum表的评论数
-        $sql = "UPDATE forum SET comment_num = (SELECT COUNT(id) AS count FROM (SELECT * FROM forum_comment) AS fc WHERE forum_id = {$forumId}) WHERE id = {$forumId};";
-        $this->sqltool->query($sql);
+
         //更新forum_class表的总主题数
-        $sql = "UPDATE forum_class SET count_all = (SELECT COUNT(*)  FROM (SELECT * FROM forum) AS f WHERE forum_class_id = {$forum_class_id}) WHERE id = {$forum_class_id}";
+        $sql = "UPDATE forum_class SET count_all = (SELECT COUNT(*) FROM (SELECT * FROM forum) AS f WHERE forum_class_id = {$forum_class_id}) WHERE id = {$forum_class_id}";
         $this->sqltool->query($sql);
 
         //更新forum_class表的总帖子数（forum数量+评论数量）
-        $sql = "UPDATE forum_class set count_forum_and_comment = count_all+(SELECT COUNT(*) FROM (select * from forum_comment) as fc WHERE forum_id IN (SELECT id FROM forum WHERE forum_class_id = {$forum_class_id})) WHERE id = {$forum_class_id};";
+        $sql = "UPDATE forum_class set count_forum_and_comment = count_all+(SELECT SUM(count_comments) FROM (SELECT * FROM forum) AS f WHERE forum_class_id = {$forum_class_id}) WHERE id = {$forum_class_id};";
         $this->sqltool->query($sql);
 
         //更新今日发帖量
@@ -188,9 +222,10 @@ class ForumModel extends Model {
         $row = $this->sqltool->getRowBySql($sql);
         $amount = $row['amount'];
         //获取今日发的评论的数量
-        $sql = "SELECT COUNT(*) AS amount FROM forum_comment WHERE forum_id in ((SELECT id AS amount FROM forum WHERE time > {$timeOfMidnight}  AND forum_class_id = {$forum_class_id})) AND time > {$timeOfMidnight}";
+        $sql = "SELECT SUM(count_comments_today) AS amount FROM forum WHERE forum_class_id in ({$forum_class_id})";
         $row = $this->sqltool->getRowBySql($sql);
         $amount += $row['amount'];
+
         $sql = "UPDATE forum_class SET count_today = {$amount} WHERE id = {$forum_class_id}";
         $this->sqltool->query($sql);
 

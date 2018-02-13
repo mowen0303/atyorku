@@ -734,7 +734,7 @@ class UserModel extends Model {
                 $credit = $creditAward['credit'];
                 $userCredit+=$credit;
                 $description = "恭喜你,领取成功! 你共有【{$userCredit}点】积分. 今天是你连续登录的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
-                if($transactionModel->addCredit($uid,$credit,$description)){
+                if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天")){
                     return [$description,$credit];
                 }else{
                     return false;

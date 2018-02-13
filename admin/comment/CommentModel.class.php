@@ -131,7 +131,17 @@ class CommentModel extends Model
      */
     private function updateCountNumber($section_name,$section_id){
         $time = time();
-        $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time} WHERE id = {$section_id}";
+        if($section_name=="forum"){
+            $today = BasicTool::getTodayTimestamp();
+            $todayStart = $today['startTime'];
+            $todayEnd = $today['endTime'];
+            $sql = "SELECT COUNT(*) AS count FROM comment WHERE section_id in ({$section_id}) AND time > {$todayStart} AND time < {$todayEnd}";
+            $countToday = $this->sqltool->getRowBySql($sql)['count'];
+            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time}, count_comments_today = {$countToday} WHERE id = {$section_id}";
+        }else{
+            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time} WHERE id = {$section_id}";
+        }
+
         return $this->sqltool->query($sql);
     }
 

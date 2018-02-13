@@ -66,11 +66,6 @@ class TransactionModel extends Model {
             $this->errorMsg = "积分值无效: {$credit}";
             return false;
         }
-        if($credit>0){
-            $description = "获得[系统奖励] {$credit} 积分 : $description";
-        }else{
-            $description = "扣除[系统奖励] {$credit} 积分 : $description";
-        }
         return $this::addTransaction($userId,$credit,$description);
     }
 
