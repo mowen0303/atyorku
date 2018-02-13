@@ -397,63 +397,22 @@ class CourseRatingModel extends Model
      */
     private function updateReports($courseCodeId, $profId) {
         $errorStack = array("course_code_id"=>$courseCodeId,"prof_id"=>$profId,"log"=>array());
-        $querySql = "SELECT ROUND(AVG(cr.content_diff),1) AS avg_content, ROUND(AVG(cr.homework_diff),1) AS avg_hw, ROUND(AVG(cr.test_diff),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE";
         // Update course_prof_report
-        $sql = "{$querySql} cr.course_code_id={$courseCodeId} AND cr.prof_id={$profId}";
-
-        $result = $this->sqltool->getRowBySql($sql);
+        $result = $this->getAnalyzedData($courseCodeId,$profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_prof_report: ".$this->errorMsg);}
-
-        $arr = array("course_code_id"=>$courseCodeId, "prof_id"=>$profId);
-        $this->parseUpdateReportArray($result, $arr, 'course_prof_report');
-
-        $sql = "SELECT * FROM course_prof_report WHERE course_code_id={$courseCodeId} AND prof_id={$profId}";
-        $courseProfReport = $this->sqltool->getRowBySql($sql);
-        $result = null;
-        if($courseProfReport){
-            $result = parent::updateRowById("course_prof_report", $courseProfReport["id"], $arr);
-        } else {
-            $result = parent::addRow("course_prof_report", $arr);
-        }
+        $result = $this->handleReportChange("course_prof_report", $result, $courseCodeId, $profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_prof_report: ".$this->errorMsg);}
 
-
         // Update course_report
-        $sql = "{$querySql} cr.course_code_id={$courseCodeId}";
-
-        $result = $this->sqltool->getRowBySql($sql);
+        $result = $this->getAnalyzedData($courseCodeId,false);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_report: ".$this->errorMsg);}
-
-        $arr = array("course_code_id"=>$courseCodeId);
-        $this->parseUpdateReportArray($result, $arr, 'course_report');
-
-        $sql = "SELECT * FROM course_report WHERE course_code_id={$courseCodeId}";
-        $courseReport = $this->sqltool->getRowBySql($sql);
-        $result = null;
-        if($courseReport){
-            $result = parent::updateRowById("course_report", $courseReport["id"], $arr);
-        } else {
-            $result = parent::addRow("course_report", $arr);
-        }
+        $result = $this->handleReportChange("course_report", $result, $courseCodeId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_report: ".$this->errorMsg);}
 
         // Update professor_report
-        $sql = "{$querySql} cr.prof_id={$profId}";
-
-        $result = $this->sqltool->getRowBySql($sql);
+        $result = $this->getAnalyzedData(false, $profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for prof_report: ".$this->errorMsg);}
-
-        $arr = array("prof_id"=>$profId);
-        $this->parseUpdateReportArray($result, $arr, 'professor_report');
-
-        $sql = "SELECT * FROM professor_report WHERE prof_id={$profId}";
-        $profReport = $this->sqltool->getRowBySql($sql);
-        $result = null;
-        if($profReport){
-            $result = parent::updateRowById("professor_report", $profReport["id"], $arr);
-        } else {
-            $result = parent::addRow("professor_report", $arr);
-        }
+        $result = $this->handleReportChange("professor_report", $result, false, $profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update prof_report: ".$this->errorMsg);}
 
         if(sizeof($errorStack['log'])===0){
@@ -464,8 +423,72 @@ class CourseRatingModel extends Model
     }
 
     /**
-    * 加载对应报告表格array
-    */
+     * 处理指定一个report的一行数据
+     * @param $table Report表明
+     * @param $result 新分析的数据数组
+     * @param bool $courseCodeId
+     * @param bool $profId
+     * @return bool
+     */
+    private function handleReportChange($table, $result, $courseCodeId=false, $profId=false) {
+        $arr = array();
+        $additionalSql = "";
+        if($courseCodeId){
+            $arr["course_code_id"] = $courseCodeId;
+            $additionalSql .= "course_code_id={$courseCodeId}";
+        }
+
+        if($profId){
+            $arr["prof_id"] = $profId;
+            $additionalSql .= (($additionalSql ? " AND " : "") . "prof_id={$profId}");
+        }
+
+        $sql = "SELECT * FROM {$table} WHERE {$additionalSql}";
+        $report = $this->sqltool->getRowBySql($sql);
+        $this->parseUpdateReportArray($result, $arr, $table);
+
+        // modify report
+        if(!$arr["rating_count"]){
+            // remove empty rating report if exists
+            if($report){
+                return parent::realDeleteByFieldIn($table, "id", $report["id"]);
+            }
+        } else {
+            if($report){
+                // update existing report
+                return parent::updateRowById($table, $report["id"], $arr);
+            } else {
+                // add new report
+                return parent::addRow($table, $arr);
+            }
+        }
+    }
+
+    /**
+     * 获取指定科目ID或、和教授ID获取新统计的报告
+     * @param bool $courseCodeId
+     * @param bool $profId
+     * @return \一维关联数组
+     */
+    private function getAnalyzedData($courseCodeId=false, $profId=false){
+        $sql = "SELECT ROUND(AVG(cr.content_diff),1) AS avg_content, ROUND(AVG(cr.homework_diff),1) AS avg_hw, ROUND(AVG(cr.test_diff),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE ";
+        $additionalSql = "";
+        if($courseCodeId){
+            $additionalSql .= "cr.course_code_id={$courseCodeId}";
+        }
+        if($profId){
+            $additionalSql .= (($additionalSql ? " AND " : "") . "cr.prof_id={$profId}");
+        }
+        $sql .= $additionalSql;
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    /**
+     * 加载对应报告表格array
+     * @param $result
+     * @param $arr
+     * @param $table
+     */
     private function parseUpdateReportArray($result, &$arr, $table) {
         if ($result) {
             $arr["homework_diff"] = $result["avg_hw"] ?: 0.0;
