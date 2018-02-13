@@ -16,7 +16,7 @@ if(!$currentUser->isLogin()){
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-	body { margin: 0; padding:0; background-color: #F6F9FF; font-size:16px; line-height: 25px;font-family: PingFangSC-light,Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica }
+	body {margin: 0; padding:0; background-color: #F6F9FF; font-size:16px; line-height: 25px;font-family: PingFangSC-light,Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica }
     table {border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color:  grey; border-radius: 5px;border-collapse:collapse; width: 100%;  background-color: white; margin-bottom: 25px; border-radius: 5%}
     tr {display:flex;border-top-width: 1px; border-top-style: solid; border-top-color: grey}
     td {border: 0px; text-align: center}
@@ -25,7 +25,7 @@ if(!$currentUser->isLogin()){
 	.head {background-color: #F44336; height: 200px;}
 	.body { position: absolute; top: 60%;padding-top: 20px; padding-left: 20px; padding-right: 20px; width: 90%}
     .infoBtn {display: flex; flex-direction: row}
-    .btnStyle{border: none;color: white;padding: 10px 24px;text-align: center;font-size: 16px;margin: 4px 2px;margin-left: 3%;margin-right: 3%;border-radius: 5px;}
+    .btnStyle{border: none;color: white;padding: 10px 24px;text-align: center;font-size: 16px;margin: 4px 2px;margin-left: 3%;margin-right: 3%;border-radius: 5px; -webkit-appearance: none}
 
 </style>
 </head>
@@ -40,12 +40,12 @@ if(!$currentUser->isLogin()){
     </div>
 </div>
 
-<input style="background-color:#13a2a3; flex:1; width: 90%; height: 8%; margin-left:5%; margin-right: 5%; position: absolute; top: 50%" class="btnStyle" value="查看我的积分记录" type="button" onclick="location.href='showCreditRecord.php'" />
+<input style="background-color:#13a2a3; flex:1; width: 90%; height: 8%; margin-left:5%; margin-right: 5%; position: absolute; top: 55%" class="btnStyle" value="查看我的积分记录" type="button" onclick="location.href='showCreditRecord.php'" />
 
 <div class="container">
 	<div class="head"></div>
 	<div class="body">
-        <h2 style="text-align: center">积分政策</h2>
+        <h2 style="text-align: center; margin-top: 50px;">积分政策</h2>
         <h3>每日签到:</h3>
         <table>
             <tr>
