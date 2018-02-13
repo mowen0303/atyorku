@@ -19,11 +19,11 @@ if(!$currentUser->isLogin()){
 	body {margin: 0; padding:0; background-color: #F6F9FF; font-size:16px; line-height: 25px;font-family: PingFangSC-light,Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica }
     table {border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color:  grey; border-radius: 5px;border-collapse:collapse; width: 100%;  background-color: white; margin-bottom: 25px; border-radius: 5%}
     tr {display:flex;border-top-width: 1px; border-top-style: solid; border-top-color: grey}
-    td {border: 0px; text-align: center}
+    td {border: 0px; text-align: center; margin-top: 10px; margin-bottom: 10px;}
     .info { background-color: #FFF; height: 180px; width: 94%; margin-left: 3%; margin-right: 3%; border-radius: 10px; position: absolute; top: 20%; box-shadow: 0 3px 0 #EDF4FE;  }
 	.avatar {  height: 100px;  width: 100px;  border-radius: 50%;  background-color: white;  position: absolute;  top: -35%;  right: 10%;  margin:10px auto;}
 	.head {background-color: #F44336; height: 200px;}
-	.body { position: absolute; top: 60%;padding-top: 20px; padding-left: 20px; padding-right: 20px; width: 90%}
+	.body { position: absolute; top: 65%;padding-top: 0px; padding-left: 20px; padding-right: 20px; width: 90%}
     .infoBtn {display: flex; flex-direction: row}
     .btnStyle{border: none;color: white;padding: 10px 24px;text-align: center;font-size: 16px;margin: 4px 2px;margin-left: 3%;margin-right: 3%;border-radius: 5px; -webkit-appearance: none}
 
@@ -31,7 +31,7 @@ if(!$currentUser->isLogin()){
 </head>
 <body>
 <div class="info">
-	<p style="color: grey; margin-left: 5%;">总积分</p>
+	<p style="color: grey; margin-left: 5%;">总积分(点)</p>
 	<h1 style="margin-left: 5%; margin-top: 1%;"><?php echo $transactionModel->getCredit($currentUser->userId)?></h1>
 	<img class="avatar" src="<?php echo $currentUser->userHeadImg?>" />
     <div class="infoBtn">
@@ -48,10 +48,7 @@ if(!$currentUser->isLogin()){
         <h2 style="text-align: center; margin-top: 50px;">积分政策</h2>
         <h3>每日签到:</h3>
         <table>
-            <tr>
-                <th style="flex:3">签到说明</th>
-                <th style="flex:1">积分</th>
-            </tr>
+
         <?php
         $dailyDescription = credit::$dailyCredit;
         foreach ($dailyDescription as $dailyRow) {?>
@@ -66,10 +63,6 @@ if(!$currentUser->isLogin()){
 
         <h3>积分机制:</h3>
         <table>
-            <tr>
-                <th style="flex:3">操作行为</th>
-                <th style="flex:1">积分</th>
-            </tr>
             <tr>
                 <td style="flex:3">在问答系统中发布提问</td>
                 <td style="flex:1">积分<?php echo(credit::$addCourseQuestion['credit']>=0 ? "+".credit::$addCourseQuestion['credit']:credit::$addCourseQuestion['credit']) ; ?></td>
