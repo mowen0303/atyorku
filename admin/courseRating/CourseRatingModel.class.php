@@ -39,7 +39,7 @@ class CourseRatingModel extends Model
     * @param pageSize 每页query数量
     * @return 2维数组
     */
-    public function getListOfCourseRating($query=false, $pageSize=20) {
+    public function getListOfCourseRating($query=false, $pageSize=20, $orderBy = false) {
         $select = "SELECT cr.*, u.id AS user_id, u.name AS user_name, u.user_class_id, u.img AS user_img, u.alias AS user_alise, u.gender AS user_gender, u.major AS user_major, u.enroll_year AS user_enroll_year, u.degree AS user_degree, uc.is_admin, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
         $from = "FROM (course_rating cr INNER JOIN course_code cc ON cr.course_code_id = cc.id INNER JOIN course_code cc2 ON cc.parent_id = cc2.id INNER JOIN professor p ON cr.prof_id = p.id INNER JOIN `user` u ON cr.user_id = u.id LEFT JOIN user_class uc ON u.user_class_id = uc.id)";
         $sql = "{$select} {$from}";
@@ -48,7 +48,13 @@ class CourseRatingModel extends Model
             $sql = "{$sql} WHERE ({$query})";
             $countSql = "{$countSql} WHERE ({$query})";
         }
-        $sql = "{$sql} ORDER BY `year` DESC, `term`, `publish_time` DESC";
+
+        $orderCondition = "";
+        if($orderBy=="id"){
+            $orderCondition .= "`id` DESC, ";
+        }
+
+        $sql = "{$sql} ORDER BY {$orderCondition} `year` DESC, `term`, `publish_time` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
@@ -123,7 +129,7 @@ class CourseRatingModel extends Model
      */
     public function getListOfunawardedCourseRating($pageSize=20){
         $query = "award=-1";
-        return $this->getListOfCourseRating($query,$pageSize);
+        return $this->getListOfCourseRating($query,$pageSize,"id");
     }
 
 
