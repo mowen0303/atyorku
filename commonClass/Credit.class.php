@@ -19,8 +19,8 @@ class Credit {
     public static $addBook = [description=>"在资料市场中发布资料", credit=>"6"];
 
     public static $addCourseRating = [
-        3=>[description=>"在课评系统中发布课评", credit=>"3"],
-        5=>[description=>"在课评系统中发布课评", credit=>"5"],
+        3=>[description=>"你的课评被评为:有用课评", credit=>"6"],
+        5=>[description=>"你的课评被评为:优秀课评", credit=>"10"],
     ];
 
 }

@@ -437,7 +437,7 @@ class CourseRatingModel extends Model
             $msgModel = new MsgModel();
             $title = $result['course_code_parent_title'] . " " . $result['course_code_child_title'];
             $grade = $credit===5 ? "优秀" : "有用";
-            $msg = "恭喜，你的课评 {$title} 被评为{$grade}课评，获得奖励 +{$credit}";
+            $msg = "恭喜，你的课评 {$title} 被评为{$grade}课评，获得奖励 +".Credit::$addCourseRating[$credit];
             $msgModel->pushMsgToUser($userId,"course_rating", $id, $msg);
         }
         return $bool;
