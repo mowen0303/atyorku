@@ -19,6 +19,7 @@ h4,h5,h6{font-size:1em}
 a{text-decoration:none; word-wrap: break-word; word-break:break-all}
 a:hover{text-decoration:underline}
 img{border:0;width: 96%; height: auto; border-radius: 8px; box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); display: block; margin: auto}
+.no-shadow img { box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);}
 button,input,select,textarea{font-size:1em}
 table{border-collapse:collapse;border-spacing:0}
 section.context { padding-top:0.4em}

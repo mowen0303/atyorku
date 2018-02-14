@@ -66,7 +66,12 @@ class TransactionModel extends Model {
             $this->errorMsg = "积分值无效: {$credit}";
             return false;
         }
-        return $this::addTransaction($userId,$credit,$description);
+        if($this::addTransaction($userId,$credit,$description)){
+            return $this->setCredit($userId, $this->getCredit($userId));
+        }else{
+            $this->errorMsg = "添加积分记录失败[systemAdjustCredit]";
+            return false;
+        }
     }
 
     /**消耗用户的积分
