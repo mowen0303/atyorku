@@ -342,7 +342,7 @@ function purchaseBookWithJson() {
             $elink = $bookModel->getELinkById($bookId);
             if(!$elink){
                 $bookModel->unLaunchBook($bookId);
-                $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.",true);
+                $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.",28);
                 BasicTool::throwException("购买失败: 资料链接不存在, 此资料将被自动下架.");
             }
             $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription) or BasicTool::throwException($transactionModel->errorMsg);
