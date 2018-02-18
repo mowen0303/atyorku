@@ -274,8 +274,14 @@ class CourseRatingModel extends Model
     */
     public function getListOfCourseReports($pageSize=20,$courseParentTitle=false,$courseChildTitle=false) {
         $q = "";
-        if($courseParentTitle) $q .= " AND c2.title='{$courseParentTitle}'";
-        if($courseChildTitle) $q .= " AND c1.title='{$courseChildTitle}'";
+        if($courseParentTitle) {
+            if($courseChildTitle){
+                // fixed parent, has child title
+                $q .= " AND c2.title='{$courseParentTitle}' AND c1.title LIKE '{$courseChildTitle}%'";
+            } else {
+                $q .= " AND c2.title LIKE '{$courseParentTitle}%'";
+            }
+        }
         $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
         $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
         $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
@@ -288,7 +294,7 @@ class CourseRatingModel extends Model
     */
     public function getListOfProfessorReports($pageSize=20,$profName=false) {
         $q = "";
-        if($profName) $q .= " AND CONCAT(p.firstname, ' ', p.lastname)='{$profName}'";
+        if($profName) $q .= " AND CONCAT(p.firstname, ' ', p.lastname) LIKE '{$profName}%'";
         $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
         $countSql = "SELECT COUNT(*) FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
         $arr = parent::getListWithPage("professor_report", $sql, $countSql, $pageSize);
