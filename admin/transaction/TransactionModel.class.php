@@ -137,8 +137,8 @@ class TransactionModel extends Model {
     }
 
     function getTransactions() {
-        $sql = "SELECT * FROM transaction";
-        $countSql = "SELECT COUNT(*) FROM transaction";
+        $sql = "SELECT * FROM transaction ORDER BY id DESC";
+        $countSql = "SELECT COUNT(*) FROM transaction ORDER BY id DESC";
         $result = $this->getListWithPage("transaction", $sql, $countSql, 30);
         return $result;
     }

@@ -39,7 +39,7 @@ li p {margin:0}
 blockquote { background: #f8f8f8; padding:3px 0.8em; border-radius: 4px;}
 blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  padding: 1em 0 0.5em 0;  border-bottom: 1px solid #eaeaea;  margin: 0 1em;}
 
-.tab td {padding:0.5em; background: #fafafa}
+.tab td {padding:0.5em; background: #fafafa;word-break:break-all;}
 .tab,.tab td { border:1px solid #cfcfcf; }
 .tab td {border-top: 0; border-left: 0}
 .tab {border-right: 0; border-bottom: 0;}

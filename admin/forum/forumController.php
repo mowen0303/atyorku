@@ -17,21 +17,15 @@ function getForumListOfSpecificUserWithJson() {
 
     global $forumModel;
     try {
-
         $userId = BasicTool::get('userId', "用户ID不能为空");
-
         //执行逻辑处理
         $result = $forumModel->getListOfForumByForumClassId(BasicTool::get("forum_class_id"), 40, false, $userId);
-
-
         if ($result) {
             //输出json结果
             BasicTool::echoJson(1, "成功", $result);
         } else {
             BasicTool::echoJson(0, "没有更多内容");
         }
-
-
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
@@ -481,7 +475,7 @@ function addComment($echoType = "normal") {
     global $forumModel;
     global $msgModel;
     try {
-        BasicTool::throwException("AtYorkU 2.0正在部署中，旧版同学圈评论功能暂停使用。");
+        BasicTool::throwException("AtYorkU 1.0 同学圈评论功能已停止使用。");
         //判断是否有权限发帖
         $currentUser->isUserHasAuthority('FORUM_COMMENT') or BasicTool::throwException($currentUser->errorMsg);
         $currentUser->addActivity();

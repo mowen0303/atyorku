@@ -20,6 +20,8 @@ class ForumModel extends Model {
         if ($today != $currentDate) {
             $sql = "UPDATE forum_class SET today = '{$currentDate}',count_today = 0";
             $this->sqltool->query($sql);
+            $sql = "UPDATE forum set count_comments_today = 0";
+            $this->sqltool->query($sql);
         }
     }
 

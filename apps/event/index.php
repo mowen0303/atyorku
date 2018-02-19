@@ -13,6 +13,7 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <meta charset="UTF-8"/>
     <link rel="stylesheet" href="style.css?1">
+    <script src="/resource/js/jquery-2.1.4.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="container">

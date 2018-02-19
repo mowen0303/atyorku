@@ -709,41 +709,48 @@ class UserModel extends Model {
      */
     public function getDailyCredit(){
         $uid = $this->userId or BasicTool::throwException("请先登录账号");
-        $time = BasicTool::getTodayTimestamp();
-        $currentTime = time();
+        $today = strtotime(date("Y-m-d")." 00:00:01");
         $sql = "SELECT checkin_last_time,checkin_count,credit FROM user WHERE id IN ({$uid})";
         $row = $this->sqltool->getRowBySql($sql);
         $checkinTime = $row["checkin_last_time"];
         $checkinCount = $row["checkin_count"];
         $userCredit = $row["credit"];
-        if($checkinTime>$time['startTime'] && $checkinTime <$time['endTime']){
+
+        $timeGap = $today-$checkinTime;
+
+        if($timeGap == 0){
             $this->errorMsg = "今日已领取过积分了哦 ^_^ 你当前共有【{$userCredit}点】积分. 连续登录天数:{$checkinCount}";
             return false;
+        }else if ($timeGap == 86400) {
+            $sql = "UPDATE user SET checkin_last_time = '{$today}', checkin_count = checkin_count+1 WHERE id IN ({$uid})";
+            $checkinCount++;
         }else{
-            $sql = "UPDATE user SET checkin_last_time = '{$currentTime}', checkin_count = checkin_count+1 WHERE id IN ({$uid})";
-            if($this->sqltool->query($sql)){
-                $transactionModel = new TransactionModel();
-                $creditAwardCount = count(Credit::$dailyCredit);
-                $creditAward = [];
-                if($checkinCount<$creditAwardCount-1){
-                    $creditAward = Credit::$dailyCredit[$checkinCount];
-                }else{
-                    $creditAward = Credit::$dailyCredit[$creditAwardCount-1];
-                }
-                $checkinCount++;
-                $credit = $creditAward['credit'];
-                $userCredit+=$credit;
-                $description = "恭喜你,领取成功! 你共有【{$userCredit}点】积分. 今天是你连续登录的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
-                if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天")){
-                    return [$description,$credit];
-                }else{
-                    return false;
-                }
+            $sql = "UPDATE user SET checkin_last_time = '{$today}', checkin_count = 1 WHERE id IN ({$uid})";
+            $checkinCount =1;
+        }
+
+        if($this->sqltool->query($sql)){
+            $transactionModel = new TransactionModel();
+            $creditAwardCount = count(Credit::$dailyCredit);
+            $creditAward = [];
+            if($checkinCount<$creditAwardCount-1){
+                $creditAward = Credit::$dailyCredit[$checkinCount-1];
             }else{
-                $this->errorMsg = "更新用户领取状态出错";
+                $creditAward = Credit::$dailyCredit[$creditAwardCount-2];
+            }
+            $credit = $creditAward['credit'];
+            $userCredit+=$credit;
+            $description = "恭喜你,领取成功! 你共有【{$userCredit}点】积分. 今天是你连续登录的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
+            if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天")){
+                return [$description,$credit];
+            }else{
                 return false;
             }
+        }else{
+            $this->errorMsg = "更新用户领取状态出错";
+            return false;
         }
+
 
     }
 }
