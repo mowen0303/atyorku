@@ -196,7 +196,7 @@ class ImageModel extends Model
                             $dst_im = imagecreate($newWidth, $newHeight);
                             imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
                         }
-                        imagejpeg($dst_im, $root . $uploadsDir . $newFileName, 80) or BasicTool::throwException("图片存储失败:" . $root . $uploadsDir . $newFileName . "newwidth:" . $newWidth . "newheight:" . $newHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
+                        imagejpeg($dst_im, $root . $uploadsDir . $newFileName, 100) or BasicTool::throwException("图片存储失败:" . $root . $uploadsDir . $newFileName . "newwidth:" . $newWidth . "newheight:" . $newHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
                         //压缩缩略图
                         if ($generateThumbnail) {
                             imagedestroy($dst_im);  //销毁缓存
@@ -209,7 +209,7 @@ class ImageModel extends Model
                                 $dst_im = imagecreate($thumbnailWidth, $thumbnailHeight);
                                 imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
                             }
-                            imagejpeg($dst_im, $root . $thumbnailUploadsDir . $newFileName, 80) or BasicTool::throwException("图片存储失败:" . $root . $thumbnailUploadsDir . $newFileName . "thumbnailWidth:" . $thumbnailWidth . "thumbnailHeight:" . $thumbnailHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
+                            imagejpeg($dst_im, $root . $thumbnailUploadsDir . $newFileName, 100) or BasicTool::throwException("图片存储失败:" . $root . $thumbnailUploadsDir . $newFileName . "thumbnailWidth:" . $thumbnailWidth . "thumbnailHeight:" . $thumbnailHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
                         }
                         imagedestroy($dst_im);  //销毁缓存
                         imagedestroy($src_im);  //销毁缓存
@@ -334,7 +334,7 @@ class ImageModel extends Model
      *       $currentImageIds = array($result["image_id_one"],$result["image_id_two"],$result["image_id_three"]);
      *       $imageModel->uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds,3,"imgFile",$currentUser->userId,"table");
      */
-    public function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false) {
+    public function uploadImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false,$generateThumbnail=true) {
         $imgArr = array_values(array_filter($modifiedImageIds));
         $currentImageIds = array_values(array_filter($currentImageIds));
         if(!$maxNum) {
@@ -349,7 +349,7 @@ class ImageModel extends Model
                 $tableName or BasicTool::throwException("上传新图片需要提供表名");
                 ($numOfNewImages <= $maxNum) or BasicTool::throwException("图片上传最多3张");
                 ($numOfNewImages+count($imgArr)<=$maxNum) or BasicTool::throwException("上传图片数量过多，请先删除当前图片");
-                $newImageIds = $this->uploadImg($uploadInputName, $path, $tableName) or BasicTool::throwException($this->errorMsg);
+                $newImageIds = $this->uploadImg($uploadInputName, $path, $tableName,$generateThumbnail) or BasicTool::throwException($this->errorMsg);
                 $imgArr = array_merge($imgArr, $newImageIds);
                 (count($imgArr)<=$maxNum) or BasicTool::throwException("Unexpected Error: imgArr size over {$maxNum}.");
             }
