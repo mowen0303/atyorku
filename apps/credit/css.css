@@ -19,9 +19,9 @@ a { color:  #c91448; text-decoration:none}
     .creditCard .point { color: #273a4b; font-size: 3.5em; font-weight:bold; font-family: 'DINMittelschrift';line-height: 2em; padding-left: 5px}
     .avatar {  height: 60px;  width: 60px;  border-radius: 50%;  background-color: white;  position: absolute;  top: -30px;  right: 30px; background-repeat: no-repeat; background-size: 100% auto;}
     .creditBtnBox {display: flex; justify-content:space-between}
-    .creditBtnBox a { flex:1; display: block; text-align: center; overflow: hidden ;text-decoration: none; background: #333; padding:8px 0; border-radius: 6px; color:#fff}
-    .creditBtnBox a:nth-child(1) {margin-right: 10px}
-    .creditBtnBox a:active {background: #111}
+    .creditBtnBox .btn_1 { flex:1; display: block; text-align: center; overflow: hidden ;text-decoration: none; background: #333; padding:8px 0; border-radius: 6px; color:#fff}
+    .creditBtnBox .btn_1:nth-child(1) {margin-right: 10px}
+    .creditBtnBox .btn_1:active {background: #111}
 
 .pageBody { margin-top: 90px}
 
@@ -30,17 +30,12 @@ a { color:  #c91448; text-decoration:none}
 .creditRecord {padding:20px; color:#686868; margin:0}
     .creditRecord h1 { font-size: 1.1em; margin-bottom: 10px;  text-align: center}
     .creditRecord h2 { font-size: 1.1em; margin-bottom: 10px;  text-align: center; margin-top:1.5em}
-    .creditRecord p { display: flex; line-height: 1em; justify-items: center; align-items: center; margin-top: 10px; background: #f8f8f8;  border-radius: 50px; padding:6px 10px 6px 20px}
-    .creditRecord span { flex:1; padding-top:6px}
-    .creditRecord span date { color:#bbb; font-style: normal;font-size: 12px; padding-top: 4px}
-    .creditRecord i { display: inline-block; font-size: 1.3em; font-family: 'DINMittelschrift'; width: 50px;font-style: normal; text-align: right;text-align: center}
-
+    .creditRecord .desRow { display: flex; line-height: 1em; justify-items: center; align-items: center; margin-top: 10px; background: #f8f8f8;  border-radius: 50px; padding:10px 15px}
+    .creditRecord .desRow span { flex:1;}
+    .creditRecord .desRow i { display: inline-block; padding-right: 10px;font-size: 1.2em; font-family: 'DINMittelschrift';font-style: normal;}
+    .creditRecord .date { color:#bbb; text-align:center; font-style: normal;font-size: 12px; padding-top: 4px}
 /*.pageListBox*/
 .pageListBox { text-align: center;}
 .pageListBox a ,.pageListBox i { display: inline-block; border-radius:4px; background: #f2f2f2; color:#aaa; padding:3px 7px; margin: 0 2px; margin-top: 40px; font-style:normal; transition: background 0.2s, color 0.2s;}
 .pageListBox i { background: #ccc; color:#888; cursor: default; visibility: hidden}
 .pageListBox .current,.pageListBox a:hover { background: #C83C46; color:#fff}
-
-
-
-

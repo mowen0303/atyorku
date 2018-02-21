@@ -14,7 +14,7 @@ use \Credit as Credit;
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
-    <link href="css.css" rel="stylesheet" type="text/css">
+    <link href="css.css?9" rel="stylesheet" type="text/css">
     <title>我的积分</title>
 </head>
 <body>
@@ -24,18 +24,18 @@ use \Credit as Credit;
     $dailyDescription = credit::$dailyCredit;
     foreach ($dailyDescription as $dailyRow) {
         ?>
-        <p>
+        <div class="desRow">
             <span><?php echo $dailyRow['description']; ?></span><i>积分<?php echo $dailyRow['credit']?></i>
-        </p>
+        </div>
         <?php
     }
     ?>
-    <p><span>在问答系统中发布提问</span><i>积分<?php echo credit::$addCourseQuestion['credit'] ?></i></p>
-    <p><span>在问答系统中删除提问</span><i>积分<?php echo credit::$deleteCourseQuestion['credit'] ?></i></p>
-    <p><span>在问答中发布答案</span><i>积分<?php echo credit::$addCourseSolution['credit'] ?></i></p>
-    <p><span>在资料市场中发布资料</span><i>积分<?php echo credit::$addBook['credit'] ?></i></p>
-    <p><span>课评被评为: 有用课评</span><i>积分<?php echo credit::$addCourseRating[3]['credit'] ?></i></p>
-    <p><span>课评被评为: 优秀课评</span><i>积分<?php echo credit::$addCourseRating[5]['credit'] ?></i></p>
+    <div class="desRow"><span>在问答系统中发布提问</span><i>积分<?php echo credit::$addCourseQuestion['credit'] ?></i></div>
+    <div class="desRow"><span>在问答系统中删除提问</span><i>积分<?php echo credit::$deleteCourseQuestion['credit'] ?></i></div>
+    <div class="desRow"><span>在问答中发布答案</span><i>积分<?php echo credit::$addCourseSolution['credit'] ?></i></div>
+    <div class="desRow"><span>在资料市场中发布资料</span><i>积分<?php echo credit::$addBook['credit'] ?></i></div>
+    <div class="desRow"><span>课评被评为: 有用课评</span><i>积分<?php echo credit::$addCourseRating[3]['credit'] ?></i></div>
+    <div class="desRow"><span>课评被评为: 优秀课评</span><i>积分<?php echo credit::$addCourseRating[5]['credit'] ?></i></div>
 
     <h2>兑换政策</h2>
     <p>每5积分可以兑换1元 (人民币)</p>

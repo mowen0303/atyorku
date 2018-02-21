@@ -20,7 +20,7 @@ if(!$currentUser->isLogin()){
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
-    <link href="css.css?5" rel="stylesheet" type="text/css">
+    <link href="css.css?9" rel="stylesheet" type="text/css">
     <title>我的积分</title>
 </head>
 <body>
@@ -29,8 +29,8 @@ if(!$currentUser->isLogin()){
     <p class="title">总积分(点)</p>
     <p class="point"><?php echo $transactionModel->getCredit($currentUser->userId)?>.00</p>
     <div class="creditBtnBox">
-        <a href="#" onclick="alert('暂不支持自动充值,请联系官方客服微信:atyorku666. (100人民币=500积分)')">积分充值</a>
-        <a href="#" onclick="alert('暂不支持自动提现,请联系官方客服微信:atyorku666. (500积分=100人民币)')">提现</a>
+        <div class="btn_1" href="#" onclick="alert('暂不支持自动充值,请联系官方客服微信:atyorku666. (100人民币=500积分)')">积分充值</div>
+        <div class="btn_1" href="#" onclick="alert('暂不支持自动提现,请联系官方客服微信:atyorku666. (500积分=100人民币)')">提现</div>
     </div>
 </div>
 <div class="pageHeader">
@@ -45,7 +45,9 @@ if(!$currentUser->isLogin()){
         if($transactionArr) {
             foreach($transactionArr as $row){
                 ?>
-                <p><span><?php echo $row['description'] ?> <br><date><?php echo date("Y-m-d",$row['time']) ?></date></span><i><?php echo($row['amount']>=0 ? "+".$row['amount']:$row['amount']) ?></i></p>
+                <div class="desRow">
+                    <i><?php echo($row['amount']>=0 ? "+".$row['amount']:$row['amount']) ?></i><span><?php echo $row['description'] ?></span><date><?php echo date("Y-m-d",$row['time']) ?></date>
+                </div>
                 <?php
             }
             $transactionModel->echoPageList();
