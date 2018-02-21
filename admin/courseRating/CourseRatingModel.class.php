@@ -122,6 +122,19 @@ class CourseRatingModel extends Model
         return $this->getListOfCourseRating($query, $pageSize);
     }
 
+
+    /**
+     * 通过指定用户Id, 获取一页课评
+     * @param $userId 用户ID
+     * @param int $pageSize
+     * @return array
+     */
+    public function getListOfCourseRatingByUserId($userId, $pageSize=20) {
+        $userId = intval($userId);
+        $query = "user_id in ({$userId})";
+        return $this->getListOfCourseRating($query, $pageSize);
+    }
+
     /**
      * 获得一页没有奖励的课评
      * @param int $pageSize
@@ -185,7 +198,7 @@ class CourseRatingModel extends Model
             BasicTool::throwException("Unknown flag.");
         }
         if ($bool) {
-            $this->updateReports($courseCodeId, $profId);
+            $this->updateReports($courseCodeId, $profId, true);
         }
         return $bool;
     }
@@ -201,7 +214,7 @@ class CourseRatingModel extends Model
         $sql = "DELETE FROM {$this->table} WHERE id in ({$id})";
         $bool = $this->sqltool->query($sql);
         if ($bool && $result["course_code_id"] && $result["prof_id"]) {
-            $this->updateReports($result["course_code_id"], $result["prof_id"]);
+            $this->updateReports($result["course_code_id"], $result["prof_id"], true);
         }
         return $bool;
     }
@@ -455,24 +468,24 @@ class CourseRatingModel extends Model
      * @param $profId 指定的教授ID
      * @return array|bool 返回true如果成功, 失败则返回 [course_code_id=>[[course code id]], prof_id=>[[professor id]], log=>[[ error stack]]]
      */
-    private function updateReports($courseCodeId, $profId) {
+    private function updateReports($courseCodeId, $profId, $updateTime=false) {
         $errorStack = array("course_code_id"=>$courseCodeId,"prof_id"=>$profId,"log"=>array());
         // Update course_prof_report
         $result = $this->getAnalyzedData($courseCodeId,$profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_prof_report: ".$this->errorMsg);}
-        $result = $this->handleReportChange("course_prof_report", $result, $courseCodeId, $profId);
+        $result = $this->handleReportChange("course_prof_report", $result, $courseCodeId, $profId, $updateTime);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_prof_report: ".$this->errorMsg);}
 
         // Update course_report
         $result = $this->getAnalyzedData($courseCodeId,false);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for course_report: ".$this->errorMsg);}
-        $result = $this->handleReportChange("course_report", $result, $courseCodeId);
+        $result = $this->handleReportChange("course_report", $result, $courseCodeId, false, $updateTime);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update course_report: ".$this->errorMsg);}
 
         // Update professor_report
         $result = $this->getAnalyzedData(false, $profId);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to retrieve average data for prof_report: ".$this->errorMsg);}
-        $result = $this->handleReportChange("professor_report", $result, false, $profId);
+        $result = $this->handleReportChange("professor_report", $result, false, $profId, $updateTime);
         if(!$result && $this->errorMsg!=="没有数据受到影响"){array_push($errorStack['log'],"Fail to update prof_report: ".$this->errorMsg);}
 
         if(sizeof($errorStack['log'])===0){
@@ -490,7 +503,7 @@ class CourseRatingModel extends Model
      * @param bool $profId
      * @return bool
      */
-    private function handleReportChange($table, $result, $courseCodeId=false, $profId=false) {
+    private function handleReportChange($table, $result, $courseCodeId=false, $profId=false, $updateTime=false) {
         $arr = array();
         $additionalSql = "";
         if($courseCodeId){
@@ -505,7 +518,7 @@ class CourseRatingModel extends Model
 
         $sql = "SELECT * FROM {$table} WHERE {$additionalSql}";
         $report = $this->sqltool->getRowBySql($sql);
-        $this->parseUpdateReportArray($result, $arr, $table);
+        $this->parseUpdateReportArray($result, $arr, $table, $updateTime);
 
         // modify report
         if(!$arr["rating_count"]){
@@ -549,7 +562,7 @@ class CourseRatingModel extends Model
      * @param $arr
      * @param $table
      */
-    private function parseUpdateReportArray($result, &$arr, $table) {
+    private function parseUpdateReportArray($result, &$arr, $table, $updateTime=false) {
         if ($result) {
             $arr["homework_diff"] = $result["avg_hw"] ?: 0.0;
             $arr["test_diff"] = $result["avg_test"] ?: 0.0;
@@ -561,6 +574,9 @@ class CourseRatingModel extends Model
             }
             if($table=='course_prof_report' || $table=='course_report') {
                 $arr["avg_grade"] = $result["avg_grade"] ?: 11;
+            }
+            if($updateTime){
+                $arr['last_update_time'] = time();
             }
         }
     }
@@ -580,7 +596,7 @@ class CourseRatingModel extends Model
             $count = mysqli_num_rows($result);
             $succeed = 0;
             foreach($result as $row){
-                $result = $this->updateReports($row['course_code_id'],$row['prof_id']);
+                $result = $this->updateReports($row['course_code_id'],$row['prof_id'],false);
                 if($result===true){
                     $succeed += 1;
                 }else {
