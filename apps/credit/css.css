@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'DINMittelschrift';
-    src: url('DINMittelschrift.woff2') format('woff2'),
-    url('DINMittelschrift.woff') format('woff');
+    src: url('/resource/font/DINMittelschrift.woff2') format('woff2'),
+    url('/resource/font/DINMittelschrift.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -27,12 +27,13 @@ a { color:  #c91448; text-decoration:none}
 
 .moreBtn {  text-decoration:none; color:#484848;text-align: center; color:#fff; position: absolute; font-size:1.1em; left:20px; top:30px}
 
-.creditRecord {padding:20px; color:#686868; margin:10px}
+.creditRecord {padding:20px; color:#686868; margin:0}
     .creditRecord h1 { font-size: 1.1em; margin-bottom: 10px;  text-align: center}
     .creditRecord h2 { font-size: 1.1em; margin-bottom: 10px;  text-align: center; margin-top:1.5em}
-    .creditRecord p { display: flex; margin-top: 10px; background: #fafafa;  border-radius: 50px; padding:5px 10px 5px 20px}
-    .creditRecord span { flex:1;}
-    .creditRecord i { display: inline-block; width: 50px;font-style: normal; text-align: right;text-align: center}
+    .creditRecord p { display: flex; line-height: 1em; justify-items: center; align-items: center; margin-top: 10px; background: #f8f8f8;  border-radius: 50px; padding:6px 10px 6px 20px}
+    .creditRecord span { flex:1; padding-top:6px}
+    .creditRecord span date { color:#bbb; font-style: normal;font-size: 12px; padding-top: 4px}
+    .creditRecord i { display: inline-block; font-size: 1.3em; font-family: 'DINMittelschrift'; width: 50px;font-style: normal; text-align: right;text-align: center}
 
 /*.pageListBox*/
 .pageListBox { text-align: center;}
