@@ -44,7 +44,7 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                 </thead>
                 <tbody>
                 <?php
-                $arr = $courseRatingModel->getListOfCourseRating();
+                $arr = $courseRatingModel->getListOfCourseRating(false,40,"id");
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
