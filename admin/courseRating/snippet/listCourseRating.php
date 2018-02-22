@@ -20,7 +20,9 @@ $queryUserName = BasicTool::get("user_name");
         }
     ?>
 </nav>
-
+<?php
+if(!$queryUserName){
+?>
 <article class="mainBox">
     <form action="index.php?s=listCourseRating" method="get">
         <header>
@@ -32,7 +34,9 @@ $queryUserName = BasicTool::get("user_name");
         </section>
     </form>
 </article>
-
+<?php
+}
+?>
 <article class="mainBox">
     <?php
         if($isGod && !$queryUserId){
