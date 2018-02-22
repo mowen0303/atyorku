@@ -21,7 +21,7 @@ class TransactionModel extends Model {
     function getCredit($user_id) {
         $sql = "SELECT SUM(amount) AS credit FROM transaction WHERE user_id = {$user_id} AND pending = 0";
         $result = $this->sqltool->getRowBySql($sql)["credit"];
-        return (int)$result;
+        return (float)$result;
     }
 
     /**给用户添加积分
@@ -53,11 +53,11 @@ class TransactionModel extends Model {
         $time = time();
         $concat = "";
         for ($i = 0; $i < count($user_ids); $i++) {
-            $a = "({$user_ids[$i]},{$amounts[$i]},'{$description}',{$time}),";
+            $a = "({$user_ids[$i]},{$amounts[$i]},'{$description}',{$time}),'course_question',0";
             $concat = $concat . $a;
         }
         $concat = substr($concat, 0, -1);
-        $sql = "INSERT INTO transaction (user_id,amount,description,time) VALUES {$concat}";
+        $sql = "INSERT INTO transaction (user_id,amount,description,time,section_name,section_id) VALUES {$concat}";
         $bool = $this->sqltool->query($sql);
         return $bool;
     }
@@ -213,7 +213,7 @@ class TransactionModel extends Model {
      * @return bool
      */
     private function addTransaction($user_id, $amount, $description,$section_name,$section_id,$pending = 0) {
-        if ((int)$amount == 0) {
+        if ($amount == 0) {
             $this->errorMsg = "积分值无效:{$amount}";
             return false;
         }
