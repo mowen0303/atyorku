@@ -49,14 +49,15 @@ class BookModel extends Model
         $arr["publish_time"] = time();
         $arr["last_modified_time"] = time();
         $bool = $this->addRow($this->table, $arr);
-        if ($bool) {
+        $id = $this->idOfInsert;
+        if ($bool && $id>0) {
             $bcm = new BookCategoryModel();
             $bcm->updateBookCategoryCount($bookCategoryId);
             $this->updateCourseReport($courseId);
 //            $this->updateReports(intval($courseId), intval($profId));
             if($this->shouldRewardAddBook($userId)){
                 $transactionModel = new TransactionModel();
-                $transactionModel->systemAdjustCredit($userId,Credit::$addBook);
+                $transactionModel->systemAdjustCredit($userId,Credit::$addBook,"book",$id);
             }
         }
         return $bool;
