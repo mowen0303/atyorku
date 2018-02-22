@@ -49,7 +49,11 @@ function addCredit(){
     $user_id = BasicTool::post("user_id","");
     $amount = BasicTool::post("amount","");
     $description = BasicTool::post("description");
-    $transactionModel->addCredit($user_id,$amount,$description);
+    $section_name = BasicTool::post("section_name");
+    $section_id = BasicTool::post("section_id");
+    $pending = BasicTool::post("pending");
+    $result = $transactionModel->addCredit($user_id,$amount,$description,$section_name,$section_id,$pending);
+    BasicTool::echoJson(1,"ss",$result);
 
 }
 function deductCredit(){
@@ -57,7 +61,11 @@ function deductCredit(){
     $user_id = BasicTool::post("user_id","");
     $amount = BasicTool::post("amount");
     $description = BasicTool::post("description");
-    $transactionModel->deductCredit($user_id,$amount,$description);
+    $section_name = BasicTool::post("section_name");
+    $section_id = BasicTool::post("section_id");
+    $pending = BasicTool::post("pending");
+   $result = $transactionModel->deductCredit($user_id,$amount,$description,$section_name,$section_id,$pending);
+    BasicTool::echoJson(1,"ss",$result);
 }
 
 function buy(){
@@ -67,11 +75,22 @@ function buy(){
     $buyer_description = BasicTool::post("buyer_description");
     $seller_description = BasicTool::post("seller_description");
     $seller_user_id = BasicTool::post("seller_user_id","");
-    $transactionModel->buy($buyer_user_id,$seller_user_id,$amount,$buyer_description,$seller_description);
+    $buyer_pending = BasicTool::post("buyer_pending");
+    $seller_pending = BasicTool::post("seller_pending");
+    $section_name = BasicTool::post("section_name");
+    $section_id = BasicTool::post("section_id");
+    $result = $transactionModel->buy($buyer_user_id,$seller_user_id,$amount,$buyer_description,$seller_description,$section_name,$section_id,$buyer_pending,$seller_pending);
+    BasicTool::echoJson(1,"",$result);
 }
 
 function clearCredit(){
     global $transactionModel;
     $user_id = BasicTool::post("user_id");
-    $transactionModel->clearCredit($user_id);
+    $result = $transactionModel->clearCredit($user_id,"test","test",0);
+    BasicTool::echoJson(1,"",$result);
+}
+function setPending(){
+    global $transactionModel;
+    $transactionId = BasicTool::post("transaction_id");
+    $transactionModel->setPending($transactionId,0);
 }

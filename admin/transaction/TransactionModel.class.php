@@ -19,7 +19,7 @@ class TransactionModel extends Model {
      * @return mixed
      */
     function getCredit($user_id) {
-        $sql = "SELECT SUM(amount) AS credit FROM transaction WHERE user_id = {$user_id}";
+        $sql = "SELECT SUM(amount) AS credit FROM transaction WHERE user_id = {$user_id} AND pending = 0";
         $result = $this->sqltool->getRowBySql($sql)["credit"];
         return (int)$result;
     }
@@ -28,9 +28,12 @@ class TransactionModel extends Model {
      * @param int $user_id 用户id
      * @param int $amount 积分
      * @param String $description 描述
+     * @param String $section_name 表名
+     * @param int $section_id 表里的id
+     * @param int $pending 0 or 1
      * @return bool
      */
-    function addCredit($user_id, $amount, $description) {
+    function addCredit($user_id, $amount, $description,$section_name,$section_id,$pending=0) {
         $amount = (float)$amount;
         if($amount < 0){
             $this->errorMsg = "积分值无效:{$amount}";
@@ -38,7 +41,7 @@ class TransactionModel extends Model {
         }else if($amount==0){
             return true;
         }
-        if($this->addTransaction($user_id, $amount, $description)){
+        if($this->addTransaction($user_id, $amount, $description,$section_name,$section_id,$pending)){
             return $this->setCredit($user_id, $this->getCredit($user_id));
         }else{
             $this->errorMsg = "添加积分记录失败";
@@ -59,14 +62,14 @@ class TransactionModel extends Model {
         return $bool;
     }
 
-    function systemAdjustCredit($userId,$creditSet){
+    function systemAdjustCredit($userId,$creditSet,$section_name,$section_id){
         $credit = $creditSet['credit'];
         $description = $creditSet['description'];
         if($credit==0){
             $this->errorMsg = "积分值无效: {$credit}";
             return false;
         }
-        if($this::addTransaction($userId,$credit,$description)){
+        if($this::addTransaction($userId,$credit,$description,$section_name,$section_id,0)){
             return $this->setCredit($userId, $this->getCredit($userId));
         }else{
             $this->errorMsg = "添加积分记录失败[systemAdjustCredit]";
@@ -78,9 +81,12 @@ class TransactionModel extends Model {
      * @param int $user_id 用户id
      * @param int $amount 扣除的积分,positive
      * @param String $description 描述
+     * @param String $section_name 表名
+     * @param int $section_id 表里的id
+     * @param int $pending 0 or 1
      * @return bool
      */
-    function deductCredit($user_id, $amount, $description) {
+    function deductCredit($user_id, $amount, $description,$section_name,$section_id,$pending = 0) {
         $amount = (float)$amount;
         if($amount < 0){
             $this->errorMsg = "积分值无效:{$amount}";
@@ -91,7 +97,7 @@ class TransactionModel extends Model {
         $credit = $this->getCredit($user_id);
         if($credit - $amount >= 0){
             $amount = -$amount;
-            if($this->addTransaction($user_id, $amount, $description)){
+            if($this->addTransaction($user_id, $amount, $description,$section_name,$section_id,$pending)){
                 return $this->setCredit($user_id, $this->getCredit($user_id));
             }else{
                 $this->errorMsg = "积分记录添加失败";
@@ -109,13 +115,24 @@ class TransactionModel extends Model {
      * @param $amount
      * @param $buyer_description
      * @param $seller_description
-     * @return bool|\mysqli_result
+     * @param String $section_name 表名
+     * @param int $section_id 表里的id
+     * @param int $buyer_pending
+     * @param int $seller_pending
+     * @return bool|array
      */
-    function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description) {
+    function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description,$section_name,$section_id,$buyer_pending = 0,$seller_pending = 0) {
+        $result = [];
         $amount = (float)$amount;
         if($amount<=0){
             $this->errorMsg = "积分值错误:{$amount}";
             return false;
+        }
+        if ($buyer_pending != 0 && $buyer_pending != 1){
+            $this->errorMsg ="买家pending无效:{$buyer_pending}";
+        }
+        if ($seller_pending != 0 && $seller_pending != 1){
+            $this->errorMsg = "卖家pending无效:{$seller_pending}";
         }
         //获取买家当前积分
         $buyerCredit = $this->getCredit($buyer_user_id);
@@ -123,12 +140,18 @@ class TransactionModel extends Model {
             //如果卖家积分足够消费
             $time = time();
             $negative_amount = $amount * -1;
-            $sql = "INSERT INTO transaction (user_id,amount,description,time) VALUES ({$buyer_user_id},{$negative_amount},'{$buyer_description}',{$time}),({$seller_user_id},{$amount},'{$seller_description}',{$time})";
+            $sql = "INSERT INTO transaction (user_id,amount,description,pending,time,section_name,section_id) VALUES ({$buyer_user_id},{$negative_amount},'{$buyer_description}',{$buyer_pending},{$time},'{$section_name}',{$section_id}),({$seller_user_id},{$amount},'{$seller_description}',{$seller_pending},{$time},'{$section_name}',{$section_id})";
             $bool = $this->sqltool->query($sql);
             if ($bool) {
+                $result["buyer_transaction_id"] = $this->getInsertId();
+                $result["seller_transaction_id"] = $result["buyer_transaction_id"] + 1;
                 $this->setCredit($buyer_user_id, $this->getCredit($buyer_user_id));
                 $this->setCredit($seller_user_id, $this->getCredit($seller_user_id));
-                return true;
+                return $result;
+            }
+            else{
+                $this->errorMsg = "网络异常,交易失败";
+                return false;
             }
         }else{
             $this->errorMsg = "购买失败:积分不足,你当前只有{$buyerCredit}点积分.";
@@ -165,9 +188,9 @@ class TransactionModel extends Model {
         }
     }
 
-    public function clearCredit($user_id,$reason){
+    public function clearCredit($user_id,$reason,$section_name,$section_id){
         $amount = $this->getCredit($user_id);
-        return $this->deductCredit($user_id,$amount,"积分清零: {$reason}");
+        return $this->deductCredit($user_id,$amount,"积分清零: {$reason}",$section_name,$section_id,0);
     }
 
     /**把积分写进user表
@@ -184,18 +207,45 @@ class TransactionModel extends Model {
      * @param int $user_id 用户id
      * @param int $amount 积分
      * @param String $description 描述
+     * @param String $section_name 表名
+     * @param int $section_id 表里的id
+     * @param int $pending 0 or 1
      * @return bool
      */
-    private function addTransaction($user_id, $amount, $description) {
+    private function addTransaction($user_id, $amount, $description,$section_name,$section_id,$pending = 0) {
         if ((int)$amount == 0) {
             $this->errorMsg = "积分值无效:{$amount}";
+            return false;
+        }
+        if ($pending != 0 && $pending != 1){
+            $this->errorMsg = "Pending无效:{$pending}";
             return false;
         }
         $arr["user_id"] = $user_id;
         $arr["amount"] = $amount;
         $arr["description"] = $description ? $description : "";
+        $arr["section_name"] = $section_name ? $section_name : "";
+        $arr["section_id"] = $section_id;
+        $arr["pending"] = $pending;
         $arr["time"] = time();
         return $this->addRow("transaction", $arr);
+    }
+
+    /**篡改指定的transaction的pending值
+     * @param int $transaction_id
+     * @param int $pending 0 or 1
+     * @return bool
+     */
+    function setPending($transaction_id,$pending){
+        if ($pending != 0 && $pending != 1){
+            $this->errorMsg = "pending无效:{$pending}";
+            return false;
+        }
+        $sql = "UPDATE transaction SET pending = {$pending} WHERE id = {$transaction_id}";
+        return $this->sqltool->query($sql);
+    }
+    function getInsertId() {
+        return $this->sqltool->getInsertId();
     }
 }
 
