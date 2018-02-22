@@ -375,27 +375,6 @@ class UserModel extends Model {
         return true;
     }
 
-    //增加积分
-    public function addCredit($value, $userId) {
-
-        if (!$this->isUserHasAuthority('GOD')) {
-            $this->errorMsg = "没有权限";
-            return false;
-        }
-
-        if (!is_numeric($value)) {
-            $this->errorMsg = "请输入正确的数字";
-            return false;
-        }
-
-        $sql = "UPDATE user SET credit = credit + {$value} WHERE id in ({$userId})";
-        $this->sqltool->query($sql);
-        if ($this->sqltool->getAffectedRows() > 0) {
-            return true;
-        }
-        $this->errorMsg = "没有数据受到影响";
-        return false;
-    }
 
 
     //更改用户为普通用户
@@ -743,10 +722,10 @@ class UserModel extends Model {
             }else{
                 $creditAward = Credit::$dailyCredit[$creditAwardCount-2];
             }
-            $credit = $creditAward['credit'];
+            $credit = (float)$creditAward['credit'];
             $userCredit+=$credit;
             $description = "恭喜你,领取成功! 你共有【{$userCredit}点】积分. 今天是你连续登录的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
-            if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天")){
+            if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天","dailyCredit",$uid)){
                 return [$description,$credit];
             }else{
                 return false;
