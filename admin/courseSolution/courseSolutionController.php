@@ -31,7 +31,7 @@ function addSolution($echoType = "normal"){
         $insertId = $solutionModel->addSolution($question_id,$answerer_user_id, $description, $imgArr[0], $imgArr[1], $imgArr[2]);
         $insertId or BasicTool::throwException("添加失败");
         //每日发布的前5个答案加积分
-        !$solutionModel->shouldRewardAddSolution($questioner_user_id) or $transactionModel->systemAdjustCredit($answerer_user_id,Credit::$addCourseSolution);
+        !$solutionModel->shouldRewardAddSolution($questioner_user_id) or $transactionModel->systemAdjustCredit($answerer_user_id,Credit::$addCourseSolution,"course_solution",0);
         //推送
         $msgModel = new \admin\msg\MsgModel();
         $msgModel->pushMsgToUser($questioner_user_id,'course_question',$question_id,substr($description,0,80));

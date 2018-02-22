@@ -49,15 +49,15 @@ class TransactionModel extends Model {
         }
     }
 
-    function addCreditWithMultipleTransactions($user_ids, $amounts, $description) {
+    function addCreditWithMultipleTransactions($user_ids, $ids, $amounts, $description) {
         $time = time();
         $concat = "";
         for ($i = 0; $i < count($user_ids); $i++) {
-            $a = "({$user_ids[$i]},{$amounts[$i]},'{$description}',{$time}),'course_question',0";
+            $a = "({$user_ids[$i]},{$amounts[$i]},'{$description}',{$time},'course_question',{$ids[$i]},0),";
             $concat = $concat . $a;
         }
         $concat = substr($concat, 0, -1);
-        $sql = "INSERT INTO transaction (user_id,amount,description,time,section_name,section_id) VALUES {$concat}";
+        $sql = "INSERT INTO transaction (user_id,amount,description,time,section_name,section_id,pending) VALUES {$concat}";
         $bool = $this->sqltool->query($sql);
         return $bool;
     }

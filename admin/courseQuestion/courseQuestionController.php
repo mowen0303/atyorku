@@ -83,9 +83,9 @@ function addQuestion($echoType = "normal") {
         $insertId or BasicTool::throwException("添加失败");
         //插入成功
         //当设置了积分悬赏的时候,从用户账户中扣除
-        $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问") or BasicTool::throwException($transactionModel->errorMsg);
+        $transactionModel->deductCredit($currentUser->userId, $reward_amount, "发布提问","course_question",$insertId) or BasicTool::throwException($transactionModel->errorMsg);
         //增加系统奖励积分
-        $transactionModel->systemAdjustCredit($currentUser->userId, Credit::$addCourseQuestion);
+        $transactionModel->systemAdjustCredit($currentUser->userId, Credit::$addCourseQuestion,"course_question",0);
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功", "/admin/courseQuestion/index.php?s=getQuestions&course_code_id={$course_code_id}&prof_id={$prof_id}");
         } else {
@@ -139,23 +139,24 @@ function updateQuestion($echoType = "normal") {
         $id = BasicTool::post("id", "Missing id");
         $description = BasicTool::post("description");
         $reward_amount = BasicTool::post("reward_amount");
+        $reward_amount = (float)$reward_amount;
         $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分");
         $question = $questionModel->getQuestionById($id);
         //确认问题是否已被解决
         ($question["solution_id"] == 0) or BasicTool::throwException("更改失败,提问已经被解决");
         //积分验证
         $balance = $transactionModel->getCredit($question["questioner_user_id"]);
-        (($balance + $question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
+        (($balance + (float)$question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
         //图片上传
         $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
         $currImgArr = array($question["img_id_1"], $question["img_id_2"], $question["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "course_question");
         //如果传回来的reward_amount跟数据库里的值是一致的.则不做任何积分操作
-        if (!($reward_amount == $question["reward_amount"])) {
+        if (!($reward_amount == (float)$question["reward_amount"])) {
             //添加积分
-            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
+            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励","course_question",$id) or BasicTool::throwException("更改积分失败");
             //消耗积分
-            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
+            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励","course_question",$id) or BasicTool::throwException("更改积分失败");
         }
         $questionModel->updateQuestion($id, $description, $imgArr[0], $imgArr[1], $imgArr[2], $reward_amount) or BasicTool::throwException("更改失败");
 
@@ -291,15 +292,15 @@ function deleteQuestion($echoType = "normal") {
 
         //退还积分
         if (is_array($id)) {
-            $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids, $reward_amounts, "删除提问,退还悬赏") or BasicTool::throwException("删除失败，退还积分失败");
+            $transactionModel->addCreditWithMultipleTransactions($questioner_user_ids,$id, $reward_amounts, "删除提问,退还悬赏") or BasicTool::throwException("删除失败，退还积分失败");
             foreach ($questioner_user_ids as $questioner_user_id) {
                 //减去系统奖励积分
-                $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion);
+                $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion,"course_question",0);
             }
         } else {
-            $reward_amount <= 0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问") or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
+            $reward_amount <= 0 || $transactionModel->addCredit($questioner_user_id, $reward_amount, "删除提问","course_question",$id) or BasicTool::throwException("删除失败:退还积分失败,退换积分值[{$reward_amount}]");
             //减去系统奖励积分
-            $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion);
+            $transactionModel->systemAdjustCredit($questioner_user_id, Credit::$deleteCourseQuestion,"course_question",0);
         }
         //退还积分成功,删除图片
         $imageModel->deleteImageById($img_ids) or BasicTool::throwException("删除图片失败");
@@ -421,7 +422,8 @@ function updateRewardAmount($echoType = "normal") {
 
         $id = BasicTool::post("id", "Missing Id");
         $reward_amount = BasicTool::post("reward_amount", "missing reward_amount");
-        $reward_amount >= 0 or BasicTool::throwException("请输入有效的积分数");
+        (float)$reward_amount >= 0 or BasicTool::throwException("请输入有效的积分数");
+        $reward_amount = (float)$reward_amount;
         $question = $questionModel->getQuestionById($id);
         $question or BasicTool::throwException("question_id不存在");
         $questioner_user_id = $question["questioner_user_id"];
@@ -436,11 +438,11 @@ function updateRewardAmount($echoType = "normal") {
         if ($reward_amount != $question["reward_amount"]) {
             //积分验证
             $balance = $transactionModel->getCredit($question["questioner_user_id"]);
-            (($balance + $question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
+            (($balance + (float)$question["reward_amount"] - $reward_amount) >= 0) or BasicTool::throwException("更改积分失败,积分不足");
             //添加积分
-            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
+            $transactionModel->addCredit($question["questioner_user_id"], $question["reward_amount"], "更改提问积分奖励","course_question",$id) or BasicTool::throwException("更改积分失败");
             //消耗积分
-            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励") or BasicTool::throwException("更改积分失败");
+            $transactionModel->deductCredit($question["questioner_user_id"], $reward_amount, "更改提问积分奖励","course_question",$id) or BasicTool::throwException("更改积分失败");
         }
 
         //更改
@@ -483,7 +485,7 @@ function approveSolution($echoType = "normal") {
         $solution_id = BasicTool::get("solution_id", "Missing solution_id");
         $question = $questionModel->getQuestionById($question_id);
         $question["solution_id"] == 0 or BasicTool::throwException("采纳失败:已经有答案被采纳了");
-        $reward_amount = $question["reward_amount"];
+        $reward_amount = (float)$question["reward_amount"];
         $questioner_user_id = $question["questioner_user_id"];
         $answerer_user_id = $solutionModel->getSolutionById($solution_id)["answerer_user_id"];
         //判断权限
@@ -494,8 +496,8 @@ function approveSolution($echoType = "normal") {
         //采纳答案
         $questionModel->approveSolution($question_id, $solution_id) or BasicTool::throwException("采纳失败");
         //增加积分
-        $reward_amount > 0 && $transactionModel->addCredit($answerer_user_id, $reward_amount, "你的答案已经被采纳,获得悬赏金额:{$reward_amount}");
-        $transactionModel->addCredit($answerer_user_id, 5, "你在作业问答中提供的答案已经被采纳,获得系统额外积分奖励:5分");
+        $reward_amount > 0 && $transactionModel->addCredit($answerer_user_id, $reward_amount, "你的答案已经被采纳,获得悬赏金额:{$reward_amount}","course_question",$question_id);
+        $transactionModel->addCredit($answerer_user_id, 5, "你在作业问答中提供的答案已经被采纳,获得系统额外积分奖励:5分","course_solution",0);
         //信息通知
 
 

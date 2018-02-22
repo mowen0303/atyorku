@@ -126,7 +126,7 @@ class CourseQuestionModel extends Model {
      * @param int $flag
      * @return array
      */
-    function getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag = 2, $uid) {
+    function getQuestionsByCourseCodeIdProfId($course_code_id, $prof_id, $flag = 2, $uid=0) {
 
         $condition = "";
         if ($flag == 0) {

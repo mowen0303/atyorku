@@ -61,6 +61,7 @@ class EventCategoryModel extends Model {
             return $this->sqltool->query($sql);
         }
         else{
+            $this->errorMsg = "删除失败,请先删除分类下的所有广告";
             return false;
         }
     }
