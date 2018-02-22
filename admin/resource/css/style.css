@@ -60,6 +60,9 @@ label i { color:#C83C46; font-weight:bold}
     word-wrap: break-word; padding: 0 1em 0 0}
 .tab.center td,.tab.center th { text-align: center}
 .bodyMain .tab td .hidden {display: none}
+.formRow {display:flex; justify-content: center;}
+.formRow .input { felx:1;}
+.formRow .btn { margin-left:2em;}
 /*.pageListBox*/
 .pageListBox { text-align: center;}
 .pageListBox a ,.pageListBox i { display: inline-block; border-radius:4px; background: #eaeaea; color:#999; padding:6px 14px; margin: 0 5px; margin-top: 40px; font-style:normal; transition: background 0.2s, color 0.2s;}

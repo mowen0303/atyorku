@@ -2,7 +2,6 @@
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
 $userModel = new \admin\user\UserModel();
 $isGod = $userModel->isUserHasAuthority("GOD");
-$queryUserId = BasicTool::get("user_id");
 $queryUserName = BasicTool::get("user_name");
 ?>
 <header class="topBox">
@@ -10,7 +9,7 @@ $queryUserName = BasicTool::get("user_name");
 </header>
 <nav class="mainNav">
     <?php
-        if($queryUserId && $queryUserName){
+        if($queryUserName){
             echo '<a class="btn" href="javascript:history.go(-1);">返回</a>';
         } else {
             echo '<a class="btn" href="index.php?s=listCourseRatingNotAwarded">未奖励的课评</a>
@@ -23,12 +22,26 @@ $queryUserName = BasicTool::get("user_name");
 </nav>
 
 <article class="mainBox">
+    <form action="index.php?s=listCourseRating" method="get">
+        <header>
+            <h2>查询用户课评记录</h2>
+        </header>
+        <section class="formRow">
+            <input class="input" placeholder="用户名邮箱" type="text" name="user_name" value="">
+            <input class="btn btn-center" type="submit" title="查询课评记录" value="查询课评记录">
+        </section>
+    </form>
+</article>
+
+<article class="mainBox">
     <?php
         if($isGod && !$queryUserId){
             echo "<form action=\"courseRatingController.php?action=updateAllReports\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"更新全部报告\" class=\"btn\" onclick=\"return confirm('确认更新全部报告?')\"></footer></form>";
         }
     ?>
-    <header><h2><?php echo $typeStr ?>课评列表<?php if($queryUserId && $queryUserName){echo " - {$queryUserName}";} ?></h2></header>
+
+
+    <header><h2><?php echo $typeStr ?>课评列表<?php if($queryUserName){echo " - {$queryUserName}";} ?></h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
             <table class="tab">
@@ -53,8 +66,8 @@ $queryUserName = BasicTool::get("user_name");
                 <tbody>
                 <?php
                 $arr = null;
-                if($queryUserId && $queryUserName){
-                    $arr = $courseRatingModel->getListOfCourseRatingByUserId($queryUserId, 40);
+                if($queryUserName){
+                    $arr = $courseRatingModel->getListOfCourseRatingByUserId($userModel->getUserIdByName($queryUserName), 40);
                 } else {
                     $arr = $courseRatingModel->getListOfCourseRating(false,40,"id");
                 }

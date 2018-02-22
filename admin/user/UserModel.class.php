@@ -702,6 +702,11 @@ class UserModel extends Model {
         return $row['credit'];
     }
 
+    public function getUserIdByName($name){
+        $sql = "SELECT id FROM user WHERE name in ('$name')";
+        return $this->sqltool->getRowBySql($sql)['id'];
+    }
+
     /**
      * 获取用户每日积分
      * @return bool|string          成功返回array["积分描述",积分值];,失败返回false
