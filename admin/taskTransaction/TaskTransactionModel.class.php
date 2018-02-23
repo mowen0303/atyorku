@@ -141,9 +141,10 @@ class TaskTransactionModel extends Model
             $arr['task_design_id'] = intval($taskId);
             $arr['time'] = time();
             $bool = parent::addRow("task_received",$arr);
+            $id = $this->idOfInsert;
             if($bool){
                 $transactionModel = new TransactionModel();
-                $transactionModel->addCredit($userId,$task['bonus'],"成就奖励: ".$task['title']);
+                $transactionModel->addCredit($userId,$task['bonus'],"成就奖励: ".$task['title'], 'task_received',$id);
             }
         }
 

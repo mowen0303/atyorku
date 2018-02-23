@@ -287,15 +287,20 @@ class CourseRatingModel extends Model
     */
     public function getListOfCourseReports($pageSize=20,$courseParentTitle=false,$courseChildTitle=false) {
         $q = "";
+        $order = "";
         if($courseParentTitle) {
+            $order = "ORDER BY c2.title, c1.title";
             if($courseChildTitle){
                 // fixed parent, has child title
                 $q .= " AND c2.title='{$courseParentTitle}' AND c1.title LIKE '{$courseChildTitle}%'";
             } else {
                 $q .= " AND c2.title LIKE '{$courseParentTitle}%'";
             }
+        } else {
+            $order = "ORDER BY cr.update_time DESC, c2.title, c1.title";
         }
-        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
+
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
         $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
         $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
         return $arr;
@@ -307,8 +312,15 @@ class CourseRatingModel extends Model
     */
     public function getListOfProfessorReports($pageSize=20,$profName=false) {
         $q = "";
-        if($profName) $q .= " AND CONCAT(p.firstname, ' ', p.lastname) LIKE '{$profName}%'";
-        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
+        $order = "";
+        if($profName){
+            $order = "ORDER BY p.firstname, p.lastname";
+            $q .= " AND CONCAT(p.firstname, ' ', p.lastname) LIKE '{$profName}%'";
+        } else {
+            $order = "ORDER BY pr.update_time DESC, p.firstname, p.lastname";
+        }
+
+        $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q} {$order}";
         $countSql = "SELECT COUNT(*) FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q}";
         $arr = parent::getListWithPage("professor_report", $sql, $countSql, $pageSize);
         return $arr;
@@ -452,7 +464,7 @@ class CourseRatingModel extends Model
         $bool = $this->sqltool->query($sql);
         if($bool && $credit!==0) {
             $transactionModel = new TransactionModel();
-            $transactionModel->systemAdjustCredit($userId, Credit::$addCourseRating[$credit]);
+            $transactionModel->systemAdjustCredit($userId, Credit::$addCourseRating[$credit],'course_rating',$id);
             $msgModel = new MsgModel();
             $title = $result['course_code_parent_title'] . " " . $result['course_code_child_title'];
             $grade = $credit===5 ? "优秀" : "有用";
@@ -576,7 +588,7 @@ class CourseRatingModel extends Model
                 $arr["avg_grade"] = $result["avg_grade"] ?: 11;
             }
             if($updateTime){
-                $arr['last_update_time'] = time();
+                $arr['update_time'] = time();
             }
         }
     }
