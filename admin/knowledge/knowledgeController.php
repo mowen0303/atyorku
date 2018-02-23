@@ -1,9 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$eventModel = new admin\event\EventModel();
+$knowledgeModel = new admin\knowledge\KnowledgeModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-$commentModel = new \admin\comment\CommentModel();
 date_default_timezone_set("America/Toronto");
 call_user_func(BasicTool::get('action'));
 
