@@ -56,5 +56,8 @@ class KnowledgeCategoryModel extends Model
         $sql = "SELECT * FROM knowledge_category";
         return $this->sqltool->getListBySql($sql);
     }
+    public function getKnowledgeCategoryById($id){
+        return $this->getRowById("knowledge_category",$id);
+    }
 }
 ?>

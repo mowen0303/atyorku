@@ -124,6 +124,10 @@ class TransactionModel extends Model {
     function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description,$section_name,$section_id,$buyer_pending = 0,$seller_pending = 0) {
         $result = [];
         $amount = (float)$amount;
+        if($buyer_user_id == $seller_user_id){
+            $this->errorMsg = "购买失败,buyer_id = seller_id";
+            return false;
+        }
         if($amount<=0){
             $this->errorMsg = "积分值错误:{$amount}";
             return false;

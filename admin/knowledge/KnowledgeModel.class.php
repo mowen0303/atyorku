@@ -148,20 +148,63 @@ class KnowledgeModel extends Model
     function deleteKnowledgeById($id){
            return $this->realDeleteByFieldIn("knowledge","id",$id);
     }
-
-    function getKnowledgeByCourseCodeIdProfId($course_code_id=0,$prof_id=0,$term_year=0,$term_semester=""){
-        $course_code_condition = $course_code_id ? "course_code_id = {$course_code_id}" :"";
-        $prof_condition = $prof_id ? "AND prof_id = {$prof_id}" : "";
-        $term_year_condition = $term_year ? "AND term_year = {$term_year}" : "";
-        $term_semester_condition = $term_semester ? "AND term_semester = '{$term_semester}'" : "";
-        $sql = "(SELECT * FROM knowledge WHERE {$course_code_condition} {$prof_condition} {$term_year_condition} {$term_semester_condition}) AS ";
-
-    }
-
     private function getKnowledgePointsByKnowledgeId($knowledge_id){
         $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$knowledge_id})";
         return $this->sqltool->getListBySql($sql);
     }
+
+    /**根据课程,教授,年级和学期等条件查询一页的考试回忆录
+     * @param int $course_code_id
+     * @param int $prof_id
+     * @param int $term_year
+     * @param string $term_semester
+     * @return array|false
+     */
+    function getKnowledgeByCourseCodeIdProfId($course_code_id=0,$prof_id=0,$term_year=0,$term_semester=""){
+        //查询knowledge表
+        $condition = "true";
+        if ($course_code_id) $condition .= " AND course_code_id in ({$course_code_id})";
+        if ($prof_id) $condition .= " AND prof_id in ({$prof_id})";
+        if ($term_year) $condition .= " AND term_year in ({$term_year})";
+        if ($term_semester) $condition .= " AND term_semester in ('{$term_semester}')";
+        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*,image.url AS img_url FROM knowledge WHERE {$condition} LEFT JOIN image ON knowledge.img_id = image.id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id ORDER BY sort DESC, publish_time DESC";
+        $countSql = "SELECT COUNT(*) FROM knowledge WHERE {$condition}";
+        $knowledges = $this->getListWithPage("knowledge",$sql,$countSql,20);
+        if (!$knowledges)
+            return false;
+        //收集knowledge_id,查询knowledge_point表
+        $concat = "";
+        foreach ($knowledges as $knowledge){
+            $concat .= $knowledge["id"].",";
+        }
+        $concat = substr($concat, 0, -1);
+        $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
+        $knowledge_points = $this->sqltool->getListBySql($sql);
+        //如查询到的考点为空，则所有的考试回忆录为图片版
+        if (!$knowledge_points)
+            return true;
+        //分配文字版考点到对应的考试回忆录
+        forEach($knowledges as $knowledge){
+            $knowledge["knowledge_points"] = [];
+            forEach($knowledge_points as $index => $knowledge_point){
+                if($knowledge_point["knowledge_id"] == $knowledge["id"]){
+                    $knowledge["knowledge_points"][] = $knowledge_point;
+                    unset($knowledge_points[$index]);
+                }
+            }
+        }
+        return $knowledges;
+    }
+    function getKnowledgeById($knowledge_id){
+        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*,image.url AS img_url FROM knowledge WHERE id = {$knowledge_id} LEFT JOIN image ON knowledge.img_id = image.id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id";
+        return $this->sqltool->getRowBySql($sql);
+    }
+
+    function updateCountSold($id){
+        $sql = "UPDATE knowledge SET count_sold = (SELECT COUNT(*)/2 FROM transaction WHERE section_name = 'knowledge' AND section_id in ({$id})) WHERE id in ({$id})";
+        return $this->sqltool->query($sql);
+    }
+
     function getInsertId() {
         return $this->sqltool->getInsertId();
     }
