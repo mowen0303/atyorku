@@ -106,14 +106,14 @@ function addKnowledgeWithJson() {
  * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseCodeIdProfId&prof_name=sha%20bi&course_code_id=2
  */
 function getKnowledgeByCourseCodeIdProfId(){
-    global $knowledgeModel, $profModel;
+    global $knowledgeModel, $profModel,$currentUser;
     try {
         $course_code_id = BasicTool::get("course_code_id");
         $prof_name = BasicTool::get("prof_name");
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $term_year = BasicTool::post("term_year");
         $term_semester = BasicTool::post("term_semester");
-        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($course_code_id,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
+        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId,$currentUser->isUserHasAuthority("ADMIN"),$course_code_id,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
         $results = [];
         foreach ($result as $knowledge) {
             $knowledge["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);

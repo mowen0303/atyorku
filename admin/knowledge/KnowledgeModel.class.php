@@ -154,20 +154,22 @@ class KnowledgeModel extends Model
     }
 
     /**根据课程,教授,年级和学期等条件查询一页的考试回忆录
+     * @param int $user_id
+     * @param bool $is_admin
      * @param int $course_code_id
      * @param int $prof_id
      * @param int $term_year
      * @param string $term_semester
      * @return array|false
      */
-    function getKnowledgeByCourseCodeIdProfId($course_code_id=0,$prof_id=0,$term_year=0,$term_semester=""){
+    function getKnowledgeByCourseCodeIdProfId($user_id,$is_admin,$course_code_id=0,$prof_id=0,$term_year=0,$term_semester=""){
         //查询knowledge表
         $condition = "true";
         if ($course_code_id) $condition .= " AND course_code_id in ({$course_code_id})";
         if ($prof_id) $condition .= " AND prof_id in ({$prof_id})";
         if ($term_year) $condition .= " AND term_year in ({$term_year})";
         if ($term_semester) $condition .= " AND term_semester in ('{$term_semester}')";
-        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*,image.url AS img_url FROM knowledge WHERE {$condition} LEFT JOIN image ON knowledge.img_id = image.id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id ORDER BY sort DESC, publish_time DESC";
+        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*, image.url AS img_url FROM (SELECT knowledge.*,transaction.section_id AS is_purchased FROM (SELECT * FROM knowledge WHERE {$condition}) AS knowledge LEFT JOIN transaction ON transaction.section_id = knowledge.id AND transaction.user_id in ({$user_id}) AND transaction.section_name='knowledge') AS knowledge LEFT JOIN image ON image.id = knowledge.img_id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id ORDER BY sort DESC, publish_time DESC";
         $countSql = "SELECT COUNT(*) FROM knowledge WHERE {$condition}";
         $knowledges = $this->getListWithPage("knowledge",$sql,$countSql,20);
         if (!$knowledges)
@@ -178,12 +180,16 @@ class KnowledgeModel extends Model
             $concat .= $knowledge["id"].",";
         }
         $concat = substr($concat, 0, -1);
-        $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
+        //如果当前用户是普通用户,每份未购买的考试回忆录只查询两条考点做为预览.每份已购买的考试回忆录查询所有考点.
+        if (!$is_admin){
+            $sql = "SELECT * FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.user_id in ({$user_id}) AND transaction.section_name = 'knowledge' AND section_id = knowledge_point.knowledge_id) AS t1 WHERE (SELECT COUNT(*) FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.section_name = 'knowledge' AND transaction.user_id in ({$user_id}) AND section_id = knowledge_point.knowledge_id) AS t2 WHERE t2.id <= t1.id AND t2.knowledge_id = t1.knowledge_id AND t1.section_id IS NULL) <= 2";
+        }
+        //如果当前用户是管理员,查询所有考点
+        else{
+            $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
+        }
         $knowledge_points = $this->sqltool->getListBySql($sql);
-        //如查询到的考点为空，则所有的考试回忆录为图片版
-        if (!$knowledge_points)
-            return true;
-        //分配文字版考点到对应的考试回忆录
+        //分配考点到对应的考试回忆录
         forEach($knowledges as $knowledge){
             $knowledge["knowledge_points"] = [];
             forEach($knowledge_points as $index => $knowledge_point){
