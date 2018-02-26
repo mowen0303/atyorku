@@ -1,0 +1,50 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    height: 900px;
+    width: 100%;
+}
+
+#container {
+    margin: 0 auto;
+}
+
+.caseBox {
+    background: #efefef;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 30px 60px;
+}
+
+.caseBox header {
+    padding-bottom: 10px;
+    border-bottom: 4px solid #aaa;
+}
+
+.caseBox header span {
+    font-weight: bold;
+    padding: 0 20px;
+    font-size: 18px;
+}
+
+.caseBox div {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
+}
+
+.caseBox div span {
+    display: block;
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+}
+
+.caseBox .subTitle {
+    border-bottom: 2px solid #aaa;
+    font-weight: bold;
+}
