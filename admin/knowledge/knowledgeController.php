@@ -98,22 +98,25 @@ function addKnowledgeWithJson() {
 
 /**根据课程,教授,学年学期查询
  * GET,JSON接口
- * @param course_code_id
+ * @param course_code_parent 学科
+ * @param course_code_child 课程代号
  * @param prof_name
  * @param term_year
  * @param term_semester
  * @param page 页数
- * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseCodeIdProfId&prof_name=sha%20bi&course_code_id=2
+ * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseProfNameWithJson
  */
-function getKnowledgeByCourseCodeIdProfId(){
-    global $knowledgeModel, $profModel,$currentUser;
+function getKnowledgeByCourseCodeProfNameWithJson(){
+    global $knowledgeModel, $profModel,$currentUser,$courseCodeModel;
     try {
-        $course_code_id = BasicTool::get("course_code_id");
+        $course_code_parent = BasicTool::get("course_code_parent");
+        $course_code_child = BasicTool::get("course_code_child");
+        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($course_code_parent, $course_code_child);
         $prof_name = BasicTool::get("prof_name");
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
-        $term_year = BasicTool::post("term_year");
-        $term_semester = BasicTool::post("term_semester");
-        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId,$currentUser->isUserHasAuthority("ADMIN"),$course_code_id,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
+        $term_year = BasicTool::get("term_year");
+        $term_semester = BasicTool::get("term_semester");
+        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId,$currentUser->isUserHasAuthority("ADMIN"),$course_code_parent,$course_code_child,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
         $results = [];
         foreach ($result as $knowledge) {
             $knowledge["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
@@ -130,7 +133,7 @@ function getKnowledgeByCourseCodeIdProfId(){
 /**根据ID删除回忆录
  * POST
  * JSON接口
- * @param id 一维数组
+ * @param id 一维数组或integer
  * localhost/admin/knowledge/knowledgeController.php?action=deleteKnowledge
  */
 function deleteKnowledge($echoType = "normal") {
@@ -180,6 +183,9 @@ function deleteKnowledge($echoType = "normal") {
             BasicTool::echoJson(0, $e->getMessage());
         }
     }
+}
+function deleteKnowledgeWithJson(){
+    deleteKnowledge("json");
 }
 
 /**购买考试回忆录
