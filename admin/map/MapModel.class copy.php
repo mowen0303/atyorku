@@ -2,7 +2,7 @@
 namespace admin\map;
 use \Model as Model;
 
-class LocationModel extends Model
+class MapModel extends Model
 {
     /**
      * LocationModel constructor.
@@ -147,14 +147,12 @@ class LocationModel extends Model
     }
 
     /**
-     * 返回数据库版本条目(id 0)
-     * @return bool|\mysqli_result
-     *
+     * --------------
+     * Code Checked
+     * --------------
      */
     public function getMapDataVersion() {
-        // TODO - why does it return nothing???
-        $sql = "SELECT * FROM {$this->table} WHERE id = 0";
-
-        return $this->sqltool->getListBySql($sql);
+        $versionJSON = json_decode(file_get_contents("version.json"));
+        return $versionJSON->version;
     }
 }
