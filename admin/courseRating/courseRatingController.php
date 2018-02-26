@@ -259,6 +259,9 @@ function getListOfCourseReportWithJson() {
         $pageSize = BasicTool::get('pageSize') ?: 20;
         $courseParentTitle = BasicTool::get('course_code_parent_title') ?: false;
         $courseChildTitle = BasicTool::get('course_code_child_title') ?: false;
+        if(!$courseParentTitle && $courseChildTitle) {
+            BasicTool::throwException("没有更多内容");
+        }
         $result = $courseRatingModel->getListOfCourseReports($pageSize,$courseParentTitle,$courseChildTitle);
 
         if ($result) {
