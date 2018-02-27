@@ -13,8 +13,8 @@ call_user_func(BasicTool::get('action'));
 /**添加活动
  * POST
  * @param knowledge_category_id 考试类别id
- * @param courseCodeParent 学科
- * @param courseCodeChild 课程代号
+ * @param course_code_parent 学科
+ * @param course_code_child 课程代号
  * @param prof_name 教授全名
  * @param price 价格
  * @param description
@@ -36,9 +36,9 @@ function addKnowledge($echoType = "normal") {
         $seller_user_id = $currentUser->userId;
         $knowledge_category_id = BasicTool::post("knowledge_category_id", "请指定考试类别");
         $knowledgeCategoryModel->getKnowledgeCategoryById($knowledge_category_id) or BasicTool::throwException("考试类别不存在");
-        $courseCodeParent = BasicTool::post("courseCodeParent", "courseCodeParent 不能为空");
-        $courseCodeChild = BasicTool::post("courseCodeChild", "courseCodeChild 不能为空");
-        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($courseCodeParent, $courseCodeChild) or BasicTool::throwException("此课程不存在");
+        $course_code_parent = BasicTool::post("course_code_parent", "courseCodeParent 不能为空");
+        $course_code_child = BasicTool::post("course_code_child", "courseCodeChild 不能为空");
+        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($course_code_parent, $course_code_child) or BasicTool::throwException("此课程不存在");
         $prof_name = BasicTool::post("prof_name", "请指定教授");
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
 
@@ -51,9 +51,12 @@ function addKnowledge($echoType = "normal") {
         $term_semester = BasicTool::post("term_semester","请指定学期");
         $sort = $echoType == "json" ? 0 : BasicTool::post("sort");
         ($sort == 0 || $sort == 1 || $sort == NULL || $echoType == "json") or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
-
         $imgArr = array(BasicTool::post("img_id"));
         $img_id = $imageModel->uploadImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
+        if (($img_id && $knowledge_point_description) || (!$img_id && !$knowledge_point_description)){
+            $imageModel->deleteImageById($img_id);
+            BasicTool::throwException("添加失败!!");
+        }
 
         $insert_id = $knowledgeModel->addKnowledge($seller_user_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort) or BasicTool::throwException($knowledgeModel->errorMsg);
         if ($echoType == "normal") {
@@ -107,11 +110,10 @@ function addKnowledgeWithJson() {
  * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseProfNameWithJson
  */
 function getKnowledgeByCourseCodeProfNameWithJson(){
-    global $knowledgeModel, $profModel,$currentUser,$courseCodeModel;
+    global $knowledgeModel, $profModel,$currentUser;
     try {
         $course_code_parent = BasicTool::get("course_code_parent");
         $course_code_child = BasicTool::get("course_code_child");
-        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($course_code_parent, $course_code_child);
         $prof_name = BasicTool::get("prof_name");
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $term_year = BasicTool::get("term_year");

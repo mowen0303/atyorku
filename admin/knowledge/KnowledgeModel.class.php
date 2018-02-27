@@ -166,7 +166,9 @@ class KnowledgeModel extends Model
     function getKnowledgeByCourseCodeIdProfId($user_id,$is_admin,$course_parent_title="",$course_child_title="",$prof_id=0,$term_year=0,$term_semester=""){
         //查询knowledge表
         $condition = "true";
+        $sql_select = "SELECT * FROM knowledge WHERE";
         if ($course_parent_title){
+            $sql_select = "SELECT knowledge.* FROM course_code AS t1,course_code AS t2,knowledge WHERE";
             if($course_child_title)
                 $condition .= " AND t1.parent_id = t2.id AND knowledge.course_code_id = t1.id AND t2.title in ('{$course_parent_title}') AND t1.title LIKE '{$course_child_title}%'";
             else
@@ -176,8 +178,8 @@ class KnowledgeModel extends Model
         if ($term_year) $condition .= " AND term_year in ({$term_year})";
         if ($term_semester) $condition .= " AND term_semester in ('{$term_semester}')";
         //!!!JOIN查分类表
-        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*, image.url AS img_url FROM (SELECT knowledge.*,transaction.section_id AS is_purchased FROM (SELECT knowledge.* FROM course_code AS t1,course_code AS t2,knowledge WHERE {$condition}) AS knowledge LEFT JOIN transaction ON transaction.section_id = knowledge.id AND transaction.user_id in ({$user_id}) AND transaction.section_name='knowledge') AS knowledge LEFT JOIN image ON image.id = knowledge.img_id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id ORDER BY sort DESC, publish_time DESC";
-        $countSql = "SELECT knowledge.* FROM course_code AS t1,course_code AS t2,knowledge WHERE {$condition}";
+        $sql = "SELECT knowledge.*,knowledge_category.name AS knowledge_category_name FROM (SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*, image.thumbnail_url,image.url AS img_url FROM (SELECT knowledge.*,transaction.section_id AS is_purchased FROM ({$sql_select} {$condition}) AS knowledge LEFT JOIN transaction ON transaction.section_id = knowledge.id AND transaction.user_id in ({$user_id}) AND transaction.section_name='knowledge') AS knowledge LEFT JOIN image ON image.id = knowledge.img_id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id) AS knowledge INNER JOIN knowledge_category ON knowledge_category.id = knowledge.knowledge_category_id ORDER BY sort DESC, publish_time DESC";
+        $countSql = "{$sql_select} {$condition}";
         $knowledges = $this->getListWithPage("knowledge",$sql,$countSql,20);
         if (!$knowledges)
             return false;
@@ -192,7 +194,7 @@ class KnowledgeModel extends Model
             //sql需要修改,SELECT * FROM knowledge_point as t1,knowledge_point as t2
             $sql = "SELECT * FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.user_id in ({$user_id}) AND transaction.section_name = 'knowledge' AND section_id = knowledge_point.knowledge_id) AS t1 WHERE (SELECT COUNT(*) FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.section_name = 'knowledge' AND transaction.user_id in ({$user_id}) AND section_id = knowledge_point.knowledge_id) AS t2 WHERE t2.id <= t1.id AND t2.knowledge_id = t1.knowledge_id AND t1.section_id IS NULL) <= 2";
         }
-        //如果当前用户是管理员,查询所有考点
+        //如果当前用户是管理员或发布人,查询所有考点
         else{
             $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
         }
@@ -211,7 +213,7 @@ class KnowledgeModel extends Model
     }
 
     function getKnowledgeById($knowledge_id){
-        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*,image.url AS img_url FROM knowledge WHERE id = {$knowledge_id} LEFT JOIN image ON knowledge.img_id = image.id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id";
+        $sql = "SELECT knowledge.*,professor.firstname AS prof_firstname, professor.lastname AS prof_lastname FROM (SELECT knowledge.*,course_code.title AS course_code_parent_title FROM (SELECT knowledge.*,course_code.parent_id AS course_code_parent_id, course_code.title AS course_code_child_title FROM (SELECT knowledge.*, user.alias,user.degree,user.img AS profile_img_url,user.gender,user.user_class_id,user.enroll_year,user.major FROM (SELECT knowledge.*,image.url AS img_url,image.thumbnail_url FROM (SELECT * FROM knowledge WHERE id = {$knowledge_id}) AS knowledge LEFT JOIN image ON knowledge.img_id = image.id) AS knowledge INNER JOIN user ON user.id = knowledge.seller_user_id) AS knowledge INNER JOIN course_code ON course_code.id = knowledge.course_code_id) AS knowledge LEFT JOIN course_code ON course_code.id = knowledge.course_code_parent_id) AS knowledge INNER JOIN professor ON professor.id = knowledge.prof_id";
         return $this->sqltool->getRowBySql($sql);
     }
 

@@ -44,7 +44,18 @@ function deleteKnowledgeCategory()
     }
 }
 
-
+function getKnowledgeCategoriesWithJson(){
+    {
+        global $knowledgeCategoryModel;
+        try {
+            $result = $knowledgeCategoryModel->getKnowledgeCategories() or BasicTool::throwException("空");
+            BasicTool::echoJson(1,"查询成功",$result);
+        }
+        catch (Exception $e){
+            BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+        }
+    }
+}
 
 
 /**更改一个分类
