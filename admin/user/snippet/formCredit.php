@@ -8,7 +8,7 @@ $inquiredUser = new \admin\user\UserModel($userId);
 ?>
 
 <header class="topBox">
-    <h1><?php echo $pageTitle?> - 修改点券</h1>
+    <h1><?php echo $pageTitle?> - 手动充值 / 手动扣除 点券</h1>
 </header>
 <article class="mainBox">
     <form action="userController.php?action=modifyCredit" method="post">
@@ -19,7 +19,7 @@ $inquiredUser = new \admin\user\UserModel($userId);
                     <label>当前点券:<?php echo $inquiredUser->credit?></label>
                 </div>
                 <div>
-                    <label>增加/减少点券数量(例如:15 or -15)</label>
+                    <label>增加/减少点券数量(例如:100 or -100)</label>
                     <input class="input input-size50" type="number" name="credit" value="">
                     <input type="hidden" name="userId" value="<?php echo $userId?>">
                     <input type="hidden" name="currentCredit" value="<?php echo $inquiredUser->credit?>">

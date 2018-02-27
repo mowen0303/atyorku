@@ -10,17 +10,17 @@ class Credit {
         [description=>"连续领取积分>=5天", credit=>"+5"],
     ];
 
-    public static $addCourseQuestion = [description=>"在问答系统中发布问题 (3倍积分)", credit=>"+6"];
+    public static $addCourseQuestion = [description=>"在问答系统中发布问题", credit=>"+2"];
 
-    public static $deleteCourseQuestion = [description=>"删除了在问答系统中发布的问题 (3倍积分)", credit=>"-6"];
+    public static $deleteCourseQuestion = [description=>"删除了在问答系统中发布的问题", credit=>"-2"];
 
-    public static $addCourseSolution = [description=>"在问答系统中发布答案 (3倍积分)", credit=>"+6"];
+    public static $addCourseSolution = [description=>"在问答系统中发布答案", credit=>"+2"];
 
-    public static $addBook = [description=>"在资料市场中发布资料 (3倍积分)", credit=>"+6"];
+    public static $addBook = [description=>"在资料市场中发布资料", credit=>"+2"];
 
     public static $addCourseRating = [
-        3=>[description=>"你的课评被评为:有用课评 (3倍积分)", credit=>"+9"],
-        5=>[description=>"你的课评被评为:优秀课评 (3倍积分)", credit=>"+15"],
+        3=>[description=>"你的课评被评为:有用课评", credit=>"+3"],
+        5=>[description=>"你的课评被评为:优秀课评", credit=>"+5"],
     ];
 
 }

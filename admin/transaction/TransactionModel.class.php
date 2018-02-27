@@ -87,11 +87,8 @@ class TransactionModel extends Model {
      * @return bool
      */
     function deductCredit($user_id, $amount, $description,$section_name,$section_id,$pending = 0) {
-        $amount = (float)$amount;
-        if($amount < 0){
-            $this->errorMsg = "积分值无效:{$amount}";
-            return false;
-        }else if($amount==0){
+        $amount = (float)abs($amount);
+        if($amount==0){
             return true;
         }
         $credit = $this->getCredit($user_id);
@@ -163,9 +160,15 @@ class TransactionModel extends Model {
         }
     }
 
-    function getTransactions() {
-        $sql = "SELECT * FROM transaction ORDER BY id DESC";
-        $countSql = "SELECT COUNT(*) FROM transaction ORDER BY id DESC";
+    function getTransactions($uid = 0) {
+        $condition = " WHERE ";
+        if($uid != 0){
+            $condition .= "user_id in ({$uid}) ";
+        }else{
+            $condition .= "true ";
+        }
+        $sql = "SELECT * FROM transaction {$condition} ORDER BY id DESC";
+        $countSql = "SELECT COUNT(*) FROM transaction {$condition} ORDER BY id DESC";
         $result = $this->getListWithPage("transaction", $sql, $countSql, 30);
         return $result;
     }

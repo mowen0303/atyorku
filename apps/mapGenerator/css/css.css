@@ -13,10 +13,11 @@ html, body {
     position:absolute;
     top:0;
     left:0;
+    background: #fff
 }
-#ea * { display: block; width: 200px; border:1px solid #ccc; margin:0; padding:0}
-#ea textarea { height: 200px; }
-#ea button {  width: 200px; height: 30px}
+#ea * { display: block; width: 200px; border:0; margin:0; padding:0}
+#ea textarea { height: 200px; border-top: 5px solid #ccc;border-bottom: 5px solid #ccc}
+#ea button {  width: 200px; height: 30px; cursor: pointer;}
 
 #container {
     margin: 0 auto;

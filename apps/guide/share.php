@@ -250,7 +250,7 @@ $signPackage = $jssdk->GetSignPackage();
     <table>
         <tr>
             <td class="t1"><img src="/resource/img/icon.png"></td>
-            <td class="t2"><span>AtYorkU (约克大学专属APP)</span><br>选课攻略·课程评价·校内论坛</td>
+            <td class="t2"><span>AtYorkU (约克大学专属APP)</span><br>学习资料交易·教学楼导航·课程&amp;教授点评...</td>
             <td class="t3"><a href="http://www.atyorku.ca/download_v2.html">下载 App</a></td>
             <!--https://itunes.apple.com/us/app/atyorku/id1137850622?l=zh&ls=1&mt=8-->
         </tr>

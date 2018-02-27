@@ -110,29 +110,27 @@ class UserModel extends Model {
     public function getProfileOfUserById($id, $onlyShowBasic = false) {
         $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u_c.is_admin,u_c.authority";
         $sql = "SELECT u.id,u.degree,u.device,u.wechat,u.user_class_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
-        $arr = $this->sqltool->getRowBySql($sql);
-
-        foreach ($arr as $k => $v) {
+        $row = $this->sqltool->getRowBySql($sql);
+        foreach ($row as $k => $v) {
             if ($k == "enroll_year") {
-                $arr['enrollYearTranslate'] = BasicTool::translateEnrollYear($v);
+                $row['enrollYearTranslate'] = BasicTool::translateEnrollYear($v);
             }
             if ($k == "registertime") {
-                $arr[$k] = date('Y-m-d', $arr[$k]);
+                $row[$k] = date('Y-m-d', $row[$k]);
             }
             if ($k == "blocktime") {
 
                 if ($v - time() > 0) {
-                    $arr['blockState'] = "1";
-                    $arr['blockToTime'] = date('Y-m-d H:i:s', $v);
+                    $row['blockState'] = "1";
+                    $row['blockToTime'] = date('Y-m-d H:i:s', $v);
                 } else {
-                    $arr['blockState'] = "0";
+                    $row['blockState'] = "0";
                 }
-                $arr['blockToTime'] = date('Y-m-d H:i:s', $v);
-                $arr[$k] = date('Y-m-d', $arr[$k]);
+                $row['blockToTime'] = date('Y-m-d H:i:s', $v);
+                $row[$k] = date('Y-m-d', $row[$k]);
             }
-
         }
-        return $arr;
+        return $row;
     }
 
 
@@ -140,16 +138,20 @@ class UserModel extends Model {
      * user_class        | id | user_class_id | name | pwd | alias  | gender | blocktime  | blockreason |
      *
      */
-    public function getListOfUser($isAdmin, $userClass = false, $pageSize = 40) {
+    public function getListOfUser($isAdmin, $userClass = false,$orderBy = false, $pageSize = 40) {
         // user * user_class          | id | user_class_id | name | img | pwd |alias | gender | blocktime | blockreason |title | is_admin | authority |
 
         $condition = "";
+        $orderCondition = "";
         if ($userClass !== false) {
             $condition .= "AND u_c.id = $userClass";
         }
+        if ($orderBy) {
+            $orderCondition .= "u.{$orderBy} DESC,";
+        }
         $table = 'user';
-        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY u.id DESC";
-        $countSql = "SELECT COUNT(*) FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY u.id DESC";
+        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
+        $countSql = "SELECT COUNT(*) FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
         return parent::getListWithPage($table, $sql, $countSql, $pageSize);
     }
 

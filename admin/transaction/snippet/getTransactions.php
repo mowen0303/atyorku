@@ -1,6 +1,10 @@
 <?php
 $transactionModel = new \admin\transaction\TransactionModel();
-$transactions = $transactionModel->getTransactions();
+$uid = BasicTool::get("uid") ?: 0;
+$transactions = $transactionModel->getTransactions($uid);
+if($uid){
+    $targetUser = new \admin\user\UserModel($uid);
+}
 ?>
 
 <header class="topBox">
@@ -8,7 +12,7 @@ $transactions = $transactionModel->getTransactions();
 </header>
 
 <article class="mainBox">
-    <header><h2>广告分类</h2></header>
+    <header><h2><?php echo $uid?"用户 ".$targetUser->userName." 的交易记录":"交易记录" ?></h2></header>
     <section>
         <table class="tab">
             <thead>
