@@ -5,9 +5,18 @@ html, body {
 }
 
 #map {
-    height: 900px;
+    height: 100%;
     width: 100%;
 }
+
+#ea {
+    position:absolute;
+    top:0;
+    left:0;
+}
+#ea * { display: block; width: 200px; border:1px solid #ccc; margin:0; padding:0}
+#ea textarea { height: 200px; }
+#ea button {  width: 200px; height: 30px}
 
 #container {
     margin: 0 auto;

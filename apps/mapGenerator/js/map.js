@@ -4,16 +4,18 @@ var map;
 var mapCenter;
 var editable = true;
 var mapListener;
+var infoWindow;
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 15,
+        zoom: 17,
         center: {
-            lat: 43.771,
-            lng: -79.500
+            lat: 43.773,
+            lng: -79.502
         },
-        mapTypeId: 'terrain'
+        mapTypeId: 'satellite'
     });
+    map.setTilt(0);
 
     mapListener = map.addListener('click', function (e) {
         clickHandler(e)
@@ -52,7 +54,6 @@ function initMap() {
     // });
 
     polygon.addListener('click', showArrays);
-    //infoWindow = new google.maps.InfoWindow;
 }
 
 function showArrays(event) {
@@ -70,10 +71,9 @@ function showArrays(event) {
         }
 
         // Replace the info window's content and position.
-        console.log(contentString)
-        //infoWindow.setPosition(event.latLng);
+        $("#ta").val(contentString)
+        //infoWindow.setContent(contentString);
 
-        document.execCommand('copy');
       }
 
 function drawPolygon(polygon) {
@@ -82,6 +82,7 @@ function drawPolygon(polygon) {
 
 function removePloygon() {
     polygonCoordinate = [];
+    $("#ta").val("");
     polygon.setMap(null);
 }
 
