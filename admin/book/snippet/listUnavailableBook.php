@@ -19,11 +19,12 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                 <tr>
                     <th width="5%"><input id="cBoxAll" type="checkbox"></th>
                     <th width="5%">顺序</th>
+                    <th width="5%">电子版</th>
                     <th width="8%">封面</th>
                     <th width="8%">标题</th>
                     <th width="8%">价钱</th>
-                    <th width="15%">描述</th>
-                    <th width="15%">链接</th>
+                    <th width="12%">描述</th>
+                    <th width="14%">链接</th>
                     <th width="6%">类别</th>
                     <th width="6%">科目</th>
                     <th width="8%">卖家</th>
@@ -43,9 +44,10 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                     <tr id="book<? echo $row['id'] ?>">
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo htmlspecialchars($row['id']) ?>"></td>
                         <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["is_e_document"]) ?></td>
                         <td><img width="60px" height="auto" src="<?php echo htmlspecialchars($row['thumbnail_url']) ?>"></td>
                         <td><?php echo htmlspecialchars($row["name"]) ?></td>
-                        <td><?php echo "$" . htmlspecialchars($row['price']) ?></td>
+                        <td><p><?php echo ($row["pay_with_points"]?"𝓟 ":"$ ") . htmlspecialchars($row['price']) ?></p></td>
                         <td><?php echo htmlspecialchars($row['description']) ?></td>
                         <td><p><?php echo htmlspecialchars($row['e_link']?:"") ?></p></td>
                         <td><?php echo htmlspecialchars($row['book_category_name']) ?></td>
