@@ -8,7 +8,7 @@ $courseCodeModel = new \admin\courseCode\CourseCodeModel();
 $professorModel = new \admin\professor\ProfessorModel();
 $transactionModel = new \admin\transaction\TransactionModel();
 $msgModel = new \admin\msg\MsgModel();
-
+use admin\book\BookAction as BookAction;
 call_user_func(BasicTool::get('action'));
 
 //============ Function with JSON ===============//
@@ -392,80 +392,57 @@ function unLaunchBookByIdWithJson() {
 function modifyBook($echoType = "normal") {
     global $bookModel;
     global $imageModel;
-    global $bookCategoryModel;
     global $currentUser;
-    global $courseCodeModel;
-    global $professorModel;
 
     try{
         $flag = BasicTool::post('flag');
-        $bookUserId = false;    // 二手书卖家ID
         $currentBook = null;
+        $userId = null;
+
         // 验证权限
         if ($flag=='update') {
-            $arr['id'] = BasicTool::post('id',"二手书ID不能为空");
-            $currentBook = $bookModel->getBookById($arr['id']) or BasicTool::throwException("无法找到二手书");
+            $id = intval(BasicTool::post("id"));
+            $id>0 or BasicTool::throwException("无效学习资料ID");
+            $currentBook = $bookModel->getBookById($id) or BasicTool::throwException("无法找到学习资料");
             $bookUserId = $currentBook['user_id'];
-            if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                $currentUser->userId == $bookUserId or BasicTool::throwException("无权修改其他人的二手书");
-            }
+            $bookModel->isAuthorized(BookAction::UPDATE, $bookUserId);
+            $userId = $bookUserId;
         } else if ($flag=='add') {
-            $currentUser->isUserHasAuthority('BOOK') or BasicTool::throwException("权限不足");
+            $bookModel->isAuthorized(BookAction::ADD);
+            $userId = $currentUser->userId;
         }
 
         // 验证 Fields
-        $name = BasicTool::post("name", "二手书标题不能为空", 100);
-        $available = BasicTool::post("is_available") ?: 1;
-        $payWithPoints = BasicTool::post("pay_with_points") ?: 0;
-        $isEDocument = BasicTool::post("is_e_document") ?: 0;
-        $eLink = "";
-        if($isEDocument){
-            $eLink = BasicTool::post("e_link", "电子书链接不能为空 ".$isEDocument);
-        }
-        $description = BasicTool::post("description",false,255) or "";
-        $bookCategoryId = BasicTool::post("book_category_id", "二手书所属分类不能为空");
-        $parentCode = BasicTool::post("course_code_parent_title", "父类课评不能为空");
-        $childCode = BasicTool::post("course_code_child_title", "子类课评不能为空");
-        $courseCodeId = 0;
-        if ($parentCode && $childCode) {
-            $courseCodeId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode);
-            $courseCodeId or BasicTool::throwException("未找到指定科目Id");
+        $name = $bookModel->validateName(BasicTool::post("name"));
+        $available = $bookModel->validateIsAvailable(BasicTool::post("is_available"));
+        $payWithPoints = $bookModel->validatePayWithPoints(BasicTool::post("pay_with_points"));
+        $isEDocument = $bookModel->validateIsEDocument(BasicTool::post("is_e_document"),$payWithPoints);
+        $eLink = $bookModel->validateELink(BasicTool::post("e_link"),$payWithPoints);
+        $price = $bookModel->validatePrice(BasicTool::post("price"), $payWithPoints);
+        $description = $bookModel->validateDescription(BasicTool::post("description"));
+        $bookCategoryId = $bookModel->validateBookCategoryId(BasicTool::post("book_category_id"));
+        $courseCodeId = $bookModel->validateCourseId(BasicTool::post("course_code_parent_title"),BasicTool::post("course_code_child_title"));
+        $profId = $bookModel->validateProfessorName(BasicTool::post("prof_name"));
+        $year = $bookModel->validateYear(BasicTool::post("term_year"));
+        $term = "";
+        if($year){
+            $term = $bookModel->validateTerm(BasicTool::post("term_semester"));
         }
 
-        $profName = BasicTool::post("prof_name");
-        $profId = 0;
-        if ($profName) {
-            $profId = $professorModel->getProfessorIdByFullName($profName);
-            $profId or BasicTool::throwException("教授名称格式错误");
-        }
-
-        $year = BasicTool::post("term_year") ?: 0;
-        $term = BasicTool::post("term_semester") ?: "";
-
-        // validate and format price
-        $price = (float)BasicTool::post("price", "二手书价格不能为空", 99999999.99);
-        if($payWithPoints){
-            $price>=50 or BasicTool::throwException("积分销售不能低于50积分");
-        }
-        $price = number_format($price, 2, '.', '');
-
-        $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("此二手书所属分类不存在");
-
+        // analyze images
         $imgArr = array(BasicTool::post("image_id_one"),BasicTool::post("image_id_two"),BasicTool::post("image_id_three"));
         $currImgArr = ($currentBook!=null) ? array($currentBook['image_id_one'],$currentBook['image_id_two'],$currentBook['image_id_three']) : false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"book");
 
         // 执行
         if ($flag=='update') {
-            $userId = $bookUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
-            $bookModel->updateBook($arr['id'], $name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink) or BasicTool::throwException($bookModel->errorMsg);
+            $bookModel->updateBook($currentBook['id'], $name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/book/index.php?listBook");
             } else {
                 BasicTool::echoJson(1, "修改成功");
             }
         } else if ($flag=='add') {
-            $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
             $bookModel->addBook($name, $price, $description, $bookCategoryId, $courseCodeId, $userId, $imgArr[0], $imgArr[1], $imgArr[2], $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink) or BasicTool::throwException($bookModel->errorMsg);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/book/index.php?listBook");

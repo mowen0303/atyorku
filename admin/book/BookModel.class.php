@@ -1,5 +1,8 @@
 <?php
 namespace admin\book;   //-- 注意 --//
+use admin\courseCode\CourseCodeModel;
+use admin\image\ImageModel;
+use admin\professor\ProfessorModel;
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
@@ -9,13 +12,258 @@ use admin\bookCategory\BookCategoryModel as BookCategoryModel;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
+abstract class BookAction {
+    const ADD = 0;
+    const UPDATE = 1;
+    const DELETE = 2;
+}
+
 class BookModel extends Model
 {
+
     public function __construct()
     {
         parent::__construct();
         $this->table = "book";
     }
+
+    /**
+    * 检验用户操作权限
+    * @param int $action BookAction
+    * @param int $bookUserId 要修改或删除的book的用户ID
+    * @throws Exception
+    */
+    public function isAuthorized($action, $bookUserId=0){
+        $currentUser = new UserModel();
+        $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
+        if($action===BookAction::ADD) {
+            $currentUser->isUserHasAuthority('BOOK') or BasicTool::throwException("权限不足");
+        } else if(($action===BookAction::UPDATE || $action===BookAction::DELETE)) {
+            $bookUserId>0 or BasicTool::throwException("请提供要修改的学习资料ID");
+            if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
+                $userId == $bookUserId or BasicTool::throwException("无权修改其他人的学习资料");
+            }
+        } else {
+            BasicTool::throwException("Unknown authorized action");
+        }
+    }
+
+
+    public function validateName($name){
+        $name = trim($name) or BasicTool::throwException("学习资料标题不能为空");
+        (strlen($name)>0 && strlen($name)<=255) or BasicTool::throwException("学习资料标题长度不能超过255字节");
+        return $name;
+    }
+
+    public function validateIsAvailable($available) {
+        $available !== null or BasicTool::throwException("学习资料可用状态不能为空");
+        return intval($available == true);
+    }
+
+    public function validatePayWithPoints($payWithPoints) {
+        return intval($payWithPoints==true);
+    }
+
+    public function validateIsEDocument($isEDocument, $payWithCredit=false) {
+        $isEDocument = intval($isEDocument==true);
+        if($payWithCredit && !$isEDocument){
+            BasicTool::throwException("积分支付目前只支持电子版");
+        }
+        return $isEDocument;
+    }
+
+    public function validateELink($eLink, $payWithCredit=false) {
+        $eLink = trim($eLink);
+        if($payWithCredit) {
+            strlen($eLink)>0 or BasicTool::throwException("学习资料电子书链接不能为空");
+            strlen($eLink)<=255 or BasicTool::throwException("学习资料电子书链接长度不能超过255字节");
+        } else {
+            $eLink = "";
+        }
+        return $eLink;
+    }
+
+    public function validatePrice($price, $payWithCredit=false) {
+        if($price === null){ BasicTool::throwException("学习资料价格不能为空"); }
+        $price = floatval($price);
+        if($payWithCredit) {
+            $price>=50 or BasicTool::throwException("积分支付最低50积分");
+        } else {
+            $price>=0 or BasicTool::throwException("学习资料价格不能为负数");
+        }
+        $price<=99999999.99 or BasicTool::throwException("学习资料价格不能大于 $99,999,999.99");
+        return floor($price*100)/100;
+    }
+
+    public function validateDescription($description) {
+        $description = trim($description);
+        (strlen($description)<=255) or BasicTool::throwException("学习资料描述长度不能超过255字节");
+        return $description;
+    }
+
+    public function validateCourseId($parentCode,$childCode) {
+        $parentCode = trim($parentCode) or BasicTool::throwException("所属学科大类不能为空");
+        $childCode = trim($childCode) or BasicTool::throwException("所属学科课号不能为空");
+        $courseCodeModel = new CourseCodeModel();
+        $courseId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode) or BasicTool::throwException("未找到指定科目Id");
+        return $courseId;
+    }
+
+    public function validateProfessorName($profName) {
+        $profName = trim($profName);
+        $profId = 0;
+        if ($profName) {
+            $professorModel = new ProfessorModel();
+            $profId = $professorModel->getProfessorIdByFullName($profName) or BasicTool::throwException("教授名称格式错误");
+        }
+        return $profId;
+    }
+
+    public function validateYear($year) {
+        $year = intval($year);
+        $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
+        return $year;
+    }
+
+    public function validateTerm($term) {
+        $term = trim($term);
+        $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
+        return $term;
+    }
+
+    public function validateBookCategoryId($bookCategoryId) {
+        $bookCategoryId = intval($bookCategoryId);
+        $bookCategoryId > 0 or BasicTool::throwException("学习资料所属分类不能为空");
+        $bookCategoryModel = new BookCategoryModel();
+        $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("学习资料所属分类不存在");
+        return $bookCategoryId;
+    }
+
+    /**
+     * 检验学习资料添加、修改POST请求
+     * @return array 返回验证过的学习资料内容
+     * @throws Exception
+     */
+    public function validate(){
+        $currentUser = new UserModel();
+        $arr = [];
+        $flag = BasicTool::post('flag');
+        $currentBook = null;
+
+        /***********************/
+        /*  Fields Validation  */
+        /***********************/
+
+        // 验证权限
+        if ($flag=='update') {
+            $id = intval(BasicTool::post("id"));
+            $id>0 or BasicTool::throwException("无效学习资料ID");
+            $currentBook = $this->getBookById($id) or BasicTool::throwException("无法找到学习资料");
+            $bookUserId = $currentBook['user_id'];
+            $this->isAuthorized(BookAction::UPDATE, $bookUserId);
+            $arr['user_id'] = $bookUserId;
+        } else if ($flag=='add') {
+            $this->isAuthorized(BookAction::ADD);
+            $arr['user_id'] = $currentUser->userId;
+        }
+
+        // validate name
+        $name = trim(BasicTool::post("name")) or BasicTool::throwException("学习资料标题不能为空");
+        (strlen($name)>0 && strlen($name)<=255) or BasicTool::throwException("学习资料标题长度不能超过255字节");
+
+        $available = BasicTool::post("is_available");
+        $available = ($available !== null) ? intval($available != 0) : 1;
+
+        $payWithPoints = intval(BasicTool::post("pay_with_points"));
+        $isEDocument = intval(BasicTool::post("is_e_document"));
+        $eLink = trim(BasicTool::post("e_link"));
+
+        // validate and format price
+        $price = BasicTool::post("price");
+        ($price !== null) or BasicTool::throwException("学习资料价格不能为空");
+        $price = floatval($price);
+        if($payWithPoints){
+            $isEDocument or BasicTool::throwException("积分支付目前只支持电子版");
+            $eLink or BasicTool::throwException("积分支付的电子版链接不能为空");
+            $price>=50 or BasicTool::throwException("积分支付最低50积分");
+        }
+        $price>=0 or BasicTool::throwException("学习资料价格不能为负数");
+        $price<=99999999.99 or BasicTool::throwException("学习资料价格不能大于 $99,999,999.99");
+        $price = floor($price*100)/100;
+
+        // validate description
+        $description = trim(BasicTool::post("description"));
+        (strlen($description)>0 && strlen($description)<=255) or BasicTool::throwException("学习资料描述长度不能超过255字节");
+
+
+        // validate and get course code id
+        $parentCode = trim(BasicTool::post("course_code_parent_title")) or BasicTool::throwException("所属学科大类不能为空");
+        $childCode = trim(BasicTool::post("course_code_child_title")) or BasicTool::throwException("所属学科课号不能为空");
+        $courseCodeModel = new CourseCodeModel();
+        $courseId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode) or BasicTool::throwException("未找到指定科目Id");
+
+        // validate and get professor id
+        $profName = BasicTool::post("prof_name");
+        $profId = 0;
+        if ($profName) {
+            $professorModel = new ProfessorModel();
+            $profId = $professorModel->getProfessorIdByFullName($profName) or BasicTool::throwException("教授名称格式错误");
+        }
+
+        // validate year and term
+        $year = intval(BasicTool::post("term_year"));
+        $term = trim(BasicTool::post("term_semester"));
+        $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
+        $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
+
+        // validate and get book category id
+        $bookCategoryId = intval(BasicTool::post("book_category_id", "学习资料所属分类不能为空"));
+        $bookCategoryModel = new BookCategoryModel();
+        $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("学习资料所属分类不存在");
+
+        // process images
+        $imgArr = array(BasicTool::post("image_id_one"),BasicTool::post("image_id_two"),BasicTool::post("image_id_three"));
+        $currImgArr = ($currentBook!=null) ? array($currentBook['image_id_one'],$currentBook['image_id_two'],$currentBook['image_id_three']) : false;
+        $imageModel = new ImageModel();
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"book");
+
+
+        /***********************/
+        /* Set fields to array */
+        /***********************/
+
+
+        $arr["name"] = $name;
+        $arr["price"] = $price;
+        $arr["description"] = $description;
+        $arr["book_category_id"] = $bookCategoryId;
+        $arr["course_id"] = $courseId;
+        if ($imgArr[0]) {
+            $arr["image_id_one"] = $imgArr[0];
+        }
+        if ($imgArr[1]) {
+            $arr["image_id_two"] = $imgArr[1];
+        }
+        if ($imgArr[2]) {
+            $arr["image_id_three"] = $imgArr[2];
+        }
+        $arr["professor_id"] = $profId;
+        $arr["is_available"] = $available;
+        $arr["term_year"] = $year;
+        $arr["term_semester"] = $term;
+        $arr["pay_with_points"] = $payWithPoints;
+        $arr["is_e_document"] = $isEDocument;
+        $arr["e_link"] = $eLink;
+        $time = time();
+
+        if ($flag=='add') {
+            $arr["publish_time"] = $time;
+        }
+        $arr["last_modified_time"] = $time;
+
+        return $arr;
+    }
+
 
     /**
      * 添加一本书
@@ -43,11 +291,12 @@ class BookModel extends Model
         $arr["is_available"] = $available;
         $arr["term_year"] = $year;
         $arr["term_semester"] = $term;
-        $arr["pay_with_points"] = $payWithPoints ? 1 : 0;
-        $arr["is_e_document"] = $isEDocument ? 1 : 0;
+        $arr["pay_with_points"] = $payWithPoints;
+        $arr["is_e_document"] = $isEDocument;
         $arr["e_link"] = $eLink;
-        $arr["publish_time"] = time();
-        $arr["last_modified_time"] = time();
+        $t = time();
+        $arr["publish_time"] = $t;
+        $arr["last_modified_time"] = $t;
         $bool = $this->addRow($this->table, $arr);
         $id = $this->idOfInsert;
         if ($bool && $id>0) {
@@ -81,7 +330,7 @@ class BookModel extends Model
      * @param bool $availableOnly
      * @return array
      */
-    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true) {
+    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $elink=false) {
         $q = "NOT b.is_deleted";
         if($availableOnly){
             $q .= " AND b.is_available";
@@ -89,11 +338,15 @@ class BookModel extends Model
         if($query){
             $q .= " AND ({$query})";
         }
-        return $this->getBooks($pageSize,$q);
+        $selectSql = "";
+        if($elink){
+            $selectSql = "b.e_link";
+        }
+        return $this->getBooks($pageSize,$q,$selectSql);
     }
 
     /**
-     * 获取一页未上架的二手书（非删除)
+     * 获取一页未上架的二手书（非删除)(二手书含电子版链接)
      * @param int $pageSize
      * @param bool $query
      * @return array
@@ -103,11 +356,11 @@ class BookModel extends Model
         if($query){
             $q .= " AND ({$query})";
         }
-        return $this->getBooks($pageSize,$q);
+        return $this->getBooks($pageSize,$q,"b.e_link");
     }
 
     /**
-     * 获取一页已删除的二手书
+     * 获取一页已删除的二手书(二手书含电子版链接)
      * @param int $pageSize
      * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
      * @return array
@@ -117,7 +370,7 @@ class BookModel extends Model
         if($query){
             $q .= " AND ({$query})";
         }
-        return $this->getBooks($pageSize,$q);
+        return $this->getBooks($pageSize,$q,"b.e_link");
     }
 
     /**
@@ -217,9 +470,6 @@ class BookModel extends Model
      */
     public function updateBook($id, $name, $price, $description, $bookCategoryId, $courseId, $userId, $img1, $img2, $img3, $profId, $year, $term, $payWithPoints, $available, $isEDocument, $eLink)
     {
-        $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
-        $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
-
         $arr = [];
         $arr["name"] = $name;
         $arr["price"] = $price;
@@ -436,10 +686,12 @@ class BookModel extends Model
      * 获取一页二手书
      * @param int $pageSize 每页数量
      * @param bool $query additional query
+     * @param bool $selectSql additional select query
      * @return array
      */
-    private function getBooks($pageSize=20, $query=false) {
+    private function getBooks($pageSize=20, $query=false, $selectSql=false) {
         $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        if($selectSql){$select .= ",{$selectSql}";};
         $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
 
         $where = $query ? ("WHERE " . "({$query})") : "";

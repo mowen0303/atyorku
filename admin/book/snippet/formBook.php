@@ -2,7 +2,7 @@
 $bookModel = new \admin\book\BookModel();
 $imageModel = new \admin\image\ImageModel();
 $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
-$flag = BasicTool::get("flag");
+$flag = htmlspecialchars(BasicTool::get("flag"));
 ?>
 
 <style>
@@ -28,6 +28,7 @@ $flag = BasicTool::get("flag");
     <form action="bookController.php?action=modifyBook" method="post" enctype="multipart/form-data">
         <input name="flag" value="<?php echo $flag?>" type="hidden">
         <input name="id" value="<?php echo htmlspecialchars(BasicTool::get('id'))?>" type="hidden">
+        <input name="is_available" value="<?php echo htmlspecialchars(BasicTool::get('is_available')?:1)?>" type="hidden">
         <header>
             <h2><?php echo $flag=="update"?"修改二手书":"添加二手书"; ?></h2>
         </header>
@@ -69,14 +70,14 @@ $flag = BasicTool::get("flag");
             </div>
             <div id="professorInputComponent">
                 <div>
-                    <label>教授<i>*</i></label>
+                    <label>教授</label>
                     <input class="input" type="text" list="professorList" name="prof_name" value="<?php echo htmlspecialchars(BasicTool::get('prof_name')) ?>" />
                     <datalist id="professorList"></datalist>
                 </div>
             </div>
             <div class="row">
                 <div class="col-2">
-                    <label>所修学年<i>*</i></label>
+                    <label>所修学年</label>
                     <select class="input input-select selectDefault" name="term_year" defvalue="<?php echo htmlspecialchars(BasicTool::get('term_year')) ?>">
                         <?php
                             echo "<option value=''>请选择学年</option>";
@@ -85,7 +86,7 @@ $flag = BasicTool::get("flag");
                     </select>
                 </div>
                 <div class="col-2">
-                    <label>所修学期<i>*</i></label>
+                    <label>所修学期</label>
                     <select class="input input-select selectDefault" name="term_semester" defvalue="<?php echo htmlspecialchars(BasicTool::get('term_semester')) ?>">
                         <option value="">选择学期</option>
                         <option value="Fall">Fall</option>

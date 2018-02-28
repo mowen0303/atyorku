@@ -14,20 +14,21 @@ $isGod = $userModel->isUserHasAuthority("GOD");
     <header><h2>已下架的二手书列表</h2></header>
     <form action="bookController.php?action=deleteBookLogically" method="post">
         <section>
-            <table class="tab">
+            <table class="tab" style="table-layout: fixed;">
                 <thead>
                 <tr>
-                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th width="40px">顺序</th>
-                    <th width="60px">封面</th>
-                    <th width="120px">标题</th>
-                    <th width="60px">价钱</th>
-                    <th>描述</th>
-                    <th width="80px">类别</th>
-                    <th width="100px">科目</th>
-                    <th width="80px">卖家</th>
-                    <th width="80px">发布时间</th>
-                    <th width="80px">操作</th>
+                    <th width="5%"><input id="cBoxAll" type="checkbox"></th>
+                    <th width="5%">顺序</th>
+                    <th width="8%">封面</th>
+                    <th width="8%">标题</th>
+                    <th width="8%">价钱</th>
+                    <th width="15%">描述</th>
+                    <th width="15%">链接</th>
+                    <th width="6%">类别</th>
+                    <th width="6%">科目</th>
+                    <th width="8%">卖家</th>
+                    <th width="8%">发布时间</th>
+                    <th width="8%">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,6 +47,7 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                         <td><?php echo htmlspecialchars($row["name"]) ?></td>
                         <td><?php echo "$" . htmlspecialchars($row['price']) ?></td>
                         <td><?php echo htmlspecialchars($row['description']) ?></td>
+                        <td><p><?php echo htmlspecialchars($row['e_link']?:"") ?></p></td>
                         <td><?php echo htmlspecialchars($row['book_category_name']) ?></td>
                         <td><?php echo htmlspecialchars($row['course_code_parent_title'] . $row['course_code_child_title']) ?></td>
                         <td><?php echo htmlspecialchars($row['alias']) ?></td>
@@ -53,12 +55,6 @@ $isGod = $userModel->isUserHasAuthority("GOD");
                         <td>
                             <a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a>
                             <a class="btn" href="bookController.php?action=launchBookById&id=<?php echo $row['id']?>">上架</a>
-                            <?php
-                            if(intval($row['is_e_document'])){
-                                $id = $row['id'];
-                                echo '<a class="btn" href="bookController.php?action=getELinkById&id=' . $id . '">链接</a>';
-                            }
-                            ?>
                         </td>
                     </tr>
                 <?php
