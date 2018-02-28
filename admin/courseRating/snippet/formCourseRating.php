@@ -34,11 +34,14 @@ $flag = BasicTool::get("flag");
     <form action="courseRatingController.php?action=modifyCourseRating" method="post">
         <input name="flag" id="flag" value="<?php echo $flag?>" type="hidden">
         <input name="id" value="<?php echo BasicTool::get('id')?>" type="hidden">
-        <input name="user_id" value="<?php echo BasicTool::get('user_id')?>" type="hidden">
         <header>
             <h2><?php echo $flag=="update"?"修改课评":"添加课评"; ?></h2>
         </header>
         <section class="formBox">
+            <div>
+                <label>课评用户ID</label>
+                <input name="user_id" value="<?php echo BasicTool::get('user_id')?>" type="text">
+            </div>
             <div id="courseCodeInputComponent" class="row">
                 <div class="col-2">
                     <label>课程类别 (例如:ADMS)<i>*</i></label>

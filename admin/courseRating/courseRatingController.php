@@ -350,17 +350,18 @@ function modifyCourseRating($echoType = "normal") {
 
     try{
         $flag = BasicTool::post('flag');
-        $courseRatingUserId = false;    // 课评用户ID
+        $courseRatingUserId = BasicTool::post("user_id");    // 课评用户ID
         $currentCourseRating = null;
 
         // 验证权限
         if ($flag=='update') {
             $id = BasicTool::post('id',"课评ID不能为空");
             $currentCourseRating = $courseRatingModel->getCourseRatingById($id);
-            $courseRatingUserId = $currentCourseRating['user_id'];
+            $courseRatingUserId = $courseRatingUserId?:$currentCourseRating['user_id'];
             checkAuthority('update', $courseRatingUserId);
         } else if ($flag=='add') {
-            checkAuthority('add');
+            $courseRatingUserId = $courseRatingUserId?:$currentUser->userId;
+            checkAuthority('add',$courseRatingUserId);
         } else {
             BasicTool::throwException("Unknown Operation: {$flag}");
         }
@@ -383,18 +384,17 @@ function modifyCourseRating($echoType = "normal") {
         $term = BasicTool::post("term","学期不能为空");
         $comment = BasicTool::post("comment", "课评评论不能为空");
 
+        $courseRatingUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
         // 执行
         if ($flag=='update') {
-            $userId = $courseRatingUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
-            $courseRatingModel->modifyCourseRating('update', $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term, $currentCourseRating["id"]);
+            $courseRatingModel->modifyCourseRating('update', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term, $currentCourseRating["id"]);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/courseRating/index.php?listCourseRating");
             } else {
                 BasicTool::echoJson(1, "修改成功");
             }
         } else if ($flag=='add') {
-            $userId = $currentUser->userId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
-            $courseRatingModel->modifyCourseRating('add', $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term);
+            $courseRatingModel->modifyCourseRating('add', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/courseRating/index.php?listCourseRating");
             } else {
@@ -458,7 +458,11 @@ function deleteCourseRating($echoType = "normal") {
 function checkAuthority($flag, $id) {
     global $currentUser;
     if ($flag == 'add') {
-        $currentUser->isUserHasAuthority('COURSE_RATING') or BasicTool::throwException("权限不足");
+        if($currentUser->userId===$id){
+            $currentUser->isUserHasAuthority('COURSE_RATING') or BasicTool::throwException("权限不足");
+        } else {
+            $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
+        }
     } else if ($flag == 'update' || $flag == 'delete') {
         $id or BasicTool::throwException("Modified course rating user id is required.");
         $currentUser->userId or BasicTool::throwException("权限不足，请先登录");
