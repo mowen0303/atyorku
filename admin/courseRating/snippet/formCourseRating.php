@@ -39,8 +39,8 @@ $flag = BasicTool::get("flag");
         </header>
         <section class="formBox">
             <div>
-                <label>课评用户ID</label>
-                <input name="user_id" value="<?php echo BasicTool::get('user_id')?>" type="text">
+                <label>课评用户ID<i>*</i></label>
+                <input class="input" name="user_id" value="<?php echo BasicTool::get('user_id')?>" type="text">
             </div>
             <div id="courseCodeInputComponent" class="row">
                 <div class="col-2">

@@ -16,6 +16,7 @@ abstract class BookAction {
     const ADD = 0;
     const UPDATE = 1;
     const DELETE = 2;
+    const UPDATE_USERID = 3;
 }
 
 class BookModel extends Model
@@ -42,6 +43,10 @@ class BookModel extends Model
             $bookUserId>0 or BasicTool::throwException("请提供要修改的学习资料ID");
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
                 $userId == $bookUserId or BasicTool::throwException("无权修改其他人的学习资料");
+            }
+        } else if ($action===BookAction::UPDATE_USERID) {
+            if(!$currentUser->isUserHasAuthority("ADMIN")) {
+                BasicTool::throwException("无权修改其他人的学习资料");
             }
         } else {
             BasicTool::throwException("Unknown authorized action");
@@ -138,132 +143,6 @@ class BookModel extends Model
         $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("学习资料所属分类不存在");
         return $bookCategoryId;
     }
-
-    /**
-     * 检验学习资料添加、修改POST请求
-     * @return array 返回验证过的学习资料内容
-     * @throws Exception
-     */
-    public function validate(){
-        $currentUser = new UserModel();
-        $arr = [];
-        $flag = BasicTool::post('flag');
-        $currentBook = null;
-
-        /***********************/
-        /*  Fields Validation  */
-        /***********************/
-
-        // 验证权限
-        if ($flag=='update') {
-            $id = intval(BasicTool::post("id"));
-            $id>0 or BasicTool::throwException("无效学习资料ID");
-            $currentBook = $this->getBookById($id) or BasicTool::throwException("无法找到学习资料");
-            $bookUserId = $currentBook['user_id'];
-            $this->isAuthorized(BookAction::UPDATE, $bookUserId);
-            $arr['user_id'] = $bookUserId;
-        } else if ($flag=='add') {
-            $this->isAuthorized(BookAction::ADD);
-            $arr['user_id'] = $currentUser->userId;
-        }
-
-        // validate name
-        $name = trim(BasicTool::post("name")) or BasicTool::throwException("学习资料标题不能为空");
-        (strlen($name)>0 && strlen($name)<=255) or BasicTool::throwException("学习资料标题长度不能超过255字节");
-
-        $available = BasicTool::post("is_available");
-        $available = ($available !== null) ? intval($available != 0) : 1;
-
-        $payWithPoints = intval(BasicTool::post("pay_with_points"));
-        $isEDocument = intval(BasicTool::post("is_e_document"));
-        $eLink = trim(BasicTool::post("e_link"));
-
-        // validate and format price
-        $price = BasicTool::post("price");
-        ($price !== null) or BasicTool::throwException("学习资料价格不能为空");
-        $price = floatval($price);
-        if($payWithPoints){
-            $isEDocument or BasicTool::throwException("积分支付目前只支持电子版");
-            $eLink or BasicTool::throwException("积分支付的电子版链接不能为空");
-            $price>=50 or BasicTool::throwException("积分支付最低50积分");
-        }
-        $price>=0 or BasicTool::throwException("学习资料价格不能为负数");
-        $price<=99999999.99 or BasicTool::throwException("学习资料价格不能大于 $99,999,999.99");
-        $price = floor($price*100)/100;
-
-        // validate description
-        $description = trim(BasicTool::post("description"));
-        (strlen($description)>0 && strlen($description)<=255) or BasicTool::throwException("学习资料描述长度不能超过255字节");
-
-
-        // validate and get course code id
-        $parentCode = trim(BasicTool::post("course_code_parent_title")) or BasicTool::throwException("所属学科大类不能为空");
-        $childCode = trim(BasicTool::post("course_code_child_title")) or BasicTool::throwException("所属学科课号不能为空");
-        $courseCodeModel = new CourseCodeModel();
-        $courseId = $courseCodeModel->getCourseIdByCourseCode($parentCode, $childCode) or BasicTool::throwException("未找到指定科目Id");
-
-        // validate and get professor id
-        $profName = BasicTool::post("prof_name");
-        $profId = 0;
-        if ($profName) {
-            $professorModel = new ProfessorModel();
-            $profId = $professorModel->getProfessorIdByFullName($profName) or BasicTool::throwException("教授名称格式错误");
-        }
-
-        // validate year and term
-        $year = intval(BasicTool::post("term_year"));
-        $term = trim(BasicTool::post("term_semester"));
-        $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
-        $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
-
-        // validate and get book category id
-        $bookCategoryId = intval(BasicTool::post("book_category_id", "学习资料所属分类不能为空"));
-        $bookCategoryModel = new BookCategoryModel();
-        $bookCategoryModel->getBookCategory($bookCategoryId) or BasicTool::throwException("学习资料所属分类不存在");
-
-        // process images
-        $imgArr = array(BasicTool::post("image_id_one"),BasicTool::post("image_id_two"),BasicTool::post("image_id_three"));
-        $currImgArr = ($currentBook!=null) ? array($currentBook['image_id_one'],$currentBook['image_id_two'],$currentBook['image_id_three']) : false;
-        $imageModel = new ImageModel();
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,3,"imgFile",$currentUser->userId,"book");
-
-
-        /***********************/
-        /* Set fields to array */
-        /***********************/
-
-
-        $arr["name"] = $name;
-        $arr["price"] = $price;
-        $arr["description"] = $description;
-        $arr["book_category_id"] = $bookCategoryId;
-        $arr["course_id"] = $courseId;
-        if ($imgArr[0]) {
-            $arr["image_id_one"] = $imgArr[0];
-        }
-        if ($imgArr[1]) {
-            $arr["image_id_two"] = $imgArr[1];
-        }
-        if ($imgArr[2]) {
-            $arr["image_id_three"] = $imgArr[2];
-        }
-        $arr["professor_id"] = $profId;
-        $arr["is_available"] = $available;
-        $arr["term_year"] = $year;
-        $arr["term_semester"] = $term;
-        $arr["pay_with_points"] = $payWithPoints;
-        $arr["is_e_document"] = $isEDocument;
-        $arr["e_link"] = $eLink;
-        $time = time();
-
-        if ($flag=='add') {
-            $arr["publish_time"] = $time;
-        }
-        $arr["last_modified_time"] = $time;
-
-        return $arr;
-    }
-
 
     /**
      * 添加一本书

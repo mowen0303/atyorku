@@ -34,6 +34,10 @@ $flag = htmlspecialchars(BasicTool::get("flag"));
         </header>
         <section class="formBox">
             <div>
+                <label>卖家ID<i>*</i></label>
+                <input class="input" name="user_id" value="<?php echo htmlspecialchars(BasicTool::get('user_id'))?>" type="text">
+            </div>
+            <div>
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="name" value="<?php echo htmlspecialchars(BasicTool::get('name')) ?>">
             </div>

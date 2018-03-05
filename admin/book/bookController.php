@@ -404,8 +404,8 @@ function modifyBook($echoType = "normal") {
             $id = intval(BasicTool::post("id"));
             $id>0 or BasicTool::throwException("无效学习资料ID");
             $currentBook = $bookModel->getBookById($id) or BasicTool::throwException("无法找到学习资料");
-            $bookUserId = $currentBook['user_id'];
-            $bookModel->isAuthorized(BookAction::UPDATE, $bookUserId);
+            $bookUserId = BasicTool::post("user_id") ?: $currentBook['user_id'];
+            $bookModel->isAuthorized((($bookUserId===$currentBook['user_id'])?BookAction::UPDATE:BookAction::UPDATE_USERID), $bookUserId);
             $userId = $bookUserId;
         } else if ($flag=='add') {
             $bookModel->isAuthorized(BookAction::ADD);
