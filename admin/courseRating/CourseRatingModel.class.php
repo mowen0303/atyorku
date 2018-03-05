@@ -54,7 +54,9 @@ class CourseRatingModel extends Model
             $orderCondition .= "`id` DESC, ";
         }
 
-        $sql = "{$sql} ORDER BY {$orderCondition} `year` DESC, `term`, `publish_time` DESC";
+
+
+        $sql = "{$sql} ORDER BY {$orderCondition} `year` DESC, `term`, `publish_time` DESC, `count_like`*2-`count_dislike` DESC";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
@@ -238,6 +240,44 @@ class CourseRatingModel extends Model
     }
 
     /**
+     * 点赞/取消点赞一个课评
+     * @param $id 课评ID
+     * @return bool
+     */
+    public function likeCourseRating($id,$on=true){
+        return $this->likeDislikeCourseRating($id, "count_like");
+    }
+
+    /**
+     * 踩/取消踩一个课评
+     * @param $id 课评ID
+     * @return bool
+     */
+    public function dislikeCourseRating($id, $on=true){
+        return $this->likeDislikeCourseRating($id, "count_dislike");
+    }
+
+    /**
+     * 赞或踩一个课评 或 相反
+     * @param $id 课评ID
+     * @param $field 赞或踩的字段 count_like | count_dislike
+     * @return bool
+     */
+    private function likeDislikeCourseRating($id,$field){
+        try{
+            ($field==="count_like" || $field==="count_dislike") or BasicTool::throwException("Unknown field.");
+            $id=intval($id);
+            $sql = "SELECT {$field} FROM course_rating WHERE id={$id}";
+            $result = $this->sqltool->getRowBySql($sql) or BasicTool::throwException("没找到该课评");
+            $arr=[$field=>(max(0,$result[$field]+1))];
+            return $this->updateRowById("course_rating",$id,$arr);
+        } catch(Exception $e){
+            $this->errorMsg = $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
     * validate difficulty
     * @param diff 用户提供的 difficulty level
     * @return bool
@@ -287,9 +327,9 @@ class CourseRatingModel extends Model
     */
     public function getListOfCourseReports($pageSize=20,$courseParentTitle=false,$courseChildTitle=false) {
         $q = "";
-        $order = "";
+        $order = "ORDER BY cr.rating_count>0 DESC";
         if($courseParentTitle) {
-            $order = "ORDER BY c2.title, c1.title";
+            $order .= ", c2.title, c1.title";
             if($courseChildTitle){
                 // fixed parent, has child title
                 $q .= " AND c2.title='{$courseParentTitle}' AND c1.title LIKE '{$courseChildTitle}%'";
@@ -297,7 +337,7 @@ class CourseRatingModel extends Model
                 $q .= " AND c2.title LIKE '{$courseParentTitle}%'";
             }
         } else {
-            $order = "ORDER BY cr.update_time DESC, c2.title, c1.title";
+            $order .= ", cr.update_time DESC, c2.title, c1.title";
         }
 
         $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
@@ -312,12 +352,11 @@ class CourseRatingModel extends Model
     */
     public function getListOfProfessorReports($pageSize=20,$profName=false) {
         $q = "";
-        $order = "";
+        $order = "ORDER BY pr.rating_count>0 DESC";
         if($profName){
-            $order = "ORDER BY p.firstname, p.lastname";
             $q .= " AND CONCAT(p.firstname, ' ', p.lastname) LIKE '{$profName}%'";
         } else {
-            $order = "ORDER BY pr.update_time DESC, p.firstname, p.lastname";
+            $order .= ", pr.update_time DESC, p.firstname, p.lastname";
         }
 
         $sql = "SELECT pr.*, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM professor_report pr, professor p WHERE pr.prof_id=p.id{$q} {$order}";
@@ -533,12 +572,7 @@ class CourseRatingModel extends Model
         $this->parseUpdateReportArray($result, $arr, $table, $updateTime);
 
         // modify report
-        if(!$arr["rating_count"]){
-            // remove empty rating report if exists
-            if($report){
-                return parent::realDeleteByFieldIn($table, "id", $report["id"]);
-            }
-        } else {
+        if($arr["rating_count"]){
             if($report){
                 // update existing report
                 return parent::updateRowById($table, $report["id"], $arr);
@@ -547,6 +581,20 @@ class CourseRatingModel extends Model
                 return parent::addRow($table, $arr);
             }
         }
+//        if(!$arr["rating_count"]){
+//            // remove empty rating report if exists
+//            if($report){
+//                return parent::realDeleteByFieldIn($table, "id", $report["id"]);
+//            }
+//        } else {
+//            if($report){
+//                // update existing report
+//                return parent::updateRowById($table, $report["id"], $arr);
+//            } else {
+//                // add new report
+//                return parent::addRow($table, $arr);
+//            }
+//        }
     }
 
     /**
@@ -600,7 +648,9 @@ class CourseRatingModel extends Model
      * @throws Exception
      */
     public function updateAllReports(){
-        $this->cleanEmptyReports();
+//        $this->cleanEmptyReports();
+        $this->generateAllProfessorReports();
+        $this->generateAllCourseReports();
         $sql = "SELECT cr.course_code_id, cr.prof_id FROM course_rating cr GROUP BY cr.course_code_id, cr.prof_id";
         $result = $this->sqltool->query($sql);
         if($result){
@@ -621,16 +671,37 @@ class CourseRatingModel extends Model
         }
     }
 
+//    /**
+//     * 清除空报告
+//     */
+//    private function cleanEmptyReports() {
+//        $sql = "DELETE FROM course_report WHERE rating_count=0";
+//        $this->sqltool->query($sql);
+//        $sql = "DELETE FROM professor_report WHERE rating_count=0";
+//        $this->sqltool->query($sql);
+//        $sql = "DELETE FROM course_prof_report WHERE rating_count=0";
+//        $this->sqltool->query($sql);
+//    }
+
     /**
-     * 清除空报告
+     * 生成所有科目报告
+     * @return bool|\mysqli_result
      */
-    private function cleanEmptyReports() {
-        $sql = "DELETE FROM course_report WHERE rating_count=0";
-        $this->sqltool->query($sql);
-        $sql = "DELETE FROM professor_report WHERE rating_count=0";
-        $this->sqltool->query($sql);
-        $sql = "DELETE FROM course_prof_report WHERE rating_count=0";
-        $this->sqltool->query($sql);
+    private function generateAllCourseReports() {
+        $sql = "INSERT INTO course_report (course_code_id, homework_diff, test_diff, content_diff, overall_diff) SELECT cc.id, 0, 0, 0, 0 FROM course_code cc WHERE cc.parent_id>0 AND cc.id NOT IN (SELECT cr.course_code_id FROM course_report cr)";
+        $result = $this->sqltool->query($sql);
+        return $result;
+    }
+
+    /**
+     * 生成所有教授报告
+     * @return bool|\mysqli_result
+     */
+    private function generateAllProfessorReports() {
+        $sql = "INSERT INTO professor_report (prof_id, homework_diff, test_diff, content_diff, overall_diff, recommendation_ratio) SELECT p.id, 0, 0, 0, 0, 0 FROM professor p WHERE p.id NOT IN (SELECT pr.prof_id FROM professor_report pr)";
+        $result = $this->sqltool->query($sql);
+        var_dump("Affected rows: ".$this->sqltool->getAffectedRows());
+        return $result;
     }
 
 }

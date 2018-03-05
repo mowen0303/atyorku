@@ -15,10 +15,10 @@ class CourseCodeModel extends Model
     }
 
     /**
-    * 通过ID获取Course Code
-    * @param id 要查询的CourseCode ID
-    * @return 一维数组
-    */
+     * 通过ID获取Course Code
+     * @param $id 要查询的CourseCode ID
+     * @return \一维关联数组
+     */
     public function getCourseCodeById($id) {
         return $this->getRowById($this->table,$id);
     }
@@ -34,10 +34,11 @@ class CourseCodeModel extends Model
         return $this->sqltool->getListBySql($sql);
     }
 
+
     /**
      * 通过字段索引科目类匹配
      * @param $str [ParentTitle ChildTitle] 空格可有可无
-     * @param $allowParentOnly 容许单独搜索父类科目
+     * @param bool $allowParentOnly 容许单独搜索父类科目
      * @return array
      */
     public function getListOfCourseCodeByString($str, $allowParentOnly=false) {
@@ -84,6 +85,7 @@ class CourseCodeModel extends Model
         }
     }
 
+
     /**
      * 通过索引获取一页（40行）科目
      * @param $str 索引字符串
@@ -108,12 +110,13 @@ class CourseCodeModel extends Model
     }
 
 
+
     /**
      * 获取科目ID和缩写（如果子类名称不为空，提供父类和子类的id和缩写）
      * @param $parentCode
      * @param $childCode
      * @return \一维关联数组 [parent_code_id=>1, parent_code_title=>'ADMS', child_code_id=>222, child_code_title=>'1000']
-     * @throws
+     * @throws Exception
      */
     public function getCourseCodeByString($parentCode, $childCode) {
         $sql = "";
@@ -126,11 +129,12 @@ class CourseCodeModel extends Model
         return $result;
     }
 
+
     /**
      * 通过课程名称查询课程ID,并给课程增加热度
      * @param $parentCode
      * @param $childCode
-     * @return int | 查询失败返回 0
+     * @return int 查询失败返回 0
      */
     public function getCourseIdByCourseCode($parentCode,$childCode){
 
@@ -151,10 +155,11 @@ class CourseCodeModel extends Model
 
     }
 
+
     /**
      * 通过科目类别名称查询科目类别ID
      * @param $parentCode
-     * @return int | 查询失败返回 0
+     * @return int 查询失败返回 0
      */
     public function getCourseParentIdByCourseCode($parentCode) {
         $sql = "SELECT id FROM course_code WHERE title='{$parentCode}'";
@@ -165,13 +170,14 @@ class CourseCodeModel extends Model
 
 
     /**
-    * 添加一行Course Code
-    * @param title Course Code title
-    * @param fullTitle Course Code full title
-    * @param credits Course credit
-    * @param parentId Course Code parent_id, 如果是父类，无需提供
-    * @return bool
-    */
+     * 添加一行Course Code
+     * @param $title Course Code title
+     * @param $fullTitle Course Code full title
+     * @param int $credits Course credit
+     * @param int $parentId Course Code parent_id, 如果是父类，无需提供
+     * @return bool
+     * @throws Exception
+     */
     public function addCourseCode($title, $fullTitle, $credits=0, $parentId=0) {
         if ($parentId != 0) {
             $sql = "SELECT * FROM course_code c WHERE c.id={$parentId}";
@@ -185,10 +191,11 @@ class CourseCodeModel extends Model
 
 
     /**
-    * 通过ID删除一个CourseCode
-    * @param id 要删除的Course Code ID
-    * @return bool
-    */
+     * 通过ID删除一个CourseCode
+     * @param $id 要删除的Course Code ID
+     * @return bool|\mysqli_result
+     * @throws Exception
+     */
     public function deleteCourseCodeById($id) {
         $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
         $parentId = $result["parent_id"];
@@ -202,13 +209,14 @@ class CourseCodeModel extends Model
 
 
     /**
-    * 更新 CourseCode Title by ID
-    * @param id 要更新的 Course Code ID
-    * @param title 要更新的 Course Code Title
-    * @param fullTitle 要更新的 Course Code Full Title
-    * @param credits 要更新的 Course Code Credits
-    * @return bool
-    */
+     * 更新 CourseCode Title by ID
+     * @param $id 要更新的 Course Code ID
+     * @param $title 要更新的 Course Code Title
+     * @param $fullTitle 要更新的 Course Code Full Title
+     * @param $credits 要更新的 Course Code Credits
+     * @return bool
+     * @throws Exception
+     */
     public function updateCourseCodeById($id, $title, $fullTitle, $credits) {
         $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
         $arr = [];

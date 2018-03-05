@@ -124,6 +124,46 @@ function getListOfCourseRatingWithJson($t="normal", $v1=false, $v2=false) {
 }
 
 /**
+ * JSON - 点赞一个指定ID的课评
+ * @param id 课评ID
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=likeCourseRatingByIdWithJson
+ */
+function likeCourseRatingByIdWithJson() {
+    global $courseRatingModel;
+    try{
+        $id = BasicTool::post("id","课评ID不能为空");
+        $result = $courseRatingModel->likeCourseRating($id);
+        if($result){
+            BasicTool::echoJson(1,"成功",$result);
+        }else{
+            BasicTool::throwException($courseRatingModel->errorMsg);
+        }
+    }catch(Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * JSON - 点赞一个指定ID的课评
+ * @param id 课评ID
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=dislikeCourseRatingByIdWithJson
+ */
+function dislikeCourseRatingByIdWithJson() {
+    global $courseRatingModel;
+    try{
+        $id = BasicTool::post("id","课评ID不能为空");
+        $result = $courseRatingModel->dislikeCourseRating($id);
+        if($result){
+            BasicTool::echoJson(1,"成功",$result);
+        }else{
+            BasicTool::throwException($courseRatingModel->errorMsg);
+        }
+    }catch(Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
  * JSON -  获取指定ID的课评报告信息
  * @param id course report id
  * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getCourseReportByIdWithJson&id=3
