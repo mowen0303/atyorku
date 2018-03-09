@@ -74,13 +74,13 @@ $userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("u
                     </select>
                 </div>
                 <div class="col-3">
-                    <label>作业难度<i>*</i></label>
+                    <label>作业难度</label>
                     <select class="input input-select selectDefault" name="homework_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('homework_diff')) ?>">
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
                 <div class="col-3">
-                    <label>考试难度<i>*</i></label>
+                    <label>考试难度</label>
                     <select class="input input-select selectDefault" name="test_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('test_diff')) ?>">
                         <?php echo $diffHtml; ?>
                     </select>

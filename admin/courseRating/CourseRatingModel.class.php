@@ -170,9 +170,9 @@ class CourseRatingModel extends Model
     */
     public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade='', $comment, $recommendation, $year, $term, $id) {
         // Validations
-        $this->isValidDiff($contentDiff) or BasicTool::throwException("内容困难等级 ({$contentDiff}) 不存在");
-        $this->isValidDiff($homeworkDiff) or BasicTool::throwException("作业困难等级 ({$homeworkDiff}) 不存在");
-        $this->isValidDiff($testDiff) or BasicTool::throwException("考试困难等级 ({$testDiff}) 不存在");
+        $this->isValidDiff($contentDiff,false) or BasicTool::throwException("内容困难等级 ({$contentDiff}) 不存在");
+        $this->isValidDiff($homeworkDiff,true) or BasicTool::throwException("作业困难等级 ({$homeworkDiff}) 不存在");
+        $this->isValidDiff($testDiff,true) or BasicTool::throwException("考试困难等级 ({$testDiff}) 不存在");
         $this->isValidGrade($grade) or BasicTool::throwException("该成绩选项 ({$grade}) 不存在");
         $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
         $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
@@ -280,11 +280,17 @@ class CourseRatingModel extends Model
     /**
     * validate difficulty
     * @param diff 用户提供的 difficulty level
+    * @param allowZero 容许0
     * @return bool
     */
-    private function isValidDiff($diff) {
+    private function isValidDiff($diff, $allowZero=false) {
         $diff = intval($diff);
-        return $diff > 0 && $diff < 11;
+        if($allowZero){
+            return $diff >= 0 && $diff < 11;
+        } else {
+            return $diff > 0 && $diff < 11;
+        }
+
     }
 
 
@@ -604,7 +610,7 @@ class CourseRatingModel extends Model
      * @return \一维关联数组
      */
     private function getAnalyzedData($courseCodeId=false, $profId=false){
-        $sql = "SELECT ROUND(AVG(cr.content_diff),1) AS avg_content, ROUND(AVG(cr.homework_diff),1) AS avg_hw, ROUND(AVG(cr.test_diff),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE ";
+        $sql = "SELECT ROUND(AVG(NULLIF(cr.content_diff,0)),1) AS avg_content, ROUND(AVG(NULLIF(cr.homework_diff,0)),1) AS avg_hw, ROUND(AVG(NULLIF(cr.test_diff,0)),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE ";
         $additionalSql = "";
         if($courseCodeId){
             $additionalSql .= "cr.course_code_id={$courseCodeId}";

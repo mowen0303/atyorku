@@ -415,8 +415,8 @@ function modifyCourseRating($echoType = "normal") {
         $profId = $professorModel->getProfessorIdByFullName($profName);
         $profId or BasicTool::throwException("教授名称格式错误");
         $contentDiff = BasicTool::post("content_diff", "内容难度不能为空");
-        $homeworkDiff = BasicTool::post("homework_diff", "作业难度不能为空");
-        $testDiff = BasicTool::post("test_diff", "考试难度不能为空");
+        $homeworkDiff = BasicTool::post("homework_diff")?:0;
+        $testDiff = BasicTool::post("test_diff")?:0;
         $hasTextbook = BasicTool::post("has_textbook", "是否需要教科书不能为空");
         $recommendation = BasicTool::post("recommendation", "是否推荐课程不能为空");
         $grade = BasicTool::post("grade")?:"";
