@@ -2,7 +2,9 @@
 $bookModel = new \admin\book\BookModel();
 $imageModel = new \admin\image\ImageModel();
 $bookCategoryModel = new \admin\bookCategory\BookCategoryModel();
+$currentUser = new \admin\user\UserModel();
 $flag = htmlspecialchars(BasicTool::get("flag"));
+$userId = htmlspecialchars($flag=="add" ? $currentUser->userId : BasicTool::get("user_id"));
 ?>
 
 <style>
@@ -35,7 +37,7 @@ $flag = htmlspecialchars(BasicTool::get("flag"));
         <section class="formBox">
             <div>
                 <label>卖家ID<i>*</i></label>
-                <input class="input" name="user_id" value="<?php echo htmlspecialchars(BasicTool::get('user_id'))?>" type="text">
+                <input class="input" name="user_id" value="<?php echo htmlspecialchars($userId)?>" type="text">
             </div>
             <div>
                 <label>标题<i>*</i></label>

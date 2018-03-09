@@ -2,10 +2,10 @@
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
 $userModel = new \admin\user\UserModel();
 $isGod = $userModel->isUserHasAuthority("GOD");
-$queryUserName = BasicTool::get("user_name");
+$queryUserName = htmlspecialchars(BasicTool::get("user_name"));
 ?>
 <header class="topBox">
-    <h1><?php echo $pageTitle?></h1>
+    <h1><?php echo htmlspecialchars($pageTitle)?></h1>
 </header>
 <nav class="mainNav">
     <?php
@@ -45,7 +45,7 @@ if(!$queryUserName){
     ?>
 
 
-    <header><h2><?php echo $typeStr ?>课评列表<?php if($queryUserName){echo " - {$queryUserName}";} ?></h2></header>
+    <header><h2><?php echo htmlspecialchars($typeStr) ?>课评列表<?php if($queryUserName){echo " - {$queryUserName}";} ?></h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
             <table class="tab">
@@ -83,28 +83,28 @@ if(!$queryUserName){
                 ?>
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
-                        <td><?php echo $row["id"] ?></td>
-                        <td><?php echo $row["course_code_parent_title"] . " " . $row["course_code_child_title"] ?></td>
+                        <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["course_code_parent_title"] . " " . $row["course_code_child_title"]) ?></td>
                         <td><?php
                                 if($queryUserId && $queryUserName) {
-                                    echo $row["user_name"];
+                                    echo htmlspecialchars($row["user_name"]);
                                 } else {
-                                    $userId = $row["user_id"];
-                                    $username = $row["user_name"];
+                                    $userId = htmlspecialchars($row["user_id"]);
+                                    $username = htmlspecialchars($row["user_name"]);
                                     echo "<a href='index.php?s=listCourseRating&user_id={$userId}&user_name={$username}'>{$username}</a>";
                                 }
                             ?>
                         </td>
-                        <td><?php echo $row["prof_name"] ?></td>
-                        <td><?php echo $row["content_diff"] ?></td>
-                        <td><?php echo $row["homework_diff"] ?></td>
-                        <td><?php echo $row["test_diff"] ?></td>
-                        <td><?php echo $row["has_textbook"] ?></td>
-                        <td><?php echo $row["grade"] ?></td>
-                        <td><?php echo $row["term"] . " " . $row["year"] ?></td>
-                        <td><?php echo $row["recommendation"] ?></td>
-                        <td><?php echo $row["comment"] ?></td>
-                        <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo $argument?>">修改</a></td>
+                        <td><?php echo htmlspecialchars($row["prof_name"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["content_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["homework_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["has_textbook"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["grade"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["recommendation"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["comment"]) ?></td>
+                        <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo htmlspecialchars($argument)?>">修改</a></td>
                     </tr>
                 <?php
                 }

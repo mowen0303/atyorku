@@ -2,13 +2,13 @@
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
 ?>
 <header class="topBox">
-    <h1><?php echo $pageTitle?></h1>
+    <h1><?php echo htmlspecialchars($pageTitle)?></h1>
 </header>
 <nav class="mainNav">
     <a class="btn" href="index.php?s=listCourseRating">返回</a>
 </nav>
 <article class="mainBox">
-    <header><h2><?php echo $typeStr ?>教授报告列表</h2></header>
+    <header><h2><?php echo htmlspecialchars($typeStr) ?>教授报告列表</h2></header>
     <form action="courseRatingController.php?action=deleteProfessorReport" method="post">
         <section>
             <table class="tab">
@@ -35,15 +35,15 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                     }
                 ?>
                     <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
-                        <td><?php echo $row["id"] ?></td>
-                        <td><?php echo $row["prof_name"] ?></td>
-                        <td><?php echo $row["content_diff"] ?></td>
-                        <td><?php echo $row["homework_diff"] ?></td>
-                        <td><?php echo $row["test_diff"] ?></td>
-                        <td><?php echo $row["overall_diff"] ?></td>
-                        <td><?php echo number_format(100*$row["recommendation_ratio"],2) . '%' ?></td>
-                        <td><?php echo $row["rating_count"] ?></td>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo htmlspecialchars($row['id']) ?>"></td>
+                        <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["prof_name"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["content_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["homework_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["overall_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars(number_format(100*$row["recommendation_ratio"],2) . '%') ?></td>
+                        <td><?php echo htmlspecialchars($row["rating_count"]) ?></td>
                     </tr>
                 <?php
                 }

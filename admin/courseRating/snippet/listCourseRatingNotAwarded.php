@@ -2,14 +2,14 @@
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
 ?>
 <header class="topBox">
-    <h1><?php echo $pageTitle?></h1>
+    <h1><?php echo htmlspecialchars($pageTitle)?></h1>
 </header>
 <nav class="mainNav">
     <a class="btn" href="index.php?s=listCourseRating">返回</a>
 </nav>
 
 <article class="mainBox">
-    <header><h2><?php echo $typeStr ?>未奖励的课评列表</h2></header>
+    <header><h2><?php echo htmlspecialchars($typeStr) ?>未奖励的课评列表</h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
             <table class="tab">
@@ -40,24 +40,24 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         $argument .= "&{$key}={$value}";
                     }
                 ?>
-                    <tr id="courseRating<? echo $row['id'] ?>">
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
-                        <td><?php echo $row["id"] ?></td>
-                        <td><?php echo $row["course_code_parent_title"] . " " . $row["course_code_child_title"] ?></td>
-                        <td><?php echo $row["user_name"] ?></td>
-                        <td><?php echo $row["prof_name"] ?></td>
-                        <td><?php echo $row["content_diff"] ?></td>
-                        <td><?php echo $row["homework_diff"] ?></td>
-                        <td><?php echo $row["test_diff"] ?></td>
-                        <td><?php echo $row["has_textbook"] ?></td>
-                        <td><?php echo $row["grade"] ?></td>
-                        <td><?php echo $row["term"] . " " . $row["year"] ?></td>
-                        <td><?php echo $row["recommendation"] ?></td>
-                        <td><?php echo $row["comment"] ?></td>
+                    <tr id="courseRating<? echo htmlspecialchars($row['id']) ?>">
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo htmlspecialchars($row['id']) ?>"></td>
+                        <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["course_code_parent_title"] . " " . $row["course_code_child_title"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["user_name"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["prof_name"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["content_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["homework_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["has_textbook"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["grade"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["recommendation"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["comment"]) ?></td>
                         <td>
-                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="0">奖励0积分</a>
-                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="3">奖励3积分</a>
-                            <a class="btn obtainBtn" href="#" data-id="<?php echo $row['id']?>" data-credit="5">奖励5积分</a>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="0">奖励0积分</a>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="3">奖励3积分</a>
+                            <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="5">奖励5积分</a>
                         </td>
                     </tr>
                 <?php

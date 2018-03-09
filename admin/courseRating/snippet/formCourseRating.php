@@ -1,7 +1,8 @@
 <?php
 $courseRatingModel = new \admin\courseRating\CourseRatingModel();
 $userModel = new \admin\user\UserModel();
-$flag = BasicTool::get("flag");
+$flag = htmlspecialchars(BasicTool::get("flag"));
+$userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("user_id"));
 ?>
 
 <style>
@@ -33,24 +34,24 @@ $flag = BasicTool::get("flag");
 <article class="mainBox">
     <form action="courseRatingController.php?action=modifyCourseRating" method="post">
         <input name="flag" id="flag" value="<?php echo $flag?>" type="hidden">
-        <input name="id" value="<?php echo BasicTool::get('id')?>" type="hidden">
+        <input name="id" value="<?php echo htmlspecialchars(BasicTool::get('id'))?>" type="hidden">
         <header>
             <h2><?php echo $flag=="update"?"修改课评":"添加课评"; ?></h2>
         </header>
         <section class="formBox">
             <div>
                 <label>课评用户ID<i>*</i></label>
-                <input class="input" name="user_id" value="<?php echo BasicTool::get('user_id')?>" type="text">
+                <input class="input" name="user_id" value="<?php echo $userId?>" type="text">
             </div>
             <div id="courseCodeInputComponent" class="row">
                 <div class="col-2">
                     <label>课程类别 (例如:ADMS)<i>*</i></label>
-                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent_title" value="<?php echo BasicTool::get('course_code_parent_title')?>">
+                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent_title" value="<?php echo htmlspecialchars(BasicTool::get('course_code_parent_title'))?>">
                     <datalist id="parentCodeList"></datalist>
                 </div>
                 <div class="col-2">
                     <label>课程代码 (例如:1000)<i>*</i></label>
-                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child_title" value="<?php echo BasicTool::get('course_code_child_title')?>">
+                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child_title" value="<?php echo htmlspecialchars(BasicTool::get('course_code_child_title'))?>">
                     <datalist id="childCodeCodeList"></datalist>
                 </div>
             </div>
@@ -68,19 +69,19 @@ $flag = BasicTool::get("flag");
                 ?>
                 <div class="col-3">
                     <label>内容难度<i>*</i></label>
-                    <select class="input input-select selectDefault" name="content_diff" defvalue="<?php echo BasicTool::get('content_diff') ?>">
+                    <select class="input input-select selectDefault" name="content_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('content_diff')) ?>">
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
                 <div class="col-3">
                     <label>作业难度<i>*</i></label>
-                    <select class="input input-select selectDefault" name="homework_diff" defvalue="<?php echo BasicTool::get('homework_diff') ?>">
+                    <select class="input input-select selectDefault" name="homework_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('homework_diff')) ?>">
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
                 <div class="col-3">
                     <label>考试难度<i>*</i></label>
-                    <select class="input input-select selectDefault" name="test_diff" defvalue="<?php echo BasicTool::get('test_diff') ?>">
+                    <select class="input input-select selectDefault" name="test_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('test_diff')) ?>">
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
@@ -88,7 +89,7 @@ $flag = BasicTool::get("flag");
             <div class="row">
                 <div class="col-3">
                     <label>是否需要教科书<i>*</i></label>
-                    <select class="input input-select selectDefault" name="has_textbook" defvalue="<?php echo BasicTool::get('has_textbook') ?>">
+                    <select class="input input-select selectDefault" name="has_textbook" defvalue="<?php echo htmlspecialchars(BasicTool::get('has_textbook')) ?>">
                         <option value="">选择是否需要教科书</option>
                         <option value="0">不需要</option>
                         <option value="1">需要</option>
@@ -96,7 +97,7 @@ $flag = BasicTool::get("flag");
                 </div>
                 <div class="col-3">
                     <label>是否推荐此教授<i>*</i></label>
-                    <select class="input input-select selectDefault" name="recommendation" defvalue="<?php echo BasicTool::get('recommendation') ?>">
+                    <select class="input input-select selectDefault" name="recommendation" defvalue="<?php echo htmlspecialchars(BasicTool::get('recommendation')) ?>">
                         <option value="">选择是否推荐此教授</option>
                         <option value="0">不推荐</option>
                         <option value="1">推荐</option>
@@ -104,7 +105,7 @@ $flag = BasicTool::get("flag");
                 </div>
                 <div class="col-3">
                     <label>本门成绩</label>
-                    <select class="input input-select selectDefault" name="grade" defvalue="<?php echo BasicTool::get('grade') ?>">
+                    <select class="input input-select selectDefault" name="grade" defvalue="<?php echo htmlspecialchars(BasicTool::get('grade')) ?>">
                         <option value="">选择成绩</option>
                         <option value="A+">A+</option>
                         <option value="A">A</option>
@@ -122,7 +123,7 @@ $flag = BasicTool::get("flag");
             <div class="row">
                 <div class="col-2">
                     <label>本科所修学年<i>*</i></label>
-                    <select class="input input-select selectDefault" name="year" defvalue="<?php echo BasicTool::get('year') ?>">
+                    <select class="input input-select selectDefault" name="year" defvalue="<?php echo htmlspecialchars(BasicTool::get('year')) ?>">
                         <?php
                             echo "<option value=''>请选择学年</option>";
                             for($i=date("Y");$i>1959;$i--) echo "<option value='{$i}'>{$i}</option>";
@@ -131,7 +132,7 @@ $flag = BasicTool::get("flag");
                 </div>
                 <div class="col-2">
                     <label>本门所修学期<i>*</i></label>
-                    <select class="input input-select selectDefault" name="term" defvalue="<?php echo BasicTool::get('term') ?>">
+                    <select class="input input-select selectDefault" name="term" defvalue="<?php echo htmlspecialchars(BasicTool::get('term')) ?>">
                         <option value="">选择学期</option>
                         <option value="Fall">Fall</option>
                         <option value="Winter">Winter</option>
@@ -144,7 +145,7 @@ $flag = BasicTool::get("flag");
             </div>
             <div>
                 <label>评论<i>*</i></label>
-                <textarea class="input input-textarea" name="comment" placeholder="说一说对此门课的看法吧。。。"><?php echo BasicTool::get('comment') ?></textarea>
+                <textarea class="input input-textarea" name="comment" placeholder="说一说对此门课的看法吧。。。"><?php echo htmlspecialchars(BasicTool::get('comment')) ?></textarea>
             </div>
         </section>
         <footer class="submitBox">
