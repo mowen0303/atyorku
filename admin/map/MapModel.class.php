@@ -33,4 +33,8 @@ class MapModel extends Model {
         }
     }
 
+    public function addBuilding($shortName,$fullName,$lan){
+
+    }
+
 }

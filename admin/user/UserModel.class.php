@@ -491,6 +491,7 @@ class UserModel extends Model {
      */
     public function logoutDevice() {
         $uid = $this->userId;
+
         $sql = "UPDATE user SET device = '0' WHERE id = {$uid}";
         $this->sqltool->query($sql);
     }
@@ -688,6 +689,14 @@ class UserModel extends Model {
         return $this->sqltool->getRowBySql($sql)['id'];
     }
 
+    public function updateDevice($uid,$deviceType,$deviceToken){
+        if(!$this->userId) return false;
+        $sql = "UPDATE user SET device = '0' WHERE device in ('{$deviceToken}')";
+        $this->sqltool->query($sql) or BasicTool::throwException("清理设备失败");
+        $sql = "UPDATE user SET device_type = '{$deviceType}',device='{$deviceToken}' WHERE id in ($uid)";
+        $this->sqltool->query($sql) or BasicTool::throwException("更新设备Token失败");
+    }
+
     /**
      * 获取用户每日积分
      * @return bool|string          成功返回array["积分描述",积分值];,失败返回false
@@ -736,8 +745,6 @@ class UserModel extends Model {
             $this->errorMsg = "更新用户领取状态出错";
             return false;
         }
-
-
     }
 }
 

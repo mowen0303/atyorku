@@ -22,11 +22,7 @@ $action = $id ? 'updateBuilding' : 'addBuilding';
                 <input class="input" type="text" name="full_name" id="fullName" value="<?php echo $row['full_name'] ?>">
             </div>
             <div>
-                <label>纬经度坐标<i>*</i></label>
-                <input class="input" type="text" name="latitude" value="<?php echo $row['latitude'] ?>">
-            </div>
-            <div>
-                <label>形状坐标<i>*</i></label>
+                <label>纬经度坐标 and 形状坐标<i>*</i></label>
                 <textarea class="input input-textarea" name="shape"><?php echo $row['shape'] ?></textarea>
             </div>
             <div>

@@ -26,3 +26,7 @@ function getAllBuildings(){
         BasicTool::echoJson(0, $e->getMessage());
     }
 }
+
+function addBuilding(){
+
+}

@@ -408,18 +408,11 @@ function topStudentToHTML() {
 function updateDevice() {
     global $currentUser;
     try {
-        $deviceToken = BasicTool::post('device') ?: "0";
-        $deviceType = BasicTool::post('device_type') ?: 'ios';
+        $deviceToken = BasicTool::post('device',"Token无效");
+        $deviceType = BasicTool::post('device_type',"设备类型无效") ;
         $currentUser->isLogin() or BasicTool::throwException("未登录");
-        $arr['device'] = $deviceToken;
-        $arr['device_type'] = $deviceType;
-        //修改用户
-        $currentUser->updateRowById('user', $currentUser->userId, $arr);
+        $currentUser->updateDevice($currentUser->userId,$deviceType,$deviceToken);
         $userArray = $currentUser->updateCookie() or BasicTool::throwException($currentUser->errorMsg);
-        //以下方法v2弃用
-        setcookie("cc_de", $deviceToken, time() + 3600 * 24 * 2, '/');
-        setcookie("cc_dev", $deviceToken, time() + 3600 * 24 * 2, '/');
-
         BasicTool::echoJson(1, "修改成功", $userArray);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
