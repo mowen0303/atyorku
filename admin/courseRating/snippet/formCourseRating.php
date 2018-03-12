@@ -88,22 +88,6 @@ $userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("u
             </div>
             <div class="row">
                 <div class="col-3">
-                    <label>是否需要教科书<i>*</i></label>
-                    <select class="input input-select selectDefault" name="has_textbook" defvalue="<?php echo htmlspecialchars(BasicTool::get('has_textbook')) ?>">
-                        <option value="">选择是否需要教科书</option>
-                        <option value="0">不需要</option>
-                        <option value="1">需要</option>
-                    </select>
-                </div>
-                <div class="col-3">
-                    <label>是否推荐此教授<i>*</i></label>
-                    <select class="input input-select selectDefault" name="recommendation" defvalue="<?php echo htmlspecialchars(BasicTool::get('recommendation')) ?>">
-                        <option value="">选择是否推荐此教授</option>
-                        <option value="0">不推荐</option>
-                        <option value="1">推荐</option>
-                    </select>
-                </div>
-                <div class="col-3">
                     <label>本门成绩</label>
                     <select class="input input-select selectDefault" name="grade" defvalue="<?php echo htmlspecialchars(BasicTool::get('grade')) ?>">
                         <option value="">选择成绩</option>

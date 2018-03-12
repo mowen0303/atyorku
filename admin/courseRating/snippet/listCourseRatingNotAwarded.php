@@ -12,23 +12,21 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
     <header><h2><?php echo htmlspecialchars($typeStr) ?>未奖励的课评列表</h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
-            <table class="tab">
+            <table class="tab" style="table-layout: fixed;">
                 <thead>
                 <tr>
-                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th width="60px">ID</th>
-                    <th width="60px">科目</th>
-                    <th width="60px">用户</th>
-                    <th width="60px">教授</th>
-                    <th width="60px">内容</th>
-                    <th width="60px">作业</th>
-                    <th width="60px">考试</th>
-                    <th width="60px">书</th>
-                    <th width="60px">成绩</th>
-                    <th width="100px">学期</th>
-                    <th width="60px">推荐</th>
-                    <th width="150px">评论</th>
-                    <th width="120px">操作</th>
+                    <th width="5%"><input id="cBoxAll" type="checkbox"></th>
+                    <th width="5%">ID</th>
+                    <th width="8%">科目</th>
+                    <th width="8%">用户</th>
+                    <th width="8%">教授</th>
+                    <th width="5%">内容</th>
+                    <th width="5%">作业</th>
+                    <th width="5%">考试</th>
+                    <th width="5%">成绩</th>
+                    <th width="6%">学期</th>
+                    <th width="26%">评论</th>
+                    <th width="14%">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,10 +47,8 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo htmlspecialchars($row["content_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["homework_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
-                        <td><?php echo htmlspecialchars($row["has_textbook"]) ?></td>
                         <td><?php echo htmlspecialchars($row["grade"]) ?></td>
                         <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
-                        <td><?php echo htmlspecialchars($row["recommendation"]) ?></td>
                         <td><?php echo htmlspecialchars($row["comment"]) ?></td>
                         <td>
                             <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="0">奖励0积分</a>

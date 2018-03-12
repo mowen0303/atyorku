@@ -149,26 +149,24 @@ class CourseRatingModel extends Model
 
 
     /**
-    * Add or Update a Course Rating
-    *
-    * @param flag 'add' | 'update'
-    * @param courseCodeId Course Code ID
-    * @param userId user ID
-    * @param profId Professor ID
-    * @param contentDiff Content difficulty
-    * @param homeworkDiff Homework Difficulty
-    * @param testDiff Test Difficulty
-    * @param hasTextbook if textbook is required
-    * @param grade Letter Grade
-    * @param comment comment to the course
-    * @param recommendation if recommend the course
-    * @param year attended year
-    * @param term attended term
-    * @param id modified course rating id (required when for 'update')
-    * @return bool
-    * @throws ValidationExceptions Use try catch
-    */
-    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade='', $comment, $recommendation, $year, $term, $id) {
+     * Add or Update a Course Rating
+     *
+     * @param $flag 'add' | 'update'
+     * @param $courseCodeId Course Code ID
+     * @param $userId user ID
+     * @param $profId Professor ID
+     * @param $contentDiff Content difficulty
+     * @param $homeworkDiff Homework Difficulty
+     * @param $testDiff Test Difficulty
+     * @param string $grade Letter Grade
+     * @param $comment comment to the course
+     * @param $year attended year
+     * @param $term attended term
+     * @param $id modified course rating id (required when for 'update')
+     * @return bool
+     * @throws Exception ValidationExceptions Use try catch
+     */
+    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade='', $comment, $year, $term, $id) {
         // Validations
         $this->isValidDiff($contentDiff,false) or BasicTool::throwException("内容困难等级 ({$contentDiff}) 不存在");
         $this->isValidDiff($homeworkDiff,true) or BasicTool::throwException("作业困难等级 ({$homeworkDiff}) 不存在");
@@ -184,10 +182,8 @@ class CourseRatingModel extends Model
         $arr["content_diff"] = $contentDiff;
         $arr["homework_diff"] = $homeworkDiff;
         $arr["test_diff"] = $testDiff;
-        $arr["has_textbook"] = $hasTextbook ? 1 : 0;
         $arr["grade"] = $grade;
         $arr["comment"] = $comment;
-        $arr["recommendation"] = $recommendation;
         $arr["year"] = $year;
         $arr["term"] = $term;
         $bool = false;
@@ -610,7 +606,7 @@ class CourseRatingModel extends Model
      * @return \一维关联数组
      */
     private function getAnalyzedData($courseCodeId=false, $profId=false){
-        $sql = "SELECT ROUND(AVG(NULLIF(cr.content_diff,0)),1) AS avg_content, ROUND(AVG(NULLIF(cr.homework_diff,0)),1) AS avg_hw, ROUND(AVG(NULLIF(cr.test_diff,0)),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating, SUM(cr.recommendation) AS sum_recommendation FROM course_rating cr WHERE ";
+        $sql = "SELECT ROUND(AVG(NULLIF(cr.content_diff,0)),1) AS avg_content, ROUND(AVG(NULLIF(cr.homework_diff,0)),1) AS avg_hw, ROUND(AVG(NULLIF(cr.test_diff,0)),1) AS avg_test, ROUND(AVG(NULLIF(cr.grade+0,11))) AS avg_grade, COUNT(*) AS sum_rating FROM course_rating cr WHERE ";
         $additionalSql = "";
         if($courseCodeId){
             $additionalSql .= "cr.course_code_id={$courseCodeId}";
@@ -635,9 +631,6 @@ class CourseRatingModel extends Model
             $arr["content_diff"] = $result["avg_content"] ?: 0.0;
             $arr["overall_diff"] = round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/3,1);
             $arr["rating_count"] = $result["sum_rating"] ?: 0;
-            if($table=='course_prof_report' || $table=='professor_report') {
-                $arr["recommendation_ratio"] = max(0, $result["sum_recommendation"]) / max($result["sum_rating"],1);
-            }
             if($table=='course_prof_report' || $table=='course_report') {
                 $arr["avg_grade"] = $result["avg_grade"] ?: 11;
             }

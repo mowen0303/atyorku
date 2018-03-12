@@ -11,18 +11,17 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
     <header><h2><?php echo htmlspecialchars($typeStr) ?>教授报告列表</h2></header>
     <form action="courseRatingController.php?action=deleteProfessorReport" method="post">
         <section>
-            <table class="tab">
+            <table class="tab" style="table-layout: fixed;">
                 <thead>
                 <tr>
-                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th width="60px">ID</th>
-                    <th width="100px">教授</th>
-                    <th width="100px">内容难度</th>
-                    <th width="100px">作业难度</th>
-                    <th width="100px">考试难度</th>
-                    <th width="100px">综合难度</th>
-                    <th width="100px">推荐比例</th>
-                    <th width="100px">评论数</th>
+                    <th width="5%"><input id="cBoxAll" type="checkbox"></th>
+                    <th width="5%">ID</th>
+                    <th width="10%">教授</th>
+                    <th width="10%">内容难度</th>
+                    <th width="10%">作业难度</th>
+                    <th width="10%">考试难度</th>
+                    <th width="10%">综合难度</th>
+                    <th width="5%">评论数</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -42,7 +41,6 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo htmlspecialchars($row["homework_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["overall_diff"]) ?></td>
-                        <td><?php echo htmlspecialchars(number_format(100*$row["recommendation_ratio"],2) . '%') ?></td>
                         <td><?php echo htmlspecialchars($row["rating_count"]) ?></td>
                     </tr>
                 <?php

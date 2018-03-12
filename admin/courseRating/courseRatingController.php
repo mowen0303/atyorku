@@ -417,8 +417,6 @@ function modifyCourseRating($echoType = "normal") {
         $contentDiff = BasicTool::post("content_diff", "内容难度不能为空");
         $homeworkDiff = BasicTool::post("homework_diff")?:0;
         $testDiff = BasicTool::post("test_diff")?:0;
-        $hasTextbook = BasicTool::post("has_textbook", "是否需要教科书不能为空");
-        $recommendation = BasicTool::post("recommendation", "是否推荐课程不能为空");
         $grade = BasicTool::post("grade")?:"";
         $year = BasicTool::post("year","学年不能为空");
         $term = BasicTool::post("term","学期不能为空");
@@ -427,14 +425,14 @@ function modifyCourseRating($echoType = "normal") {
         $courseRatingUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
         // 执行
         if ($flag=='update') {
-            $courseRatingModel->modifyCourseRating('update', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term, $currentCourseRating["id"]);
+            $courseRatingModel->modifyCourseRating('update', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade, $comment, $year, $term, $currentCourseRating["id"]);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/courseRating/index.php?listCourseRating");
             } else {
                 BasicTool::echoJson(1, "修改成功");
             }
         } else if ($flag=='add') {
-            $courseRatingModel->modifyCourseRating('add', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $hasTextbook, $grade, $comment, $recommendation, $year, $term);
+            $courseRatingModel->modifyCourseRating('add', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade, $comment, $year, $term);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/courseRating/index.php?listCourseRating");
             } else {

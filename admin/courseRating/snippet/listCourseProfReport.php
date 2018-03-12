@@ -11,22 +11,21 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
     <header><h2><?php echo htmlspecialchars($typeStr) ?>科目教授报告列表</h2></header>
     <form action="courseRatingController.php?action=deleteCourseProfessorReport" method="post">
         <section>
-            <table class="tab">
+            <table class="tab" style="table-layout: fixed;">
                 <thead>
                 <tr>
-                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th width="60px">ID</th>
-                    <th width="100px">科目</th>
-                    <th width="100px">教授</th>
-                    <th width="80px">内容难度</th>
-                    <th width="80px">作业难度</th>
-                    <th width="80px">考试难度</th>
-                    <th width="80px">综合难度</th>
-                    <th width="80px">平均成绩</th>
-                    <th width="80px">推荐比例</th>
-                    <th width="80px">评论数</th>
-                    <th width="80px">问题数</th>
-                    <th width="120px">已解决问题数</th>
+                    <th width="5%"><input id="cBoxAll" type="checkbox"></th>
+                    <th width="5%">ID</th>
+                    <th width="10%">科目</th>
+                    <th width="10%">教授</th>
+                    <th width="10%">内容难度</th>
+                    <th width="10%">作业难度</th>
+                    <th width="10%">考试难度</th>
+                    <th width="10%">综合难度</th>
+                    <th width="10%">平均成绩</th>
+                    <th width="5%">评论数</th>
+                    <th width="5%">问题数</th>
+                    <th width="10%">已解决问题数</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,7 +47,6 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["overall_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["avg_grade"]) ?></td>
-                        <td><?php echo number_format(100*htmlspecialchars($row["recommendation_ratio"]),2) . '%' ?></td>
                         <td><?php echo htmlspecialchars($row["rating_count"]) ?></td>
                         <td><?php echo htmlspecialchars($row["count_questions"]) ?></td>
                         <td><?php echo htmlspecialchars($row["count_solved_questions"]) ?></td>
