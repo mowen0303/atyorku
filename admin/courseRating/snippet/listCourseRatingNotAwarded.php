@@ -20,13 +20,14 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                     <th width="8%">科目</th>
                     <th width="8%">用户</th>
                     <th width="8%">教授</th>
-                    <th width="5%">内容</th>
-                    <th width="5%">作业</th>
-                    <th width="5%">考试</th>
-                    <th width="5%">成绩</th>
+                    <th width="3%">内容</th>
+                    <th width="3%">作业</th>
+                    <th width="3%">考试</th>
+                    <th width="3%">成绩</th>
                     <th width="6%">学期</th>
-                    <th width="26%">评论</th>
-                    <th width="14%">操作</th>
+                    <th width="20%">评论</th>
+                    <th width="16%">课程总结</th>
+                    <th width="12%">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -50,6 +51,7 @@ $courseRatingModel = new \admin\courseRating\CourseRatingModel();
                         <td><?php echo htmlspecialchars($row["grade"]) ?></td>
                         <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
                         <td><?php echo htmlspecialchars($row["comment"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["content_summary"]) ?></td>
                         <td>
                             <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="0">奖励0积分</a>
                             <a class="btn obtainBtn" href="#" data-id="<?php echo htmlspecialchars($row['id'])?>" data-credit="3">奖励3积分</a>

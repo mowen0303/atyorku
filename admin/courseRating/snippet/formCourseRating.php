@@ -131,6 +131,10 @@ $userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("u
                 <label>评论<i>*</i></label>
                 <textarea class="input input-textarea" name="comment" placeholder="说一说对此门课的看法吧。。。"><?php echo htmlspecialchars(BasicTool::get('comment')) ?></textarea>
             </div>
+            <div>
+                <label>课程内容总结</label>
+                <textarea class="input input-textarea" name="content_summary" placeholder="写一些对此门课的内容总结吧。。。"><?php echo htmlspecialchars(BasicTool::get('content_summary')) ?></textarea>
+            </div>
         </section>
         <footer class="submitBox">
             <input type="submit" value="提交" class="btn">

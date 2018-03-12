@@ -58,12 +58,13 @@ if(!$queryUserName && !$queryCourseCode){
                     <th width="8%">科目</th>
                     <th width="8%">用户</th>
                     <th width="8%">教授</th>
-                    <th width="5%">内容</th>
-                    <th width="5%">作业</th>
-                    <th width="5%">考试</th>
-                    <th width="5%">成绩</th>
-                    <th width="10%">学期</th>
-                    <th width="26%">评论</th>
+                    <th width="3%">内容</th>
+                    <th width="3%">作业</th>
+                    <th width="3%">考试</th>
+                    <th width="3%">成绩</th>
+                    <th width="6%">学期</th>
+                    <th width="20%">评论</th>
+                    <th width="18%">课程总结</th>
                     <th width="10%">操作</th>
                 </tr>
                 </thead>
@@ -104,6 +105,7 @@ if(!$queryUserName && !$queryCourseCode){
                         <td><?php echo htmlspecialchars($row["grade"]) ?></td>
                         <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
                         <td><?php echo htmlspecialchars($row["comment"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["content_summary"]) ?></td>
                         <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo htmlspecialchars($argument)?>">修改</a></td>
                     </tr>
                 <?php

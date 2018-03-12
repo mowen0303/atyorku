@@ -162,11 +162,12 @@ class CourseRatingModel extends Model
      * @param $comment comment to the course
      * @param $year attended year
      * @param $term attended term
+     * @param $contentSummary 课程内容总结
      * @param $id modified course rating id (required when for 'update')
      * @return bool
      * @throws Exception ValidationExceptions Use try catch
      */
-    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade='', $comment, $year, $term, $id) {
+    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade='', $comment, $year, $term, $contentSummary, $id) {
         // Validations
         $this->isValidDiff($contentDiff,false) or BasicTool::throwException("内容困难等级 ({$contentDiff}) 不存在");
         $this->isValidDiff($homeworkDiff,true) or BasicTool::throwException("作业困难等级 ({$homeworkDiff}) 不存在");
@@ -186,6 +187,7 @@ class CourseRatingModel extends Model
         $arr["comment"] = $comment;
         $arr["year"] = $year;
         $arr["term"] = $term;
+        $arr["content_summary"] = $contentSummary;
         $bool = false;
         if($flag=='add') {
             $arr["publish_time"] = time();
