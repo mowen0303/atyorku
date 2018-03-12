@@ -5,7 +5,9 @@ $courseCodeModel = new \admin\courseCode\CourseCodeModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
+    <?php
     echo '<a class="btn" href="javascript:history.go(-1);">返回</a>';
+    ?>
 </nav>
 <article class="mainBox">
     <header><h2>父类科目列表</h2></header>
