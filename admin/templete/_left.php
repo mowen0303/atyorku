@@ -40,7 +40,7 @@ if(!$userModel->isAdminLogin()){
                 <li><a href="/admin/courseRating/index.php" target="mainFrame">课评V2</a></li>
 				<li><a href="/admin/courseQuestion/" target="mainFrame">问答系统</a></li>
                 <li><a href="/admin/professor/index.php?s=listProfessor" target="mainFrame">教授管理</a></li>
-				<li><a href="/admin/user/index.php?s=listUser&isAdmin=0" target="mainFrame">用户管理</a></li>
+				<li><a href="/admin/user/index.php?s=listUser" target="mainFrame">用户管理</a></li>
 				<li><a href="/admin/map/" target="mainFrame">地图管理</a ></li>
 				<li><a href="/admin/courseCode/index.php?s=listCourseCode&parent_id=0" target="mainFrame">科目管理</a ></li>
                 <li><a href="/admin/transaction/index.php" target="mainFrame">积分记录</a ></li>

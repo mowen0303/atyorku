@@ -14,7 +14,7 @@ $signPackage = $jssdk->GetSignPackage();
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
     <title><?php echo $arr['title'] ?></title>
-    <link href="/apps/guide/css.css?1215135" rel="stylesheet" type="text/css">
+    <link href="/apps/guide/css.css?1215138" rel="stylesheet" type="text/css">
     <style type="text/css">
         #coverImgBox {
             position: absolute;
@@ -56,47 +56,43 @@ $signPackage = $jssdk->GetSignPackage();
             width: 100%;
             height: 60px;
             background: rgba(0, 0, 0, 0.92);
-            color: #ccc
+            color: #ccc;
+            display:flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        #appBox table {
-            padding: 0;
-            margin: 0;
-            width: 100%
-        }
-
-        #appBox .t1 {
-            width: 50px;
-            padding: 10px 0 0 10px
-        }
-
-        #appBox .t1 img {
-            width: 43px;
-            height: 43px;
+        #appBox img {
+            width: 46px;
+            height: 46px;
             border-radius: 6px;
+            margin:0 6px
         }
 
         #appBox .t2 {
+            flex:1;
             line-height: 1.5em;
             font-size: 12px
         }
 
-        #appBox .t2 span {
-            font-weight: bold;
+        #appBox .t2 p {
+            padding: 0;
+            margin: 0;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+            overflow:hidden;
+            line-height: 1.25em;
         }
-
-        #appBox .t3 {
-            text-align: right;
-            padding-right: 10px;
-            padding-top: 5px
-        }
-
         #appBox .t3 a {
+            display: inline-block;
+            margin:0 6px;
+            width: 50px;
+            text-align: center;
             font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            padding: 6px 5px;
             color: #ccc;
+            line-height: 1.25em;
+            padding:4px;
             text-decoration: none
         }
 
@@ -247,14 +243,9 @@ $signPackage = $jssdk->GetSignPackage();
     <!--评论组件 E-->
 </article>
 <div id="appBox" class="fix">
-    <table>
-        <tr>
-            <td class="t1"><img src="/resource/img/icon.png"></td>
-            <td class="t2"><span>AtYorkU (约克大学专属APP)</span><br>学习资料交易·教学楼导航·课程&amp;教授点评...</td>
-            <td class="t3"><a href="http://www.atyorku.ca/download_v2.html">下载 App</a></td>
-            <!--https://itunes.apple.com/us/app/atyorku/id1137850622?l=zh&ls=1&mt=8-->
-        </tr>
-    </table>
+    <div><img src="/resource/img/icon.png"></div>
+    <div class="t2"><p>学习资料 · 考点回忆  ·  作业问答</p><p>课程点评 · 找教学楼 · 同学圈</p><p><b>AtYorkU -约克大学专属APP</b></p></div>
+    <div class="t3"><a href="http://www.atyorku.ca/download_v2.html">下载<br>App</a></div>
 </div>
 
 <?php

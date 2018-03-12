@@ -1,6 +1,6 @@
 <?php
 $userModel = new \admin\user\UserModel();
-$isAdmin = BasicTool::get('isAdmin');
+$isAdmin = BasicTool::get('isAdmin') ?: false;
 $orderBy = BasicTool::get('orderBy');
 $classId = BasicTool::get('classId') ? BasicTool::get('classId') : false;
 ?>

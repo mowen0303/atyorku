@@ -138,20 +138,25 @@ class UserModel extends Model {
      * user_class        | id | user_class_id | name | pwd | alias  | gender | blocktime  | blockreason |
      *
      */
-    public function getListOfUser($isAdmin, $userClass = false,$orderBy = false, $pageSize = 40) {
+    public function getListOfUser($isAdmin = false, $userClass = false,$orderBy = false, $pageSize = 40) {
         // user * user_class          | id | user_class_id | name | img | pwd |alias | gender | blocktime | blockreason |title | is_admin | authority |
 
-        $condition = "";
+        $condition = " true ";
         $orderCondition = "";
+
+        if($isAdmin !== false){
+            $condition .= "AND is_admin in ({$isAdmin}) ";
+        }
+
         if ($userClass !== false) {
-            $condition .= "AND u_c.id = $userClass";
+            $condition .= "AND u_c.id = $userClass ";
         }
         if ($orderBy) {
             $orderCondition .= "u.{$orderBy} DESC,";
         }
         $table = 'user';
-        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
-        $countSql = "SELECT COUNT(*) FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE is_admin in ({$isAdmin}) {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
+        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE  {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
+        $countSql = "SELECT COUNT(*) FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
         return parent::getListWithPage($table, $sql, $countSql, $pageSize);
     }
 
@@ -491,7 +496,6 @@ class UserModel extends Model {
      */
     public function logoutDevice() {
         $uid = $this->userId;
-
         $sql = "UPDATE user SET device = '0' WHERE id = {$uid}";
         $this->sqltool->query($sql);
     }
@@ -689,7 +693,7 @@ class UserModel extends Model {
         return $this->sqltool->getRowBySql($sql)['id'];
     }
 
-    public function updateDevice($uid,$deviceType,$deviceToken){
+     public function updateDevice($uid,$deviceType,$deviceToken){
         if(!$this->userId) return false;
         $sql = "UPDATE user SET device = '0' WHERE device in ('{$deviceToken}')";
         $this->sqltool->query($sql) or BasicTool::throwException("清理设备失败");
@@ -745,6 +749,8 @@ class UserModel extends Model {
             $this->errorMsg = "更新用户领取状态出错";
             return false;
         }
+
+
     }
 }
 

@@ -1,10 +1,10 @@
 *:focus { outline: none;}
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
-body,button,input,select,textarea{color: rgb(89, 89, 89);font-size:15px; letter-spacing: 2px; line-height: 1.75em;font-family: "PingFangSC-light","微软雅黑",Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica}
+body,button,input,select,textarea{color: rgb(89, 89, 89);font-size:15px; line-height: 1.75em;font-family: "PingFangSC-light","微软雅黑",Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica}
 #container {max-width:700px; margin:0 auto; overflow: hidden;white-space:normal; /*word-break:break-all;text-align:justify;*/ background: #fefefe;}
+.context {letter-spacing: 2px;}
 a { color:  #c91448}
-b {color:#333}
 h1,h2,h3,h4,h5,h6 { font-weight: normal;letter-spacing: 1px; }
 h3,h4,h5,h6 { margin-top:2em}
 h1{font-size:1.4em; color: #2a2a2a;line-height:1.4em}
