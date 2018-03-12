@@ -60,20 +60,15 @@ function showArrays(event) {
         // Since this polygon has only one path, we can call getPath() to return the
         // MVCArray of LatLngs.
         var vertices = this.getPath();
-
-        // var contentString = '<b>点击点坐标: </b><br><br>' + event.latLng.lat() + ',' + event.latLng.lng() +
-        //     '<br><br><br><br><b>形状坐标: </b><br>';
-        var contentString = "";
+        var contentString = event.latLng.lat() + ',' + event.latLng.lng() + '|';
         // Iterate over the vertices.
         for (var i =0; i < vertices.getLength(); i++) {
           var xy = vertices.getAt(i);
           contentString += xy.lat() + ',' + xy.lng() + ';';
         }
-
         // Replace the info window's content and position.
         $("#ta").val(contentString)
         //infoWindow.setContent(contentString);
-
       }
 
 function drawPolygon(polygon) {

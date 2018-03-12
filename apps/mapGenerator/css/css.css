@@ -16,7 +16,7 @@ html, body {
     background: #fff
 }
 #ea * { display: block; width: 200px; border:0; margin:0; padding:0}
-#ea textarea { height: 200px; border-top: 5px solid #ccc;border-bottom: 5px solid #ccc}
+#ea textarea { height: 100px; border-top: 5px solid #ccc;border-bottom: 5px solid #ccc}
 #ea button {  width: 200px; height: 30px; cursor: pointer;}
 
 #container {
