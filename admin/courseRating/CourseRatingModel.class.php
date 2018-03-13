@@ -181,9 +181,9 @@ class CourseRatingModel extends Model
         $arr["user_id"] = $userId;
         $arr["prof_id"] = $profId;
         $arr["content_diff"] = $contentDiff;
-        $arr["homework_diff"] = $homeworkDiff;
-        $arr["test_diff"] = $testDiff;
-        $arr["grade"] = $grade;
+        $arr["homework_diff"] = $homeworkDiff?:0;
+        $arr["test_diff"] = $testDiff?:0;
+        $arr["grade"] = $grade?:"";
         $arr["comment"] = $comment;
         $arr["year"] = $year;
         $arr["term"] = $term;

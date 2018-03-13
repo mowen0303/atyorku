@@ -13,7 +13,7 @@ $queryCourseCode = BasicTool::get("course_code_id");
         if($queryUserName || $queryCourseCode){
             echo '<a class="btn" href="javascript:history.go(-1);">返回</a>';
         } else {
-            echo '<a class="btn" href="index.php?s=listCourseCode">科目搜索</a>
+            echo '<a class="btn" href="index.php?s=listCourseCode">大类索引</a>
     <a class="btn" href="index.php?s=listCourseRatingNotAwarded">未奖励的课评</a>
     <a class="btn" href="index.php?s=listCourseProfReport">科目教授报告表</a>
     <a class="btn" href="index.php?s=listCourseReport">科目报告表</a>

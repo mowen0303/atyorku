@@ -128,13 +128,14 @@ $userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("u
                 </div>
             </div>
             <div>
-                <label>评论<i>*</i></label>
-                <textarea class="input input-textarea" name="comment" placeholder="说一说对此门课的看法吧。。。"><?php echo htmlspecialchars(BasicTool::get('comment')) ?></textarea>
+                <label>课程内容总结</label>
+                <textarea class="input input-textarea" name="content_summary" placeholder="这个课主要是学什么，这个教授是如何分配分数比重的，这个课怎么复习等等"><?php echo htmlspecialchars(BasicTool::get('content_summary')) ?></textarea>
             </div>
             <div>
-                <label>课程内容总结</label>
-                <textarea class="input input-textarea" name="content_summary" placeholder="写一些对此门课的内容总结吧。。。"><?php echo htmlspecialchars(BasicTool::get('content_summary')) ?></textarea>
+                <label>教授点评<i>*</i></label>
+                <textarea class="input input-textarea" name="comment" placeholder="点评下这个教授吧，例如：课讲的好不好，有没有口音，出题难不难，阅卷严不严，推不推荐，等等"><?php echo htmlspecialchars(BasicTool::get('comment')) ?></textarea>
             </div>
+
         </section>
         <footer class="submitBox">
             <input type="submit" value="提交" class="btn">

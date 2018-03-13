@@ -415,13 +415,13 @@ function modifyCourseRating($echoType = "normal") {
         $profId = $professorModel->getProfessorIdByFullName($profName);
         $profId or BasicTool::throwException("教授名称格式错误");
         $contentDiff = BasicTool::post("content_diff", "内容难度不能为空");
-        $homeworkDiff = BasicTool::post("homework_diff")?:0;
-        $testDiff = BasicTool::post("test_diff")?:0;
-        $grade = BasicTool::post("grade")?:"";
+        $homeworkDiff = BasicTool::post("homework_diff");
+        $testDiff = BasicTool::post("test_diff");
+        $grade = BasicTool::post("grade");
         $year = BasicTool::post("year","学年不能为空");
         $term = BasicTool::post("term","学期不能为空");
         $comment = BasicTool::post("comment", "课评评论不能为空");
-        $contentSummary = BasicTool::post("content_summary") ?: "";
+        $contentSummary = BasicTool::post("content_summary");
 
         $courseRatingUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
         // 执行
