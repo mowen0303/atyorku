@@ -25,14 +25,71 @@ $queryCourseCode = BasicTool::get("course_code_id");
 <?php
 if(!$queryUserName && !$queryCourseCode){
 ?>
+<script>
+    function parseCourseCodeFromString(str){
+        var arr = str.split(/(^[a-zA-Z]+)/).slice(1);
+        var parent=arr[0]?arr[0].trim():"";
+        var child = "";
+        if(parent.length===0 && str.length>0){
+            child = str;
+        }else if(arr[1]){
+            child=arr[1].trim();
+        }
+        return [parent,child];
+    }
+
+    function handleQuery(e){
+        var e = document.getElementById("querySelect");
+        if(e.options[e.selectedIndex].value==="course_code"){
+            var str = $("input[name=search_value]").val().trim();
+            if(str.length===0){return;}
+            var arr = parseCourseCodeFromString(str);
+            $.get("/admin/courseCode/courseCodeController.php?action=getCourseCodeByStringWithJson&parent="+arr[0]+"&child="+arr[1],function(data){
+                data = JSON.parse(data);
+                if(data.result != null && data.result['course_child_id'] != null){
+                    $("input[name=user_name]").val(null);
+                    $("input[name=course_code_id]").val(data.result['course_child_id']);
+                    document.getElementById("queryForm").submit();
+                }else{
+                    alert("未找到该科目");
+                }
+            });
+        } else {
+            $("input[name=course_code_id]").val(null);
+            $("input[name=user_name]").val($("input[name=search_value]").val());
+            document.getElementById("queryForm").submit();
+        }
+
+    }
+</script>
 <article class="mainBox">
-    <form action="index.php?s=listCourseRating" method="get">
+    <form id="queryForm" action="index.php?s=listCourseRating" method="get">
         <header>
             <h2>查询用户课评记录</h2>
         </header>
-        <section class="formRow">
-            <input class="input" placeholder="用户名邮箱" type="text" name="user_name" value="">
-            <input class="btn btn-center" type="submit" title="查询课评记录" value="查询课评记录">
+        <section>
+            <table width="100%">
+                <tbody>
+                <tr>
+                    <td width="180px">
+                        <select id="querySelect" class="input input-select input-50 selectDefault" name="search_type" defvalue="<?php echo htmlspecialchars(BasicTool::get("search_type")) ?>">
+                            <option value="course_code">科目名称</option>
+                            <option value="username">用户名邮箱</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="user_name" style="display:none;">
+                        <input type="text" name="course_code_id" style="display:none;">
+                        <input class="input" type="text" name="search_value" placeholder="输入对应搜索信息" style="margin-left:16px;" />
+                    </td>
+                    <td width="150px">
+                        <a><input type="submit" value="搜索" class="btn" style="width:110px; float:right;" onclick="handleQuery(); return false;"></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+<!--            <input class="input" placeholder="用户名邮箱" type="text" name="user_name" value="">-->
+<!--            <input class="btn btn-center" type="submit" title="查询课评记录" value="查询课评记录">-->
         </section>
     </form>
 </article>

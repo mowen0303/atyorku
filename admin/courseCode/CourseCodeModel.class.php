@@ -226,7 +226,26 @@ class CourseCodeModel extends Model
         return $this->updateRowById($this->table, $id, $arr);
     }
 
-
+    /**
+     * split string into course code parent and child
+     * @param $str query string
+     * @return array [0 => course_parent_string, 1 => course_child_string]
+     */
+    public static function splitStringToCourseCode($str) {
+        $str = trim($str);
+        $parent = "";
+        $child = "";
+        $arr = [];
+        preg_match('/^[a-zA-Z]+/',$str, $arr);
+        if(sizeof($arr)>0){
+            $parent = $arr[0];
+        }else{
+            $arr[0] = "";
+        }
+        $child = substr($str, strlen($parent));
+        $arr[1] = $child;
+        return $arr;
+    }
 
 }
 
