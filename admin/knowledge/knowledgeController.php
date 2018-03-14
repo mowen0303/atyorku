@@ -202,7 +202,7 @@ function buyKnowledge($echoType = "normal"){
         $id = BasicTool::post("id","请指定回忆录id");
         $knowledge = $knowledgeModel->getKnowledgeById($id) or BasicTool::throwException("回忆录不存在");
         !$transactionModel->isPurchased($currentUser->userId,"knowledge",$id) or BasicTool::throwException("已购买当前回忆录");
-        $transactionModel->buy($currentUser->userId,$knowledge["seller_user_id"],$knowledge["amount"],"购买考试回忆录","出售考试回忆录","knowledge",$id,0,0) or BasicTool::throwException($transactionModel->errorMsg);
+        $transactionModel->buy($currentUser->userId,$knowledge["seller_user_id"],$knowledge["price"],"购买考试回忆录","出售考试回忆录","knowledge",$id,0,0) or BasicTool::throwException($transactionModel->errorMsg);
         $knowledgeModel->updateCountSold($id);
         if ($echoType == "normal") {
             BasicTool::echoMessage("购买成功");

@@ -255,8 +255,8 @@ class TransactionModel extends Model {
         return $this->sqltool->getInsertId();
     }
     function isPurchased($user_id,$section_name,$section_id){
-        $sql = "SELECT COUNT(*) AS count FROM transaction WHERE user_id in ({$user_id}) AND section_name in ({$section_name}) AND section_id in ({$section_id})";
-        $count = $this->sqltool->getRowBySql($sql);
+        $sql = "SELECT COUNT(*) AS count FROM transaction WHERE user_id in ({$user_id}) AND section_name in ('{$section_name}') AND section_id in ({$section_id})";
+        $count = $this->sqltool->getRowBySql($sql)["count"];
         if ($count)
             return true;
         else
