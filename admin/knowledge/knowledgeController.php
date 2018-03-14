@@ -9,7 +9,6 @@ $profModel = new \admin\professor\ProfessorModel();
 $transactionModel = new \admin\transaction\TransactionModel();
 call_user_func(BasicTool::get('action'));
 
-
 /**添加活动
  * POST
  * @param knowledge_category_id 考试类别id
@@ -107,7 +106,7 @@ function addKnowledgeWithJson() {
  * @param term_year
  * @param term_semester
  * @param page 页数
- * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseProfNameWithJson
+ * localhost/admin/knowledge/knowledgeController.php?action=getKnowledgeByCourseCodeProfNameWithJson
  */
 function getKnowledgeByCourseCodeProfNameWithJson(){
     global $knowledgeModel, $profModel,$currentUser;
@@ -118,11 +117,13 @@ function getKnowledgeByCourseCodeProfNameWithJson(){
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $term_year = BasicTool::get("term_year");
         $term_semester = BasicTool::get("term_semester");
-        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId,$currentUser->isUserHasAuthority("ADMIN"),$course_code_parent,$course_code_child,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
+        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId?$currentUser->userId:0,$currentUser->isUserHasAuthority("ADMIN"),$course_code_parent,$course_code_child,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
         $results = [];
         foreach ($result as $knowledge) {
             $knowledge["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
             $knowledge["enroll_year"] = BasicTool::translateEnrollYear($knowledge["enroll_year"]);
+            $knowledge["is_admin"] = $currentUser->isUserHasAuthority("ADMIN")?1:"";
+            $knowledge["is_seller"] = $currentUser->userId == $knowledge["seller_user_id"]?1:"";
             array_push($results, $knowledge);
         }
         BasicTool::echoJson(1, "查询成功", $results);
@@ -200,13 +201,18 @@ function buyKnowledge($echoType = "normal"){
     try {
         $id = BasicTool::post("id","请指定回忆录id");
         $knowledge = $knowledgeModel->getKnowledgeById($id) or BasicTool::throwException("回忆录不存在");
+        !$transactionModel->isPurchased($currentUser->userId,"knowledge",$id) or BasicTool::throwException("已购买当前回忆录");
         $transactionModel->buy($currentUser->userId,$knowledge["seller_user_id"],$knowledge["amount"],"购买考试回忆录","出售考试回忆录","knowledge",$id,0,0) or BasicTool::throwException($transactionModel->errorMsg);
         $knowledgeModel->updateCountSold($id);
         if ($echoType == "normal") {
             BasicTool::echoMessage("购买成功");
         }
         else {
-            BasicTool::echoJson(1, "购买成功");
+            $result = $knowledgeModel->getKnowledgeById($id);
+            $result["is_purchased"] = 1;
+            $result["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
+            $result["enroll_year"] = BasicTool::translateEnrollYear($knowledge["enroll_year"]);
+            BasicTool::echoJson(1, "购买成功",$result);
         }
     }
     catch (Exception $e) {
@@ -224,4 +230,9 @@ function buyKnowledge($echoType = "normal"){
  */
 function buyKnowledgeWithJson(){
     buyKnowledge("json");
+}
+function getKnowledgeByIdWithJson(){
+    global $knowledgeModel;
+    $id = BasicTool::get("id");
+    BasicTool::echoJson(1,"",$knowledgeModel->getKnowledgeById($id));
 }
