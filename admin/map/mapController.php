@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $mapModel = new \admin\map\MapModel();
-$currentUser = new admin\user\UserModel();
+$currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
 /**
@@ -27,6 +27,35 @@ function getAllBuildings(){
     }
 }
 
-function addBuilding(){
+function editBuilding(){
+    global $mapModel,$currentUser;
+    try{
 
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足,添加失败");
+
+        $id = BasicTool::post("id")?:0;
+        $abbreviation=BasicTool::post("abbreviation","大楼缩写不能为空");
+        $fullName=BasicTool::post("full_name","大楼全名不能为空");
+        $coordinates=BasicTool::post("coordinates","大楼坐标和形状坐标不能为空");
+        $description=BasicTool::post("description");
+
+        $mapModel->editBuilding($id,$abbreviation,$fullName,$description,$coordinates) or BasicTool::throwException($mapModel->errorMsg);
+        $mapModel->changeMapDataVersion() or BasicTool::throwException($mapModel->errorMsg);
+        BasicTool::echoMessage("成功","/admin/map/");
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+    }
+}
+
+
+function deleteBuildingByIDs(){
+    global $mapModel;
+    try{
+        $IDs = BasicTool::post("ids","IDs不能为空");
+        $mapModel->deleteBuildingByIDs($IDs);
+        $mapModel->changeMapDataVersion() or BasicTool::throwException($mapModel->errorMsg);
+        BasicTool::echoMessage("删除成功","/admin/map/");
+    }catch(Exception $e){
+        BasicTool::echoMessage($e->getMessage(),$_SERVER["HTTP_REFERER"]);
+    }
 }

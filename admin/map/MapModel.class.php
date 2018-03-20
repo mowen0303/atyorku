@@ -4,14 +4,33 @@ use \Model as Model;
 
 class MapModel extends Model {
 
+    const VERSION_FILE = "snippet/version.json";
+
     /**
      * 获取大楼数据版本号
      * @return bool|mixed
      */
     public function getMapDataVersion() {
-        $versionJSON = json_decode(file_get_contents("version.json"));
-        if ($versionJSON) {
+        $versionJSON = json_decode(file_get_contents(self::VERSION_FILE));
+        if ($versionJSON->version) {
             return $versionJSON;
+        } else {
+            $this->errorMsg = "获取版本号失败";
+            return false;
+        }
+    }
+
+    public function changeMapDataVersion(){
+        $versionJSON = json_decode(file_get_contents(self::VERSION_FILE));
+        if ($versionJSON->version) {
+            $versionJSON->version+=1;
+            $versionJSON->time = date("Y-m-d H:m:s");
+            if(file_put_contents(self::VERSION_FILE,json_encode($versionJSON))){
+                return true;
+            }else{
+                $this->errorMsg = "地图版本更新失败";
+                return false;
+            }
         } else {
             $this->errorMsg = "获取版本号失败";
             return false;
@@ -23,7 +42,7 @@ class MapModel extends Model {
      * @return array|bool
      */
     public function getAllBuildings(){
-        $sql = "SELECT * FROM map";
+        $sql = "SELECT * FROM map ORDER BY id DESC";
         $result = $this->getListWithPage("map",$sql,null,500);
         if($result){
             return $result;
@@ -33,8 +52,34 @@ class MapModel extends Model {
         }
     }
 
-    public function addBuilding($shortName,$fullName,$lan){
+    public function getBuildingByID($id){
+        $sql = "SELECT * FROM map WHERE id in ({$id})";
+        return $this->sqltool->getRowBySql($sql);
+    }
 
+    //如果id有值，更新数据，无值则添加新数据
+    public function editBuilding($id,$abbreviation,$fullName,$description,$coordinates){
+        $description = $description?:"暂无简介";
+        $arr['abbreviation'] = strtoupper($abbreviation);
+        $arr['full_name'] = ucwords($fullName);
+        $arr['description'] = $description;
+        $arr['coordinates'] = $coordinates;
+        if($id){
+            return $this->updateRowById('map', $id, $arr);
+        }else{
+            return $this->addRow('map', $arr);
+        }
+    }
+
+
+
+    //IDs 1,2,3,4 或 1
+    public function deleteBuildingByIDs($IDs){
+         if(is_array($IDs)){
+             $IDs = implode(",",$IDs);
+         }
+         $sql = "DELETE FROM map WHERE id IN ({$IDs})";
+         return $this->sqltool->query($sql);
     }
 
 }

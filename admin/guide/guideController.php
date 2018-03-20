@@ -81,7 +81,7 @@ function updateGuide(){
 
         $guideID = BasicTool::post('guide_id') or BasicTool::throwException("缺少Guide ID");
         $guideClassID = BasicTool::post('guide_class_id', '所属指南组不能为空');
-        $title = BasicTool::post('title', '标题不能为空',100);
+        $title = BasicTool::post('title', '标题不能为空',255);
         $content = $_POST['content'];
         $contentLength = strlen($content);
         $contentLength < 16777215 or BasicTool::throwException("内容超出字符限制{$contentLength}/65500");
