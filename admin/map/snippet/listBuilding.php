@@ -10,7 +10,7 @@ $version = $mapModel->getMapDataVersion();
     <h1><?php echo $pageTitle ?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="http://www.yorku.ca/web/maps/" target="_blank">约克官网地图</a><a class="btn" href="/apps/mapGenerator/index.html" target="_blank">地图标记工具</a><a class="btn" href="index.php?s=editBuilding">添加新教学楼</a>
+    <a class="btn" href="http://maps.info.yorku.ca/keele-campus/" target="_blank">PDF地图</a><a class="btn" href="http://www.yorku.ca/web/maps/" target="_blank">约克官网地图</a><a class="btn" href="/apps/mapGenerator/index.html" target="_blank">地图标记工具</a><a class="btn" href="index.php?s=editBuilding">添加新教学楼</a>
 </nav>
 <article class="mainBox">
     <form action="index.php" method="get">
