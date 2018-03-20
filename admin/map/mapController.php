@@ -7,7 +7,7 @@ call_user_func(BasicTool::get('action'));
 /**
  * 获取大楼数据版本号
  */
-function getVersion() {
+function getVersionWithJson() {
     global $mapModel;
     try {
         $version = $mapModel->getMapDataVersion() or BasicTool::throwException($mapModel->errorMsg);
@@ -17,11 +17,11 @@ function getVersion() {
     }
 }
 
-function getAllBuildings(){
+function getAllBuildingsWithJson(){
     global $mapModel;
     try {
-        $version = $mapModel->getAllBuildings() or BasicTool::throwException($mapModel->errorMsg);
-        BasicTool::echoJson(1, "成功", $version);
+        $result = $mapModel->getAllBuildings() or BasicTool::throwException($mapModel->errorMsg);
+        BasicTool::echoJson(1, "成功", $result);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
