@@ -29,6 +29,7 @@ $version = $mapModel->getMapDataVersion();
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th>ID</th>
+                    <th>地图CODE</th>
                     <th>缩写</th>
                     <th>全称</th>
                     <th width="35%">坐标</th>
@@ -43,6 +44,7 @@ $version = $mapModel->getMapDataVersion();
                     <tr>
                         <td><input type="checkbox" class="cBox" name="ids[]" value="<?php echo $building['id'] ?>"></td>
                         <td><?php echo $building['id'] ?></td>
+                        <td><?php echo $building['code'] ?></td>
                         <td><?php echo $building['abbreviation'] ?></td>
                         <td><?php echo $building['full_name'] ?></td>
                         <td><?php echo $building['coordinates'] ?></td>

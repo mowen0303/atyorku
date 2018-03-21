@@ -57,9 +57,19 @@ class MapModel extends Model {
         return $this->sqltool->getRowBySql($sql);
     }
 
-    //如果id有值，更新数据，无值则添加新数据
-    public function editBuilding($id,$abbreviation,$fullName,$description,$coordinates){
+    /**
+     * 添加/编辑 大楼数据
+     * @param $id               如果id无值，则添加一个新楼，有值则更新数据
+     * @param $code             大楼的
+     * @param $abbreviation
+     * @param $fullName
+     * @param $description
+     * @param $coordinates
+     * @return bool
+     */
+    public function editBuilding($id,$code,$abbreviation,$fullName,$description,$coordinates){
         $description = $description?:"暂无简介";
+        $arr['code'] = $code;
         $arr['abbreviation'] = strtoupper($abbreviation);
         $arr['full_name'] = ucwords($fullName);
         $arr['description'] = $description;
@@ -72,8 +82,11 @@ class MapModel extends Model {
     }
 
 
-
-    //IDs 1,2,3,4 或 1
+    /**
+     * 删除一条或多条大楼数据
+     * @param $IDs                      支持数组或单值，如果是一个id数组，则删掉多条
+     * @return bool|\mysqli_result
+     */
     public function deleteBuildingByIDs($IDs){
          if(is_array($IDs)){
              $IDs = implode(",",$IDs);

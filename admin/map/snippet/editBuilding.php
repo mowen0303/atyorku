@@ -14,6 +14,10 @@ $row = $id ? $mapModel->getBuildingByID($id) : [];
         <input type="hidden" name="id" value="<?php echo $id?>">
         <section class="formBox">
             <div>
+                <label>地图CODE<i>*</i></label>
+                <input class="input" type="text" name="code" id="init" value="<?php echo $row['code'] ?>">
+            </div>
+            <div>
                 <label>大楼缩写<i>*</i></label>
                 <input class="input" type="text" name="abbreviation" id="init" value="<?php echo $row['abbreviation'] ?>">
             </div>
