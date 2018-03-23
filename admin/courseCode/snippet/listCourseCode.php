@@ -8,6 +8,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
 </header>
 <nav class="mainNav">
     <?php if($parentId>0) echo '<a class="btn" href="index.php?s=listCourseCode&parent_id=0">返回父类科目</a>';?>
+    <?php if(!$parentId>0) echo '<a class="btn" href="/admin/xmlParser/index.php?s=updateCourseCodeTable">数据集更新</a>';?>
     <a class="btn" href="index.php?s=formCourseCode&flag=add&parent_id=<?php echo $parentId ?>">添加新<?php echo $typeStr ?>科目</a>
 </nav>
 <article class="mainBox">

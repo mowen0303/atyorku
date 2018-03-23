@@ -3,7 +3,7 @@ namespace admin\xmlParser;   //-- 注意 --//
 
 use \Model as Model;
 
-class XMLParser extends Model
+class XMLParserModel extends Model
 {
     /**更新数据表
      * @param array $array
