@@ -35,12 +35,11 @@ function editBuilding(){
 
         $id = BasicTool::post("id")?:0;
         $code=BasicTool::post("code","大楼代号CODE不能为空",3);
-        $abbreviation=$_POST["abbreviation"];
-        $abbreviation or BasicTool::throwException("大楼缩写不能为空");
+        $abbreviation=BasicTool::post("abbreviation",false,6);
         $fullName=BasicTool::post("full_name","大楼全名不能为空");
         $coordinates=BasicTool::post("coordinates","大楼坐标和形状坐标不能为空");
         $description=BasicTool::post("description");
-
+        !$mapModel->checkUniqueByFullName($fullName,$id) or BasicTool::throwException("Building已经存在：{$fullName}");
         $mapModel->editBuilding($id,$code,$abbreviation,$fullName,$description,$coordinates) or BasicTool::throwException($mapModel->errorMsg);
         $mapModel->changeMapDataVersion() or BasicTool::throwException($mapModel->errorMsg);
         BasicTool::echoMessage("成功","/admin/map/");

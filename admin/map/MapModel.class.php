@@ -70,7 +70,7 @@ class MapModel extends Model {
     public function editBuilding($id,$code,$abbreviation,$fullName,$description,$coordinates){
         $description = $description?:"暂无简介";
         $arr['code'] = $code;
-        $arr['abbreviation'] = strtoupper($abbreviation);
+        $arr['abbreviation'] = $abbreviation?strtoupper($abbreviation):"";
         $arr['full_name'] = ucwords($fullName);
         $arr['description'] = $description;
         $arr['coordinates'] = $coordinates;
@@ -93,6 +93,10 @@ class MapModel extends Model {
          }
          $sql = "DELETE FROM map WHERE id IN ({$IDs})";
          return $this->sqltool->query($sql);
+    }
+
+    public function checkUniqueByFullName($fullName,$id){
+        return $this->isExistByFieldValue("map","full_name",$fullName,$id);
     }
 
 }
