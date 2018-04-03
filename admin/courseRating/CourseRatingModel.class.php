@@ -331,9 +331,10 @@ class CourseRatingModel extends Model
     */
     public function getListOfCourseReports($pageSize=20,$courseParentTitle=false,$courseChildTitle=false) {
         $q = "";
-        $order = "ORDER BY cr.rating_count>0 DESC";
+        //$order = "ORDER BY cr.rating_count>0 DESC";
+        $order = "ORDER BY ";
         if($courseParentTitle) {
-            $order .= ", c2.title, c1.title";
+            $order .= "c2.title, c1.title";
             if($courseChildTitle){
                 // fixed parent, has child title
                 $q .= " AND c2.title='{$courseParentTitle}' AND c1.title LIKE '{$courseChildTitle}%'";
@@ -344,7 +345,7 @@ class CourseRatingModel extends Model
             $order .= ", cr.update_time DESC, c2.title, c1.title";
         }
 
-        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
+        $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title,c1.description, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
         $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
         $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
         return $arr;
@@ -699,7 +700,7 @@ class CourseRatingModel extends Model
      * @return bool|\mysqli_result
      */
     private function generateAllProfessorReports() {
-        $sql = "INSERT INTO professor_report (prof_id, homework_diff, test_diff, content_diff, overall_diff, recommendation_ratio) SELECT p.id, 0, 0, 0, 0, 0 FROM professor p WHERE p.id NOT IN (SELECT pr.prof_id FROM professor_report pr)";
+        $sql = "INSERT INTO professor_report (prof_id, homework_diff, test_diff, content_diff, overall_diff) SELECT p.id, 0, 0, 0, 0 FROM professor p WHERE p.id NOT IN (SELECT pr.prof_id FROM professor_report pr)";
         $result = $this->sqltool->query($sql);
         var_dump("Affected rows: ".$this->sqltool->getAffectedRows());
         return $result;

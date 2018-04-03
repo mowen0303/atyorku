@@ -42,7 +42,7 @@ class MapModel extends Model {
      * @return array|bool
      */
     public function getAllBuildings(){
-        $sql = "SELECT * FROM map ORDER BY id DESC";
+        $sql = "SELECT * FROM map ORDER BY abbreviation='',abbreviation";
         $result = $this->getListWithPage("map",$sql,null,500);
         if($result){
             return $result;
