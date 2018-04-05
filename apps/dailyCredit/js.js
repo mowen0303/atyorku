@@ -2,6 +2,7 @@ $(document).ready(function(){
 
     //progress
     var progressAmount = $("#progress").attr("data-amount");
+    console.log(progressAmount);
     var progressVal = $("#progress").attr("data-val");
     var progressConf = {
             color: '#585858',
@@ -16,18 +17,14 @@ $(document).ready(function(){
             step: function(state, circle) {
                 circle.path.setAttribute('stroke', state.color);
                 circle.path.setAttribute('stroke-width', state.width);
-                var value = Math.round(circle.value() * progressAmount);
-                if (value === 0) {
-                  circle.setText('');
-                } else {
-                  circle.setText(value);
-                }
+                var value = circle.value().toFixed(1);
+                circle.setText(value);
             }
     }
     var bar = new ProgressBar.Circle(progress, progressConf);
     bar.text.style.fontFamily = 'DINMittelschrift';
     bar.text.style.fontSize = '2.5rem';
-    bar.animate(progressVal/5);  // Number from 0.0 to 1.0
+    bar.animate(progressVal/progressAmount);  // Number from 0.0 to 1.0
 
     //get credit
     $creditBtn = $("#creditBtn");

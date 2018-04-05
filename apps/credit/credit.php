@@ -26,11 +26,11 @@ if(!$currentUser->isLogin()){
 <body>
 <div class="creditCard">
     <div class="avatar" style="background-image:url(<?php echo $currentUser->userHeadImg?>)"></div>
-    <p class="title">总积分(点)</p>
-    <p class="point"><?php echo $transactionModel->getCredit($currentUser->userId)?>.00</p>
+    <p class="title">总积分(1积分=1人民币)</p>
+    <p class="point"><?php echo $transactionModel->getCredit($currentUser->userId)?></p>
     <div class="creditBtnBox">
-        <div class="btn_1" href="#" onclick="alert('暂不支持自动充值,请联系官方客服微信:atyorku666. (100人民币=500积分)')">积分充值</div>
-        <div class="btn_1" href="#" onclick="alert('暂不支持自动提现,请联系官方客服微信:atyorku666. (500积分=100人民币)')">提现</div>
+        <div class="btn_1" href="#" onclick="alert('暂不支持自动充值,请联系官方客服微信:atyorku666. (100人民币=100积分)')">积分充值</div>
+        <div class="btn_1" href="#" onclick="alert('暂不支持自动提现,请联系官方客服微信:atyorku666. (100积分=100人民币)')">提现</div>
     </div>
 </div>
 <div class="pageHeader">

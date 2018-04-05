@@ -12,7 +12,7 @@ $checkinTime = $userProfile["checkin_last_time"];
 $todayTime = BasicTool::getTodayTimestamp();
 $checkinState = (int) $checkinTime!=$todayTime["startTime"];
 $currentRewardCount = $checkinCount<=count($dailyDescription)?$checkinCount:count($dailyDescription);
-$currentReward =(int) $dailyDescription[$currentRewardCount-1]["credit"];
+$currentReward =(float) $dailyDescription[$currentRewardCount-1]["credit"];
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +27,7 @@ $currentReward =(int) $dailyDescription[$currentRewardCount-1]["credit"];
     <script src="js.js"></script>
 </head>
 <body>
-    <div class="progress" id="progress" data-amount="5" data-val="<?php echo $currentReward?>">
+    <div class="progress" id="progress" data-amount="1" data-val="<?php echo $currentReward?>">
         <div class="subtitle">(今日可领)</div>
     </div>
     <div class="descriptionBox">
