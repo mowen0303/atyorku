@@ -136,12 +136,12 @@ function getGuideClassListVisibleWithJson(){
 
     $arr1 = [];
     $arr1['id'] = "0";
-    $arr1['title'] = "最新";
+    $arr1['title'] = "所有文章";
     $arr1['is_del'] = "0";
     $arr1['visible'] = "0";
-    $arr1['icon'] = "/admin/resource/img/icon/h68.png";
+    $arr1['icon'] = "/admin/resource/img/icon/guideIcon/all8.png";
     $arr1['guide_class_order'] = "1";
-    $arr1['description'] = "全部";
+    $arr1['description'] = "发过的所有文章都在这里了";
     $amount = 0;
     foreach($arr2 as $row){
         foreach($row as $k => $v){
