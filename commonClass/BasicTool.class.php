@@ -132,7 +132,7 @@ class BasicTool
      * @param string $url 跳转地址
      * @param string $urlTxt 跳转按钮标题
      */
-    public static function echoWapMessage($msg)
+    public static function echoWapMessage($msg,$title=false)
     {
         include_once $_SERVER['DOCUMENT_ROOT'] . "/apps/wap/msg.php";
         die();

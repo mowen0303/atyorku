@@ -88,7 +88,7 @@ class UserModel extends Model {
             $this->authorityTitle = $arr['title'];
             $this->blockTime = $arr['blocktime'];
             $this->blockReason = $arr['blockreason'];
-            $this->major = $arr['major'];;
+            $this->major = $arr['major'];
             $this->enrollYear = $arr['enroll_year'];;
             $this->description = $arr['description'];;
             $this->credit = $arr['credit'];;
@@ -109,7 +109,7 @@ class UserModel extends Model {
      */
     public function getProfileOfUserById($id, $onlyShowBasic = false) {
         $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u_c.is_admin,u_c.authority";
-        $sql = "SELECT u.id,u.degree,u.device,u.wechat,u.user_class_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
+        $sql = "SELECT u.id,u.degree,u.checkin_count,u.checkin_last_time,u.device,u.wechat,u.user_class_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
         $row = $this->sqltool->getRowBySql($sql);
         foreach ($row as $k => $v) {
             if ($k == "enroll_year") {

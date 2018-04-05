@@ -64,24 +64,27 @@ $userId = htmlspecialchars($flag=="add" ? $userModel->userId : BasicTool::get("u
             </div>
             <div class="row">
                 <?php
-                    $diffHtml = "<option value=''>请选择难度等级</option>";
+                    $diffHtml = "";
                     for($i=1;$i<11;$i++) $diffHtml .= "<option value='{$i}'>{$i}</option>";
                 ?>
                 <div class="col-3">
                     <label>内容难度<i>*</i></label>
                     <select class="input input-select selectDefault" name="content_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('content_diff')) ?>">
+                        <option value='0'>请选择难度等级</option>
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
                 <div class="col-3">
                     <label>作业难度</label>
                     <select class="input input-select selectDefault" name="homework_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('homework_diff')) ?>">
+                        <option value='0'>无作业</option>
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>
                 <div class="col-3">
                     <label>考试难度</label>
                     <select class="input input-select selectDefault" name="test_diff" defvalue="<?php echo htmlspecialchars(BasicTool::get('test_diff')) ?>">
+                        <option value='0'>无考试</option>
                         <?php echo $diffHtml; ?>
                     </select>
                 </div>

@@ -632,7 +632,13 @@ class CourseRatingModel extends Model
             $arr["homework_diff"] = $result["avg_hw"] ?: 0.0;
             $arr["test_diff"] = $result["avg_test"] ?: 0.0;
             $arr["content_diff"] = $result["avg_content"] ?: 0.0;
-            $arr["overall_diff"] = round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/3,1);
+
+            //动态调整除数
+            $divisor = 3;
+            if($arr["homework_diff"] == 0) $divisor -= 1;
+            if($arr["test_diff"] == 0) $divisor -= 1;
+
+            $arr["overall_diff"] = round(($arr["homework_diff"] + $arr["test_diff"] + $arr["content_diff"])/$divisor,1);
             $arr["rating_count"] = $result["sum_rating"] ?: 0;
             if($table=='course_prof_report' || $table=='course_report') {
                 $arr["avg_grade"] = $result["avg_grade"] ?: 11;
