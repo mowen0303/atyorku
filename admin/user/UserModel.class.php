@@ -728,18 +728,19 @@ class UserModel extends Model {
             $checkinCount =1;
         }
 
+
         if($this->sqltool->query($sql)){
             $transactionModel = new TransactionModel();
             $creditAwardCount = count(Credit::$dailyCredit);
             $creditAward = [];
-            if($checkinCount<$creditAwardCount-1){
+            if($checkinCount<$creditAwardCount){
                 $creditAward = Credit::$dailyCredit[$checkinCount-1];
             }else{
-                $creditAward = Credit::$dailyCredit[$creditAwardCount-2];
+                $creditAward = end(Credit::$dailyCredit);
             }
             $credit = (float)$creditAward['credit'];
             $userCredit+=$credit;
-            $description = "今天是你连续登录的【第{$checkinCount}天】.你共有【{$userCredit}点】积分.  连续天数越多, 积分越多哦!!";
+            $description = "恭喜获得{$credit}点积分！今天是你连续登录的【第{$checkinCount}天】！连续天数越多, 积分越多哦！";
             if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天","dailyCredit",$uid)){
                 return [$description,$credit];
             }else{

@@ -17,14 +17,17 @@ $timeGap = $today-$checkinTime;
 if($timeGap == 0){
     $checkinState=0;
 }else if ($timeGap == 86400) {
-    echo "!23";
+
 }else{
     $checkinCount=1;
 }
 $currentRewardCount = $checkinCount<=count($dailyCredit)?$checkinCount:count($dailyCredit);
 $currentRewardCount = $checkinState?$currentRewardCount:$currentRewardCount+1;
+$currentRewardCount = $currentRewardCount>=count($dailyCredit)?count($dailyCredit):$currentRewardCount;
+
 $currentReward =(float) $dailyCredit[$currentRewardCount-1]["credit"];
-$creditAmount = end($dailyCredit)["credit"];
+$creditAmount = (float) end($dailyCredit)["credit"];
+
 ?>
 
 <!DOCTYPE html>
