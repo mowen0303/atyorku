@@ -158,7 +158,7 @@ class BasicTool
 
         if ($second < 120) {
 
-            return 刚刚发布;
+            return 刚刚;
 
         } elseif ($second < 3600) {
 
