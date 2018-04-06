@@ -167,7 +167,7 @@ class CourseRatingModel extends Model
      * @return bool
      * @throws Exception ValidationExceptions Use try catch
      */
-    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade='', $comment, $year, $term, $contentSummary, $id) {
+    public function modifyCourseRating($flag, $courseCodeId, $userId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade='', $comment, $year, $term, $contentSummary, $id=false) {
         // Validations
         $this->isValidDiff($contentDiff,false) or BasicTool::throwException("内容困难等级 ({$contentDiff}) 不存在");
         $this->isValidDiff($homeworkDiff,true) or BasicTool::throwException("作业困难等级 ({$homeworkDiff}) 不存在");

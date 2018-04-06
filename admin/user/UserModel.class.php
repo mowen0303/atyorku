@@ -718,7 +718,7 @@ class UserModel extends Model {
         $timeGap = $today-$checkinTime;
 
         if($timeGap == 0){
-            $this->errorMsg = "今日已领取过积分了哦 ^_^ 你当前共有【{$userCredit}点】积分. 连续登录天数:{$checkinCount}";
+            $this->errorMsg = "今日已领取过积分了哦 ^_^";
             return false;
         }else if ($timeGap == 86400) {
             $sql = "UPDATE user SET checkin_last_time = '{$today}', checkin_count = checkin_count+1 WHERE id IN ({$uid})";
@@ -739,7 +739,7 @@ class UserModel extends Model {
             }
             $credit = (float)$creditAward['credit'];
             $userCredit+=$credit;
-            $description = "恭喜你,领取成功! 你共有【{$userCredit}点】积分. 今天是你连续登录的第{$checkinCount}天. 连续天数越多, 积分越多哦!!";
+            $description = "今天是你连续登录的【第{$checkinCount}天】.你共有【{$userCredit}点】积分.  连续天数越多, 积分越多哦!!";
             if($transactionModel->addCredit($uid,$credit,"连续登陆第{$checkinCount}天","dailyCredit",$uid)){
                 return [$description,$credit];
             }else{

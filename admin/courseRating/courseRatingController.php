@@ -423,7 +423,7 @@ function modifyCourseRating($echoType = "normal") {
         $comment = BasicTool::post("comment", "课评评论不能为空");
         $contentSummary = BasicTool::post("content_summary");
 
-        $courseRatingUserId or BasicTool::throwException("无法找到卖家ID, 请重新登陆");
+        $courseRatingUserId or BasicTool::throwException("无法找到用户ID, 请重新登陆");
         // 执行
         if ($flag=='update') {
             $courseRatingModel->modifyCourseRating('update', $courseCodeId, $courseRatingUserId, $profId, $contentDiff, $homeworkDiff, $testDiff, $grade, $comment, $year, $term, $contentSummary, $currentCourseRating["id"]);

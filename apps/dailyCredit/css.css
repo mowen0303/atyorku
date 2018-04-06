@@ -13,17 +13,26 @@ body,button,input,select,textarea{font-size:14px; line-height: 25px;font-family:
 body { color: #484848; background-color: #f7f7f7}
 a { color:  #c91448; text-decoration:none}
 
-#progress {position: relative;width: 160px; margin:100px auto 30px auto;}
+#progress {position: relative;width: 160px; margin:70px auto 30px auto;}
     #progress .subtitle { position: absolute; bottom:30px; left:0; right: 0;text-align:center; font-size: 12px; color:#ccc}
 .progressbar-text:after {content:"积分"; font-size: 12px; padding-left: 5px;color:#ccc}
 .progressbar-text {width: 100%; text-align: center;}
 .descriptionBox {text-align: center; color:#4a4a4a}
 .btn {background: #f53053; border-radius: 23px; height:46px;width: 200px; line-height: 46px; color:#fff; margin: 2em auto; text-align: center;}
 .disableBtn {background-color: #ccc}
-.btn:active {background-color: #746dc7; transition:background-color 1s}
+.btn:active {background-color: #f53049;}
+.disableBtn:active {background-color: #ccc}
 #closeBtn {background: #f53053; border-radius: 23px; height:46px;line-height: 46px; color:#fff;  text-align: center; position: absolute; bottom: 30px; left: 30px; right: 30px;}
 #resultCard {position: absolute; background-color: #fff; border-radius: 10px; height: 350px; width: 300px; left: 50%; top:-500px; transform:translate(-50%,0); box-shadow: 0 0 40px rgba(0,0,0,0.08)}
 #resultCard h1 {text-align: center; margin-top: 1em; font-size: 1.4em; color: #4a4a4a}
 #resultCard .con { text-align: center; padding: 1em}
 .iconBox { width: 60px; margin: 0 auto; margin-top: 30px;}
 .iconBox img {width: 100%}
+
+.creditRecord {padding:20px; padding-top: 40px; color:#686868; }
+.creditRecord h1 { font-size: 1.1em; margin-bottom: 10px;  text-align: center}
+.creditRecord h2 { font-size: 1.1em; margin-bottom: 10px;  text-align: center; margin-top:1.5em}
+.creditRecord .desRow { display: flex; line-height: 1em; justify-items: center; align-items: center; margin-top: 10px; background: #f2f2f2;  border-radius: 50px; padding:10px 15px}
+.creditRecord .desRow span { flex:1;}
+.creditRecord .desRow i { display: inline-block; padding-right: 10px;font-size: 1.2em; font-family: 'DINMittelschrift';font-style: normal;}
+.creditRecord .date { color:#bbb; text-align:center; font-style: normal;font-size: 12px; padding-top: 4px}
