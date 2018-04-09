@@ -352,6 +352,28 @@ class CourseRatingModel extends Model
     }
 
     /**
+     * 根据parent id 获取子分类
+     * @param $parentId
+     * @param int $pageSize
+     * @return array
+     */
+    public function getListOfCourseReportsByParentId($parentId,$orderField,$orderModel,$pageSize){
+
+        $q = " AND c1.parent_id in ($parentId)";
+        if($orderField=="title"){
+            $order = "ORDER BY c2.title, c1.title {$orderModel}";
+        }else if($orderField=="diff"){
+            $order = "ORDER BY nodata,cr.overall_diff {$orderModel}";
+        }
+
+
+        $sql = "SELECT cr.*,cr.overall_diff=0 as nodata, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title,c1.description, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
+        $countSql = "SELECT COUNT(*) FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q}";
+        $arr = parent::getListWithPage("course_report", $sql, $countSql, $pageSize);
+        return $arr;
+    }
+
+    /**
     * 获取一页教授报告
     * @return 二维数组
     */

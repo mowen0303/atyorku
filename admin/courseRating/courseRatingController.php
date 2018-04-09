@@ -315,6 +315,25 @@ function getListOfCourseReportWithJson() {
 }
 
 /**
+ * JSON -  根据 parentId 获取某一页科目报告
+ * @param pageSize 每一页科目报告获取量，默认值=20
+ * @$courseParentId
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=getListOfCourseReportByParentIdWithJson&courseParentId=10&orderField=title&orderModel=desc
+ */
+function getListOfCourseReportByParentIdWithJson(){
+    global $courseRatingModel;
+    try {
+        $courseParentId = BasicTool::get('courseParentId',"缺少课程父类id");
+        $orderField = BasicTool::get('orderField',"缺少排序字段");
+        $orderModel = BasicTool::get('orderModel',"缺少排序方式");
+        $result = $courseRatingModel->getListOfCourseReportsByParentId($courseParentId,$orderField,$orderModel,30) or BasicTool::throwException("无更多内容");
+        BasicTool::echoJson(1, "成功", $result);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
+
+/**
  * JSON -  获取某一页教授报告
  * @param pageSize 每一页教授报告获取量，默认值=20
  * @param prof_name 教授名
