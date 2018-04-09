@@ -92,7 +92,7 @@ class BookModel extends Model
         if($price === null){ BasicTool::throwException("学习资料价格不能为空"); }
         $price = floatval($price);
         if($payWithCredit) {
-            $price>=50 or BasicTool::throwException("积分支付最低50积分");
+            $price>=10 or BasicTool::throwException("所售积分不能低于10");
         } else {
             $price>=0 or BasicTool::throwException("学习资料价格不能为负数");
         }
