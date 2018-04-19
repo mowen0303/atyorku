@@ -120,6 +120,7 @@ if(!$queryUserName && !$queryCourseCode){
                     <th width="3%">考试</th>
                     <th width="3%">成绩</th>
                     <th width="6%">学期</th>
+                    <th width="6%">赞/踩</th>
                     <th width="20%">评论</th>
                     <th width="18%">课程总结</th>
                     <th width="10%">操作</th>
@@ -161,6 +162,7 @@ if(!$queryUserName && !$queryCourseCode){
                         <td><?php echo htmlspecialchars($row["test_diff"]) ?></td>
                         <td><?php echo htmlspecialchars($row["grade"]) ?></td>
                         <td><?php echo htmlspecialchars($row["term"] . " " . $row["year"]) ?></td>
+                        <td><?php echo $row["count_like"] ?>/<?php echo $row["count_dislike"] ?></td>
                         <td><?php echo htmlspecialchars($row["comment"]) ?></td>
                         <td><?php echo htmlspecialchars($row["content_summary"]) ?></td>
                         <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo htmlspecialchars($argument)?>">修改</a></td>
