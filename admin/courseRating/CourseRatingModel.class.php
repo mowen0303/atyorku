@@ -55,7 +55,7 @@ class CourseRatingModel extends Model
         }
 
 //        $sql = "{$sql} ORDER BY {$orderCondition} `count_like`*2-`count_dislike` DESC,`publish_time` DESC";
-        $sql = "{$sql} ORDER BY {$orderCondition} count_like-count_dislike desc";
+        $sql = "{$sql} ORDER BY {$orderCondition} count_like-count_dislike desc,publish_time desc";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
