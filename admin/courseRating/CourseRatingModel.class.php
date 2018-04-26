@@ -525,7 +525,7 @@ class CourseRatingModel extends Model
         $result = $this->getCourseRatingById($id,true) or BasicTool::throwException("没找到该课评");
         intval($result['award'])=== -1 or BasicTool::throwException("该课评已被奖励");
         $userId = intval($result['user_id']) or BasicTool::throwException("课评用户ID不存在");
-        $sql = "UPDATE course_rating SET award={$credit} WHERE id in ({$id})";
+        $sql = "UPDATE course_rating SET award='".(int)Credit::$addCourseRating[$credit]['credit']."' WHERE id in ({$id})";
         $bool = $this->sqltool->query($sql);
         if($bool && $credit!==0) {
             $transactionModel = new TransactionModel();
