@@ -670,6 +670,24 @@ class CourseRatingModel extends Model
         }
     }
 
+    /**
+     * 加精
+     * @param $courseRatingId
+     */
+    public function addEssence($courseRatingId){
+        $sql = "UPDATE course_rating SET essence = 1 WHERE id in ({$courseRatingId})";
+        $this->sqltool->query($sql);
+    }
+
+    /**
+     * 消精
+     * @param $courseRatingId
+     */
+    public function deleteEssence($courseRatingId){
+        $sql = "UPDATE course_rating SET essence = 0 WHERE id in ({$courseRatingId})";
+        $this->sqltool->query($sql);
+    }
+
 
     /**
      * 更新全部报告

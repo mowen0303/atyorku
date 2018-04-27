@@ -530,6 +530,40 @@ function checkAuthority($flag, $id) {
     }
 }
 
+/**
+ * 课评加精
+ * @param id    课评id
+ */
+function addEssenceWithJson(){
+    global $courseRatingModel;
+    global $currentUser;
+    try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
+        $id = BasicTool::get("id","课评ID不能为空");
+        $courseRatingModel->addEssence($id);
+        BasicTool::echoMessage("成功加精", $_SERVER['HTTP_REFERER']);
+    } catch(Exception $e){
+        BasicTool::echoMessage("操作失败", $_SERVER['HTTP_REFERER']);
+    }
+}
+
+/**
+ * 取消课程加精
+ * @param id    课评id
+ */
+function deleteEssenceWithJson(){
+    global $courseRatingModel;
+    global $currentUser;
+    try {
+        $currentUser->isUserHasAuthority("ADMIN") or BasicTool::throwException("权限不足");
+        $id = BasicTool::get("id","课评ID不能为空");
+        $courseRatingModel->deleteEssence($id);
+        BasicTool::echoMessage("精品标记已取消", $_SERVER['HTTP_REFERER']);
+    } catch(Exception $e){
+        BasicTool::echoMessage("操作失败", $_SERVER['HTTP_REFERER']);
+    }
+}
+
 
 
 function deleteCourseReport($echoType="normal") {

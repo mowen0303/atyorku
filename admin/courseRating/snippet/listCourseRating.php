@@ -165,7 +165,16 @@ if(!$queryUserName && !$queryCourseCode){
                         <td><?php echo $row["count_like"] ?>/<?php echo $row["count_dislike"] ?></td>
                         <td><?php echo htmlspecialchars($row["comment"]) ?></td>
                         <td><?php echo htmlspecialchars($row["content_summary"]) ?></td>
-                        <td><a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo htmlspecialchars($argument)?>">修改</a></td>
+                        <td>
+                            <a class="btn" href="index.php?s=formCourseRating&flag=update<?php echo htmlspecialchars($argument)?>">修改</a>
+                            <?php
+                                if($row['essence']){
+                                    echo '<a class="btn" href="courseRatingController.php?action=deleteEssenceWithJson&id='.$row['id'].'">精品</a>';
+                                }else{
+                                    echo '<a class="btn" style="background-color:#ccc" href="courseRatingController.php?action=addEssenceWithJson&id='.$row['id'].'">精品</a>';
+                                }
+                            ?>
+                        </td>
                     </tr>
                 <?php
                 }
