@@ -26,6 +26,7 @@ $_AUT = [
     'COURSE_RECALL'=>getAuthorityNum(23),
     'COMMENT'=>getAuthorityNum(24),
     'TASK_DESIGN'=>getAuthorityNum(18),
+    'KNOWLEDGE' =>getAuthorityNum(25),
 ];
 function getAuthorityNum($int){return pow(2,$int);}
 ?>
