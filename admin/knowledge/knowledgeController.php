@@ -64,6 +64,8 @@ function addKnowledge($echoType = "normal") {
             $result = $knowledgeModel->getKnowledgeById($insert_id);
             $result["publish_time"] = BasicTool::translateTime($result["publish_time"]);
             $result["enroll_year"] = BasicTool::translateEnrollYear($result["enroll_year"]);
+            $result["is_admin"] = $currentUser->isUserHasAuthority("ADMIN")?1:"";
+            $result["is_seller"] = $currentUser->userId == $result["seller_user_id"]?1:"";
             BasicTool::echoJson(1, "添加成功",$result);
         }
     } catch (Exception $e) {
@@ -212,6 +214,8 @@ function buyKnowledge($echoType = "normal"){
             $result["is_purchased"] = 1;
             $result["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
             $result["enroll_year"] = BasicTool::translateEnrollYear($knowledge["enroll_year"]);
+            $result["is_admin"] = $currentUser->isUserHasAuthority("ADMIN")?1:"";
+            $result["is_seller"] = $currentUser->userId == $result["seller_user_id"]?1:"";
             BasicTool::echoJson(1, "购买成功",$result);
         }
     }
