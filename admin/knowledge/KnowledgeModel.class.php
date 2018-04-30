@@ -32,7 +32,9 @@ class KnowledgeModel extends Model
         $arr["count_knowledge_points"] = $count_knowledge_points? $count_knowledge_points : count($knowledge_point_description);
         $arr["count_views"] = 0;
         $arr["count_sold"] = 0;
+        $arr["count_comments"] = 0;
         $arr["publish_time"] = time();
+        $arr["update_time"] = time();
         $arr["term_year"] = $term_year;
         $arr["term_semester"] = $term_semester?$term_semester:"";
         $arr["sort"] = $sort;
