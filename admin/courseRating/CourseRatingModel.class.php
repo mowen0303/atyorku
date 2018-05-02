@@ -39,7 +39,7 @@ class CourseRatingModel extends Model
     * @param pageSize 每页query数量
     * @return 2维数组
     */
-    public function getListOfCourseRating($query=false, $pageSize=20, $orderBy = false) {
+    public function getListOfCourseRating($query=false, $pageSize=20, $orderBy = false, $onlyShowEssence = false) {
         $select = "SELECT cr.*, u.id AS user_id, u.name AS user_name, u.user_class_id, u.img AS user_img, u.alias AS user_alise, u.gender AS user_gender, u.major AS user_major, u.enroll_year AS user_enroll_year, u.degree AS user_degree, uc.is_admin, cc.id AS course_code_child_id, cc2.id AS course_code_parent_id, cc.title AS course_code_child_title, cc2.title AS course_code_parent_title, cc.full_title AS course_full_title, p.id AS prof_id, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
         $from = "FROM (course_rating cr INNER JOIN course_code cc ON cr.course_code_id = cc.id INNER JOIN course_code cc2 ON cc.parent_id = cc2.id INNER JOIN professor p ON cr.prof_id = p.id INNER JOIN `user` u ON cr.user_id = u.id LEFT JOIN user_class uc ON u.user_class_id = uc.id)";
         $sql = "{$select} {$from}";
@@ -47,15 +47,24 @@ class CourseRatingModel extends Model
         if ($query) {
             $sql = "{$sql} WHERE ({$query})";
             $countSql = "{$countSql} WHERE ({$query})";
+
+            if($onlyShowEssence==true){
+                $sql .= " AND essence in (1)";
+                $countSql .= " AND essence in (1)";
+            }
         }
+
+
 
         $orderCondition = "";
         if($orderBy=="id"){
             $orderCondition .= "`id` DESC, ";
+        }else if($orderBy=='essence'){
+            $orderCondition .= "`essence` DESC, ";
         }
 
 //        $sql = "{$sql} ORDER BY {$orderCondition} `count_like`*2-`count_dislike` DESC,`publish_time` DESC";
-        $sql = "{$sql} ORDER BY {$orderCondition} count_like-count_dislike desc,publish_time desc";
+        $sql = "{$sql} ORDER BY {$orderCondition} essence desc,count_like-count_dislike desc,publish_time desc";
         $arr = parent::getListWithPage($this->table, $sql, $countSql, $pageSize);
          // Format publish time and enroll year
         foreach ($arr as $k => $v) {
@@ -95,9 +104,9 @@ class CourseRatingModel extends Model
     * @param pageSize 每页query数量
     * @return 2维数组
     */
-    public function getListOfCourseRatingByCourseId($courseId, $pageSize=20) {
+    public function getListOfCourseRatingByCourseId($courseId, $orderType, $pageSize=20,$onlyShowEssence=false) {
         $query = "course_code_id in ({$courseId})";
-        return $this->getListOfCourseRating($query, $pageSize);
+        return $this->getListOfCourseRating($query, $pageSize,$orderType,$onlyShowEssence);
     }
 
     /**
@@ -341,7 +350,7 @@ class CourseRatingModel extends Model
                 $q .= " AND c2.title LIKE '{$courseParentTitle}%'";
             }
         } else {
-            $order .= ", cr.update_time DESC, c2.title, c1.title";
+            $order .= "cr.update_time DESC, c2.title, c1.title";
         }
 
         $sql = "SELECT cr.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title,c1.description, c2.title AS course_code_parent_title FROM course_report cr, course_code c1, course_code c2 WHERE c1.parent_id=c2.id AND cr.course_code_id=c1.id{$q} {$order}";
@@ -717,6 +726,24 @@ class CourseRatingModel extends Model
             BasicTool::throwException("获取课评失败");
         }
     }
+
+    public function cleanCourseProfReport(){
+        $sql = "select cpr.id from course_prof_report as cpr LEFT JOIN course_rating as cr on cpr.prof_id = cr.prof_id and cpr.course_code_id = cr.course_code_id WHERE cr.id is null";
+        $result = $this->sqltool->getListBySql($sql);
+        $ids = "";
+        if(count($result)>0){
+            foreach($result as $row){
+                $ids.= ($row['id'].',');
+            }
+            $ids = substr($ids,0,-1);
+            $sql = "DELETE FROM course_prof_report WHERE id IN ({$ids})";
+            $this->sqltool->query($sql);
+            return count($result)."条无用数据被清除";
+        }else{
+            return "没有无用数据被清除";
+        }
+    }
+
 
 //    /**
 //     * 清除空报告

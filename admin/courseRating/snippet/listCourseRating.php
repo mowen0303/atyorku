@@ -97,13 +97,10 @@ if(!$queryUserName && !$queryCourseCode){
 }
 ?>
 <article class="mainBox">
-    <?php
-        if($isGod && !$queryUserId){
-            echo "<form action=\"courseRatingController.php?action=updateAllReports\" method=\"post\"><footer class=\"buttonBox\"><input type=\"submit\" value=\"更新全部报告\" class=\"btn\" onclick=\"return confirm('确认更新全部报告?')\"></footer></form>";
-        }
-    ?>
-
-
+    <div style="display: flex; justify-content: flex-end">
+        <a class="btn" href="courseRatingController.php?action=updateAllReports" onclick="return confirm('确认更新全部报告?')">更新全部报告</a>
+        <a class="btn" href="courseRatingController.php?action=cleanCourseProfReport" onclick="return confirm('确认清除无效数据?')">清除无效'教授&课程'数据</a>
+    </div>
     <header><h2><?php echo htmlspecialchars($typeStr) ?>课评列表<?php if($queryUserName){echo " - {$queryUserName}";} ?></h2></header>
     <form action="courseRatingController.php?action=deleteCourseRating" method="post">
         <section>
@@ -132,7 +129,7 @@ if(!$queryUserName && !$queryCourseCode){
                 if($queryUserName){
                     $arr = $courseRatingModel->getListOfCourseRatingByUserId($userModel->getUserIdByName($queryUserName), 40);
                 } else if($queryCourseCode) {
-                    $arr = $courseRatingModel->getListOfCourseRatingByCourseId($queryCourseCode, 40);
+                    $arr = $courseRatingModel->getListOfCourseRatingByCourseId($queryCourseCode,'essence' ,40);
                 } else {
                     $arr = $courseRatingModel->getListOfCourseRating(false,40,"id");
                 }

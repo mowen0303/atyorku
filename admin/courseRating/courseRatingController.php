@@ -96,12 +96,14 @@ function getListOfCourseRatingWithJson($t="normal", $v1=false, $v2=false) {
     global $courseRatingModel;
     try {
         $pageSize = BasicTool::get('pageSize') ?: 20;
+        $orderType = BasicTool::get('orderTYpe') ?: 'essence';
+        $onlyShowEssence = BasicTool::get('onlyShowEssence') ?: 0;
 
         $result = NULL;
 
         switch($t) {
             case "courseId":
-                $result = $courseRatingModel->getListOfCourseRatingByCourseId($v1, $pageSize);
+                $result = $courseRatingModel->getListOfCourseRatingByCourseId($v1,$orderType ,$pageSize,$onlyShowEssence);
                 break;
             case "profId":
                 $result = $courseRatingModel->getListOfCourseRatingByProfId($v1, $pageSize);
@@ -710,5 +712,22 @@ function awardCourseRating($echoType = "normal") {
         } else {
             BasicTool::echoJson(0, $e->getMessage());
         }
+    }
+}
+
+/**
+ * 清除无效的课程教授报告
+ * http://www.atyorku.ca/admin/courseRating/courseRatingController.php?action=cleanCourseProfReport
+ */
+function cleanCourseProfReport() {
+    global $courseRatingModel;
+    global $currentUser;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("权限不足");
+        $result = $courseRatingModel->cleanCourseProfReport();
+        BasicTool::echoMessage($result, $_SERVER['HTTP_REFERER']);
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
     }
 }
