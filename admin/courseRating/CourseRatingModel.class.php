@@ -105,6 +105,10 @@ class CourseRatingModel extends Model
     * @return 2维数组
     */
     public function getListOfCourseRatingByCourseId($courseId, $orderType, $pageSize=20,$onlyShowEssence=false) {
+        if($courseId>0){
+            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id IN ('{$courseId}');";
+            $this->sqltool->query($sql);
+        }
         $query = "course_code_id in ({$courseId})";
         return $this->getListOfCourseRating($query, $pageSize,$orderType,$onlyShowEssence);
     }

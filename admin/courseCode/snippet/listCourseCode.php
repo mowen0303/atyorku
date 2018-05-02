@@ -21,6 +21,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th width="60px">ID</th>
                     <th width="100px"><?php echo $typeStr ?>科目简称</th>
+                    <th width="80px">浏览量</th>
                     <th><?php echo $typeStr ?>科目全称</th>
                     <?php if($parentId>0) echo '<th width="60px">学分</th>'; ?>
                     <th width="80px">操作</th>
@@ -45,6 +46,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                             echo ($parentId == 0 ? "<a href=\"index.php?s=listCourseCode&parent_id={$id}\">{$title}</a>" : "{$title}");
                             ?>
                         </td>
+                        <td width="80px"><?php echo $row['view_count']?></td>
                         <td><?php echo $row["full_title"]; ?></td>
                         <?php if($parentId>0) echo "<td>{$row['credits']}</td>"; ?>
                         <td><a class="btn" href="index.php?s=formCourseCode&flag=update<?php echo $argument?>">修改</a></td>

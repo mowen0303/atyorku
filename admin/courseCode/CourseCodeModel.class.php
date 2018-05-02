@@ -30,7 +30,11 @@ class CourseCodeModel extends Model
      * @return array 一维数组
      */
     public function getListOfCourseCodeByParentId($id=0) {
-        $sql = "SELECT * FROM course_code c WHERE c.parent_id={$id}";
+        if($id>0){
+            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id IN ('{$id}');";
+            $this->sqltool->query($sql);
+        }
+        $sql = "SELECT * FROM course_code c WHERE c.parent_id={$id} ORDER BY view_count desc, title asc";
         return $this->sqltool->getListBySql($sql);
     }
 
