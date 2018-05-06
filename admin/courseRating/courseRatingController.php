@@ -370,7 +370,7 @@ function getListOfCourseProfReportWithJson() {
     global $courseRatingModel;
 
     try {
-        $pageSize = BasicTool::get('pageSize') ?: 20;
+        $pageSize = BasicTool::get('pageSize') ?: 100;
         $profId = BasicTool::get("prof_id");
         $courseCodeId = BasicTool::get("course_code_id");
 

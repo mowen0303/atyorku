@@ -371,6 +371,11 @@ class CourseRatingModel extends Model
      */
     public function getListOfCourseReportsByParentId($parentId,$orderField,$orderModel,$pageSize){
 
+        if($parentId>0){
+            $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id IN ('{$parentId}');";
+            $this->sqltool->query($sql);
+        }
+
         $q = " AND c1.parent_id in ($parentId)";
         if($orderField=="title"){
             $order = "ORDER BY c2.title, c1.title {$orderModel}";
@@ -408,7 +413,7 @@ class CourseRatingModel extends Model
     * 获取一页科目教授报告
     * @return 二维数组
     */
-    public function getListOfCourseProfessorReports($pageSize=20,$courseId=false,$profId=false) {
+    public function getListOfCourseProfessorReports($pageSize=100,$courseId=false,$profId=false) {
         $query = "";
         if($courseId) {
             $query .= " AND cp.course_code_id={$courseId}";
@@ -416,7 +421,7 @@ class CourseRatingModel extends Model
         if($profId) {
             $query .= " AND cp.prof_id={$profId}";
         }
-        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id{$query}";
+        $sql = "SELECT cp.*, c2.id AS course_code_parent_id, c1.title AS course_code_child_title, c1.full_title AS course_full_title, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id{$query} ORDER BY cp.overall_diff";
         $countSql = "SELECT COUNT(*) FROM course_prof_report cp, course_code c1, course_code c2, professor p WHERE c1.parent_id=c2.id AND cp.course_code_id=c1.id AND cp.prof_id=p.id{$query}";
         $arr = parent::getListWithPage("course_prof_report", $sql, $countSql, $pageSize);
         return $arr;
