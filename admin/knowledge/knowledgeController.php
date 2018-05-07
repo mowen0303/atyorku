@@ -51,7 +51,7 @@ function addKnowledge($echoType = "normal") {
         $sort = $echoType == "json" ? 0 : BasicTool::post("sort");
         ($sort == 0 || $sort == 1 || $sort == NULL || $echoType == "json") or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
         $imgArr = array(BasicTool::post("img_id"));
-        $img_id = $imageModel->uploadImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
+        $img_id = $imageModel->uploadKnowledgeImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
         if (($img_id && $knowledge_point_description) || (!$img_id && !$knowledge_point_description)){
             $imageModel->deleteImageById($img_id);
             BasicTool::throwException("添加失败!!");
@@ -126,6 +126,7 @@ function getKnowledgeByCourseCodeProfNameWithJson(){
             $knowledge["enroll_year"] = BasicTool::translateEnrollYear($knowledge["enroll_year"]);
             $knowledge["is_admin"] = $currentUser->isUserHasAuthority("ADMIN")?1:"";
             $knowledge["is_seller"] = $currentUser->userId == $knowledge["seller_user_id"]?1:"";
+            $knowledge["img_url"] = !!$knowledge["is_admin"] || !!$knowledge["is_seller"] || !!$knowledge["is_purchased"]? $knowledge["img_url"] : $knowledge["thumbnail_url"];
             array_push($results, $knowledge);
         }
         BasicTool::echoJson(1, "查询成功", $results);

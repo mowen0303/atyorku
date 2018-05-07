@@ -368,5 +368,252 @@ class ImageModel extends Model
         }
         return $imgArr;
     }
+    public function uploadKnowledgeImg($inputName, $path, $appliedTable, $generateThumbnail = true, $maxThumbnailFileSize = 1000000, $maxThumbnailLength = 1000, $maxFileSize = 1000000, $maxLength = 1000) {
+        try {
+            $file = $_FILES[$inputName];
+            if ($file != null) {
+                $count = $this->getNumOfUploadImages($inputName);   //获取文件上传数量
+                $gaussian_kernel = array(
+                    array(1,2,1),
+                    array(2,4,2),
+                    array(1,2,1)
+                );
+                $root = $_SERVER["DOCUMENT_ROOT"];
+                $uploadsFolder = "/uploads/";
+                $uploadsDir = $generateThumbnail ? ("{$uploadsFolder}rawimage/") : ("{$uploadsFolder}{$path}/");
+                $thumbnailUploadsDir = "{$uploadsFolder}{$path}/";
+                $result = [];
+                for ($i=0; $i<$count; $i++) {
+                    //初始化参数
+                    $fileName = $file['name'][$i];          //文件名
+                    $fileTmpName = $file['tmp_name'][$i];   //临时文件
+                    $fileType = $file["type"][$i];          //文件类型
+                    $fileSize = $file["size"][$i];          //文件大小
+                    //检测上传目录文件夹权限
+                    if (is_dir($root . $uploadsDir)) {
+                        //目录存在,检查是否可写
+                        if (!is_writable($root . $uploadsFolder)) {
+                            chmod($root . $uploadsFolder, 0777) or BasicTool::throwException("文件夹权限修改失败:" . $root . $uploadsFolder);;
+                        }
+                        if (!is_writable($root . $uploadsDir)) {
+                            chmod($root . $uploadsDir, 0777) or BasicTool::throwException("文件夹权限修改失败:" . $root . $uploadsDir);
+                            //BasicTool::throwException("不可以写:".$uploadsDirRoot);
+                        }
+                    } else {
+                        //目录不存在,创建目录
+                        mkdir($root . $uploadsDir, 0777);
+                    }
+                    //配置上传文件名
+                    $newFileName = trim($fileName);
+                    $newFileName = substr(strrchr($newFileName, '.'), 1);
+                    $newFileName = uniqid(rand(), true) . "." . $newFileName;
+                    while (true) {
+                        $newFileName = uniqid(rand(), true) . "." . $newFileName;
+                        if (!file_exists($uploadsDir . $newFileName)) break;
+                    }
+                    //记录图像尺寸,如果图片不需要压缩,则用原尺寸重新渲染,防止上传漏洞
+                    list($width, $height) = getimagesize($fileTmpName);
+                    $newWidth = $width;
+                    $newHeight = $height;
+                    //需要压缩图片,重新计算图片尺寸
+                    if ($fileSize > $maxFileSize) {
+                        $imgRatio = sprintf("%.2f", $width / $height);
+                        if ($imgRatio > 1) {
+                            //横向图片
+                            $newWidth = $maxLength;
+                            $newHeight = floor($maxLength / $imgRatio);
+                        } else if ($imgRatio == 1) {
+                            //正方形图片
+                            $newWidth = $maxLength;
+                            $newHeight = $maxLength;
+                        } else {
+                            //竖向图片
+                            $newWidth = floor($maxLength * $imgRatio);
+                            $newHeight = $maxLength;
+                        }
+                    }
+                    if ($generateThumbnail) {
+                        //检测缩略图上传目录文件夹权限
+                        if (is_dir($root . $thumbnailUploadsDir)) {
+                            if (!is_writable($root . $thumbnailUploadsDir)) {
+                                chmod($root . $thumbnailUploadsDir, 0777) or BasicTool::throwException("文件夹权限修改失败:" . $root . $thumbnailUploadsDir);
+                            }
+                        } else {
+                            mkdir($root . $thumbnailUploadsDir, 0777);
+                        }
+                        // 重新计算缩略图尺寸
+                        $thumbnailWidth = $newWidth;
+                        $thumbnailHeight = $newHeight;
+                        if ($fileSize > $maxThumbnailFileSize) {
+                            $imgRatio = sprintf("%.2f", $width / $height);
+                            if ($imgRatio > 1) {
+                                //横向图片
+                                $thumbnailWidth = $maxThumbnailLength;
+                                $thumbnailHeight = floor($maxThumbnailLength / $imgRatio);
+                            } else if ($imgRatio == 1) {
+                                //正方形图片
+                                $thumbnailWidth = $maxThumbnailLength;
+                                $thumbnailHeight = $maxThumbnailLength;
+                            } else {
+                                //竖向图片
+                                $thumbnailWidth = floor($maxThumbnailLength * $imgRatio);
+                                $thumbnailHeight = $maxThumbnailLength;
+                            }
+                        }
+                    }
+                    //压缩
+                    if ($fileType == "image/jpeg") {
+                        //压缩JPG
+                        $src_im = imagecreatefromjpeg($fileTmpName);
+                        if (function_exists("imagecopyresampled")) {
+                            //高保真压缩
+                            $dst_im = imagecreatetruecolor($newWidth, $newHeight);
+                            imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        } else {
+                            //快速压缩
+                            $dst_im = imagecreate($newWidth, $newHeight);
+                            imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        }
+                        imagejpeg($dst_im, $root . $uploadsDir . $newFileName, 100) or BasicTool::throwException("图片存储失败:" . $root . $uploadsDir . $newFileName . "newwidth:" . $newWidth . "newheight:" . $newHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
+                        //压缩缩略图
+                        if ($generateThumbnail) {
+                            imagedestroy($dst_im);  //销毁缓存
+                            if (function_exists("imagecopyresampled")) {
+                                //高保真压缩
+                                $dst_im = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+                                imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
+                            } else {
+                                //快速压缩
+                                $dst_im = imagecreate($thumbnailWidth, $thumbnailHeight);
+                                imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
+                            }
+                            //模糊压缩过的图片
+                            for ($i=0;$i<40;$i++)
+                                imageconvolution($dst_im,$gaussian_kernel,16,0);
+                            imagejpeg($dst_im, $root . $thumbnailUploadsDir . $newFileName, 100) or BasicTool::throwException("图片存储失败:" . $root . $thumbnailUploadsDir . $newFileName . "thumbnailWidth:" . $thumbnailWidth . "thumbnailHeight:" . $thumbnailHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
+                        }
+                        imagedestroy($dst_im);  //销毁缓存
+                        imagedestroy($src_im);  //销毁缓存
+                    } else if ($fileType == "image/png") {
+                        //压缩PNG
+                        $src_im = imagecreatefrompng($fileTmpName);
+                        $dst_im = imagecreatetruecolor($newWidth, $newHeight);
+                        imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        imagepng($dst_im, $root . $uploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $uploadsDir);     //输出压缩后的图片
+                        //压缩缩略图
+                        if ($generateThumbnail) {
+                            imagedestroy($dst_im);  //销毁缓存
+                            $dst_im = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+                            imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
+                            //模糊压缩过的图片
+                            for ($i=0;$i<20;$i++)
+                                imageconvolution($dst_im,$gaussian_kernel,16,0);
+                            imagepng($dst_im, $root . $thumbnailUploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $thumbnailUploadsDir);     //输出压缩后的缩略图
+                        }
+                        imagedestroy($dst_im);  //销毁缓存
+                        imagedestroy($src_im);  //销毁缓存
+                    } else if ($fileType == "image/gif") {
+                        if ($fileSize > $maxFileSize) {
+                            BasicTool::throwException("只支持上传小于" . ($maxFileSize / 1000000) . "MB的GIF图片");
+                        }
+                        //压缩JPG
+                        $src_im = imagecreatefromgif($fileTmpName);
+                        $dst_im = imagecreatetruecolor($newWidth, $newHeight);
+                        // Imagick 保存动态GIF
+                        // $src_im = new Imagick($fileTmpName);
+                        //
+                        // $image = $src_im->coalesceImages();
+                        //
+                        // foreach ($image as $frame) {
+                        //   $frame->thumbnailImage($newWidth, $newHeight);
+                        //   $frame->setImagePage($newWidth, $newHeight, 0, 0);
+                        // }
+                        //
+                        // $image = $image->deconstructImages();
+                        // $image->writeImages($root . $uploadsDir . $newFileName, true) or BasicTool::throwException("图片存储失败" . $root . $uploadsDir);
+                        imagealphablending($dst_im, false);
+                        imagesavealpha($dst_im,true);
+                        $transparent = imagecolorallocatealpha($dst_im, 255, 255, 255, 127);
+                        imagefilledrectangle($dst_im, 0, 0, $newWidth, $newHeight, $transparent);
+                        imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        imagegif($dst_im, $root . $uploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $uploadsDir);     //输出压缩后的图片
+                        //压缩缩略图
+                        if ($generateThumbnail) {
+                            imagedestroy($dst_im);  //销毁缓存
+                            $dst_im = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
+                            imagealphablending($dst_im, false);
+                            imagesavealpha($dst_im,true);
+                            $transparent = imagecolorallocatealpha($dst_im, 255, 255, 255, 127);
+                            imagefilledrectangle($dst_im, 0, 0, $newWidth, $newHeight, $transparent);
+                            imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
+                            //模糊压缩过的图片
+                            for ($i=0;$i<20;$i++)
+                                imageconvolution($dst_im,$gaussian_kernel,16,0);
+                            imagepng($dst_im, $root . $thumbnailUploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $thumbnailUploadsDir);     //输出压缩后的缩略图
+                        }
+                        imagedestroy($dst_im);  //销毁缓存
+                        imagedestroy($src_im);  //销毁缓存
+                    }
+                    //添加图片到数据库
+                    if ($this->addImage(
+                        $uploadsDir . $newFileName,
+                        ($generateThumbnail) ? ($thumbnailUploadsDir . $newFileName) : ($uploadsDir . $newFileName),
+                        $appliedTable,
+                        filesize($root . $uploadsDir . $newFileName),
+                        $newWidth,
+                        $newHeight)
+                    ) {
+                        $result[$i] = $this->idOfInsert;
+                    } else {
+                        $this->errorMsg = "图片上传失败";
+                        return " ";
+                    }
+                }
+                return $result;
+            } else {
+                //无文件需要上传
+                $this->errorMsg = "未获取到上传文件";
+                return " ";
+            }
+        } catch (Exception $e) {
+            $this->errorMsg = $e->getMessage();
+            return false;
+        }
+    }
+
+    public function uploadKnowledgeImagesWithExistingImages($modifiedImageIds,$currentImageIds=false,$maxNum=false,$uploadInputName=false,$path=false,$tableName=false,$generateThumbnail=true) {
+        $imgArr = array_values(array_filter($modifiedImageIds));
+        $currentImageIds = array_values(array_filter($currentImageIds));
+        if(!$maxNum) {
+            $maxNum = count($modifiedImageIds);
+        }
+        $numOfNewImages=0;
+        // 上传新图片并添加新图id到$imgArr
+        if($uploadInputName) {
+            $numOfNewImages = $this->getNumOfUploadImages($uploadInputName);
+            if ($numOfNewImages > 0) {
+                $path or BasicTool::throwException("上传新图片需要提供上传路径");
+                $tableName or BasicTool::throwException("上传新图片需要提供表名");
+                ($numOfNewImages <= $maxNum) or BasicTool::throwException("图片上传最多3张");
+                ($numOfNewImages+count($imgArr)<=$maxNum) or BasicTool::throwException("上传图片数量过多，请先删除当前图片");
+                $newImageIds = $this->uploadKnowledgeImg($uploadInputName, $path, $tableName,$generateThumbnail) or BasicTool::throwException($this->errorMsg);
+                $imgArr = array_merge($imgArr, $newImageIds);
+                (count($imgArr)<=$maxNum) or BasicTool::throwException("Unexpected Error: imgArr size over {$maxNum}.");
+            }
+        }
+        // 检查并删除替代掉的图片
+        if($imgArr != $currentImageIds) {
+            $needDeletedIds=array();
+            foreach($currentImageIds as $v) {
+                if($v and !in_array($v,$imgArr)) {
+                    array_push($needDeletedIds,$v);
+                }
+            }
+            if(count($needDeletedIds)>0) {
+                $this->deleteImageById($needDeletedIds);
+            }
+        }
+        return $imgArr;
+    }
 }
 ?>

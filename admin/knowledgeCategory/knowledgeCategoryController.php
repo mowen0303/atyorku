@@ -26,7 +26,7 @@ function addKnowledgeCategory(){
 /**
  * 删分类
  * POST
- * @param id 分类id
+ * @param int Array id 分类id
  * localhost:8080/admin/knowledgeCategory/knowledgeCategoryController.php?action=deleteKnowledgeCategory
  */
 function deleteKnowledgeCategory()
