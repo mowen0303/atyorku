@@ -258,7 +258,6 @@ class CourseQuestionModel extends Model {
         $arr["test_diff"] = 0;
         $arr["content_diff"] = 0;
         $arr["overall_diff"] = 0;
-        $arr["recommendation_ratio"] = 0;
         $arr["rating_count"] = 0;
         $arr["count_questions"] = 0;
         $arr["count_solved_questions"] = 0;

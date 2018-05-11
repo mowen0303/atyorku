@@ -39,6 +39,7 @@ class KnowledgeModel extends Model
         $arr["term_semester"] = $term_semester?$term_semester:"";
         $arr["sort"] = $sort;
         $insert_id = $this->addRow("knowledge",$arr)?$this->getInsertId() : false;
+        $this->addCountToCourseReport($arr["course_code_id"]);
         if ($insert_id){
             if (!$img_id){
                 //文字版
@@ -50,8 +51,7 @@ class KnowledgeModel extends Model
                 }
             }
             return $insert_id;
-        }
-        else{
+        }else{
             $this->errorMsg = "添加失败";
             return false;
         }
@@ -280,6 +280,26 @@ class KnowledgeModel extends Model
 
     function getInsertId() {
         return $this->sqltool->getInsertId();
+    }
+
+    /**
+     * 添加考试回忆录统计到课程报告表
+     * @param $courseCodeId
+     * @return bool|\mysqli_result
+     */
+    private function addCountToCourseReport($courseCodeId){
+        $sql = "UPDATE course_report as cr SET cr.count_knowledge = (SELECT COUNT(*) FROM knowledge as k WHERE k.course_code_id in ({$courseCodeId})) where cr.course_code_id in ({$courseCodeId})";
+        return $this->sqltool->query($sql);
+    }
+
+    /**
+     * 增加一次阅读量
+     * @param $knowledgeId
+     * @return bool|\mysqli_result
+     */
+    function addCountView($knowledgeId){
+        $sql = "UPDATE knowledge SET count_views = count_views+1 WHERE id in ({$knowledgeId})";
+        return $this->sqltool->query($sql);
     }
 }
 

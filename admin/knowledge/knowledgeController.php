@@ -241,3 +241,19 @@ function getKnowledgeByIdWithJson(){
     $id = BasicTool::get("id");
     BasicTool::echoJson(1,"",$knowledgeModel->getKnowledgeById($id));
 }
+
+/**
+ * 增加一次阅读量
+ * [GET] @param $courseCodeId
+ * http://www.atyorku.ca/admin/knowledge/knowledgeController.php?action=addCountView&id=1
+ */
+function addCountView(){
+    global $knowledgeModel;
+    try{
+        $id = BasicTool::get("id","考点ID不能为空");
+        $knowledgeModel->addCountView($id);
+        BasicTool::echoJson(1,"阅读量增加成功");
+    }catch(Exception $e){
+        BasicTool::echoJson(0,$e->getMessage());
+    }
+}
