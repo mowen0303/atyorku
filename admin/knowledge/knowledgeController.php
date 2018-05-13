@@ -124,7 +124,7 @@ function getKnowledgeByCourseCodeProfNameWithJson(){
         foreach ($result as $knowledge) {
             $knowledge["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
             $knowledge["enroll_year"] = BasicTool::translateEnrollYear($knowledge["enroll_year"]);
-            $knowledge["is_admin"] = $currentUser->isUserHasAuthority("ADMIN")?1:"";
+            $knowledge["is_admin"] = $currentUser->isAdmin?1:"";
             $knowledge["is_seller"] = $currentUser->userId == $knowledge["seller_user_id"]?1:"";
             $knowledge["img_url"] = !!$knowledge["is_admin"] || !!$knowledge["is_seller"] || !!$knowledge["is_purchased"]? $knowledge["img_url"] : $knowledge["thumbnail_url"];
             array_push($results, $knowledge);
