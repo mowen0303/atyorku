@@ -215,7 +215,7 @@ class KnowledgeModel extends Model
                 if ($knowledge['seller_user_id'] != $user_id && !$knowledge['is_purchased']){
                     forEach($knowledge['knowledge_points'] as $index => $knowledge_point){
                         if ($index != 0 && strlen($knowledge_point['description']) > 5){
-                            $knowledges[$i]['knowledge_points'][$index]['description'] = substr($knowledge_point['description'],0,5).'...';
+                            $knowledges[$i]['knowledge_points'][$index]['description'] = mb_substr($knowledge_point['description'],0,12,'utf-8').'...';
                         }
                     }
                 }

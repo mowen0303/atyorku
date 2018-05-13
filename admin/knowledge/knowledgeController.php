@@ -129,6 +129,7 @@ function getKnowledgeByCourseCodeProfNameWithJson(){
             $knowledge["img_url"] = !!$knowledge["is_admin"] || !!$knowledge["is_seller"] || !!$knowledge["is_purchased"]? $knowledge["img_url"] : $knowledge["thumbnail_url"];
             array_push($results, $knowledge);
         }
+//        print_r($results);
         BasicTool::echoJson(1, "查询成功", $results);
 
     } catch (Exception $e) {
