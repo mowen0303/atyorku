@@ -119,7 +119,7 @@ function getKnowledgeByCourseCodeProfNameWithJson(){
         $prof_id = $profModel->getProfessorIdByFullName($prof_name);
         $term_year = BasicTool::get("term_year");
         $term_semester = BasicTool::get("term_semester");
-        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId?$currentUser->userId:0,$currentUser->isUserHasAuthority("ADMIN"),$course_code_parent,$course_code_child,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
+        $result = $knowledgeModel->getKnowledgeByCourseCodeIdProfId($currentUser->userId?$currentUser->userId:0,$currentUser->isAdmin?$currentUser->isAdmin:false,$course_code_parent,$course_code_child,$prof_id,$term_year,$term_semester) or BasicTool::throwException("空");
         $results = [];
         foreach ($result as $knowledge) {
             $knowledge["publish_time"] = BasicTool::translateTime($knowledge["publish_time"]);
