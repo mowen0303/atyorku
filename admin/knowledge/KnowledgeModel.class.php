@@ -214,8 +214,8 @@ class KnowledgeModel extends Model
             forEach ($knowledges as $i => $knowledge){
                 if ($knowledge['seller_user_id'] != $user_id && !$knowledge['is_purchased']){
                     forEach($knowledge['knowledge_points'] as $index => $knowledge_point){
-                        if ($index != 1 && strlen($knowledge_point['description'] > 5)){
-                            $knowledges[$i]['knowledge_points'][$index]['description'] = substr($knowledge_point,0,5).'...';
+                        if ($index != 0 && strlen($knowledge_point['description']) > 5){
+                            $knowledges[$i]['knowledge_points'][$index]['description'] = substr($knowledge_point['description'],0,5).'...';
                         }
                     }
                 }
