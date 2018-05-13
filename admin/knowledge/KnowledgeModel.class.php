@@ -191,13 +191,14 @@ class KnowledgeModel extends Model
         }
         $concat = substr($concat, 0, -1);
         //如果当前用户是普通用户,每份未购买的考试回忆录只查询两条考点做为预览.每份已购买的考试回忆录查询所有考点.
-        if (!$is_admin){
-            $sql = "SELECT * FROM ( SELECT t1.*, knowledge.seller_user_id FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.user_id in ({$user_id}) AND transaction.section_name = 'knowledge' AND section_id = knowledge_point.knowledge_id) AS t1 INNER JOIN knowledge ON knowledge.id = t1.knowledge_id) AS t1 WHERE (SELECT COUNT(*) FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.section_name = 'knowledge' AND transaction.user_id in ({$user_id}) AND section_id = knowledge_point.knowledge_id) AS t2 WHERE t2.id <= t1.id AND t2.knowledge_id = t1.knowledge_id AND t1.section_id IS NULL AND t1.seller_user_id != {$user_id}) <= 2";
-        }
-        //如果当前用户是管理员或发布人,查询所有考点
-        else{
-            $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
-        }
+//        if (!$is_admin){
+//            $sql = "SELECT * FROM ( SELECT t1.*, knowledge.seller_user_id FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.user_id in ({$user_id}) AND transaction.section_name = 'knowledge' AND section_id = knowledge_point.knowledge_id) AS t1 INNER JOIN knowledge ON knowledge.id = t1.knowledge_id) AS t1 WHERE (SELECT COUNT(*) FROM (SELECT knowledge_point.*, transaction.section_id FROM (SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})) AS knowledge_point LEFT JOIN transaction ON transaction.section_name = 'knowledge' AND transaction.user_id in ({$user_id}) AND section_id = knowledge_point.knowledge_id) AS t2 WHERE t2.id <= t1.id AND t2.knowledge_id = t1.knowledge_id AND t1.section_id IS NULL AND t1.seller_user_id != {$user_id}) <= 2";
+//        }
+//        //如果当前用户是管理员或发布人,查询所有考点
+//        else{
+//            $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
+//        }
+        $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$concat})";
         $knowledge_points = $this->sqltool->getListBySql($sql);
         //分配考点到对应的考试回忆录
         forEach($knowledges as $i => $knowledge){
@@ -206,6 +207,17 @@ class KnowledgeModel extends Model
                 if($knowledge_point["knowledge_id"] == $knowledge["id"]){
                     $knowledges[$i]["knowledge_points"][] = $knowledge_point;
                     unset($knowledge_points[$index]);
+                }
+            }
+        }
+        if (!$is_admin){
+            forEach ($knowledges as $i => $knowledge){
+                if ($knowledge['seller_user_id'] != $user_id && !$knowledge['is_purchased']){
+                    forEach($knowledge['knowledge_points'] as $index => $knowledge_point){
+                        if ($index != 1 && strlen($knowledge_point['description'] > 5)){
+                            $knowledges[$i]['knowledge_points'][$index]['description'] = substr($knowledge_point,0,5).'...';
+                        }
+                    }
                 }
             }
         }
