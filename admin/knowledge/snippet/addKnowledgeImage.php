@@ -9,7 +9,6 @@ $flag = !$knowledge_id ? "add" : "update";
 $knowledge_categories = $knowledgeCategoryModel->getKnowledgeCategories();
 if ($flag == 'add') {
     $row = null;
-    $seller_user_id = $currentUser->userId;
     $form_action = "/admin/knowledge/knowledgeController.php?action=addKnowledge";
 } else {
     $row = $knowledgeModel->getKnowledgeById($knowledge_id);
