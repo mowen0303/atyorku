@@ -41,7 +41,7 @@ $row = $flag == 'add' ? null : $forumModel->getRowOfForumClassById($forumClassId
                     <label>类型</label>
                     <select class="input input-select input-size50 selectDefault" name="type" defvalue="<?php echo $row['type']?>">
                         <option value="normal" selected="selected">普通型</option>
-                        <option value="commercial">交易型</option>
+                        <option value="anonymity">树洞</option>
                     </select>
                 </div>
                 <div>

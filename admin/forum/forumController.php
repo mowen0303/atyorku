@@ -114,7 +114,7 @@ function modifyForumClass() {
         $arr['description'] = BasicTool::post('description', '论坛描述不能为空', 255);
         $arr['type'] = BasicTool::post('type', '论坛类型不能为空', false, 10);
         $arr['icon'] = BasicTool::post('icon', false, 80);
-        $arr['sort'] = BasicTool::post('sort', false, 3);
+        $arr['sort'] = BasicTool::post('sort', false, 3)?:0;
         $arr['display'] = BasicTool::post('display', false, 1);
 
         if ($flag == 'add') {
@@ -251,18 +251,16 @@ function getForumClassListWithJson() {
 
 /**
  * 获取某一分类下的帖子列表
- * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListWithJson&pageSize=15&forum_class_id=4&page=1
+ * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListWithJson&pageSize=15&forum_class_id=4&orderBy=replyTime&page=1
  * @param forum_class_id 论坛分类id
  * @param page 第几页的数据
  * @return json
  */
 function getForumListWithJson() {
     global $forumModel;
-    $pageSize = BasicTool::get('pageSize');
-    if (!$pageSize) {
-        $pageSize = 40;
-    }
-    $result = $forumModel->getListOfForumByForumClassId(BasicTool::get("forum_class_id"), $pageSize);
+    $pageSize = BasicTool::get('pageSize') ?: 40;
+    $orderBy = BasicTool::get('orderBy')?:'replyTime';
+    $result = $forumModel->getListOfForumByForumClassId(BasicTool::get("forum_class_id"), $pageSize, false, false, false,$orderBy);
     if ($result) {
         setcookie("forumRequest", 1, time() + 5, '/');
         BasicTool::echoJson(1, "成功", $result);

@@ -106,7 +106,7 @@ class CommentModel extends Model
         $sql ="DELETE FROM comment WHERE id in ({$commentId}) or parent_id in ({$commentId})";
         $this->sqltool->query($sql);
         //更新统计
-        self::updateCountNumber($section_name,$section_id);
+        self::updateCountNumber($section_name,$section_id,'delete');
     }
 
 
@@ -129,17 +129,22 @@ class CommentModel extends Model
      * @param $section_id
      * @return bool|\mysqli_result
      */
-    private function updateCountNumber($section_name,$section_id){
+    private function updateCountNumber($section_name,$section_id,$actionType='add'){
         $time = time();
+        if($actionType=='add'){
+            $updateCondition = ",update_time = {$time} ";
+        }else{
+            $updateCondition = "";
+        }
         if($section_name=="forum"){
             $today = BasicTool::getTodayTimestamp();
             $todayStart = $today['startTime'];
             $todayEnd = $today['endTime'];
             $sql = "SELECT COUNT(*) AS count FROM comment WHERE section_id in ({$section_id}) AND time > {$todayStart} AND time < {$todayEnd}";
             $countToday = $this->sqltool->getRowBySql($sql)['count'];
-            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time}, count_comments_today = {$countToday} WHERE id = {$section_id}";
+            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), count_comments_today = {$countToday} {$updateCondition} WHERE id = {$section_id}";
         }else{
-            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}), update_time = {$time} WHERE id = {$section_id}";
+            $sql = "UPDATE {$section_name} SET count_comments = (SELECT COUNT(*) from comment WHERE section_name = '{$section_name}' AND section_id = {$section_id}) {$updateCondition} WHERE id = {$section_id}";
         }
 
         return $this->sqltool->query($sql);

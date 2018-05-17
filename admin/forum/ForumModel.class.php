@@ -354,7 +354,7 @@ class ForumModel extends Model {
         }
         $all = [];
         $all['id'] = '0';
-        $all['title'] = '全部';
+        $all['title'] = '最新';
         $all['count_today'] = "{$count_today}";
         $all['count_all'] = "{$count_all}";
         $all['count_forum_and_comment'] = "{$count_forum_and_comment}";
@@ -380,7 +380,7 @@ class ForumModel extends Model {
      * @param bool $onlyShowSpecificForumId
      * @return array
      */
-    public function getListOfForumByForumClassId($forum_classId, $pageSize = 20, $onlyShowReportList = false, $onlyShowForumOfUserByUserId = false, $onlyShowSpecificForumId = false) {
+    public function getListOfForumByForumClassId($forum_classId, $pageSize = 20, $onlyShowReportList = false, $onlyShowForumOfUserByUserId = false, $onlyShowSpecificForumId = false, $orderBy = false) {
 
         $userIsLogin = false;
         $currentUser = new UserModel();
@@ -407,7 +407,13 @@ class ForumModel extends Model {
             $condition .= " f.id IN ({$onlyShowSpecificForumId}) AND ";
         }
 
-        $sql = "SELECT f.*,fc.title AS classTitle, type AS classType FROM (select f.*,u_c.is_admin,u_c.title as userTitle from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY `sort` DESC,`update_time` DESC";
+        if($orderBy == "countComments"){
+            $order = "f.sort DESC,`count_comments` DESC";
+        }else{
+            $order = "f.sort DESC,`update_time` DESC";
+        }
+
+        $sql = "SELECT f.*,fc.id AS classId,fc.title AS classTitle, type AS classType FROM (select f.*,u_c.is_admin,u_c.title as userTitle from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY {$order}";
 
         $countSql = "SELECT COUNT(*) FROM (select f.*,u_c.is_admin from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY f.sort DESC,`update_time` DESC";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);

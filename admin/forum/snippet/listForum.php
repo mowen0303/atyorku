@@ -23,11 +23,9 @@ $userModel = new \admin\user\UserModel();
                     <th>性别</th>
                     <th>内容</th>
                     <th>图片</th>
-                    <th>价格</th>
-                    <th>分类</th>
                     <th>评论数</th>
                     <th>赞</th>
-                    <th>时间</th>
+                    <th>时间/更新</th>
                     <th>阅读量</th>
                     <th>排序</th>
                     <th>操作</th>
@@ -49,17 +47,10 @@ $userModel = new \admin\user\UserModel();
                             <?php
                             $forumModel->echoImage($row[img1]);
                             ?>
-                           </td>
-                        <td><?php echo $row['price'] ?></td>
-                        <td><?php  if($row['category']=="buy"){
-                                echo '买';
-                            }else{
-                                echo '卖';
-                            } ?></td>
-
+                        </td>
                         <td><?php echo $row['comment_num'] ?></td>
                         <td><?php echo $row['like'] ?></td>
-                        <td><?php echo $row['time'] ?></td>
+                        <td><?php echo $row['time'] ?>/<?php echo BasicTool::translateTime($row['update_time']) ?></td>
                         <td><?php echo $row['count_view'] ?></td>
                         <td><?php echo $row['sort'] ?></td>
                         <td><a href="index.php?s=formForum&forum_id=<?php echo $row['id']?>&forum_class_id=<?php echo BasicTool::get('forum_class_id') ?>">修改</a></td>

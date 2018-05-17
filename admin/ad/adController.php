@@ -85,7 +85,8 @@ function getAdsByCategoryWithJson(){
     global $adModel;
     global $currentUser;
     try {
-        $ad_category_id = BasicTool::get("ad_category_id", "请指定广告分类id");
+        $ad_category_id = BasicTool::get("ad_category_id", "请指定广告分类id") ?:1;    //升级到2.1.0之后,拿掉此行
+        //$ad_category_id = BasicTool::get("ad_category_id", "请指定广告分类id");
         $result = $adModel->getAdsByCategory($ad_category_id,1);
         if ($result)
             BasicTool::echoJson(1, "查询成功", $result);
