@@ -69,19 +69,21 @@ class CourseCodeModel extends Model
                 }
 
                 if(!$childTitle){
+
                     // 暂无子类科目输入, 返回匹配的父类科目
-                    $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 AND c1.title LIKE '{$parentTitle}%' ORDER BY c1.view_count,c1.title";
+                    $sql = "SELECT c1.id, c1.title FROM course_code c1 WHERE c1.parent_id=0 AND c1.title LIKE '{$parentTitle}%' ORDER BY c1.view_count DESC,c1.title";
+
                     $arr = $this->sqltool->getListBySql($sql);
                     if($arr){
                         $title = $arr[0]['title'];
-                        $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND c1.title='{$title}' AND c2.title LIKE '{$childTitle}%' ORDER BY c1.title, c2.title";
+                        $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND c1.title='{$title}' AND c2.title LIKE '{$childTitle}%' ORDER BY c1.view_count DESC, c1.title, c2.title";
                         $childArr = $this->sqltool->getListBySql($sql);
                         $arr = array_merge($arr,$childArr);
                     }
                     return $arr;
                 } else {
                     // 已确定父类字段, 搜索对应子类科目
-                    $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND c1.title='{$parentTitle}' AND c2.title LIKE '{$childTitle}%' ORDER BY c1.title, c2.title";
+                    $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND c1.title='{$parentTitle}' AND c2.title LIKE '{$childTitle}%' ORDER BY c2.view_count DESC,c1.title, c2.title";
                     return $this->sqltool->getListBySql($sql);
                 }
             }
@@ -109,7 +111,7 @@ class CourseCodeModel extends Model
             }
         }
         $fullStr = trim($parentTitle." ".$childTitle);
-        $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND CONCAT(c1.title,' ',c2.title) LIKE '{$fullStr}%' ORDER BY title LIMIT 40";
+        $sql = "SELECT CONCAT(c1.id,'-',c2.id) AS id, CONCAT(c1.title,' ',c2.title) AS title, c1.id AS course_parent_id, c1.title AS course_parent_title, c2.id AS course_child_id, c2.title AS course_child_title, c2.view_count FROM course_code c1, course_code c2 WHERE c2.parent_id=c1.id AND CONCAT(c1.title,' ',c2.title) LIKE '{$fullStr}%' ORDER BY c2.view_count DESC, title LIMIT 40";
         return $this->sqltool->getListBySql($sql);
     }
 
