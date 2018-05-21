@@ -74,73 +74,79 @@ class KnowledgeModel extends Model
     }
 
     /**更改一个考试回忆录,用于CMS
-     * @param int $id knowledge_id
-     * @param int $knowledge_category_id 分类ID
-     * @param string $description
-     * @param int[] $knowledge_point_id 考点id
-     * @param string[] $knowledge_point_description 考点描述
-     * @param int $count_knowledge_points
+     * @param int $knowledge_id
+     * @param int $knowledge_category_id
      * @param int $img_id
+     * @param int $course_code_id
+     * @param int $prof_id
      * @param float $price
+     * @param string $description
+     * @param string[] | NULL $knowledge_point_description
+     * @param int $count_knowledge_points
      * @param int $term_year
      * @param string $term_semester
      * @param int $sort
      * @return bool
      */
-    function updateKnowledgeById($id,$knowledge_category_id,$description,$knowledge_point_id,$knowledge_point_description,$count_knowledge_points,$img_id,$price,$term_year,$term_semester,$sort=0){
+    function updateKnowledgeById($knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort){
+        $is_image_version = !!$img_id;
         $arr = [];
-        $arr["knowledge_category_id"] = $knowledge_category_id;
-        $arr["img_id"] = $img_id;
-        $arr["price"] = $price;
-        $arr["description"] = $description?$description:"";
-        $arr["count_knowledge_points"] = $count_knowledge_points? $count_knowledge_points : count($knowledge_point_description);
-        $arr["term_year"] = $term_year;
-        $arr["term_semester"] = $term_semester?$term_semester:"";
-        $arr["sort"] = $sort;
-        if (!$img_id){
-            //文字版,更改考点，插入新考点
-            if ($this->updateKnowledgePointById($knowledge_point_id,$id,$knowledge_point_description)){
-                $this->errorMsg = "更改考点失败";
-                return false;
-            }
+        $arr['knowledge_category_id'] = $knowledge_category_id;
+        $arr['img_id'] = $is_image_version?$img_id : 0;
+        $arr['course_code_id'] = $course_code_id;
+        $arr['prof_id'] = $prof_id;
+        $arr['price'] = $price;
+        $arr['description'] = $description?$description:'';
+        $arr['count_knowledge_points'] = $is_image_version?$count_knowledge_points : count($knowledge_point_description);
+        $arr['term_year'] = $term_year;
+        $arr['term_semester'] = $term_semester;
+        $arr['sort'] = $sort;
+        if (!$is_image_version){
+            $this->updateKnowledgePointsByKnowledgeId($knowledge_id,$knowledge_point_description);
         }
-        if(!$this->updateRowById("knowledge",$id,$arr)){
-            $this->errorMsg = "更改失败";
-            return false;
-        }
+        $this->updateRowById('knowledge',$knowledge_id,$arr);
         return true;
     }
 
     /**修改考点,用于文字版
      * 新考点的knowledge_point_id = 0
-     * @param int[] $knowledge_point_id
      * @param int $knowledge_id
      * @param string[] $knowledge_point_description
      * @return bool
      */
-    private function updateKnowledgePointById($knowledge_point_id,$knowledge_id,$knowledge_point_description){
-        $knowledge_point_description_for_insert = [];
-        $existing_knowledge_point_ids = [];
-        $bool = true;
-        //把knowledge_point表里已存在的考点的id储存进数组里
-        foreach ($this->getKnowledgePointsByKnowledgeId($knowledge_id) as $knowledge_point){
-            $existing_knowledge_point_ids[] = $knowledge_point["id"];
+    private function updateKnowledgePointsByKnowledgeId($knowledge_id,$knowledge_point_description){
+        $existing_knowledge_points = $this->getKnowledgePointsByKnowledgeId($knowledge_id);
+        if (count($existing_knowledge_points)>count($knowledge_point_description)){
+            $delete_ids=[];
+            foreach($existing_knowledge_points as $i => $knowledge_point){
+                if ($i > count($knowledge_point_description)-1){
+                    $delete_ids[] = $knowledge_point['id'];
+                }
+                else{
+                    $arr=[];
+                    $arr['knowledge_id'] = $knowledge_id;
+                    $arr['description'] = $knowledge_point_description[$i];
+                    $this->updateRowById("knowledge_point",$knowledge_point['id'],$arr);
+                }
+            }
+            $this->realDeleteByFieldIn('knowledge_point','id',$delete_ids);
         }
-        for ($i=0; $i < count($knowledge_point_id);$i++){
-            if(in_array($knowledge_point_id[$i],$existing_knowledge_point_ids)){
-                //考点id已存在数据表里,执行update
+        else{
+            $new_knowledge_point_descriptions = [];
+            foreach ($existing_knowledge_points as $i => $knowledge_point){
                 $arr=[];
-                $arr["description"] = $knowledge_point_description[$i];
-                $arr["knowledge_id"] = $knowledge_id;
-                $this->updateRowById("knowledge_point",$knowledge_point_id[$i],$arr);
+                $arr['knowledge_id'] = $knowledge_id;
+                $arr['description'] = $knowledge_point_description[$i];
+                $this->updateRowById("knowledge_point",$knowledge_point['id'],$arr);
+                if ($i == count($existing_knowledge_points)-1){
+                    //last iteration in foreach loop
+                    for ($m=$i+1;$m < count($knowledge_point_description);$m++){
+                        $new_knowledge_point_descriptions[] = $knowledge_point_description[$m];
+                    }
+                }
             }
-            else{
-                $knowledge_point_description_for_insert[] = $knowledge_point_description[$i];
-            }
+            !count($new_knowledge_point_descriptions) or $this->addKnowledgePoint($knowledge_id,$new_knowledge_point_descriptions);
         }
-        if (count($knowledge_point_description_for_insert) > 0)
-            $bool = $this->addKnowledgePoint($knowledge_id,$knowledge_point_description_for_insert);
-        return $bool;
     }
 
     /**删除一个或多个考试回忆录
@@ -150,7 +156,7 @@ class KnowledgeModel extends Model
     function deleteKnowledgeById($id){
            return $this->realDeleteByFieldIn("knowledge","id",$id);
     }
-    private function getKnowledgePointsByKnowledgeId($knowledge_id){
+    function getKnowledgePointsByKnowledgeId($knowledge_id){
         $sql = "SELECT * FROM knowledge_point WHERE knowledge_id in ({$knowledge_id})";
         return $this->sqltool->getListBySql($sql);
     }

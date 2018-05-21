@@ -3,8 +3,9 @@ $knowledgeModel = new \admin\knowledge\KnowledgeModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $knowledgeCategoryModel = new \admin\knowledgeCategory\KnowledgeCategoryModel();
-
-$knowledge_id = BasicTool::get('id');
+$courseCodeModel = new \admin\courseCode\CourseCodeModel();
+$profModel = new \admin\professor\ProfessorModel();
+$knowledge_id = BasicTool::get('knowledge_id');
 $flag = !$knowledge_id ? "add" : "update";
 $knowledge_categories = $knowledgeCategoryModel->getKnowledgeCategories();
 if ($flag == 'add') {
@@ -14,19 +15,15 @@ if ($flag == 'add') {
     $row = $knowledgeModel->getKnowledgeById($knowledge_id);
     $img_id = $row['img_id'];
     $form_action = "/admin/knowledge/knowledgeController.php?action=updateKnowledge";
+    $course_code_child = $courseCodeModel->getCourseCodeById($row['course_code_id']);
+    $course_code_parent = $courseCodeModel->getCourseCodeById($course_code_child['parent_id']);
+    $prof = $profModel->getProfessorById($row['prof_id']);
+    $prof_full_name = "{$prof['firstname']} {$prof['lastname']}";
+    $category_name = $knowledgeCategoryModel->getKnowledgeCategoryById($row['knowledge_category_id'])['name'];
 }
 
 ?>
 <script>
-    //删除已上传图片 (点击更新后生效)
-    function removeImg(i) {
-        var v = $('#img' + i).val();
-        if (v) {
-            $('#img' + i).attr('value', '');
-            $('#pic' + i).attr('src', '').show();
-            $('#imgbtn' + i).hide();
-        }
-    }
 
     $(function () {
         function readURL(input) {
@@ -40,6 +37,7 @@ if ($flag == 'add') {
             }
         }
         $("#imgFile").change(function () {
+            $('#img').attr('value', 'delete');
             readURL(this);
         });
     })
@@ -54,42 +52,45 @@ if ($flag == 'add') {
 
 <article class="mainBox">
     <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
-        <input name="id" value="<?php echo $knowledge_id ?>" type="hidden"/>
+        <input name="knowledge_id" value="<?php echo $knowledge_id ?>" type="hidden"/>
         <section class="formBox">
             <div id="courseCodeInputComponent">
                 <div style="float:left;width:49.3%;margin-right:6px">
                     <label>课程类别 (例如:ADMS)</label>
-                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent" value="">
+                    <input id="parentInput" class="input" type="text" list="parentCodeList" name="course_code_parent" value="<?php echo $course_code_parent['title']?>">
                     <datalist id="parentCodeList"></datalist>
                 </div>
                 <div style="float:left;width:49.3%">
                     <label>课程代码 (例如:1000)</label>
-                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child" value="">
+                    <input id="childInput" class="input" type="text" list="childCodeCodeList" name="course_code_child" value="<?php echo $course_code_child['title']?>">
                     <datalist id="childCodeCodeList"></datalist>
                 </div>
             </div>
             <div id="professorInputComponent" style="clear:left">
                 <div style="float:left;width:49.3%;margin-right:6px">
                     <label>教授</label>
-                    <input class="input" type="text" list="professorList" name="prof_name" />
+                    <input class="input" type="text" list="professorList" value="<?php echo $prof_full_name?>" name="prof_name" />
                     <datalist id="professorList"></datalist>
                 </div>
                 <div style="float:left;width:49.3%">
                     <label>售价(积分)</label>
-                    <input class="input" type="number" name="price"/>
+                    <input class="input" type="number" value="<?php echo $row['price']?>" name="price"/>
                 </div>
             </div>
             <div style="clear:left">
                 <select name="term_year" class='input input-select' style="float:left;width:32%;margin-right:5px">
-                    <option value="" selected>选择学年</option>
                     <?php
-                        for ($i = 2000; $i <= (int)date('Y'); $i++){
-                            echo "<option value='{$i}'>{$i}</option>";
-                        }
+                    $output = $row?"<option value='{$row["term_year"]}' selected>{$row["term_year"]}</option>":"<option value='' selected>选择学年</option>";
+                    echo $output;
+                    for ($i = 2000; $i <= (int)date('Y'); $i++){
+                        echo "<option value='{$i}'>{$i}</option>";
+                    }
                     ?>
                 </select>
                 <select class="input input-select" name="term_semester" style="float:left;width:32%;margin-right:5px">
-                    <option value="" selected>选择学期</option>
+                    <?php   $output = $row?"<option value='{$row["term_semester"]}' selected>{$row['term_semester']}</option>":"<option value='' selected>选择学期</option>";
+                    echo $output;
+                    ?>
                     <option value="Fall">Fall</option>
                     <option value="Winter">Winter</option>
                     <option value="Year">Year</option>
@@ -98,41 +99,44 @@ if ($flag == 'add') {
                     <option value="Summer 2">Summer 2</option>
                 </select>
                 <select class="input input-select" name="knowledge_category_id" style="float:left;width:32%">
-                    <option value="" selected>选择分类</option>
                     <?php
-                        foreach($knowledge_categories as $category)
-                            echo "<option value='{$category["id"]}'>{$category['name']}</option>";
-                        ?>
+                    $output = $row?"<option value='{$row["knowledge_category_id"]}' selected>{$category_name}</option>":"<option value='' selected>选择分类</option>";
+                    echo $output;
+                    foreach($knowledge_categories as $category)
+                        echo "<option value='{$category["id"]}'>{$category['name']}</option>";
+                    ?>
                 </select>
             </div>
         </section>
         <section class="formBox" style="clear:left">
             <div>
                 <label>卖家留言</label>
-                <textarea placeholder="说点什么吧。。。" name="description" class="input input-textarea"></textarea>
+                <textarea placeholder="说点什么吧。。。" name="description" class="input input-textarea"><?php echo $row["description"]?></textarea>
             </div>
             <div style="float:left;margin-right:5px;width:49.3%">
                 <label>考点量</label>
-                <input class="input" name="count_knowledge_points" type="number"/>
+                <input class="input" name="count_knowledge_points" value="<?php echo $row['count_knowledge_points']?>" type="number"/>
             </div>
             <div style="float:left;width:49.3%">
                 <label>排序值</label>
-                <input class="input" type="number" name="sort" value="0" />
+                <input class="input" type="number" name="sort" value="<?php echo $row['sort']?1:0?>" />
             </div>
         </section>
         <section class="formBox" style="clear:left">
             <div>
                 <div id="currentImages">
                     <label style="margin-top:1.5rem">图片: 最多上传1张</label>
-                    <div id="currentImages">
-                        <?php
-                        if ($img_id) {
-                            echo "<div style='display: inline-block; vertical-align: middle;'><div><img id='pic1' src='{$imageModel->getImageById($img_id)["url"]}' style='width: 100px; height: auto;'><input id='img1' name='img_id' value='{$img_id}' style='display: none'></div><div><input type='button' id='imgbtn1' value='删除' onclick='removeImg(1);'></div></div>";
-                        }
-                        ?>
-                    </div>
-                    <p style="margin-bottom:1rem"><img id="imgOfUpload"
-                                                       style="width: 100px; height: auto; display: none"></p>
+                    <input id='img' name='img_id' value="<?php echo $img_id?>" hidden/>
+                    <p style="margin-bottom:1rem"><?php
+                                if ($img_id){
+                                    $url = $imageModel->getImageById($img_id)['url'];
+                                    echo "<img id='imgOfUpload' src = '{$url}'
+                                                       style='width: 100px; height: auto'/>";
+                                }
+                                else
+                                    echo "<img id='imgOfUpload'
+                                                       style='width: 100px; height: auto; display: none'>";
+                        ?></p>
                     <input type="file" name="imgFile[]" id="imgFile"/>
                 </div>
             </div>

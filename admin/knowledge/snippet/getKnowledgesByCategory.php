@@ -82,7 +82,7 @@ $arr = $knowledgeModel->getKnowledgeByCourseCodeIdProfIdCMS(1,true,"","",0,0,"",
                         <td><?php echo $row['count_comments']?></td>
                         <td><?php echo $row["count_views"]?></td>
                         <td><?php echo $row["sort"]?></td>
-                        <td><a href="index.php?s=addKnowledge&id=<?php echo $row['id'] ?>">修改</a></td>
+                        <td><a href="index.php?s=<?php $url = $row['img_id']?"addKnowledgeImage&knowledge_id={$row['id']}":"addKnowledgeText&knowledge_id={$row['id']}"; echo $url?>">修改</a></td>
                     </tr>
                     <?php
                 }

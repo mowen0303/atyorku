@@ -22,8 +22,7 @@ call_user_func(BasicTool::get('action'));
  * @param term_year 学年
  * @param term_semester 学期
  * @param sort
- * @param page
- * @param img_id
+ * @param imgFile
  * localhost/admin/knowledge/knowledgeController.php?action=addKnowledge
  */
 function addKnowledge($echoType = "normal") {
@@ -50,7 +49,7 @@ function addKnowledge($echoType = "normal") {
         $term_semester = BasicTool::post("term_semester","请指定学期");
         $sort = $echoType == "json" ? 0 : BasicTool::post("sort");
         ($sort == 0 || $sort == 1 || $sort == NULL || $echoType == "json") or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
-        $imgArr = array(BasicTool::post("img_id"));
+        $imgArr = array(NULL);
         $img_id = $imageModel->uploadKnowledgeImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
         if (($img_id && $knowledge_point_description) || (!$img_id && !$knowledge_point_description)){
             $imageModel->deleteImageById($img_id);
@@ -92,12 +91,69 @@ function addKnowledge($echoType = "normal") {
  * @param term_year 学年
  * @param term_semester 学期
  * @param sort
- * @param page
- * @param img_id
+ * @param imgFile
  * localhost/admin/knowledge/knowledgeController.php?action=addKnowledgeWithJson
  */
 function addKnowledgeWithJson() {
     addKnowledge("json");
+}
+
+/**更改活动
+ * POST
+ * @param knowledge_id 回忆录ID
+ * @param knowledge_category_id 考试类别id
+ * @param course_code_parent 学科
+ * @param course_code_child 课程代号
+ * @param prof_name 教授全名
+ * @param price 价格
+ * @param description
+ * @param knowledge_point_description 所有考点
+ * @param count_knowledge_points
+ * @param term_year 学年
+ * @param term_semester 学期
+ * @param sort
+ * @param img_id
+ * @param imgFile
+ * localhost/admin/knowledge/knowledgeController.php?action=updateKnowledge
+ */
+function updateKnowledge(){
+    global $knowledgeModel,$knowledgeCategoryModel,$courseCodeModel,$profModel,$currentUser,$imageModel;
+    try{
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException('更改失败:非管理员权利');
+        $knowledge_id = BasicTool::post('knowledge_id','更改失败：回忆录ID不能为空');
+        $knowledge = $knowledgeModel->getKnowledgeById($knowledge_id) or BasicTool::throwException('更改失败:考试回忆录不存在');
+        $knowledge_category_id = BasicTool::post("knowledge_category_id",'更改失败：请选择分类');
+        $knowledgeCategoryModel->getKnowledgeCategoryById($knowledge_category_id) or BasicTool::throwException("考试类别不存在");
+        $course_code_parent = BasicTool::post('course_code_parent','更改失败：请选择学科');
+        $course_code_child = BasicTool::post('course_code_child','更改失败：请选择课程');
+        $course_code_id = $courseCodeModel->getCourseIdByCourseCode($course_code_parent, $course_code_child) or BasicTool::throwException("此课程不存在");
+        $prof_name = BasicTool::post('prof_name','更改失败，请选择教授');
+        $prof_id = $profModel->getProfessorIdByFullName($prof_name);
+        $price = (float)BasicTool::post('price','更改失败：售价不能为空');
+        $price >= 0 or BasicTool::throwException("请输入有效的价格");
+        $description = BasicTool::post('description');
+        $knowledge_point_description = BasicTool::post('knowledge_point_description');
+        $count_knowledge_points = BasicTool::post('count_knowledge_points');
+        $term_year = BasicTool::post('term_year','更改失败:请选择学年');
+        $term_semester = BasicTool::post('term_semester','更改失败，请选择学年');
+        $img_id = BasicTool::post('img_id');
+        $sort = BasicTool::post('sort')?1:0;
+        if (($img_id && $knowledge_point_description) || (!$img_id && !$knowledge_point_description)){
+            BasicTool::throwException("更改失败!!");
+        }
+        if ($img_id){
+            //Updating an image version
+            if ($img_id != $knowledge['img_id']){
+                $imageModel->deleteImageById($knowledge['img_id']) or BasicTool::throwException('更改失败:删除旧图片失败');
+                $imgArr = array("");
+                $img_id = $imageModel->uploadKnowledgeImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
+            }
+        }
+        $knowledgeModel->updateKnowledgeById($knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort) or BasicTool::throwException($knowledgeModel->errorMsg);
+        BasicTool::echoMessage("更改成功");
+    }catch(Exception $e){
+        BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+    }
 }
 
 /**根据课程,教授,学年学期查询
