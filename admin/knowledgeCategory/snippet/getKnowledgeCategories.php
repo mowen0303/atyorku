@@ -5,6 +5,7 @@ $knowledgeCategoryModel = new \admin\knowledgeCategory\KnowledgeCategoryModel();
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
+    <a class="btn" href="/admin/knowledge/index.php">返回</a>
     <a class="btn" href="index.php?s=addKnowledgeCategory">添加分类</a>
 </nav>
 <article class="mainBox">
@@ -33,7 +34,7 @@ $knowledgeCategoryModel = new \admin\knowledgeCategory\KnowledgeCategoryModel();
                         <td><?php echo $row["name"] ?></td>
                         <td><?php echo $knowledgeCategoryModel->getKnowledgeCountByCategoryId($row["id"])?></td>
                         <td><a href="index.php?s=addKnowledgeCategory&id=<?php echo $row['id'] ?>">修改</a></td>
-                        <td><a href="/admin/knowledge/index.php?s=getKnowledgesByCategory&knowledge_category_id=<?php echo $row['id']?>&knowledge_category_name=<?php echo $row["name"] ?>">查看</a></td>
+                        <td><a href="/admin/knowledge/index.php?s=getKnowledges&knowledge_category_id=<?php echo $row['id']?>&knowledge_category_name=<?php echo $row["name"] ?>">查看</a></td>
                     </tr>
                     <?php
                 }

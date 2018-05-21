@@ -12,12 +12,12 @@ $arr = $knowledgeModel->getKnowledgeByCourseCodeIdProfIdCMS(1,true,"","",0,0,"",
     <h1>考试回忆录</h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="/admin/knowledgeCategory/index.php">返回</a>
-    <a class="btn" href="index.php?s=addKnowledgeText&knowledge_category_id=<?php echo $knowledge_category_id ?>">添加新回忆录(文字)</a>
-    <a class="btn" href="index.php?s=addKnowledgeImage&knowledge_category_id=<?php echo $knowledge_category_id ?>">添加新回忆录(图片)</a>
+    <a class="btn" href="/admin/knowledgeCategory/index.php">分类管理</a>
+    <a class="btn" href="index.php?s=addKnowledgeText">添加新回忆录(文字)</a>
+    <a class="btn" href="index.php?s=addKnowledgeImage">添加新回忆录(图片)</a>
 </nav>
 <article class="mainBox">
-    <header><h2><?php echo $knowledge_category_name?></h2></header>
+    <header><h2><?php echo $knowledge_category_name?$knowledge_category_name:"最新发布"?></h2></header>
     <form action="knowledgeController.php?action=deleteKnowledge" method="post">
         <section>
             <table class="tab">

@@ -33,7 +33,7 @@ if(!$userModel->isAdminLogin()){
 			<ul>
 				<li><a href="/admin/adCategory/" target="mainFrame">广告管理</a></li>
 				<li><a href ="/admin/eventCategory/" target="mainFrame">活动管理</a></li>
-                <li><a href ="/admin/knowledgeCategory/" target="mainFrame">考试回忆录</a></li>
+                <li><a href ="/admin/knowledge/" target="mainFrame">考试回忆录</a></li>
 				<li><a href="/admin/forum/" target="mainFrame">同学圈</a></li>
 				<li><a href="/admin/guide/" target="mainFrame">文章</a></li>
 				<li><a href="/admin/book/index.php?s=listBook" target="mainFrame">二手书</a ></li>

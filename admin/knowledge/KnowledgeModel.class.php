@@ -229,7 +229,7 @@ class KnowledgeModel extends Model
         }
         return $knowledges;
     }
-    function getKnowledgeByCourseCodeIdProfIdCMS($user_id=0,$is_admin=false,$course_parent_title="",$course_child_title="",$prof_id=0,$term_year=0,$term_semester="",$knowledge_category_id=1){
+    function getKnowledgeByCourseCodeIdProfIdCMS($user_id=0,$is_admin=false,$course_parent_title="",$course_child_title="",$prof_id=0,$term_year=0,$term_semester="",$knowledge_category_id=0){
         //查询knowledge表
         $condition = "true";
         $sql_select = "SELECT * FROM knowledge WHERE";
