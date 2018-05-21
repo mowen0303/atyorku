@@ -2,6 +2,8 @@
 namespace admin\book;   //-- 注意 --//
 use admin\courseCode\CourseCodeModel;
 use admin\image\ImageModel;
+use admin\productTransaction\ProductTransactionModel;
+use admin\productTransaction\ProductTransactionState;
 use admin\professor\ProfessorModel;
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
@@ -207,9 +209,10 @@ class BookModel extends Model
      * @param int $pageSize 每页显示数
      * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
      * @param bool $availableOnly
+     * @param bool $userDetail 是否query用户信息
      * @return array
      */
-    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $elink=false) {
+    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $elink=false, $userDetail=true) {
         $q = "NOT b.is_deleted";
         if($availableOnly){
             $q .= " AND b.is_available";
@@ -221,7 +224,7 @@ class BookModel extends Model
         if($elink){
             $selectSql = "b.e_link";
         }
-        return $this->getBooks($pageSize,$q,$selectSql);
+        return $this->getBooks($pageSize,$q,$selectSql, $userDetail);
     }
 
     /**
@@ -250,6 +253,76 @@ class BookModel extends Model
             $q .= " AND ({$query})";
         }
         return $this->getBooks($pageSize,$q,"b.e_link");
+    }
+
+    /**
+     * 获取一页指定用户卖出的交易中的二手书
+     * @param int|string $userId 用户ID
+     * @param int $pageSize
+     * @return array
+     * @throws Exception
+     */
+    public function getListOfInTransactionSellingBooksByUserId($userId, $pageSize=20){
+        return $this->getListOfSellingBooksByUserId($userId, 1, $pageSize);
+    }
+
+    /**
+     * 获取一页指定用户卖出的二手书
+     * @param int|string $userId 卖家ID
+     * @param int $pending -1 = 全部, 0 = 完成的交易, 1 = 交易中
+     * @param int $pageSize
+     * @return array
+     * @throws Exception
+     */
+    private function getListOfSellingBooksByUserId($userId, $pending, $pageSize=20){
+        $productTransactionModel = new ProductTransactionModel('book');
+        $pendingSellingTransactions = $productTransactionModel->getListOfSoldTransactionsByUserId($userId,$pending,$pageSize,false, false, false, false, true);
+        $ids = array_column($pendingSellingTransactions, "section_id");
+        if(!$ids){return [];}
+        $implodedIds = implode($ids, ",");
+        $arr = $this->getListOfBooks($pageSize, "b.id IN ($implodedIds)", false, true, false);
+        $books = [];
+        foreach($arr as $item) {
+            $books[$item['id']] = $item;
+        }
+        $results = [];
+        foreach($pendingSellingTransactions as $tran) {
+            $tran['product_transaction_id'] = $tran['id'];
+            array_push($results, array_merge($tran, $books[$tran['section_id']]));
+        }
+        return $results;
+    }
+
+    /**
+     * 获取一页指定用户购买的二手书
+     * @param $userId
+     * @param $pending -1 = 全部, 0 = 完成的交易, 1 = 交易中
+     * @param int $pageSize
+     * @return array
+     */
+    public function getListOfOrderedBooksByUserId($userId, $pending=-1, $pageSize=20){
+        $productTransactionModel = new ProductTransactionModel('book');
+        $q = "";
+        if ($pending===0) {
+            $q = "pt.state='".ProductTransactionState::COMPLETED."'";
+        } else if($pending===1) {
+            $q = "pt.state<>'".ProductTransactionState::COMPLETED."'";
+        }
+        $transactions = $productTransactionModel->getListOfPurchasedTransactionsByUserId($userId, $pageSize, false, $q, false, false, true);
+        $ids = array_column($transactions, "section_id");
+        if(!$ids){return [];}
+        $implodedIds = implode($ids, ",");
+        $arr = $this->getListOfBooks($pageSize, "b.id IN ($implodedIds)", false, true, false);
+        $books = [];
+        foreach($arr as $item) {
+            $books[$item['id']] = $item;
+        }
+        $results = [];
+        foreach($transactions as $tran) {
+            $tran['product_transaction_id'] = $tran['id'];
+            array_push($results, array_merge($tran, $books[$tran['section_id']]));
+        }
+        return $results;
     }
 
     /**
@@ -566,12 +639,15 @@ class BookModel extends Model
      * @param int $pageSize 每页数量
      * @param bool $query additional query
      * @param bool $selectSql additional select query
+     * @param bool $userDetail 是否query用户信息
      * @return array
      */
-    private function getBooks($pageSize=20, $query=false, $selectSql=false) {
-        $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+    private function getBooks($pageSize=20, $query=false, $selectSql=false, $userDetail=true) {
+        $select = "SELECT b.id,b.price,b.name,b.description,b.user_id,b.book_category_id,b.course_id,b.image_id_one,b.image_id_two,b.image_id_three,b.professor_id,b.term_year,b.term_semester,b.count_comments,b.count_view,b.is_e_document,b.pay_with_points,b.is_available,b.publish_time,b.last_modified_time,bc.id AS book_category_id, bc.name AS book_category_name, img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width, c1.id AS course_code_child_id, c1.title AS course_code_child_title, c2.id AS course_code_parent_id, c2.title AS course_code_parent_title, CONCAT(p.firstname, ' ', p.lastname) AS prof_name";
+        if($userDetail){$select .= ",u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree,uc.is_admin";};
         if($selectSql){$select .= ",{$selectSql}";};
-        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+        $from = "FROM(`{$this->table}` b LEFT JOIN `book_category` bc ON b.book_category_id = bc.id LEFT JOIN `image` img ON b.image_id_one = img.id LEFT JOIN `course_code` c1 ON b.course_id = c1.id LEFT JOIN `course_code` c2 ON c1.parent_id = c2.id LEFT JOIN `professor` p ON b.professor_id = p.id)";
+        if($userDetail){$from .= " LEFT JOIN `user` u ON b.user_id = u.id LEFT JOIN `user_class` uc ON u.user_class_id = uc.id";};
 
         $where = $query ? ("WHERE " . "({$query})") : "";
         $order = "ORDER BY `sort` DESC,`last_modified_time` DESC";
@@ -582,9 +658,11 @@ class BookModel extends Model
         // Format publish time and enroll year
         foreach ($arr as $k => $v) {
             $t = $v["publish_time"];
-            $y = $v["enroll_year"];
             if($t) $arr[$k]["publish_time"] = BasicTool::translateTime($t);
-            if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
+            if($userDetail){
+                $y = $v["enroll_year"];
+                if($y) $arr[$k]["enroll_year"] = BasicTool::translateEnrollYear($y);
+            }
         }
         return $arr;
     }

@@ -14,23 +14,23 @@ call_user_func(BasicTool::get('action'));
 //============ Function with JSON ===============//
 
 /**
- * JSON -  获取指定Id的二手书信息
- * @param book_id 二手书ID
+ * JSON -  获取指定Id的学习资料信息
+ * @param book_id 学习资料ID
  * http://www.atyorku.ca/admin/book/bookController.php?action=getBookByIdWithJson&book_id=1
  */
 function getBookByIdWithJson() {
     global $bookModel;
     try {
-        $id = BasicTool::get("book_id","请指定二手书Id");
+        $id = BasicTool::get("book_id","请指定学习资料Id");
         if (validateId($id)) {
             $result = $bookModel->getBookById((int)$id);
             if ($result) {
                 BasicTool::echoJson(1, "成功", $result);
             } else {
-                BasicTool::echoJson(0, "未找到该ID对应的二手书");
+                BasicTool::echoJson(0, "未找到该ID对应的学习资料");
             }
         } else {
-            BasicTool::echoJson("二手书ID无效");
+            BasicTool::echoJson("学习资料ID无效");
         }
     } catch (Exception $e) {
         BasicTool::echoJson(0,$e->getMessage());
@@ -38,14 +38,14 @@ function getBookByIdWithJson() {
 }
 
 /**
- * JSON -  获取指定二手书类别ID下的一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
- * @param book_category_id 二手书类别ID
+ * JSON -  获取指定学习资料类别ID下的一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
+ * @param book_category_id 学习资料类别ID
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByCategoryIdWithJson&book_category_id=3&pageSize=20
  */
 function getListOfBooksByCategoryIdWithJson() {
     try {
-        $id = BasicTool::get("book_category_id","请指定二手书类别Id");
+        $id = BasicTool::get("book_category_id","请指定学习资料类别Id");
         if (validateId($id)) {
             getListOfBooksWithJson("book_category_id", (int)$id);
         }
@@ -55,8 +55,8 @@ function getListOfBooksByCategoryIdWithJson() {
 }
 
 /**
- * JSON -  获取指定用户ID下的一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
+ * JSON -  获取指定用户ID下的一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
  * @param user_id 用户ID
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByUserIdWithJson&user_id=1123&pageSize=20
  */
@@ -72,8 +72,8 @@ function getListOfBooksByUserIdWithJson() {
 }
 
 /**
- * JSON -  获取指定用户名下的一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
+ * JSON -  获取指定用户名下的一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
  * @param username 用户名
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByUsernameWithJson&username=abc@gmail.com&pageSize=20
  */
@@ -87,8 +87,8 @@ function getListOfBooksByUsernameWithJson() {
 }
 
 /**
- * JSON -  获取指定关键词相关的一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
+ * JSON -  获取指定关键词相关的一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
  * @param keywords 搜索关键词
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksByKeywordsWithJson&keywords=计算机科学&pageSize=20
  */
@@ -101,10 +101,50 @@ function getListOfBooksByKeywordsWithJson() {
     }
 }
 
+/**
+ * JSON - 获取一页我的学习资料 [用户需要登录]
+ * <GET Parameters>
+ * @param int queryType 1=出售中，2=已下架，3=待处理
+ * @param int pageSize
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfMyBooksWithJson&queryType=1&pageSize=20
+ */
+function getListOfMyBooksWithJson() {
+    global $bookModel;
+    global $currentUser;
+
+    try {
+        $userId = $currentUser->userId;
+        $userId or BasicTool::throwException("请先登录");
+        $q = intval(BasicTool::get("queryType") ?: 1);
+        $pageSize = BasicTool::get("pageSize") ?: 20;
+        $query = "b.user_id=${userId}";
+        $result = [];
+        if($q===1){
+            // 获取出售中
+            $result = $bookModel->getListOfBooks($pageSize, $query, true, true);
+        } else if ($q===2){
+            // 获取已下架
+            $result = $bookModel->getListOfBooks($pageSize, $query . " AND NOT b.is_available", false, true);
+        } else if ($q===3){
+            // 获取待处理
+            $result = $bookModel->getListOfInTransactionSellingBooksByUserId($userId, $pageSize);
+        } else {
+            BasicTool::throwException("没找到获取类型");
+        }
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 
 /**
- * JSON -  获取某一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
+ * JSON -  获取某一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
  * @param String $queryType 搜索类别
  * @param $queryValue 搜索关键词
  * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksWithJson&pageSize=20
@@ -120,7 +160,7 @@ function getListOfBooksWithJson($queryType=NULL, $queryValue=NULL) {
         $result = NULL;
 
         if ($queryType) {
-            // 根据指定搜索类别来获取二手书
+            // 根据指定搜索类别来获取学习资料
             $queryValue or BasicTool::throwException("请指定搜索类别相对应搜索值");
             switch($queryType) {
                 case "user_id":
@@ -156,10 +196,10 @@ function getListOfBooksWithJson($queryType=NULL, $queryValue=NULL) {
 
 
 /**
- * JSON -  获取某一页二手书
- * @param pageSize 每一页二手书获取量，默认值=40
+ * JSON -  获取某一页学习资料
+ * @param pageSize 每一页学习资料获取量，默认值=40
  * @param q $query string 搜索条件
- * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksWithJsonV2&pageSize=20
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfBooksWithJsonV2&pageSize=40
  */
 function getListOfBooksWithJsonV2() {
     global $bookModel;
@@ -237,15 +277,45 @@ function getListOfBooksWithJsonV2() {
 }
 
 
+/**
+ * JSON -  获取一页用户订购的学习资料
+ * @param pending 订购状态 -1 = 全部， 0 = 已完成[默认值]， 1 = 已处理/处理中的
+ * @param pageSize 每一页学习资料获取量，默认值=20
+ * http://www.atyorku.ca/admin/book/bookController.php?action=getListOfOrderedBooksWithJson&pending=0&pageSize=20
+ */
+function getListOfOrderedBooksWithJson() {
+    global $bookModel;
+    global $currentUser;
+
+    try {
+        $userId = $currentUser->userId;
+        $userId or BasicTool::throwException("请先登录");
+        $pending = intval(BasicTool::get("pending") ?: 0);
+        $pageSize = BasicTool::get("pageSize") ?: 20;
+        if($pending!==-1&&$pending!==0&&$pending!==1){
+            BasicTool::throwException("无效索引");
+        }
+        $result = $bookModel->getListOfOrderedBooksByUserId($userId,$pending,$pageSize);
+
+        if ($result) {
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 
 /**
-* JSON - 添加或修改一本二手书
+* JSON - 添加或修改一本学习资料
 * @param flag 添加or修改 [add/update]
-* @param name 二手书名
-* @param price 二手书价钱, 不能为负数
-* @param book_category_id 二手书所属分类ID
-* @param description 二手书细节描述
-* @param id 二手书ID，修改二手书时必填
+* @param name 学习资料名
+* @param price 学习资料价钱, 不能为负数
+* @param book_category_id 学习资料所属分类ID
+* @param description 学习资料细节描述
+* @param id 学习资料ID，修改学习资料时必填
 * [POST] http://www.atyorku.ca/admin/book/bookController.php?action=addBookWithJson
 */
 function addBookWithJson() {
@@ -254,8 +324,8 @@ function addBookWithJson() {
 
 
 /**
-* JSON - 添加或修改一本二手书
-* @param id 删除二手书的id
+* JSON - 添加或修改一本学习资料
+* @param id 删除学习资料的id
 * [POST] http://www.atyorku.ca/admin/book/bookController.php?action=deleteBookWithJson
 */
 function deleteBookWithJson() {
@@ -263,12 +333,30 @@ function deleteBookWithJson() {
 }
 
 /**
-* JSON - 添加或修改一本二手书
-* @param id 删除二手书的id
+* JSON - 添加或修改一本学习资料
+* @param id 删除学习资料的id
 * [POST] http://www.atyorku.ca/admin/book/bookController.php?action=deleteBookLogicallyWithJson
 */
 function deleteBookLogicallyWithJson() {
     deleteBookLogically("json");
+}
+
+/**
+ * JSON - 上架一本学习资料
+ * @param id 学习资料的id
+ * [POST] http://www.atyorku.ca/admin/book/bookController.php?action=launchBookWithJson
+ */
+function launchBookWithJson() {
+    launchBookById('json');
+}
+
+/**
+ * JSON - 下架一本学习资料
+ * @param id 学习资料的id
+ * [POST] http://www.atyorku.ca/admin/book/bookController.php?action=unlaunchBookWithJson
+ */
+function unlaunchBookWithJson() {
+    unLaunchBookById('json');
 }
 
 /**
@@ -291,14 +379,14 @@ function uploadImgWithJson() {
 
 /**
  * http://www.atyorku.ca/admin/book/bookController.php?action=getImagesByBookIdWithJson&id=3
- * 获取该二手书ID的所有关联图片
- * 同时二手书浏览数 + 1
+ * 获取该学习资料ID的所有关联图片
+ * 同时学习资料浏览数 + 1
  * @return JSON 二维数组
  */
 function getImagesByBookIdWithJson() {
     global $bookModel;
     try {
-        $id = BasicTool::get('id','请提供二手书ID');
+        $id = BasicTool::get('id','请提供学习资料ID');
         $result = $bookModel->getImagesByBookId($id);
         if ($result) {
             BasicTool::echoJson(1, "获取图片成功", $result);
@@ -314,8 +402,8 @@ function getImagesByBookIdWithJson() {
 
 /**
 * http://www.atyorku.ca/admin/book/bookController.php?action=purchaseBookWithJson&book_id=3
-* 购买一本二手书
-* @param bookId 二手书ID
+* 购买一本学习资料
+* @param bookId 学习资料ID
 * @return JSON
 */
 function purchaseBookWithJson() {
@@ -359,7 +447,7 @@ function purchaseBookWithJson() {
 
 
 /**
- * 恢复一本已删除的二手书 [ADMIN]操作
+ * 恢复一本已删除的学习资料 [ADMIN]操作
  */
 function restoreDeletedBookByIdWithJson() {
     global $bookModel;
@@ -368,7 +456,7 @@ function restoreDeletedBookByIdWithJson() {
         if (!($currentUser->isUserHasAuthority('ADMIN'))) {
             BasicTool::throwException("无权限");
         }
-        $bookId = BasicTool::post('book_id','二手书ID不能为空');
+        $bookId = BasicTool::post('book_id','学习资料ID不能为空');
         $bookModel->restoreBookById($bookId);
         BasicTool::echoJson(1, "恢复成功", true);
     } catch (Exception $e) {
@@ -378,8 +466,8 @@ function restoreDeletedBookByIdWithJson() {
 
 
 /**
- * 下架一本二手书
- * @param id 二手书ID
+ * 下架一本学习资料
+ * @param id 学习资料ID
  */
 function unLaunchBookByIdWithJson() {
     unLaunchBookById("json");
@@ -388,7 +476,8 @@ function unLaunchBookByIdWithJson() {
 //=========== END Function with JSON ============//
 
 
-// 添加或修改一本二手书
+
+// 添加或修改一本学习资料
 function modifyBook($echoType = "normal") {
     global $bookModel;
     global $imageModel;
@@ -461,21 +550,21 @@ function modifyBook($echoType = "normal") {
 }
 
 /**
-* 删除1个或多本二手书
-* @param id 要删除的二手书id或id array
+* 删除1个或多本学习资料
+* @param id 要删除的学习资料id或id array
 */
 function deleteBook($echoType = "normal") {
     global $bookModel;
     global $currentUser;
     global $imageModel;
     try {
-        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除二手书ID");
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除学习资料ID");
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
                 $i++;
                 if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的二手书");
+                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的学习资料");
                 }
                 deleteBookImagesByBookId($v);
                 $bookModel->deleteBookById($v) or BasicTool::throwException("删除多本失败");
@@ -483,15 +572,15 @@ function deleteBook($echoType = "normal") {
         } else {
             $i++;
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的二手书");
+                $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的学习资料");
             }
             deleteBookImagesByBookId($id);
             $bookModel->deleteBookById($id) or BasicTool::throwException("删除1本失败");
         }
         if ($echoType == "normal") {
-            BasicTool::echoMessage("成功删除{$i}本二手书", $_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功删除{$i}本学习资料", $_SERVER['HTTP_REFERER']);
         } else {
-            BasicTool::echoJson(1, "成功删除{$i}本二手书");
+            BasicTool::echoJson(1, "成功删除{$i}本学习资料");
         }
     } catch (Exception $e) {
         if ($echoType == "normal") {
@@ -504,34 +593,34 @@ function deleteBook($echoType = "normal") {
 
 
 /**
-* 逻辑删除1个或多本二手书
-* @param id 要删除的二手书id或id array
+* 逻辑删除1个或多本学习资料
+* @param id 要删除的学习资料id或id array
 */
 function deleteBookLogically($echoType="normal") {
     global $bookModel;
     global $currentUser;
     try {
-        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除二手书ID");
+        $id = BasicTool::post('id') or BasicTool::throwException("请指定被删除学习资料ID");
         $i = 0;
         if (is_array($id)) {
             foreach ($id as $v) {
                 $i++;
                 if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的二手书");
+                    $currentUser->userId == $bookModel->getUserIdFromBookId($v) or BasicTool::throwException("无权删除其他人的学习资料");
                 }
                 $bookModel->deleteBookLogicallyById($v) or BasicTool::throwException("删除多本失败");
             }
         } else {
             $i++;
             if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-                $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的二手书");
+                $currentUser->userId == $bookModel->getUserIdFromBookId($id) or BasicTool::throwException("无权删除其他人的学习资料");
             }
             $bookModel->deleteBookLogicallyById($id) or BasicTool::throwException("删除1本失败");
         }
         if ($echoType == "normal") {
-            BasicTool::echoMessage("成功删除{$i}本二手书", $_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功删除{$i}本学习资料", $_SERVER['HTTP_REFERER']);
         } else {
-            BasicTool::echoJson(1, "成功删除{$i}本二手书");
+            BasicTool::echoJson(1, "成功删除{$i}本学习资料");
         }
     } catch (Exception $e) {
         if ($echoType == "normal") {
@@ -581,14 +670,14 @@ function validateId($id) {
 }
 
 /**
-* 删除指定二手书ID相关联的图片
-* @param id 二手书ID
+* 删除指定学习资料ID相关联的图片
+* @param id 学习资料ID
 */
 function deleteBookImagesByBookId($id) {
     global $bookModel;
     global $imageModel;
     try {
-        $data = $bookModel->getImagesIdByBookId($id) or BasicTool::throwException("没找到二手书");
+        $data = $bookModel->getImagesIdByBookId($id) or BasicTool::throwException("没找到学习资料");
         $imgs = array_values(array_filter([$data["image_id_one"], $data["image_id_two"], $data["image_id_three"]]));
         $imageModel->deleteImageById($imgs) or BasicTool::throwException("删除失败");
     } catch (Exception $e) {
@@ -597,7 +686,7 @@ function deleteBookImagesByBookId($id) {
 }
 
 /**
- * 清空已删除的二手书 [GOD权限]
+ * 清空已删除的学习资料 [GOD权限]
  */
 function emptyAllDeletedBooks() {
     global $bookModel;
@@ -608,7 +697,7 @@ function emptyAllDeletedBooks() {
         }
         $result = $bookModel->emptyAllDeletedBooks();
         if($result['code']===1){
-            BasicTool::echoMessage("成功删除{$result['result']}个二手书", $_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功删除{$result['result']}个学习资料", $_SERVER['HTTP_REFERER']);
         } else {
             BasicTool::throwException($result['result']);
         }
@@ -619,8 +708,8 @@ function emptyAllDeletedBooks() {
 
 
 /**
- * 获取一本二手书的E链接
- * @param $id 二手书ID
+ * 获取一本学习资料的E链接
+ * @param $id 学习资料ID
  */
 function getELinkById(){
     global $bookModel;
@@ -629,7 +718,7 @@ function getELinkById(){
         if(!$currentUser->isUserHasAuthority('ADMIN')) {
             BasicTool::throwException("无权限查看");
         }
-        $id = BasicTool::get("id","二手书ID不能为空");
+        $id = BasicTool::get("id","学习资料ID不能为空");
         $link = $bookModel->getELinkById($id) or BasicTool::throwException("未找到E-链接");
         BasicTool::echoMessage($link, $_SERVER['HTTP_REFERER']);
     } catch (Exception $e) {
@@ -638,23 +727,23 @@ function getELinkById(){
 }
 
 /**
- * 上架一本二手书
+ * 上架一本学习资料
  * @param $echoType
- * @param $id 该二手书ID
+ * @param $id 该学习资料ID
  */
 function launchBookById($echoType = "normal"){
     global $bookModel;
     global $currentUser;
     try {
-        $id = BasicTool::get("id","二手书ID不能为空");
-        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该二手书");
+        $id = BasicTool::post("id","学习资料ID不能为空");
+        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该学习资料");
         if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
             $currentUser->userId == $book['user_id'] or BasicTool::throwException("无权限");
         }
         $result = $bookModel->launchBook($id) or BasicTool::throwException("上架失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("成功上架该二手书", $_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功上架该学习资料", $_SERVER['HTTP_REFERER']);
         } else {
             BasicTool::echoJson(1, $result);
         }
@@ -668,23 +757,23 @@ function launchBookById($echoType = "normal"){
 }
 
 /**
- * 下架一本二手书
+ * 下架一本学习资料
  * @param $echoType
- * @param $id 该二手书ID
+ * @param $id 该学习资料ID
  */
 function unLaunchBookById($echoType = "normal"){
     global $bookModel;
     global $currentUser;
     try {
-        $id = BasicTool::get("id","二手书ID不能为空");
-        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该二手书");
+        $id = BasicTool::post("id","学习资料ID不能为空");
+        $book = $bookModel->getBookById($id) or BasicTool::throwException("未找到该学习资料");
         if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('BOOK'))) {
-            $currentUser->userId == $book['user_id'] or BasicTool::throwException("无权下架其他人的二手书");
+            $currentUser->userId == $book['user_id'] or BasicTool::throwException("无权下架其他人的学习资料");
         }
         $result = $bookModel->unLaunchBook($id) or BasicTool::throwException("下架失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("成功下架该二手书", $_SERVER['HTTP_REFERER']);
+            BasicTool::echoMessage("成功下架该学习资料", $_SERVER['HTTP_REFERER']);
         } else {
             BasicTool::echoJson(1, $result);
         }
@@ -696,5 +785,6 @@ function unLaunchBookById($echoType = "normal"){
         }
     }
 }
+
 
 ?>
