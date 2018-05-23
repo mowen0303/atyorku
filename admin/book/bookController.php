@@ -632,28 +632,11 @@ function deleteBookLogically($echoType="normal") {
 }
 
 function searchBooks($bookModel, $pageSize=40) {
+    global $bookModel;
     try {
         $queryType = BasicTool::post("search_type", "搜索类别不能为空");
         $queryValue = BasicTool::post("search_value", "搜索内容不能为空");
-        $result = "";
-        switch($queryType) {
-            case "keywords":
-                $result = $bookModel->getBooksByKeywords($queryValue, $pageSize);
-                break;
-            case "user_id":
-                $result = $bookModel->getBooksByUserId($queryValue, $pageSize);
-                break;
-            case "username":
-                $result = $bookModel->getBooksByUsername($queryValue, $pageSize);
-                break;
-            case "book_category_id":
-                $result = $bookModel->getBooksByCategoryId($queryValue, $pageSize);
-                break;
-            default:
-                BasicTool::echoMessage("搜索类别无法识别");
-                break;
-        }
-        return $result;
+        return $bookModel->searchBooks($queryType, $queryValue, $pageSize);
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage(),-1);
     }

@@ -21,6 +21,13 @@ abstract class BookAction {
     const UPDATE_USERID = 3;
 }
 
+abstract class BookSearchType {
+    const KEYWORDS = "keywords";
+    const USER_ID = "user_id";
+    const USERNAME = "username";
+    const CATEGORY = "book_category_id";
+}
+
 class BookModel extends Model
 {
 
@@ -362,7 +369,8 @@ class BookModel extends Model
     * @return 返回二维数组
     */
     public function getBooksByKeywords($keywords, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%'");
+        $trimedKeywords=str_replace(' ','',$keywords);
+        return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%' or CONCAT(c2.title,c1.title) LIKE '{$trimedKeywords}%'");
     }
 
 
@@ -414,6 +422,37 @@ class BookModel extends Model
     {
         $sql = "UPDATE book SET count_view = count_view+1 WHERE id in ($id)";
         $this->sqltool->query($sql);
+    }
+
+
+    /**
+     * 搜索二手书
+     * @param string|BookSearchType $queryType
+     * @param int|string $queryValue
+     * @param int $pageSize
+     * @return 返回二维数组|array
+     * @throws Exception
+     */
+    public function searchBooks($queryType, $queryValue, $pageSize=40){
+        $result = [];
+        switch($queryType) {
+            case BookSearchType::KEYWORDS:
+                $result = $this->getBooksByKeywords($queryValue, $pageSize);
+                break;
+            case BookSearchType::USER_ID:
+                $result = $this->getBooksByUserId($queryValue, $pageSize);
+                break;
+            case BookSearchType::USERNAME:
+                $result = $this->getBooksByUsername($queryValue, $pageSize);
+                break;
+            case BookSearchType::CATEGORY:
+                $result = $this->getBooksByCategoryId($queryValue, $pageSize);
+                break;
+            default:
+                BasicTool::throwException("搜索类别无法识别");
+                break;
+        }
+        return $result;
     }
 
     /**

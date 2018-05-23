@@ -13,44 +13,59 @@ $userModel = new \admin\user\UserModel();
     <header><h2>二手书搜索结果</h2></header>
     <form action="bookController.php?action=deleteBook" method="post">
         <section>
-            <table class="tab">
+            <table class="tab" style="table-layout: fixed;">
                 <thead>
                 <tr>
-                    <th width="21px"><input id="cBoxAll" type="checkbox"></th>
-                    <th width="40px">顺序</th>
-                    <th width="60px">封面</th>
-                    <th width="120px">标题</th>
-                    <th width="60px">价钱</th>
-                    <th>描述</th>
-                    <th width="80px">类别</th>
-                    <th width="80px">卖家</th>
-                    <th width="80px">发布时间</th>
-                    <th width="80px">操作</th>
+                    <th width="5%"><input id="cBoxAll" type="checkbox"></th>
+                    <th width="5%">顺序</th>
+                    <th width="5%">电子版</th>
+                    <th width="8%">封面</th>
+                    <th width="8%">标题</th>
+                    <th width="8%">价钱</th>
+                    <th width="12%">描述</th>
+                    <th width="14%">链接</th>
+                    <th width="6%">类别</th>
+                    <th width="6%">科目</th>
+                    <th width="8%">卖家</th>
+                    <th width="8%">发布时间</th>
+                    <th width="8%">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
                 include 'bookController.php';
-
-                $arr = searchBooks($bookModel);
+                try {
+                    $searchType = BasicTool::post("search_type","搜索类别不能为空");
+                    $searchValue = BasicTool::post("search_value","搜索内容不能为空");
+                    $arr = $bookModel->searchBooks($searchType, $searchValue);
+                } catch (Exception $e) {
+                    BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+                    return;
+                }
 
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {
-                        $argument .= "&f_" . $key . "={$value}";
+                        $argument .= "&{$key}={$value}";
                     }
                 ?>
                     <tr>
-                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
-                        <td><?php echo $row["id"] ?></td>
-                        <td><img width="60px" height="auto" src="<?php echo $row['thumbnail_url'] ?>"></td>
-                        <td><?php echo $row["name"] ?></td>
-                        <td><?php echo "$" . $row['price'] ?></td>
-                        <td><?php echo $row['description'] ?></td>
-                        <td><?php echo $row['book_category_name'] ?></td>
-                        <td><?php echo $row['user_name'] ?></td>
-                        <td><?php echo BasicTool::translateTime($row['publish_time']) ?></td>
-                        <td><a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a></td>
+                        <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo htmlspecialchars($row['id']) ?>"></td>
+                        <td><?php echo htmlspecialchars($row["id"]) ?></td>
+                        <td><?php echo htmlspecialchars($row["is_e_document"]) ?></td>
+                        <td><img width="60px" height="auto" src="<?php echo htmlspecialchars($row['thumbnail_url']) ?>"></td>
+                        <td><p><?php echo htmlspecialchars($row["name"]) ?></p></td>
+                        <td><p><?php echo ($row["pay_with_points"]?"𝓟 ":"$ ") . htmlspecialchars($row['price']) ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['description']?:"") ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['e_link']?:"") ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['book_category_name']) ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['course_code_parent_title'] . $row['course_code_child_title']) ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['alias']) ?></p></td>
+                        <td><p><?php echo htmlspecialchars($row['publish_time']) ?></p></td>
+                        <td>
+                            <a class="btn" href="index.php?s=formBook&flag=update<?php echo $argument?>">修改</a>
+                            <a class="btn" href="bookController.php?action=unLaunchBookById&id=<?php echo $row['id']?>">下架</a>
+                        </td>
                     </tr>
                 <?php
                 }
