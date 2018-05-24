@@ -162,9 +162,14 @@ $_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
                     <input class="input input-size30" type="text" name="userID" value="<?php echo $row['user_id']?$row['user_id']:$currentUser->userId ?>"> 当前用户<?php echo ": {$currentUser->aliasName} (ID: {$currentUser->userId})" ?>
                 </div>
                 <div>
-                    <label>置顶顺序 (设置0取消置顶))</label>
+                    <label>总排序顺序 (设置0取消置顶,值越大,排序越靠前))</label>
                     <input class="input input-size30" type="text" name="guide_order"
                            value="<?php echo $row['guide_order'] ?>">
+                </div>
+                <div>
+                    <label>分类内顺序 (设置0取消置顶,值越大,排序越靠前))</label>
+                    <input class="input input-size30" type="text" name="guide_class_order"
+                           value="<?php echo $row['guide_class_order'] ?>">
                 </div>
             </section>
 

@@ -61,10 +61,12 @@ class GuideModel extends Model
         $condition = $guide_classId == 0 ? "" : "AND gc.id IN ({$guide_classId}) "; //0显示全部
         $condition .= $showVisible == true ? "AND gc.visible = 0 " : "";
         //$condition .= $showNotValid ? "AND g.valid = 0" : "";
+        $order = $guide_classId == 0 ? "" : "g.guide_class_order DESC,";
 
-        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY g.guide_order DESC ,g.time DESC";
 
-        $countSql = "SELECT count(*) FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY g.guide_order,time";
+        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order DESC ,g.time DESC";
+
+        $countSql = "SELECT count(*) FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order,time";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);
 
         $id = "";
@@ -130,14 +132,15 @@ class GuideModel extends Model
         }
     }
 
-    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order)
+    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order, $classOrder)
     {
         $arr['guide_class_id'] = $guideClassID; //14草稿箱
         $arr['user_id'] = $userID;
-        $arr['title'] = $title ? $title : "";
-        $arr['content'] = $content ? $content : "";
-        $arr['introduction'] = $introduction ? $introduction : "";
-        $arr['guide_order'] = $order ? $order : 0;
+        $arr['title'] = $title ?: "";
+        $arr['content'] = $content ?: "";
+        $arr['introduction'] = $introduction ?: "";
+        $arr['guide_order'] = $order ?: 0;
+        $arr['guide_class_order'] = $classOrder ?: 0;
         $arr['cover'] = $cover ? $cover : "";
         $this->updateRowById('guide', $guideID, $arr);
         return true;

@@ -90,8 +90,9 @@ function updateGuide(){
         $order = BasicTool::post('guide_order',false,4);
         $oldClassId = BasicTool::post('guide_class_old_id');
         $userID = BasicTool::post('userID');
+        $classOrder = BasicTool::post('guide_class_order');
 
-        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order) or BasicTool::throwException($guideModel->errorMsg);
+        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order,$classOrder) or BasicTool::throwException($guideModel->errorMsg);
         if( $oldClassId != null && $oldClassId != $guideClassID){
             $guideModel->updateAmountOfArticleByClassId($guideClassID);
             $guideModel->updateAmountOfArticleByClassId($oldClassId);
