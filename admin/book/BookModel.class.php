@@ -26,6 +26,7 @@ abstract class BookSearchType {
     const USER_ID = "user_id";
     const USERNAME = "username";
     const CATEGORY = "book_category_id";
+    const COURSE = "course";
 }
 
 class BookModel extends Model
@@ -366,11 +367,22 @@ class BookModel extends Model
     * 通过模糊搜索调出一页二手书
     * @param String $keywords 搜索关键词
     * @param int 每页显示数
-    * @return 返回二维数组
+    * @return array
     */
     public function getBooksByKeywords($keywords, $pageSize=40) {
         $trimedKeywords=str_replace(' ','',$keywords);
         return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%' or CONCAT(c2.title,c1.title) LIKE '{$trimedKeywords}%'");
+    }
+
+    /**
+     * 通过用户输入的科目名称来搜索一页二手书
+     * @param string $queryValue 搜索科目名
+     * @param int $pageSize 每页显示数
+     * @return array
+     */
+    public function getBooksByCourse($queryValue, $pageSize=20) {
+        $trimedValue = str_replace(' ', '', $queryValue);
+        return $this->getListOfBooks($pageSize, "CONCAT(c2.title,c1.title) LIKE '{$trimedValue}%'");
     }
 
 
@@ -447,6 +459,9 @@ class BookModel extends Model
                 break;
             case BookSearchType::CATEGORY:
                 $result = $this->getBooksByCategoryId($queryValue, $pageSize);
+                break;
+            case BookSearchType::COURSE:
+                $result = $this->getBooksByCourse($queryValue, $pageSize);
                 break;
             default:
                 BasicTool::throwException("搜索类别无法识别");

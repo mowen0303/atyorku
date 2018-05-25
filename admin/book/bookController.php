@@ -307,6 +307,26 @@ function getListOfOrderedBooksWithJson() {
     }
 }
 
+/**
+ * JSON -  搜索一页学习资料
+ * @param search_type 搜索类型
+ * @param search_value 搜索值
+ * @param pageSize 每一页学习资料获取量，默认值=20
+ * http://www.atyorku.ca/admin/book/bookController.php?action=searchBooksWithJson&search_type=keywords&search_value=abc&pageSize=20
+ */
+function searchBooksWithJson() {
+    global $bookModel;
+    try {
+        $pageSize = BasicTool::get("pageSize") ?: 20;
+        $queryType = BasicTool::get("search_type", "搜索类别不能为空");
+        $queryValue = BasicTool::get("search_value", "搜索内容不能为空");
+        $result = $bookModel->searchBooks($queryType, $queryValue, $pageSize);
+        BasicTool::echoJson(1, "成功", $result);
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
 
 /**
 * JSON - 添加或修改一本学习资料
@@ -629,18 +649,6 @@ function deleteBookLogically($echoType="normal") {
             BasicTool::echoJson(0, $e->getMessage());
         }
     }
-}
-
-function searchBooks($bookModel, $pageSize=40) {
-    global $bookModel;
-    try {
-        $queryType = BasicTool::post("search_type", "搜索类别不能为空");
-        $queryValue = BasicTool::post("search_value", "搜索内容不能为空");
-        return $bookModel->searchBooks($queryType, $queryValue, $pageSize);
-    } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage(),-1);
-    }
-
 }
 
 /**

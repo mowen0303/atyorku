@@ -19,8 +19,9 @@ $userModel = new \admin\user\UserModel();
                 <tbody>
                     <tr>
                         <td width="180px">
-                            <select class="input input-select input-50 selectDefault" name="search_type" defvalue="keywords">
-                                <option value="keywords">二手书信息</option>
+                            <select class="input input-select input-50 selectDefault" name="search_type" defvalue="course">
+                                <option value="course">科目</option>
+                                <option value="keywords">关键词</option>
                                 <option value="user_id">用户ID</option>
                                 <option value="username">用户名</option>
                                 <option value="book_category_id">二手书分类ID</option>
