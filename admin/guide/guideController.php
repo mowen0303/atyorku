@@ -125,36 +125,18 @@ function deleteGuide()
 //=======
 
 /*
-*JSON - 获取指南分类的一个分类列表
-http://www.atyorku.ca/admin/guide/guideController.php?action=getGuideClassListVisibleWithJson
+ * JSON - 获取指南分类的一个分类列表
+ * @param hideIds
+ * @param $hideAll 0 代表
+ * http://www.atyorku.ca/admin/guide/guideController.php?action=getGuideClassListVisibleWithJson&hideIds=0&hideAll=0
 */
 function getGuideClassListVisibleWithJson(){
-
-
     global $guideModel;
-
-    $arr2 = $guideModel->getListOfGuideClassVisible();
-
-    $arr1 = [];
-    $arr1['id'] = "0";
-    $arr1['title'] = "所有文章";
-    $arr1['is_del'] = "0";
-    $arr1['visible'] = "0";
-    $arr1['icon'] = "/admin/resource/img/icon/guideIcon/all8.png";
-    $arr1['guide_class_order'] = "1";
-    $arr1['description'] = "发过的所有文章都在这里了";
-    $amount = 0;
-    foreach($arr2 as $row){
-        foreach($row as $k => $v){
-            if($k == 'amount'){
-                $amount += $v;
-            }
-        }
-    }
-    $arr1['amount'] = "{$amount}";
-    array_unshift($arr2,$arr1);
-    BasicTool::echoJson(1,"获取成功",$arr2);
-
+    $hideIds = BasicTool::get("hideIds")?:false;
+    $hideAll = BasicTool::get("hideAll")?:false;
+    //var_dump($hideIds);
+    $result = $guideModel->getListOfGuideClassVisible($hideAll,$hideIds);
+    BasicTool::echoJson(1,"获取成功",$result);
 }
 /**
  * JSON -  获取某一分类下的文章列表

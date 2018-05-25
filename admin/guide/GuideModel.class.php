@@ -17,12 +17,43 @@ class GuideModel extends Model
         return parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
     }
 
-    public function getListOfGuideClassVisible($pageSize = 20)
+    /**
+     * @param bool $hideAll
+     * @param bool $hideIds     1,2,3,4 或 1
+     * @param int $pageSize
+     */
+    public function getListOfGuideClassVisible($hideAll=false,$hideIds=false,$pageSize = 40)
     {
+        $condition="";
+        if($hideIds){
+            $condition.=" AND id not in ({$hideIds}) ";
+        }
         $table = 'guide_class';
-        $sql = "SELECT * FROM {$table} where is_del=0 AND visible=0 ORDER BY guide_class_order";
-        $countSql = null;
-        return parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
+        $sql = "SELECT * FROM {$table} where is_del=0 AND visible=0 {$condition} ORDER BY guide_class_order";
+        //die($sql);
+        $countSql = "SELECT count(*) FROM {$table} where is_del=0 AND visible=0 {$condition} ORDER BY guide_class_order";
+        $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);   //-- 注意 --//
+        if(!$hideAll){
+            $arr = [];
+            $arr['id'] = "0";
+            $arr['title'] = "所有文章";
+            $arr['is_del'] = "0";
+            $arr['visible'] = "0";
+            $arr['icon'] = "/admin/resource/img/icon/guideIcon/all8.png";
+            $arr['guide_class_order'] = "1";
+            $arr['description'] = "发过的所有文章都在这里了";
+            $amount = 0;
+            foreach($result as $row){
+                foreach($row as $k => $v){
+                    if($k == 'amount'){
+                        $amount += $v;
+                    }
+                }
+            }
+            $arr['amount'] = "{$amount}";
+            array_unshift($result,$arr);
+        }
+        return $result;
     }
 
     public function getRowOfGuideClassById($id)
