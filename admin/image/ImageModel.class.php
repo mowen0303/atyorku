@@ -488,7 +488,7 @@ class ImageModel extends Model
                                 imagecopyresized($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
                             }
                             //模糊压缩过的图片
-                            for ($i=0;$i<40;$i++)
+                            for ($i=0;$i<60;$i++)
                                 imageconvolution($dst_im,$gaussian_kernel,16,0);
                             imagejpeg($dst_im, $root . $thumbnailUploadsDir . $newFileName, 100) or BasicTool::throwException("图片存储失败:" . $root . $thumbnailUploadsDir . $newFileName . "thumbnailWidth:" . $thumbnailWidth . "thumbnailHeight:" . $thumbnailHeight . "width:" . $width . "height:" . $height);     //输出压缩后的图片
                         }
@@ -506,7 +506,7 @@ class ImageModel extends Model
                             $dst_im = imagecreatetruecolor($thumbnailWidth, $thumbnailHeight);
                             imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
                             //模糊压缩过的图片
-                            for ($i=0;$i<40;$i++)
+                            for ($i=0;$i<60;$i++)
                                 imageconvolution($dst_im,$gaussian_kernel,16,0);
                             imagepng($dst_im, $root . $thumbnailUploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $thumbnailUploadsDir);     //输出压缩后的缩略图
                         }
@@ -547,7 +547,7 @@ class ImageModel extends Model
                             imagefilledrectangle($dst_im, 0, 0, $newWidth, $newHeight, $transparent);
                             imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $thumbnailWidth, $thumbnailHeight, $width, $height);
                             //模糊压缩过的图片
-                            for ($i=0;$i<40;$i++)
+                            for ($i=0;$i<60;$i++)
                                 imageconvolution($dst_im,$gaussian_kernel,16,0);
                             imagepng($dst_im, $root . $thumbnailUploadsDir . $newFileName) or BasicTool::throwException("图片存储失败" . $root . $thumbnailUploadsDir);     //输出压缩后的缩略图
                         }

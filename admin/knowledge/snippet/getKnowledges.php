@@ -58,7 +58,7 @@ $arr = $knowledgeModel->getKnowledgeByCourseCodeIdProfIdCMS(1,true,"","",0,0,"",
                                     echo "N/A"
                             ?>
                         </td>
-                        <td style="max-width:170px"><?php echo $row['img_id']?$row['description']:'N/A' ?></td>
+                        <td style="max-width:170px"><?php echo $row['description'] ?></td>
                         <td style="max-width:320px">
                             <?php
                             if (!$row['img_id']){
