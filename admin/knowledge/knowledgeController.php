@@ -31,7 +31,7 @@ function addKnowledge($echoType = "normal") {
         //判断权限
         ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("KNOWLEDGE")) or BasicTool::throwException("权限不足,添加失败");
 
-        $seller_user_id = $currentUser->userId;
+        $seller_user_id = BasicTool::post("seller_user_id")?:$currentUser->userId;
         $knowledge_category_id = BasicTool::post("knowledge_category_id", "请指定考试类别");
         $knowledgeCategoryModel->getKnowledgeCategoryById($knowledge_category_id) or BasicTool::throwException("考试类别不存在");
         $course_code_parent = BasicTool::post("course_code_parent", "courseCodeParent 不能为空");
@@ -120,6 +120,7 @@ function updateKnowledge(){
     global $knowledgeModel,$knowledgeCategoryModel,$courseCodeModel,$profModel,$currentUser,$imageModel;
     try{
         $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException('更改失败:非管理员权利');
+        $seller_user_id = BasicTool::post("seller_user_id","作者ID不能为空");
         $knowledge_id = BasicTool::post('knowledge_id','更改失败：回忆录ID不能为空');
         $knowledge = $knowledgeModel->getKnowledgeById($knowledge_id) or BasicTool::throwException('更改失败:考试回忆录不存在');
         $knowledge_category_id = BasicTool::post("knowledge_category_id",'更改失败：请选择分类');
@@ -149,7 +150,7 @@ function updateKnowledge(){
                 $img_id = $imageModel->uploadKnowledgeImagesWithExistingImages($imgArr, false, 1, "imgFile", $currentUser->userId, "knowledge")[0];
             }
         }
-        $knowledgeModel->updateKnowledgeById($knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort) or BasicTool::throwException($knowledgeModel->errorMsg);
+        $knowledgeModel->updateKnowledgeById($seller_user_id,$knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort) or BasicTool::throwException($knowledgeModel->errorMsg);
         BasicTool::echoMessage("更改成功");
     }catch(Exception $e){
         BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);

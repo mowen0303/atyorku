@@ -14,7 +14,7 @@ $signPackage = $jssdk->GetSignPackage();
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
     <title><?php echo $arr['title'] ?></title>
-    <link href="/apps/guide/css.css?1215138" rel="stylesheet" type="text/css">
+    <link href="/apps/guide/css.css?1215190" rel="stylesheet" type="text/css">
     <style type="text/css">
         #coverImgBox {
             position: absolute;

@@ -88,9 +88,10 @@ class KnowledgeModel extends Model
      * @param int $sort
      * @return bool
      */
-    function updateKnowledgeById($knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort){
+    function updateKnowledgeById($seller_user_id,$knowledge_id,$knowledge_category_id,$img_id,$course_code_id,$prof_id,$price,$description,$knowledge_point_description,$count_knowledge_points,$term_year,$term_semester,$sort){
         $is_image_version = !!$img_id;
         $arr = [];
+        $arr['seller_user_id'] = $seller_user_id;
         $arr['knowledge_category_id'] = $knowledge_category_id;
         $arr['img_id'] = $is_image_version?$img_id : 0;
         $arr['course_code_id'] = $course_code_id;

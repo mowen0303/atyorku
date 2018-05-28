@@ -1,31 +1,22 @@
 <?php
-// require_once "../commonClass/config.php";
-// $msgModel = new \admin\msg\MsgModel();
-//
-// //$msgModel->updateRowById('user',3,['device'=>'APA91bHiQG999TZOvWdoGu-E5Qfrpil2EGudgHpXHtkWOdW8Xp…LTH5xVJb6nvcp-ZMnojBVHvRbjSA3um_GdRAlmyZpPMBV_7Kw']);
-//
-//
-// //var_dump($msgModel->pushMsgToUser(1,"good","1","good"));
-//
-// //$time = BasicTool::getTodayTimestamp();
-// //print_r($time);
-//
-// $user = new \admin\user\UserModel();
-//
-// $user->getDailyCredit() or BasicTool::throwException($user->errorMsg);
-//
-// //邮箱验证
+require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/simple_html_dom.php";
 
+$cookie = dirname(__file__).'/cookie.txt';
 
+function getData($url){
+    global $cookie;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER,0);
+    curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie); //CURL发送的 HTTP Request 中的 Cookie 存放的位置
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    return curl_exec($ch);
+}
 
-
-/**
-* @access_path: http://127.0.0.1/4.php
-* @author: vfhky 20140313 19:13
-* @description: PHP模拟登录wordpress后台(http://127.0.0.1/wpupdate/wp-admin/)
-* @reference: http://vfhky.sinaapp.com/mix/887.html
-*/
-
+//登陆
+$login_url = 'https://passportyork.yorku.ca/ppylogin/ppylogin';
 $post = [
     "dologin"=>"Login",
     "mli"=>"jerry226",
@@ -34,15 +25,9 @@ $post = [
     "__albstate__"=>"eJzzFXW9qF7y7W6dC9dhpnfbcycJG+s2MNUWMmqEcsTHFySmp8bHFzKFsubkp2fmFTKHckIEi4GiLLGFrKV6ACFPFs0=",
     "__pybpp__"=>"tYsV1IneTfYnS8LTQtdJjCdIjT81"
 ];
-
-$cookie = dirname(__file__).'/cookie.txt';
-$login_url = 'https://passportyork.yorku.ca/ppylogin/ppylogin';
-
 $ch = curl_init($login_url);
 curl_setopt($ch, CURLOPT_COOKIESESSION, true);
 curl_setopt($ch, CURLOPT_HEADER, true);
-
-/* curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); */
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
     'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Encoding: gzip, deflate, br',
@@ -58,63 +43,54 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, array(
     'Upgrade-Insecure-Requests: 1',
     'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
 ));
-
-
-/* CURL收到的 HTTP Response 中的 Set-Cookie 存放的位置 */
-curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);
-/* CURL发送的 HTTP Request 中的 Cookie 存放的位置 */
-curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
+curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie);   //CURL收到的 HTTP Response 中的 Set-Cookie 存放的位置
+curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);  //CURL发送的 HTTP Request 中的 Cookie 存放的位置
+curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
 $result = curl_exec($ch);
 curl_close($ch);
-
-/* 输出获取的资源$result,该资源是wordpress后台处理返回的Response Headers信息 */
 print_r($result);
 
-/* 清理cookie文件: unlink($cookie_file); */
+/**
+ * 获取课程表连接
+ */
+$login_url = 'https://w2prod.sis.yorku.ca/Apps/WebObjects/cdm.woa/wa/DirectAction/cds';
+$ch = curl_init($login_url);
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch,CURLOPT_RETURNTRANSFER,0);
+curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie); //CURL发送的 HTTP Request 中的 Cookie 存放的位置
+curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$result = curl_exec($ch);
+curl_close($ch);
+//print_r($result);
+$html = new simple_html_dom();
+$html->load($result);
+$timeTableLinkArr = [];
+foreach($html->find('table table table a') as $a){
+    $timeTableLinkArr[$a->innertext] = 'https://w2prod.sis.yorku.ca'.$a->href;
+}
+//print_r($timeTableLinkArr);
 
-// //模拟登录
-// function login_post($url, $cookie, $post) {
-//     $curl = curl_init();
-//     curl_setopt($curl, CURLOPT_URL, $url);
-//     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
-//     curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie);
-//     curl_setopt($curl, CURLOPT_POST, 1);
-//     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
-//     curl_exec($curl);
-//     curl_close($curl);
-// }
-//
-// //登录成功后获取数据
-// function get_content($url, $cookie) {
-//     $ch = curl_init();
-//     curl_setopt($ch, CURLOPT_URL, $url);
-//     curl_setopt($ch, CURLOPT_HEADER, 0);
-//     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//     curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie);
-//     $rs = curl_exec($ch);
-//     curl_close($ch);
-//     return $rs;
-// }
-//
-//
-// $post = [
-//     "dologin"=>"Login",
-//     "mli"=>"jerry226",
-//     "password"=>"miss0227"
-// ];
-// $url = "https://passportyork.yorku.ca/ppylogin/ppylogin";
-// $url2 = "https://my.yorku.ca/group/home/home";
-// $cookie = dirname(__FILE__) . '/cookie.txt';
-//
-// //模拟登录
-// login_post($url, $cookie, $post);
-// //获取登录页的信息
-// $content = get_content($url2, $cookie);
-// //删除cookie文件
-// //@ unlink($cookie);
-//
-// var_dump($content);
+/**
+ * 获取课程表
+ */
+next($timeTableLinkArr);
+print_r(getData(next($timeTableLinkArr)));
+
+
+////获取成绩单
+//$login_url = 'https://wrem.sis.yorku.ca/Apps/WebObjects/ydml.woa/wa/DirectAction/document?name=CourseListv1';
+//$ch = curl_init($login_url);
+//curl_setopt($ch, CURLOPT_HEADER, false);
+//curl_setopt($ch, CURLOPT_HEADER, 0);
+//curl_setopt($ch,CURLOPT_RETURNTRANSFER,0);
+//curl_setopt($ch, CURLOPT_COOKIEFILE, $cookie); //CURL发送的 HTTP Request 中的 Cookie 存放的位置
+//curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
+//$result = curl_exec($ch);
+//curl_close($ch);
+//print_r($result);
 ?>
