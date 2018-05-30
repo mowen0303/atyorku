@@ -38,7 +38,7 @@ $userModel = new \admin\user\UserModel();
                         <input name="classId" type="hidden" value="<?php echo $guideClassId?>">
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"></td>
                         <td><?php echo $row['guide_order']?></td>
-                        <td><a target="_blank" href="/apps/guide/index.php?guide_id=<?php echo $row['id']?>"><img width="200" height="100" src="<?php echo $row['cover']?>"></a></td>
+                        <td><a target="_blank" href="/apps/guide/index.php?guide_id=<?php echo $row['id']?>"><div style="width:200px;height:125px;background-image:url('<?php echo $row['cover']?>');background-size:auto 100%;background-repeat:no-repeat;background-position:center"></div></a></td>
                         <td><a target="_blank" href="/apps/guide/index.php?guide_id=<?php echo $row['id']?>"><?php echo $row['title']?></a></td>
                         <td><?php echo $row['introduction']?></a></td>
                         <td><?php echo $row['alias'] ?></td>

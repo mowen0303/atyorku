@@ -130,7 +130,7 @@ $_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
                 </div>
 
                 <div>
-                    <label>封面图片: 1000X500</label>
+                    <label>封面图片: 640X400</label>
                     <input class="input input-size50" type="hidden" name="cover" id="cover"
                            value="<?php echo $row['cover'] ?>">
                     <p><img id="imgOfUpload" src="<?php echo $row['cover'] ?>"
@@ -160,6 +160,8 @@ $_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
                 <div>
                     <label>作者ID</label>
                     <input class="input input-size30" type="text" name="userID" value="<?php echo $row['user_id']?$row['user_id']:$currentUser->userId ?>"> 当前用户<?php echo ": {$currentUser->aliasName} (ID: {$currentUser->userId})" ?>
+                    <p>约克头条（2187），GPA+ （2278）</p>
+                    <p></p>
                 </div>
                 <div>
                     <label>总排序顺序 (设置0取消置顶,值越大,排序越靠前))</label>
