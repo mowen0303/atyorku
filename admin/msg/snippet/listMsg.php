@@ -20,6 +20,7 @@ $type = BasicTool::get("type");
                     <th style="text-align: center; width: 100px">发送者(ID)</th>
                     <th style="text-align: center; width: 100px">接受者(ID)</th>
                     <th>类别</th>
+                    <th>类别ID</th>
                     <th>内容</th>
                     <th style="text-align: center; width: 100px">时间</th>
                 </tr>
@@ -39,6 +40,7 @@ $type = BasicTool::get("type");
                         <td><?php echo $row['sender_alias']?><br>(<?php echo $row['sender_id']?>)</td>
                         <td><?php echo $row['receiver_alias']?><br>(<?php echo $row['receiver_id']?>)</td>
                         <td><?php echo $row['type']?></td>
+                        <td><?php echo $row['type_id']?></td>
                         <td><?php echo $row['content']?></td>
                         <td><?php echo $row['time']?></td>
                     </tr>
