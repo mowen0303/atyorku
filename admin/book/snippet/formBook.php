@@ -40,8 +40,8 @@ $userId = htmlspecialchars($flag=="add" ? $currentUser->userId : BasicTool::get(
                 <input class="input" name="user_id" value="<?php echo htmlspecialchars($userId)?>" type="text">
             </div>
             <div>
-                <label>标题<i>*</i></label>
-                <input class="input" type="text" name="name" value="<?php echo htmlspecialchars(BasicTool::get('name')) ?>">
+                <label>商品描述<i>*</i></label>
+                <textarea class="input input-textarea" name="name"><?php echo htmlspecialchars(BasicTool::get('name')) ?></textarea>
             </div>
             <div>
                 <label>积分付款<input type="checkbox" name="pay_with_points" <?php echo htmlspecialchars(BasicTool::get('pay_with_points') ? "checked" : "") ?>></label>
