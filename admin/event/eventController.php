@@ -107,16 +107,18 @@ function addEventWithJson() {
 
 /**根据分类ID查询一页活动
  * GET
- * @param event_category_id 分类id 0查询全部
- * @param page 页数
- * localhost/admin/event/eventController.php?action=getEventsByCategory&event_category_id=2&pageSize=3&page=1
+ * @param event_category_id         分类id 0查询全部
+ * @param onlyShowEffectEvent       0:显示所有活动 1:只显示即将开始和进行中的活动 2:只显示已经结束的活动
+ * @param page                      页数
+ * localhost/admin/event/eventController.php?action=getEventsByCategory&event_category_id=2&onlyShowEffectEvent=true&pageSize=3&page=1
  */
 function getEventsByCategory($echoType = "normal") {
     global $eventModel;
     try {
         $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
+        $onlyShowEffectEvent = BasicTool::get("onlyShowEffectEvent")?:0;
         $pageSize = BasicTool::get("pageSize") ?: 10;
-        $result = $eventModel->getEventsByCategory($event_category_id, $pageSize) or BasicTool::throwException("查询失败");
+        $result = $eventModel->getEventsByCategory($event_category_id,$onlyShowEffectEvent,$pageSize) or BasicTool::throwException("查询失败");
         $currentTime = time();
 //        echo date("Y-m-d H:m:s",time());
 
@@ -125,9 +127,9 @@ function getEventsByCategory($echoType = "normal") {
             if($currentTime<$item['event_time']){
                 //还未开始
                 $time = $item['event_time']-$currentTime;
-                $day = ceil($time/(60*60*24));
-                $hour = ceil(($time%(60*60*24))/(60*60));
-                $minute = ceil(($time%(60*60))/60);
+                $day = floor($time/(60*60*24));
+                $hour = floor(($time%(60*60*24))/(60*60));
+                $minute = floor(($time%(60*60))/60);
                 $result[$key]['state_code'] = "1";
                 if($day){
                     $result[$key]['state'] = "倒计时:{$day}天";
@@ -142,7 +144,7 @@ function getEventsByCategory($echoType = "normal") {
                 $result[$key]['state_code'] = "2";
             }else{
                 //已结束
-                $result[$key]['state'] = "活动已结束";
+                $result[$key]['state'] = "已结束";
                 $result[$key]['state_code'] = "0";
             }
             $result[$key]['event_time'] = date("Y-m-d H:i",$item['event_time']);

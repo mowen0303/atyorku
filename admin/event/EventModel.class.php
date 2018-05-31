@@ -76,18 +76,27 @@ class EventModel extends Model
     /**
      * 查询一个活动类下的活动
      * @param $event_category_id
+     * @param bool $onlyShowEffectEvent 0:显示所有活动 1:只显示即将开始和进行中的活动 2:只显示已经结束的活动
      * @param int $pageSize
-     * @return array    二维数组
+     * @return array                    二维数组
      */
-    public function getEventsByCategory($event_category_id,$pageSize=20){
+    public function getEventsByCategory($event_category_id,$onlyShowEffectEvent=false,$pageSize=20){
+        $time = time();
+        $condition = "";
         if($event_category_id){
-            $condition = "WHERE event_category_id = {$event_category_id}";
+            $condition .= " event_category_id = {$event_category_id}";
         }else{
-            $condition = "";
+            $condition .= " true";
         }
 
-        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
-        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+        if($onlyShowEffectEvent==1){
+            $condition .= " AND expiration_time >= {$time}";
+        }else if($onlyShowEffectEvent==2){
+            $condition .= " AND expiration_time < {$time}";
+        }
+
+        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
         return $this->getListWithPage("event", $sql, $countSql, $pageSize);
     }
 

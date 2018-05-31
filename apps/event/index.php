@@ -12,7 +12,7 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <meta charset="UTF-8"/>
-    <link rel="stylesheet" href="style.css?1">
+    <link rel="stylesheet" href="style.css?2">
     <script src="/resource/js/jquery-2.1.4.js" type="text/javascript"></script>
 </head>
 <body>
@@ -43,7 +43,7 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 </tr>
                 <tr>
                     <th>结束时间：</th>
-                    <td><?php echo date("Y-m-d H:m",$event["event_time"]) ?></td>
+                    <td><?php echo date("Y-m-d H:m",$event["expiration_time"]) ?></td>
                 </tr>
             </table>
         </article>
