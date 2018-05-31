@@ -38,10 +38,10 @@ use \Credit as Credit;
     <div class="desRow"><span>课评被评为: 优秀课评</span><i>积分<?php echo credit::$addCourseRating[5]['credit'] ?></i></div>
 
     <h2>兑换政策</h2>
-    <p>每1积=1元 (人民币)</p>
+    <p>汇率：1积分 = 1元 (人民币)</p>
     <p>兑换用户必须是约克大学 (加拿大) 的学生,将会通过学生号进行认证。</p>
     <p>必须满100分才能进行兑换,每笔兑换中系统将收取30%的手续费。</p>
-    <p>联系人工客服,微信号 atyorku666 进行兑换</p>
+    <p>请联系人工客服,微信号 atyorku666 进行兑换</p>
 </div>
 
 </div>

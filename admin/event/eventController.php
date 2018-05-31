@@ -39,20 +39,23 @@ function addEvent($echoType = "normal") {
 
         $event_category_id = BasicTool::post("event_category_id", "Missing event_category_id");
         $title = BasicTool::post("title", "活动标题不能为空");
-        $description = BasicTool::post("description", "missing description");
-        $expiration_time = BasicTool::post("expiration_time", "活动过期时间不能为空");
-        $event_time = BasicTool::post("event_time", "活动时间不能为空");
-        $location = BasicTool::post("location");
+        $event_time = BasicTool::post("event_time", "请填写开始日期");
+        $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
+        $location = BasicTool::post("location", "请填活动地点");
         $location_link = BasicTool::post("location_link");
-        $registration_fee = BasicTool::post("registration_fee", "活动费用不能为空");
-        $max_participants = BasicTool::post("max_participants", "活动名额不能为空");
-        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
-        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
+        $registration_fee = BasicTool::post("registration_fee");
+        $registration_way = BasicTool::post("registration_way", "请填写报名方式");
+        $registration_link = BasicTool::post("registration_link");
+        $max_participants = BasicTool::post("max_participants");
+        $description = BasicTool::post("description", "missing description");
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
+
+        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
+        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
 
         $event_time = BasicTool::translateHTMLTimeToPHPStaple($event_time);
         $expiration_time = BasicTool::translateHTMLTimeToPHPStaple($expiration_time);
@@ -62,7 +65,12 @@ function addEvent($echoType = "normal") {
         $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
         $currImgArr = false;
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
-        $eventModel->addEvent($event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link, $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("添加失败");
+        $eventModel->addEvent($event_category_id, $title, $description,
+                            $expiration_time, $event_time, $location,
+                            $location_link, $registration_fee,$registration_way,$registration_link,
+                            $imgArr[0], $imgArr[1], $imgArr[2], $max_participants,
+                            $sponsor_user_id, $sponsor_name, $sponsor_wechat,
+                            $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("添加成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
@@ -309,28 +317,30 @@ function updateEvent($echoType = "normal") {
             $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,更改失败");
         }
 
-        $event_category_id = BasicTool::post("event_category_id");
-        $title = BasicTool::post("title");
-        $description = BasicTool::post("description");
-
-        $expiration_time = BasicTool::post("expiration_time");
-        $event_time = BasicTool::post("event_time");
-        $location = BasicTool::post("location");
+        $event_category_id = BasicTool::post("event_category_id", "Missing event_category_id");
+        $title = BasicTool::post("title", "活动标题不能为空");
+        $event_time = BasicTool::post("event_time", "请填写开始日期");
+        $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
+        $location = BasicTool::post("location", "请填活动地点");
         $location_link = BasicTool::post("location_link");
         $registration_fee = BasicTool::post("registration_fee");
+        $registration_way = BasicTool::post("registration_way", "请填写报名方式");
+        $registration_link = BasicTool::post("registration_link");
         $max_participants = BasicTool::post("max_participants");
-        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
-        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
-
-        //$sponsor_user_id = BasicTool::post("sponsor_user_id");
+        $description = BasicTool::post("description", "missing description");
+        $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
         $sponsor_telephone = BasicTool::post("sponsor_telephone");
-        $sort = BasicTool::post("sort");
+
+        $registration_fee >= 0 or BasicTool::throwException("活动费用不能小于0");
+        $max_participants >= 0 or BasicTool::throwException("活动名额不能小于0");
 
         $event_time = BasicTool::translateHTMLTimeToPHPStaple($event_time);
         $expiration_time = BasicTool::translateHTMLTimeToPHPStaple($expiration_time);
+
+        $sort = BasicTool::post("sort");
 
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
 
@@ -350,7 +360,7 @@ function updateEvent($echoType = "normal") {
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
 
         $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link,
-            $registration_fee, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
+            $registration_fee,$registration_way,$registration_link, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("更改成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");

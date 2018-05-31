@@ -59,17 +59,6 @@ if ($flag == 'add') {
     })
 </script>
 <script>
-//    function eve() {
-//        var d = new Date();
-//        var event_time = Date.parse(document.getElementById("aa").value) / 1000 + d.getTimezoneOffset()*60;
-//        document.getElementById("event_time").value = event_time;
-//    }
-//
-//    function exp() {
-//        var expiration_time = Date.parse(document.getElementById("bb").value) / 1000;
-//        document.getElementById("expiration_time").value = expiration_time;
-//    }
-
     function fileChangeListener() {
         var file = document.getElementById("imgFile").files[0];
         var reader = new FileReader();
@@ -79,17 +68,6 @@ if ($flag == 'add') {
         }
         reader.readAsDataURL(file);
     }
-//    $("#event_time").ready(function () {
-//        var a = $("#event_time").val() * 1000;
-//        var b = new Date(a).toISOString();
-//        $("#aa").val(b.slice(0, b.indexOf(":", b.indexOf(":") + 1)));
-//    });
-//    $("#expiration_time").ready(function () {
-//        var a = $("#expiration_time").val() * 1000;
-//        var b = new Date(a).toISOString();
-//        $("#bb").val(b.slice(0, b.indexOf(":", b.indexOf(":") + 1)));
-//    });
-
 
 </script>
 
@@ -111,12 +89,73 @@ if ($flag == 'add') {
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
-        </section>
-        <div>
-            <label>活动详情<i>*</i></label>
-            <textarea class="input input-textarea" name="description"><?php echo $row["description"] ?></textarea>
-        </div>
-        <section class="formBox">
+
+            <div style="display:flex;flex-direction:row">
+                <div>
+                    <label>活动时间<i>*</i></label>
+                    <input type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:m:s",$event_time)?>"  id="aa" style="margin-right:3rem"/>
+                </div>
+                <div>
+                    <label>活动有效至<i>*</i></label>
+                    <input type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:m:s",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:row">
+                <div style="flex:1;margin-right:20px">
+                    <label>活动地点<i>*</i></label>
+                    <input type="text" class="input" name="location" value="<?php echo $row['location'] ?>"/>
+                </div>
+                <div style="flex:1">
+                    <label>地图连接</label>
+                    <input type="text" class="input" name="location_link" value="<?php echo $row['location_link'] ?>"/>
+                </div>
+            </div>
+
+             <div style="display:flex;flex-direction:row">
+                 <div style="flex:1;margin-right:20px">
+                     <label>报名方式<i>*</i>（walk-in，在线报名）</label>
+                     <input type="text" class="input" name="registration_way" value="<?php echo $row['registration_way'] ?>"/>
+                 </div>
+                 <div style="flex:1;margin-right:20px">
+                    <label>活动金额（不填代表免费）</label>
+                    <input type="number" class="input" name="registration_fee" value="<?php echo $row['registration_fee'] ?>"/>
+                </div>
+                 <div style="flex:1;margin-right:20px">
+                     <label>报名连接（非在线报名可不填）</label>
+                     <input type="text" class="input" name="registration_link" value="<?php echo $row['registration_link'] ?>"/>
+                 </div>
+                <div style="flex:1;margin-right:20px">
+                    <label>名额限制</label>
+                    <input type="number" class="input" name="max_participants" value="<?php echo $row['max_participants'] ?>"/>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:row">
+                <div style="flex:1;margin-right:20px">
+                    <label>活动联系人<i>*</i></label>
+                    <input type="text" class="input" name="sponsor_name" value="<?php echo $row['sponsor_name'] ?>"/>
+                </div>
+                <div style="flex:1;margin-right:20px">
+                    <label>联系电话</label>
+                    <input type="tel" class="input" name="sponsor_telephone" value="<?php echo $row['sponsor_telephone'] ?>">
+                </div>
+                <div style="flex:1;margin-right:20px">
+                    <label>微信</label>
+                    <input type="text" class="input" type="text" name="sponsor_wechat" value="<?php echo $row['sponsor_wechat'] ?>">
+                </div>
+                <div style="flex:1">
+                    <label>邮箱</label>
+                    <input type="email" name="sponsor_email" class="input" value="<?php echo $row['sponsor_email'] ?>">
+                </div>
+            </div>
+
+            <div>
+                <label>活动详情<i>*</i></label>
+                <textarea class="input-textarea" name="description"><?php echo $row["description"] ?></textarea>
+            </div>
+
+
             <div>
                 <div id="currentImages">
                     <label style="margin-top:1.5rem">活动图片: 最多上传3张</label>
@@ -133,63 +172,18 @@ if ($flag == 'add') {
                         }
                         ?>
                     </div>
-                    <p style="margin-bottom:1rem"><img id="imgOfUpload"
-                                                       style="width: 100px; height: auto; display: none"></p>
+                    <p style="margin-bottom:1rem"><img id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                     <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
 
                 <div>
-                    <label>活动金额<i>*</i></label>
-                    <input type="number" class="input input-size30" name="registration_fee"
-                           value="<?php echo $row['registration_fee'] ?>"/>
-                </div>
-                <div>
-                    <label>活动名额<i>*</i></label>
-                    <input type="number" class="input input-size30" name="max_participants"
-                           value="<?php echo $row['max_participants'] ?>"/>
-                </div>
-                <div>
-                    <label>活动地点</label>
-                    <input type="text" class="input input-size30" name="location"
-                           value="<?php echo $row['location'] ?>"/>
-                </div>
-                <div>
-                    <label>活动地点连接</label>
-                    <input type="text" class="input input-size30" name="location_link"
-                           value="<?php echo $row['location_link'] ?>"/>
-                </div>
-                <div>
-                    <label>活动发起人姓名</label>
-                    <input type="text" class="input input-size30" name="sponsor_name"
-                           value="<?php echo $row['sponsor_user_id'] ?>"/>
-                </div>
-
-                <div>
-                    <label>联系电话</label>
-                    <input type="tel" class="input input-size30" name="sponsor_telephone"
-                           value="<?php echo $row['sponsor_telephone'] ?>">
-                </div>
-                <div>
-                    <label>微信</label>
-                    <input type="text" class="input input-size30" type="text" name="sponsor_wechat"
-                           value="<?php echo $row['sponsor_wechat'] ?>">
-                </div>
-                <div>
-                    <label>邮箱</label>
-                    <input type="email" name="sponsor_email" class="input input-size30"
-                           value="<?php echo $row['sponsor_email'] ?>">
-                </div>
-                <div>
                     <label>顺序</label>
-                    <input class="input input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
+                    <input class="input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
                 </div>
             </div>
 
         </section>
-        <label>活动时间<i>*</i></label>
-        <input type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:m:s",$event_time)?>"  id="aa" style="margin-right:3rem"/>
-        <label>活动有效至<i>*</i></label>
-        <input type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:m:s",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
+
         <footer class="buttonBox">
             <input type="submit" value="提交" class="btn">
         </footer>

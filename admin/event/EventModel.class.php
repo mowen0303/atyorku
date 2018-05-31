@@ -31,24 +31,26 @@ class EventModel extends Model
      * @return bool
      */
     public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location,
-                             $location_link,$registration_fee,$img_id_1,$img_id_2,$img_id_3,
+                             $location_link,$registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,
                              $max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,
                              $sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
-        $arr["title"] = $title ? $title : "";
-        $arr["description"] = $description ? $description : "";
-        $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
+        $arr["title"] = $title ?: "";
+        $arr["description"] = $description ?: "";
+        $arr["expiration_time"] = $expiration_time ?: 0;
         $arr["publish_time"] = time();
-        $arr["event_time"] = $event_time ? $event_time : 0;
-        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
-        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
-        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
-        $arr["location"] = $location ? $location : "";
-        $arr["location_link"] = $location_link ? $location_link : "";
-        $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
-        $arr["max_participants"]=$max_participants ? $max_participants : 0;
+        $arr["event_time"] = $event_time ?: 0;
+        $arr["img_id_1"] = $img_id_1 ?: 0;
+        $arr["img_id_2"] = $img_id_2 ?: 0;
+        $arr["img_id_3"] = $img_id_3 ?: 0;
+        $arr["location"] = $location ?: "";
+        $arr["location_link"] = $location_link ?: "";
+        $arr["registration_fee"] = $registration_fee ?: 0;
+        $arr["registration_way"] = $registration_way ?: "";
+        $arr["registration_link"] = $registration_link ?: "";
+        $arr["max_participants"]=$max_participants ?: 0;
         $arr["count_participants"] = 0;
         $arr["count_views"] = 0;
         $arr["count_comments"] = 0;
@@ -123,7 +125,7 @@ class EventModel extends Model
      * @return bool
      */
     public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link,
-                                $registration_fee,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
+                                $registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -131,12 +133,14 @@ class EventModel extends Model
         $arr["description"] = $description ? $description : "";
         $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
         $arr["event_time"] = $event_time ? $event_time : 0;
-        $arr["img_id_1"] = $img_id_1 ? $img_id_1 : 0;
-        $arr["img_id_2"] = $img_id_2 ? $img_id_2 : 0;
-        $arr["img_id_3"] = $img_id_3 ? $img_id_3 : 0;
-        $arr["location"] = $location ? $location : "";
-        $arr["location_link"] = $location_link ? $location_link : "";
-        $arr["registration_fee"] = $registration_fee ? $registration_fee : 0;
+        $arr["img_id_1"] = $img_id_1 ?: 0;
+        $arr["img_id_2"] = $img_id_2 ?: 0;
+        $arr["img_id_3"] = $img_id_3 ?: 0;
+        $arr["location"] = $location ?: "";
+        $arr["location_link"] = $location_link ?: "";
+        $arr["registration_fee"] = $registration_fee ?: 0;
+        $arr["registration_way"] = $registration_way ?: "";
+        $arr["registration_link"] = $registration_link ?: "";
         $arr["max_participants"]=$max_participants ? $max_participants : 0;
         $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
         $arr["sponsor_telephone"] = $sponsor_telephone ? $sponsor_telephone : "";

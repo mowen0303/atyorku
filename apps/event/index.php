@@ -27,12 +27,9 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
                 </tr>
                 <tr>
                     <th>参与方式：</th>
-                    <td><?php echo $event["registration_fee"]?:"免费" ?></td>
+                    <td><?php echo $event["registration_way"]?></td>
                 </tr>
-                <tr>
-                    <th>人数限制：</th>
-                    <td><?php echo $event["max_participants"]?:"不限人数"?></td>
-                </tr>
+                <?php echo $event['max_participants']?"<tr><th>人数限制：</th><td>{$event[max_participants]}</td></tr>":null?>
                 <tr>
                     <th>活动地点：</th>
                     <td><?php echo $event["location_link"]?"<a href='{$event[location_link]}'>{$event[location]}</a>":$event["location"] ?></td>
