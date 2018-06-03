@@ -77,7 +77,7 @@ body {
   line-height: 1.625em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', 'HelveticaNeue-Light', "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', 'HelveticaNeue-Light', "Helvetica Neue Light", "Helvetica Neue",
   Helvetica, 'Lora', 'Helvetica', 'Arial', sans-serif;
   color: #767676;
   font-weight: 400;
@@ -94,7 +94,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
   'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', 'Montserrat', 'Helvetica', 'Arial', sans-serif;
   color: #343434;
   font-weight: 600;
@@ -221,7 +221,7 @@ a:active {
   text-decoration: underline;
 }
 .type--body-font {
-  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑',"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  font-family: 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑', 'STHeiti Light','华文细黑','Microsoft YaHei','微软雅黑',"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
   Helvetica, 'Lora', 'Helvetica';
 }
 /**! 4. Position **/
@@ -980,7 +980,7 @@ a {
   color: #343434;
   border-color: #343434;
   font-weight: 400;
-  font-size: 0.625em;
+  font-size: 1em;
 }
 .btn + .btn {
   margin-left: 1.625em;
