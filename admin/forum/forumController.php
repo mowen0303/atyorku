@@ -150,7 +150,7 @@ function deleteForumClass() {
 
     try {
 
-        $currentUser->isUserHasAuthority('ADMIN') & $currentUser->isUserHasAuthority('FORUM_DELETE') or BasicTool::throwException("无权操作");
+        $currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE') or BasicTool::throwException("无权操作");
 
         $id = BasicTool::post('id');
         $isAdmin = BasicTool::post('isAdmin');
@@ -615,6 +615,24 @@ function getForumByIdWithJson() {
         BasicTool::echoJson(1, "获取成功", $result1);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
+    }
+}
+
+/**
+ * 转换数据
+ * @throws Exception
+ * http://www.atyorku.ca/admin/forum/forumController.php?action=transform
+ */
+function transform(){
+    //删除论坛
+    global $currentUser;
+    global $forumModel;
+
+    try {
+        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权操作");
+        $forumModel->transform();
+    } catch (Exception $e) {
+        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
     }
 }
 

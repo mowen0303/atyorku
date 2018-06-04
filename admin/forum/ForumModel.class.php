@@ -372,6 +372,11 @@ class ForumModel extends Model {
         }
     }
 
+    public function getForumImagesByForumIds($ids){
+        $sql = "SELECT * from image WHERE id IN ($ids)";
+        return $this->sqltool->getListBySql($sql);
+    }
+
     /**
      * @param $forum_classId
      * @param int $pageSize
@@ -382,16 +387,10 @@ class ForumModel extends Model {
      */
     public function getListOfForumByForumClassId($forum_classId, $pageSize = 20, $onlyShowReportList = false, $onlyShowForumOfUserByUserId = false, $onlyShowSpecificForumId = false, $orderBy = false) {
 
-        $userIsLogin = false;
         $currentUser = new UserModel();
-        if ($currentUser->isLogin()) {
-            $currentUser->addActivity();
-            $userIsLogin = true;
-        }
-
+        if ($currentUser->isLogin()) {$currentUser->addActivity();}
         $statisticsModel = new StatisticsModel();
         $statisticsModel->countStatistics(1);
-
         $table = 'forum';
         $condition = $forum_classId == 0 ? "" : "f.`forum_class_id` in ({$forum_classId}) AND";
 
@@ -417,55 +416,51 @@ class ForumModel extends Model {
 
         $countSql = "SELECT COUNT(*) FROM (select f.*,u_c.is_admin from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY f.sort DESC,`update_time` DESC";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);
-        $id = "";
-        $idIndex = 0;
-        foreach ($result as $k1 => $v1) {
-            foreach ($v1 as $k2 => $v2) {
-                if ($k2 == "id") {
-                    if ($idIndex < 5) {
-                        $id .= ($v2 . ",");
-                        $idIndex++;
-                    }
-                }
-                if ($k2 == "enroll_year") {
-                    $result[$k1][$k2] = BasicTool::translateEnrollYear($v1[$k2]);
-                }
-                if ($k2 == "img1") {
-                    $imgWidth = "";
-                    $imgHeight = "";
-                    if ($v2 != null) {
-                        $imgSize = getimagesize($_SERVER['DOCUMENT_ROOT'] . $v2);
-                        $imgWidth = $imgSize[0];
-                        $imgHeight = $imgSize[1];
-                    }
-                    if ($imgWidth == null) {
-                        $imgWidth = 0;
-                        $imgHeight = 0;
-                    }
-                    $result[$k1]['img1Width'] = "{$imgWidth}";
-                    $result[$k1]['img1Height'] = "{$imgHeight}";
-                }
-                if ($k2 == "time") {
-                    $result[$k1][$k2] = BasicTool::translateTime($v2);
-                }
-                if ($userIsLogin) {
-                    if ($k2 == "user_id") {
-                        if (($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) || ($v2 == $currentUser->userId)) {
-                            $editable = 'yes';
-                        } else {
-                            $editable = 'no';
-                        }
-                    }
-                }
+        $imgIds = [];
+        for($i=0;$i<count($result);$i++) {
+            $ids[] = $result[$i]['id'];
+            $result[$i]['enroll_year'] = BasicTool::translateEnrollYear($result[$i]['enroll_year']);
+            $result[$i]['time'] = BasicTool::translateTime($result[$i]['time']);
+            if ($result[$i]['img1']) {
+                list($result[$i]['img1Width'], $result[$i]['img1Height']) = getimagesize($_SERVER['DOCUMENT_ROOT'] . $result[$i]['img1']);
             }
-            $result[$k1]['editable'] = $editable;
-
+            $result[$i]['imgs'] = [];
+            if ($result[$i]['img_id_1']) $imgIds[] = $result[$i]['img_id_1'];
+            if ($result[$i]['img_id_2']) $imgIds[] = $result[$i]['img_id_2'];
+            if ($result[$i]['img_id_3']) $imgIds[] = $result[$i]['img_id_3'];
+            if ($result[$i]['img_id_4']) $imgIds[] = $result[$i]['img_id_4'];
+            if ($result[$i]['img_id_5']) $imgIds[] = $result[$i]['img_id_5'];
+            if ($result[$i]['img_id_6']) $imgIds[] = $result[$i]['img_id_6'];
         }
+        $imgArr=[];
+        if(count($imgIds)>0){
+            $imgIds = implode(",",$imgIds);
+            $sql = "SELECT * FROM image WHERE id IN ({$imgIds})";
+            $imgResult = $this->sqltool->getListBySql($sql);
+            foreach($imgResult as $k => $v){
+                $imgArr[$v["id"]]=$v;
+            }
+        }
+        if(count($imgArr)>0){
+            for($i=0;$i<count($result);$i++) {
+                if ($result[$i]['img_id_1']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_1']];
+                if ($result[$i]['img_id_2']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_2']];
+                if ($result[$i]['img_id_3']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_3']];
+                if ($result[$i]['img_id_4']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_4']];
+                if ($result[$i]['img_id_5']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_5']];
+                if ($result[$i]['img_id_6']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_6']];
+
+            }
+            foreach ($imgArr as $img) {
+
+            }
+        }
+
         //增加阅读量
-        if ($id != "") {
+        if (count($ids)>0) {
+            $ids = implode(",",$ids);
             if ($_COOKIE["forumViewTime"] == null) {
-                $id = substr($id, 0, -1);
-                $this->countViewOfForumById($id);
+                $this->countViewOfForumById($ids);
                 setcookie("forumViewTime", time(), time() + 600, '/');
             }
         }
@@ -575,5 +570,25 @@ class ForumModel extends Model {
             }
         }
         return $arr;
+    }
+
+    /**
+     * 转换数据 转6张图片
+     */
+    public function transform(){
+        $sql = "SELECT * from forum WHERE img1 <> ''";
+        $forumResult = $this->sqltool->getListBySql($sql);
+        $amount = count($forumResult);
+        $index = 1;
+        foreach($forumResult as $forum){
+            $sql = "INSERT INTO image (url,thumbnail_url,size,height,width,applied_table,publish_time) VALUE ('{$forum[img1]}','{$forum[img1]}',0,0,0,'forum','{$forum[time]}')";
+            $this->sqltool->query($sql);
+            $id = $this->sqltool->getInsertId();
+            $sql = "UPDATE forum SET img_id_1 = {$id} WHERE id = {$forum[id]}";
+            $this->sqltool->query($sql);
+            echo "{$index}/{$amount}<br>";
+            $index++;
+        }
+
     }
 }
