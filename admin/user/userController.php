@@ -42,11 +42,12 @@ function modifyCredit() {
         $transactionModel = new \admin\transaction\TransactionModel();
         $userId = BasicTool::post('userId', '用户ID不能为空');
         $credit = BasicTool::post('credit', '点券值不能为空');
+        $reason = BasicTool::post('reason', '请输入理由');
         $alias = $currentUser->aliasName;
         if ($credit > 0) {
-            $transactionModel->addCredit($userId, $credit, "管理员{$alias}手动给你增加了{$credit}点积分","manualAdjust",$userId) or BasicTool::throwException("操作失败");
+            $transactionModel->addCredit($userId, $credit, "【{$reason}】您的积分增加了{$credit}点。（管理员：{$alias}）","manualAdjust",$userId) or BasicTool::throwException("操作失败");
         } else {
-            $transactionModel->deductCredit($userId, $credit, "管理员{$alias}手动给你减掉了{$credit}点积分","manualAdjust",$userId) or BasicTool::throwException("操作失败");;
+            $transactionModel->deductCredit($userId, $credit, "【{$reason}】您的积分减少了{$credit}点。（管理员：{$alias}）","manualAdjust",$userId) or BasicTool::throwException("操作失败");;
         }
         BasicTool::echoMessage("成功");
     } catch (Exception $e) {

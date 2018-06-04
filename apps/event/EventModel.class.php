@@ -1,6 +1,10 @@
 <?php
-namespace apps\event;   //-- 注意 --//
+namespace apps\event;  //-- 注意 --//
+use admin\statistics\StatisticsModel;
+use admin\user\UserModel;
 use \Model as Model;
+use \BasicTool as BasicTool;
+use \Exception as Exception;
 class EventModel extends Model
 {
 
@@ -81,6 +85,7 @@ class EventModel extends Model
     public function getEventsByCategory($event_category_id,$onlyShowEffectEvent=false,$pageSize=20){
         $time = time();
         $condition = "";
+        $order = "";
         if($event_category_id){
             $condition .= " event_category_id = {$event_category_id}";
         }else{
@@ -89,12 +94,16 @@ class EventModel extends Model
 
         if($onlyShowEffectEvent==1){
             $condition .= " AND expiration_time >= {$time}";
+            $order .= ", event_time ASC";
         }else if($onlyShowEffectEvent==2){
             $condition .= " AND expiration_time < {$time}";
+            $order .= ", event_time DESC";
+        }else{
+            $order .= ", event_time DESC";
         }
 
-        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
-        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC, event_time DESC";
+        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
+        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
         return $this->getListWithPage("event", $sql, $countSql, $pageSize);
     }
 

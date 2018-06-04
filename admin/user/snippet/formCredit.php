@@ -24,7 +24,16 @@ $inquiredUser = new \admin\user\UserModel($userId);
                     <input type="hidden" name="userId" value="<?php echo $userId?>">
                     <input type="hidden" name="currentCredit" value="<?php echo $inquiredUser->credit?>">
                 </div>
+                <div>
+                    <label>操作缘由</label>
+                    <select class="input input-select input-size30" name="reason">
+                        <option value="手动调整积分">手动调整积分</option>
+                        <option value="充值积分">充值积分</option>
+                        <option value="积分提现">积分提现</option>
+                    </select>
+                </div>
             </div>
+
         </section>
         <footer class="submitBox">
             <input type="submit" value="修改" class="btn" id="btn">
