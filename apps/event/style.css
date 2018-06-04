@@ -17,15 +17,19 @@ article {padding:0 1em;margin-top:1.1em;}
 #indicatorContainer { display: block; width:100%; text-align:center; list-style-type: none; position:absolute; bottom:10%}
 .indicator {display:inline-block; padding:0.3em 0.3em; border-radius:0.3em; margin-right:0.3em; background-color:rgba(0,0,0,0.4)}
 
-.titleBlock { background: #fff; padding: 1em}
-.infoBlock { margin-top: 1em; background: #fff; overflow: hidden; margin-top: 1em}
-    .infoBlock header {border-bottom: 1px solid #f8f8f8;}
-        .infoBlock header div { display: inline-block; margin: 1em 0 0 1em}
-        .infoBlock header * { display: block}
-        .infoBlock header h2 {font-size: 1.2em; padding:0 2px; color:#333}
-        .infoBlock header i {background: #c83c45; border-radius: 10px; height: 2px;}
-    .infoBlock article {margin: 1em; font-size: 1em}
-        .infoBlock .imgContainer img {width: 100%}
+.infoBlock {margin-bottom: 1.5em;}
+.infoBlock pre {font-size:0.875em; color:#787878}
+.subtitle {font-size:1em;color:#585858;}
+.subtitleIcon {position:relative;height:1em;width:1em;margin-right:0.3em;top:2px;}
+.content {font-size:0.875em;color:#787878}
+.content::before {content: ' '; display: inline-block; background-repeat: no-repeat; background-image: url("/resource/img/event_icon/spriteMap.png");background-position: 0 -496px; height: 6px; width: 5px; overflow: hidden; -webkit-background-size: 38px auto; background-size: 38px auto; bottom:2px; margin-right:0.4em; position: relative}
+.content:nth-child(2n)::before {content: ' '; display: inline-block; background-repeat: no-repeat; background-image: url("/resource/img/event_icon/spriteMap.png"); background-position: 0 -477px; height: 6px; width: 5px; overflow: hidden; -webkit-background-size: 38px auto; background-size: 38px auto; bottom:2px; margin-right:0.4em; position: relative}
+.content span {color:#222222;font-weight:bold}
+
+#sponsorInfoBlock {position:relative; text-align:center;}
+#sponsorInfoBlock p {text-align: center;margin-bottom:1em;}
+#sponsorInfoBlock span {color: #F36700; border-style:solid; border-radius:20px; border-color:#F36700; border-width:0.4px; padding:7px 18px;}
+#profileImg{height:3.75em;width:3.75em; margin-bottom:1em;border-radius:3.75em; background:url("/resource/img/head-default.png") no-repeat center; background-size:cover; position:relative; left:50%; transform: translate3d(-50%,0,0)}
 
 
 /*评论*/
