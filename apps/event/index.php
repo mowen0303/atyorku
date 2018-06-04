@@ -6,6 +6,10 @@ $userModel = new \admin\user\UserModel();
 $event_id = BasicTool::get("event_id");
 $event = $eventModel->getEvent($event_id);
 $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
+$imgUrls = array();
+if ($event['img_id_1']) $imgUrls[] = $imageModel->getImageById($event['img_id_1'])['url'];
+if ($event['img_id_2']) $imgUrls[] = $imageModel->getImageById($event['img_id_2'])['url'];
+if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'])['url'];
 ?>
 <!doctype html>
 <html lang="en">
@@ -17,79 +21,66 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
 </head>
 <body>
 <div id="container">
-    <section class="titleBlock">
-        <h1><?php echo $event["title"] ?></h1>
-        <article>
-            <table class="infoTable">
-                <tr>
-                    <th>参与费用：</th>
-                    <td><?php echo $event["registration_fee"]?:"免费" ?></td>
-                </tr>
-                <tr>
-                    <th>参与方式：</th>
-                    <td><?php echo $event["registration_way"]?></td>
-                </tr>
-                <?php echo $event['max_participants']?"<tr><th>人数限制：</th><td>{$event[max_participants]}</td></tr>":null?>
-                <tr>
-                    <th>活动地点：</th>
-                    <td><?php echo $event["location_link"]?"<a href='{$event[location_link]}'>{$event[location]}</a>":$event["location"] ?></td>
-                </tr>
-                <tr>
-                    <th>开始时间：</th>
-                    <td><?php echo date("Y-m-d H:m",$event["event_time"]) ?></td>
-                </tr>
-                <tr>
-                    <th>结束时间：</th>
-                    <td><?php echo date("Y-m-d H:m",$event["expiration_time"]) ?></td>
-                </tr>
-            </table>
-        </article>
-    </section>
-    <?php if($event["img_id_2"]||$event["img_id_3"]){?>
+    <div id = 'slideBox'>
+        <?php
+        $html = "";
+        foreach ($imgUrls as $index => $url){
+            $html .= "<div class='slider' id='slider{$index}' style='background-image:url({$url})'></div>";
+            }
+        echo $html;
+        ?>
+        <ul id = 'indicatorContainer'>
+            <?php
+            $html = "";
+            foreach ($imgUrls as $index => $url) {
+                $html .= "<li class='indicator' id='indicator{$index}'></li>";
+            }
+            echo $html;
+            ?>
+        </ul>
+    </div>
+    <article>
+        <header>
+            <h1><?php echo $event['title']?></h1>
+        </header>
         <section class="infoBlock">
-            <header>
-                <div><h2>活动图片</h2><i></i></div>
-            </header>
-            <article>
-                <div class="imgContainer">
-                    <?php
-                    if ($event["img_id_2"]) {
-                        $img2 = $imageModel->getImageById($event["img_id_2"])["url"];
-                        echo '<p><img src="' . $img2 . '"/></p>';
-                    }
-                    if ($event["img_id_3"]) {
-                        $img3 = $imageModel->getImageById($event["img_id_3"])["url"];
-                        echo '<p><img src="' . $img3 . '"/></p>';
-                    }
-                    ?>
-                </div>
-            </article>
+            <div>
+                <img class="subtitleIcon" src="/resource/img/event_icon/calendar.png"/>
+                <span class="subtitle"><?php echo date("Y/m/d",$event['event_time'])?> - <?php echo date("m/d",$event['expiration_time'])?></span>
+            </div>
+            <hr/>
+            <p class="content">活动费用 : <?php echo $event['registration_fee']?></p>
+            <p class="content">参与方式 : <?php echo $event['registration_way'] ?></p>
+            <p class="content"><span><?php echo $event['max_participants'] ?></span>个活动名额</p>
+            <p class="content">地点位于<?php echo $event['location'] ?></p>
         </section>
-    <?php }?>
-    <section class="infoBlock">
-        <header>
-            <div><h2>活动简介</h2><i></i></div>
-        </header>
-        <article>
-            <pre><?php echo $event["description"] ?></pre>
-        </article>
-    </section>
-    <section class="infoBlock">
-        <header>
-            <div><h2>活动负责人</h2><i></i></div>
-        </header>
-        <article>
-            <table class="infoTable">
-                <tr>
-                    <th>联系人：</th>
-                    <td><?php echo $event["sponsor_name"]?:$event["alias"] ?></td>
-                </tr>
-                <?php echo $event["sponsor_telephone"]!=""?"<tr><th>电 话：</th><td>{$event["sponsor_telephone"]}</td></tr>":null ?>
-                <?php echo $event["sponsor_wechat"]!=""?"<tr><th>微 信：</th><td>{$event["sponsor_wechat"]}</td></tr>":null ?>
-                <?php echo $event["sponsor_email"]!=""?"<tr><th>Email：</th><td>{$event["sponsor_email"]}</td></tr>":null ?>
-            </table>
-        </article>
-    </section>
+        <section id="sponsorInfoBlock" class="infoBlock">
+            <div id="profileImg"></div>
+            <p><?php echo $event['sponsor_name']?></p>
+            <span>活动负责人</span>
+        </section>
+        <section class="infoBlock">
+            <div>
+                <img class="subtitleIcon" src="/resource/img/event_icon/event.png"/>
+                <span class="subtitle">活动介绍</span>
+            </div>
+            <hr/>
+            <pre><?php echo $event['description']?>></pre>
+        </section>
+        <section class="infoBlock">
+            <div>
+                <img class="subtitleIcon" src="/resource/img/event_icon/user.png"/>
+                <span class="subtitle">活动联系人</span>
+            </div>
+            <hr/>
+            <p class="content">联系人: <?php echo $event['sponsor_name'] ?></p>
+            <?php if ($event['sponsor_telephone']) echo "<p class='content'>电话: {$event['sponsor_telephone']}</p>"?>
+            <?php if ($event['sponsor_email']) echo "<p class='content'>邮箱: {$event['sponsor_email']}</p>"?>
+            <?php if ($event['sponsor_wechat']) echo "<p class='content'>微信: {$event['sponsor_wechat']}</p>"?>
+        </section>
+    </article>
+
+
     <!--评论组件 S-->
     <!--
     data-category 产品数据库表名
@@ -111,5 +102,27 @@ $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
     </div>
     <!--评论组件 E-->
 </div>
+<script type="text/javascript">
+    let count = $('.slider').length;
+    let index = 0;
+    let width = $('#slideBox').width();
+    $(document).ready(function(){
+        if (count){
+            $("#slider"+index).width(width);
+            if (count ===1)
+                $("#indicator"+index).css("display","none");
+            else{
+                $("#indicator"+index).css("background-color","white");
+                setInterval(()=>{
+                    $("#slider"+index).animate({width:'0'},150);
+                    $("#indicator"+index).css("background-color","rgba(0,0,0,0.4)");
+                    index = (index + 1) % count;
+                    $("#slider"+index).animate({width:`${width}px`},150);
+                    $("#indicator"+index).css("background-color","white");
+                }, 5000);
+            }
+        }
+    });
+</script>
 </body>
 </html>
