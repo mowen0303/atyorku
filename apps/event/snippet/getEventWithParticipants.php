@@ -1,8 +1,8 @@
 <?php
-$eventModel = new \admin\event\EventModel();
+$eventModel = new \apps\event\EventModel();
 $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-$eventParticipantModel = new \admin\eventParticipant\EventParticipantModel();
+$eventParticipantModel = new \apps\eventParticipant\EventParticipantModel();
 
 $event_id = BasicTool::get("event_id","event id missing");
 $event = $eventModel->getEvent($event_id);
@@ -97,7 +97,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
     <header>
         <h2>已参与的用户</h2>
     </header>
-    <form action="/admin/eventParticipant/eventParticipantController.php?action=deleteEventParticipant" method="post">
+    <form action="./../eventParticipant/eventParticipantController.php?action=deleteEventParticipant" method="post">
         <section>
             <table class="tab">
                 <thead>
@@ -149,7 +149,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
     <header>
         <h2>添加用户</h2>
     </header>
-    <form action="/admin/eventParticipant/eventParticipantController.php?action=addEventParticipant" method="post">
+    <form action="./../eventParticipant/eventParticipantController.php?action=addEventParticipant" method="post">
         <section class="formBox">
             <input name="event_id" value="<?php echo $event_id?>" type="hidden">
             <div>

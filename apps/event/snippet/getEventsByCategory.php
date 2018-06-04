@@ -1,5 +1,5 @@
 <?php
-$eventModel = new \admin\event\EventModel();
+$eventModel = new \apps\event\EventModel();
 $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 
@@ -12,7 +12,7 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
         <h1><?php echo $pageTitle?></h1>
     </header>
     <nav class="mainNav">
-        <a class="btn" href="/admin/eventCategory/index.php?s=getEventCategories">返回</a>
+        <a class="btn" href="./../eventCategory/index.php?s=getEventCategories">返回</a>
         <a class="btn" href="index.php?s=addEvent&event_category_id=<?php echo $event_category_id ?>">发布新活动</a>
     </nav>
     <article class="mainBox">
@@ -59,7 +59,7 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                             <td><?php echo $row['count_comments']?></td>
                             <td><?php echo $row['count_views']?></td>
                             <td><?php echo $row["sort"]?></td>
-                            <td><a href="/apps/event/index.php?event_id=<?php echo $row['id'] ?>">预览</a> | <a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
+                            <td><a href="./snippet/getEventWebView.php?event_id=<?php echo $row['id'] ?>">预览</a> | <a href="index.php?s=addEvent&id=<?php echo $row['id'] ?>&event_category_id=<?php echo $event_category_id ?>">修改</a></td>
                         </tr>
                         <?php
                     }

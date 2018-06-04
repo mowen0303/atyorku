@@ -1,5 +1,5 @@
 <?php
-$eventCategoryModel = new \admin\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
 $isAdmin = BasicTool::get('isAdmin');
 ?>
 <header class="topBox">
@@ -36,7 +36,7 @@ $isAdmin = BasicTool::get('isAdmin');
                         <td><?php echo $row['description']?></td>
                         <td><?php echo $row['count_events']?></td>
                         <td><a href="index.php?s=addEventCategory&id=<?php echo $row['id'] ?>">修改</a></td>
-                        <td><a href="/admin/event/index.php?s=getEventsByCategory&event_category_id=<?php echo $row['id']?>&event_category_title=<?php echo $row["title"] ?>&flag=1">查看</a></td>
+                        <td><a href="./../event/index.php?s=getEventsByCategory&event_category_id=<?php echo $row['id']?>&event_category_title=<?php echo $row["title"] ?>&flag=1">查看</a></td>
                      </tr>
                     <?php
                 }

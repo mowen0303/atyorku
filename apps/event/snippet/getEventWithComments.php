@@ -1,5 +1,5 @@
 <?php
-$eventModel = new \admin\event\EventModel();
+$eventModel = new \apps\event\EventModel();
 $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $commentModel = new \admin\comment\CommentModel();

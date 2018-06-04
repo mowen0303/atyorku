@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$eventModel = new admin\event\EventModel();
+$eventModel = new \apps\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $commentModel = new \admin\comment\CommentModel();

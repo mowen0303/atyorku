@@ -1,17 +1,17 @@
 <?php
 $userModel = new \admin\user\UserModel();
-$eventCategoryModel = new \admin\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 
 
 if ($flag=='update') {
     $row = $eventCategoryModel->getEventCategory($id);
-    $form_action = "/admin/eventCategory/eventCategoryController.php?action=updateEventCategory";
+    $form_action = "./eventCategoryController.php?action=updateEventCategory";
     }
 else
     {$row = null;
-    $form_action = "/admin/eventCategory/eventCategoryController.php?action=addEventCategory";
+    $form_action = "./eventCategoryController.php?action=addEventCategory";
     }
 
 ?>

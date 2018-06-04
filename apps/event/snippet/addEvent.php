@@ -1,9 +1,9 @@
 <?php
 date_default_timezone_set("America/Toronto");
-$eventModel = new \admin\event\EventModel();
+$eventModel = new \apps\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-$eventCategoryModel = new \admin\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
 
 $user_id = $currentUser->userId;
 $event_category_id = BasicTool::get('event_category_id', "event_category_id missing");
@@ -14,7 +14,7 @@ $flag = $id == null ? 'add' : 'update';
 
 if ($flag == 'add') {
     $row = null;
-    $form_action = "/admin/event/eventController.php?action=addEvent";
+    $form_action = "./eventController.php?action=addEvent";
     $event_time = time();
     $expiration_time = time();
 } else {
@@ -24,7 +24,7 @@ if ($flag == 'add') {
     $img3 = $row["img_id_3"];
     $event_time = $row["event_time"];
     $expiration_time = $row["expiration_time"];
-    $form_action = "/admin/event/eventController.php?action=updateEvent";
+    $form_action = "./eventController.php?action=updateEvent";
 }
 
 ?>

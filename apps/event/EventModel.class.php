@@ -1,10 +1,6 @@
 <?php
-namespace admin\event;   //-- 注意 --//
-use admin\statistics\StatisticsModel;
-use admin\user\UserModel;
+namespace apps\event;   //-- 注意 --//
 use \Model as Model;
-use \BasicTool as BasicTool;
-use \Exception as Exception;
 class EventModel extends Model
 {
 
