@@ -4,6 +4,7 @@ $action = BasicTool::get('action');
 $forumModel = new \admin\forum\ForumModel();
 $currentUser = new \admin\user\UserModel();
 $msgModel = new \admin\msg\MsgModel();
+$imageModel = new \admin\image\ImageModel();
 call_user_func(BasicTool::get('action'));
 
 /**
@@ -258,6 +259,47 @@ function getForumClassListWithJson() {
  */
 function getForumListWithJson() {
     global $forumModel;
+    $version = BasicTool::get('version');
+    if($version!=2 && BasicTool::get("page")==1){
+        BasicTool::echoJson(1, "成功", [[
+            "id"=> "1",
+            "user_id"=> "1",
+            "forum_class_id"=> "1",
+            "content"=> "重要通知: 同学圈功能已升级,请到App Store将atYorkU升级到最新版本.",
+            "img1"=> "",
+            "img_id_1"=> "0",
+            "img_id_2"=> "0",
+            "img_id_3"=> "0",
+            "img_id_4"=> "0",
+            "img_id_5"=> "0",
+            "img_id_6"=> "0",
+            "count_comments"=> "0",
+            "time"=> "2018",
+            "update_time"=> "1528179540",
+            "count_view"=> "9999+",
+            "count_comments_today"=> "0",
+            "report"=> "0",
+            "sort"=> "1",
+            "user_class_id"=> "1",
+            "img"=> "/uploads/1/1519188596.jpg",
+            "alias"=> "atYorkU",
+            "gender"=> "1",
+            "major"=> "EECS",
+            "enroll_year"=> "2011级",
+            "degree"=> "研究生",
+            "is_admin"=> "1",
+            "userTitle"=> "超级管理员",
+            "classId"=> "1",
+            "classTitle"=> "默认",
+            "classType"=> "normal",
+            "imgs"=> []
+        ]]);
+        return false;
+    }else if($version!=2 && BasicTool::get("page")>=1){
+        BasicTool::echoJson(0, "没有更多内容");
+        return false;
+    }
+
     $pageSize = BasicTool::get('pageSize') ?: 40;
     $orderBy = BasicTool::get('orderBy')?:'replyTime';
     $result = $forumModel->getListOfForumByForumClassId(BasicTool::get("forum_class_id"), $pageSize, false, false, false,$orderBy);
@@ -291,6 +333,7 @@ function addForumWithJson() {
 function modifyForum($echoType = "normal") {
     global $forumModel;
     global $currentUser;
+    global $imageModel;
     try {
         //判断是否有权限发帖
         $currentUser->isUserHasAuthority('FORUM_ADD') or BasicTool::throwException($currentUser->errorMsg);
@@ -298,25 +341,37 @@ function modifyForum($echoType = "normal") {
         $flag = BasicTool::post('flag');
         $id = BasicTool::post('forum_id');
         $arr = [];
+        BasicTool::post('version')==2 or BasicTool::throwException("同学圈功能已升级, 请到App Store将atYorkU升级到最新版本");
         $arr['content'] = BasicTool::post('content', '内容不能为空', 65500);
-        $arr['price'] = BasicTool::post('price', false, 8);
-        $arr['category'] = BasicTool::post('category', false, 4);
         $arr['forum_class_id'] = BasicTool::post('forum_class_id', '所属论坛组不能为空');
-        if ($arr['price'] == null) {
-            $arr['price'] = 0;
+        $arr['sort'] = BasicTool::post('sort', false, 3) ?: 0;
+        $arr['img1'] = "";  //升级之后删除
+        //上传图片
+        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"),BasicTool::post("img_id_4"),BasicTool::post("img_id_5"),BasicTool::post("img_id_6"));
+        if($id){
+            $currImgArr = [
+                BasicTool::post('img_id_1'),
+                BasicTool::post('img_id_2'),
+                BasicTool::post('img_id_3'),
+                BasicTool::post('img_id_4'),
+                BasicTool::post('img_id_5'),
+                BasicTool::post('img_id_6')
+            ];
+        }else{
+            $currImgArr = false;
         }
-        is_numeric($arr['price']) or BasicTool::throwException("价格格式不正确");
-        $arr['sort'] = BasicTool::post('sort', false, 3);
-        if ($arr['sort'] == null) {
-            $arr['sort'] = 0;
-        }
+        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,6,"imgFile",$currentUser->userId,"forum");
+        $arr['img_id_1'] = $imgArr[0]?:0;
+        $arr['img_id_2'] = $imgArr[1]?:0;
+        $arr['img_id_3'] = $imgArr[2]?:0;
+        $arr['img_id_4'] = $imgArr[3]?:0;
+        $arr['img_id_5'] = $imgArr[4]?:0;
+        $arr['img_id_6'] = $imgArr[5]?:0;
         if ($flag == 'add') {
             $arr['time'] = time();
             $arr['update_time'] = time();
-            //上传图片 --------
-            $arr["img1"] = $currentUser->uploadImg("img1", $currentUser->userId) or BasicTool::throwException($currentUser->errorMsg);
-            //增加一个新信息
             $arr['user_id'] = $currentUser->userId;
+            //增加一个新信息
             if ($forumModel->addRow('forum', $arr)) {
                 //更新今日数据
                 $forumModel->updateCountData($forumModel->idOfInsert);
@@ -331,7 +386,6 @@ function modifyForum($echoType = "normal") {
             }
         } elseif ($flag == 'update') {
             $currentUser->isUserHasAuthority('FORUM_UPDATE') or BasicTool::throwException($currentUser->errorMsg);
-            $arr['img1'] = BasicTool::post('img1');
             //修改信息
             if ($forumModel->updateRowById('forum', $id, $arr)) {
                 if ($echoType == "normal") {

@@ -1,5 +1,6 @@
 <?php
 namespace admin\forum;   //-- 注意 --//
+use admin\image\ImageModel;
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
@@ -127,6 +128,7 @@ class ForumModel extends Model {
     public function deleteOneForumById($forumId) {
 
         $currentUser = new UserModel();
+        $imageModel = new ImageModel();
 
         //判断是否有权限发帖
         if (!($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE'))) {
@@ -134,9 +136,17 @@ class ForumModel extends Model {
             $currentUser->userId == $this->getUserIdOfForumByForumId($forumId) or BasicTool::throwException("无权删除其他人的帖子");
         }
 
-        $sql = "SELECT img1 FROM forum WHERE id IN ({$forumId})";
+        $sql = "SELECT img_id_1,img_id_2,img_id_3,img_id_4,img_id_5,img_id_6 FROM forum WHERE id IN ({$forumId})";
         $row = $this->sqltool->getRowBySql($sql);
         //删除图片
+        $imageModel->deleteImageById([
+            $row['img_id_1'],
+            $row['img_id_2'],
+            $row['img_id_3'],
+            $row['img_id_4'],
+            $row['img_id_5'],
+            $row['img_id_6']
+        ]);
         unlink($_SERVER["DOCUMENT_ROOT"] . $row['img1']);
         //删除forum表内容 和 forum_comment内容
         $sql = "DELETE FROM forum_comment WHERE forum_id IN ({$forumId}); ";
