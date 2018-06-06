@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
-$test = new \apps\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
+$test = new \apps\event\eventCategory\EventCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get("action"));
 

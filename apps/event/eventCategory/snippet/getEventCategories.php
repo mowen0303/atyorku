@@ -1,5 +1,5 @@
 <?php
-$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 $isAdmin = BasicTool::get('isAdmin');
 ?>
 <header class="topBox">
@@ -10,7 +10,7 @@ $isAdmin = BasicTool::get('isAdmin');
 </nav>
 <article class="mainBox">
     <header><h2>活动分类</h2></header>
-    <form action="EventCategoryController.php?action=deleteEventCategory" method="post">
+    <form action="eventCategoryController.php?action=deleteEventCategory" method="post">
         <section>
             <table class="tab">
                 <thead>

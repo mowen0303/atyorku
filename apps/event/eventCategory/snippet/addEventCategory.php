@@ -1,6 +1,6 @@
 <?php
 $userModel = new \admin\user\UserModel();
-$eventCategoryModel = new \apps\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 

@@ -1,5 +1,5 @@
 <?php
-namespace apps\eventCategory;   //-- 注意 --//
+namespace apps\event\eventCategory;   //-- 注意 --//
 use admin\statistics\StatisticsModel;
 use admin\user\UserModel;
 use \Model as Model;
