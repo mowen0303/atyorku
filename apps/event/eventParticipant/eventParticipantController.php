@@ -83,7 +83,7 @@ function deleteEventParticipant($echoType="normal"){
     $id = BasicTool::post("id","specify id");
     try {
         //判断权限
-        if(!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))){
+        if(!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT_ADMIN"))){
             $user_id = $eventParticipantModel->getEventParticipant($id)["user_id"];
             $currentUser->userId == $user_id or BasicTool::throwException("权限不足,删除失败");
         }

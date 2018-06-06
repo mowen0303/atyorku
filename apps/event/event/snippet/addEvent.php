@@ -4,10 +4,9 @@ $eventModel = new \apps\event\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
+$eventCategories = $eventCategoryModel->getEventCategories();
 
 $user_id = $currentUser->userId;
-$event_category_id = BasicTool::get('event_category_id', "event_category_id missing");
-$event_category_title = $eventCategoryModel->getEventCategory($event_category_id)["title"];
 
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
@@ -76,15 +75,33 @@ if ($flag == 'add') {
         echo $pageTitle . '-';
         echo $flag == 'add' ? '发布活动' : '修改活动';
         ?></h1>
+    <nav class="mainNav">
+        <a class="btn" href="index.php?s=getEventsByCategory">返回</a>
+    </nav>
 </header>
 
 <article class="mainBox">
     <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
         <input name="id" value="<?php echo $id ?>" type="hidden">
-        <input name="event_category_id" value="<?php echo $event_category_id ?>" type="hidden"/>
         <input name="sponsor_user_id" value="<?php echo $user_id ?>" type="hidden"/>
         <section class="formBox">
-            <h4 style="padding-left:5px;color:#555;">活动类别:&nbsp;<?php echo $event_category_title ?></h4>
+            <div>
+                <label>活动类别<i>*</i></label>
+                <select class = 'input input-select' name="event_category_id">
+                    <?php
+                    $placeholderSelected=$flag=='add'?'selected':'';
+                    $html = "<option value='' disabled {$placeholderSelected}>选择活动分类</option>";
+                    echo $html;
+                    foreach ($eventCategories as $category){
+                        if ($flag == 'update' && $row['event_category_id'] == $category['id'])
+                            $html = "<option selected value='{$category["id"]}'>{$category['title']}</option>";
+                        else
+                            $html = "<option value='{$category["id"]}'>{$category['title']}</option>";
+                        echo $html;
+                    }
+                    ?>
+                </select>
+            </div>
             <div>
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
@@ -175,11 +192,13 @@ if ($flag == 'add') {
                     <p style="margin-bottom:1rem"><img id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
                     <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
-
-                <div>
+                <?php
+                if ($currentUser->isUserHasAuthority('ADMIN'))
+                    echo "<div>
                     <label>顺序</label>
-                    <input class="input-size30" type="number" name="sort" value="<?php echo $row['sort'] ?>">
-                </div>
+                    <input class='input-size30' type='number' name='sort' value='{$row["sort"]}'>
+                    </div>";
+                ?>
             </div>
 
         </section>

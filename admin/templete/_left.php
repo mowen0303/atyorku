@@ -32,7 +32,7 @@ if(!$userModel->isAdminLogin()){
 		<article class="navCon">
 			<ul>
 				<li><a href="/admin/adCategory/" target="mainFrame">广告管理</a></li>
-				<li><a href ="/apps/eventCategory" target="mainFrame">活动管理</a></li>
+				<li><a href ="/apps/event/event" target="mainFrame">活动管理</a></li>
                 <li><a href ="/admin/knowledge/" target="mainFrame">考试回忆录</a></li>
 				<li><a href="/admin/forum/" target="mainFrame">同学圈</a></li>
 				<li><a href="/admin/guide/" target="mainFrame">文章</a></li>

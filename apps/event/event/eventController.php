@@ -35,9 +35,9 @@ function addEvent($echoType = "normal") {
     global $imageModel;
     try {
         //判断权限
-        ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("EVENT")) or BasicTool::throwException("权限不足,添加失败");
+        ($currentUser->isUserHasAuthority("ADMIN") || $currentUser->isUserHasAuthority("EVENT_ADMIN")) or BasicTool::throwException("权限不足,添加失败");
 
-        $event_category_id = BasicTool::post("event_category_id", "Missing event_category_id");
+        $event_category_id = BasicTool::post("event_category_id", "请选择活动分类");
         $title = BasicTool::post("title", "活动标题不能为空");
         $event_time = BasicTool::post("event_time", "请填写开始日期");
         $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
@@ -73,7 +73,7 @@ function addEvent($echoType = "normal") {
                             $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("添加失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("添加成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
+            BasicTool::echoMessage("添加成功", "index.php?s=getEventsByCategory");
         } else {
             BasicTool::echoJson(1, "添加成功");
         }
@@ -195,13 +195,19 @@ function deleteEvent($echoType = "normal") {
     global $currentUser;
     global $commentModel;
     global $imageModel;
-    $id = BasicTool::post("id", "请指定要删除的广告的id");
-
+    $id = BasicTool::post("id", "请指定要删除的广告");
     try {
         //判断权限
-        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))) {
-            $sponsor_user_id = $eventModel->getEvent($id)["sponsor_user_id"];
-            $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,删除失败");
+        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT_ADMIN"))) {
+            if ($echoType == 'normal'){
+                foreach ($id as $i){
+                    $sponsor_user_id = $eventModel->getEvent($i)['sponsor_user_id'];
+                    $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,删除失败");
+                }
+            }else{
+                $sponsor_user_id = $eventModel->getEvent($id)["sponsor_user_id"];
+                $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,删除失败");
+            }
         }
 
         //删除评论
@@ -312,12 +318,12 @@ function updateEvent($echoType = "normal") {
     $id = BasicTool::post("id", "必须填写id");
     try {
         //判断权限
-        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT"))) {
+        if (!($currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("EVENT_ADMIN"))) {
             $sponsor_user_id = $eventModel->getEvent($id)["sponsor_user_id"];
             $currentUser->userId == $sponsor_user_id or BasicTool::throwException("权限不足,更改失败");
         }
 
-        $event_category_id = BasicTool::post("event_category_id", "Missing event_category_id");
+        $event_category_id = BasicTool::post("event_category_id", "请选择活动分类");
         $title = BasicTool::post("title", "活动标题不能为空");
         $event_time = BasicTool::post("event_time", "请填写开始日期");
         $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
@@ -328,7 +334,6 @@ function updateEvent($echoType = "normal") {
         $registration_link = BasicTool::post("registration_link");
         $max_participants = BasicTool::post("max_participants");
         $description = BasicTool::post("description", "missing description");
-        $sponsor_user_id = BasicTool::post("sponsor_user_id");
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
@@ -345,7 +350,9 @@ function updateEvent($echoType = "normal") {
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");
 
         $event = $eventModel->getEvent($id);
-        $event or BasicTool::throwException("event_id不存在");
+        $event or BasicTool::throwException("活动不存在");
+        $old_event_category_id = $event['event_category_id'];
+
         $imgArr = array(BasicTool::post("img_id_1"), BasicTool::post("img_id_2"), BasicTool::post("img_id_3"));
         if ($event["img_id_1"] == 0) {
             $event["img_id_1"] = NULL;
@@ -359,11 +366,11 @@ function updateEvent($echoType = "normal") {
         $currImgArr = array($event["img_id_1"], $event["img_id_2"], $event["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
 
-        $eventModel->updateEvent($id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link,
+        $eventModel->updateEvent($id, $old_event_category_id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link,
             $registration_fee,$registration_way,$registration_link, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
-            BasicTool::echoMessage("更改成功", "index.php?s=getEventsByCategory&event_category_id={$event_category_id}");
+            BasicTool::echoMessage("更改成功", "index.php?s=getEventsByCategory");
         } else {
             BasicTool::echoJson(1, "更改成功");
         }

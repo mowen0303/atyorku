@@ -110,6 +110,7 @@ class EventModel extends Model
     /**
      * 更改一则广告
      * @param int $id 活动id
+     * @param int $old_event_category_id 活动id
      * @param int $event_category_id 活动类ID
      * @param String $title 活动标题
      * @param String $description 活动详情
@@ -129,7 +130,7 @@ class EventModel extends Model
      * @param int $sort 排序值 0或1
      * @return bool
      */
-    public function updateEvent($id,$event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link,
+    public function updateEvent($id, $old_event_category_id, $event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link,
                                 $registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
@@ -156,6 +157,10 @@ class EventModel extends Model
         if ($bool) {
             $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$event_category_id}) WHERE id = {$event_category_id}";
             $this->sqltool->query($sql);
+            if ($old_event_category_id != $event_category_id){
+                $sql = "UPDATE event_category SET count_events = (SELECT COUNT(*) from event WHERE event_category_id = {$old_event_category_id}) WHERE id = {$old_event_category_id}";
+                $this->sqltool->query($sql);
+            }
         }
         return $bool;
     }

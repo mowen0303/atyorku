@@ -34,8 +34,11 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
     <h1>活动</h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=getEventWithParticipants&event_id=<?php echo $event_id ?>">已参与的用户</a>
-    <a class="btn" href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>&flag=1">返回列表</a>
+    <?php
+    if ($userModel->isUserHasAuthority('ADMIN'))
+        echo "<a class='btn' href='index.php?s=getEventWithParticipants&event_id={$event_id}'>已参与的用户</a>";
+    ?>
+    <a class="btn" href="index.php?s=getEventsByCategory&flag=1">返回列表</a>
 </nav>
 <article class="mainBox">
 

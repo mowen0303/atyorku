@@ -15,7 +15,7 @@ $sponsor =$userModel->getProfileOfUserById($event["sponsor_user_id"]);
 </header>
 <nav class="mainNav">
     <a class="btn" href="index.php?s=getEventWithComments&event_id=<?php echo $event_id ?>">查看评论</a>
-    <a class="btn" href="index.php?s=getEventsByCategory&event_category_id=<?php echo $event_category_id ?>">返回列表</a>
+    <a class="btn" href="index.php?s=getEventsByCategory">返回列表</a>
 </nav>
 <article class="mainBox">
 
