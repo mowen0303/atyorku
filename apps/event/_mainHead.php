@@ -1,10 +1,14 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $userModel = new \admin\user\UserModel();
-if(!$userModel->isAdminLogin() && !($userModel->isLogin() && $userModel->isUserHasAuthority('EVENT_ADMIN'))){
-    $userModel->logout();
-    BasicTool::jumpTo('/apps/event','parent');
-    die("非法登录");
+if($userModel->isLogin()){
+    if(!($userModel->isUserHasAuthority('EVENT_ADMIN')||$userModel->isUserHasAuthority('EVENT_ADMIN'))){
+        $userModel->logout();
+        BasicTool::echoMessage("无权限进入此页面");
+    }
+}else{
+    BasicTool::jumpTo('/apps/login.php');
+    die("没登录");
 }
 ?>
 <!doctype html>

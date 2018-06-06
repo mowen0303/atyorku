@@ -12,16 +12,13 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
         <h1><?php echo $pageTitle?></h1>
     </header>
     <nav class="mainNav">
-        <?php
-        if ($userModel->isUserHasAuthority('ADMIN'))
-            echo '<a class="btn" href="./../eventCategory/index.php?s=getEventCategories">分类管理</a>';
-        else
-            echo '<a class="btn" href="/admin/login/loginController.php?action=logout">登出</a>';
-        ?>
+        <a class="btn" href="/admin/login/loginController.php?action=logout&url=/index.html">注销</a>
+        <?php if ($userModel->isUserHasAuthority('ADMIN')) echo '<a class="btn" href="./../eventCategory/index.php?s=getEventCategories">分类管理</a>';?>
         <a class="btn" href="index.php?s=addEvent">发布新活动</a>
+
     </nav>
     <article class="mainBox">
-        <header><h2><?php echo $event_category_title?></h2></header>
+        <header><h2>活动列表 <?php echo $event_category_title?></h2></header>
         <form action="eventController.php?action=deleteEvent" method="post">
             <section>
                 <table class="tab">
@@ -29,20 +26,11 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                     <tr>
                         <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                         <th>ID</th>
-                        <th>分类</th>
-                        <th>封面</th>
-                        <th>标题</th>
-                        <th>发起人</th>
-                        <th>报名金额</th>
-                        <th>活动名额</th>
-                        <th>已参与人数</th>
-                        <th>活动投放时间</th>
-                        <th>活动时间</th>
-                        <th>过期时间</th>
-                        <th>评论量</th>
-                        <th>阅读量</th>
+                        <th width="230">封面</th>
+                        <th>活动信息</th>
+                        <th>人数</th>
                         <th>顺序</th>
-                        <th></th>
+                        <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -58,23 +46,21 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                                 echo "<td> </td>";
                             ?>
                             <td><?php echo $row['id']?></td>
-                            <td><?php echo $eventCategoryModel->getEventCategory($row['event_category_id'])['title'] ?></td>
-                            <td><a href="index.php?s=getEventWithComments&event_id=<?php echo $row["id"] ?>"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
-                            <td><?php echo $row['title']?></td>
-                            <td><?php echo $userModel->getProfileOfUserById($row['sponsor_user_id'])["alias"]?></td>
-                            <td><?php echo $row['registration_fee'] ?></td>
-                            <td><?php echo $row['max_participants'] ?></td>
-                            <td><?php echo $row['count_participants']?></td>
-                            <td><?php echo date("Y-m-d",$row['publish_time'])?></td>
-                            <td><?php echo date("Y-m-d",$row['event_time'])?></td>
-                            <td><?php echo date("Y-m-d",$row['expiration_time'])?></td>
-                            <td><?php echo $row['count_comments']?></td>
-                            <td><?php echo $row['count_views']?></td>
+
+                            <td><a href="./snippet/getEventWebView.php?event_id=<?php echo $row['id'] ?>" target="_blank"><img width="200" height="100" src="<?php echo $banner_url?>"></a></td>
+                            <td>
+                                <p><b><a href="./snippet/getEventWebView.php?event_id=<?php echo $row['id'] ?>" target="_blank"><?php echo $row['title']?></a></b></p>
+                                活动类别：<?php echo $eventCategoryModel->getEventCategory($row['event_category_id'])['title'] ?></br>
+                                报名费：<?php echo $row['registration_fee'] ?> &nbsp;&nbsp;&nbsp;&nbsp;报名方式：<?php echo $row['registration_way'] ?>&nbsp;&nbsp;&nbsp;&nbsp;发起人：<?php echo $userModel->getProfileOfUserById($row['sponsor_user_id'])["alias"]?></br>
+                                <?php echo date("Y-m-d H:m",$row['event_time'])?> 至 <?php echo date("Y-m-d H:m",$row['expiration_time'])?></br>
+                            </td>
+
+                            <td><?php echo $row['count_participants']?>/<?php echo $row['max_participants'] ?></td>
                             <td><?php echo $row["sort"]?></td>
-                            <td><a href="./snippet/getEventWebView.php?event_id=<?php echo $row['id'] ?>">预览</a>
+                            <td>
                                 <?php
                                 if ($userModel->isUserHasAuthority('ADMIN') || $userModel->userId == $row["sponsor_user_id"])
-                                    echo "<a href='index.php?s=addEvent&id={$row['id']}'>| 修改</a>";
+                                    echo "<a href='index.php?s=addEvent&id={$row['id']}'>编辑</a>";
                                 ?>
                             </td>
                         </tr>

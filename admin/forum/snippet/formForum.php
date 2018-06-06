@@ -20,6 +20,7 @@ $row = $flag=='add' ? null : $forumModel->getOneRowOfForumById($forum_id);
 <article class="mainBox">
     <form action="forumController.php?action=modifyForum" method="post">
         <section class="formBox">
+            <input name="version" value="2" type="hidden">
             <input name="flag" value="<?php echo $flag?>" type="hidden">
             <input name="id" value="<?php echo $user_id ?>" type="hidden">
             <input name="forum_id" value="<?php echo $forum_id ?>" type="hidden">
@@ -43,7 +44,7 @@ $row = $flag=='add' ? null : $forumModel->getOneRowOfForumById($forum_id);
                 <p><img style="width: 100px; height: auto" src="<?php echo $row['img1'] ?>"></p>
                 <input class="input  input-size50" type="text" name="img1" value="<?php echo $row['img1'] ?>">
             </div>
-            
+
 
             <div>
                 <label>分类</label>
@@ -57,7 +58,7 @@ $row = $flag=='add' ? null : $forumModel->getOneRowOfForumById($forum_id);
                 <label>置顶(默认为0)</label>
                 <input class="input input-size30" type="text" name="sort" value="<?php echo $row['sort'] ?>">
             </div>
-            
+
 
         </section>
         <footer class="buttonBox">

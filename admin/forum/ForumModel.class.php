@@ -582,23 +582,23 @@ class ForumModel extends Model {
         return $arr;
     }
 
-    /**
-     * 转换数据 转6张图片
-     */
-    public function transform(){
-        $sql = "SELECT * from forum WHERE img1 <> ''";
-        $forumResult = $this->sqltool->getListBySql($sql);
-        $amount = count($forumResult);
-        $index = 1;
-        foreach($forumResult as $forum){
-            $sql = "INSERT INTO image (url,thumbnail_url,size,height,width,applied_table,publish_time) VALUE ('{$forum[img1]}','{$forum[img1]}',0,0,0,'forum','{$forum[time]}')";
-            $this->sqltool->query($sql);
-            $id = $this->sqltool->getInsertId();
-            $sql = "UPDATE forum SET img_id_1 = {$id} WHERE id = {$forum[id]}";
-            $this->sqltool->query($sql);
-            echo "{$index}/{$amount}<br>";
-            $index++;
-        }
-
-    }
+    // /**
+    //  * 转换数据 转6张图片
+    //  */
+    // public function transform(){
+    //     $sql = "SELECT * from forum WHERE img1 <> ''";
+    //     $forumResult = $this->sqltool->getListBySql($sql);
+    //     $amount = count($forumResult);
+    //     $index = 1;
+    //     foreach($forumResult as $forum){
+    //         $sql = "INSERT INTO image (url,thumbnail_url,size,height,width,applied_table,publish_time) VALUE ('{$forum[img1]}','{$forum[img1]}',0,0,0,'forum','{$forum[time]}')";
+    //         $this->sqltool->query($sql);
+    //         $id = $this->sqltool->getInsertId();
+    //         $sql = "UPDATE forum SET img_id_1 = {$id} WHERE id = {$forum[id]}";
+    //         $this->sqltool->query($sql);
+    //         echo "{$index}/{$amount}<br>";
+    //         $index++;
+    //     }
+    //
+    // }
 }

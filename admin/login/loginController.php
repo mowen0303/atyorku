@@ -62,7 +62,8 @@ function login($type) {
 function logout(){
     global $userModel;
     $userModel->logout();
-    BasicTool::jumpTo('/admin/login/','parent');
+    $url = BasicTool::get("url");
+    $url?BasicTool::jumpTo($url,'parent'):BasicTool::jumpTo('/admin/login/','parent');
     die("非法登录");
 }
 

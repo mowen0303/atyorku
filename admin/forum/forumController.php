@@ -265,7 +265,7 @@ function getForumListWithJson() {
             "id"=> "1",
             "user_id"=> "1",
             "forum_class_id"=> "1",
-            "content"=> "重要通知: 同学圈功能已升级,请到App Store将atYorkU升级到最新版本.",
+            "content"=> "重要通知: 同学圈功能已升级,请到App Store将atYorkU升级到最新版本( 2.3.0 ).",
             "img1"=> "",
             "img_id_1"=> "0",
             "img_id_2"=> "0",
@@ -345,29 +345,28 @@ function modifyForum($echoType = "normal") {
         $arr['content'] = BasicTool::post('content', '内容不能为空', 65500);
         $arr['forum_class_id'] = BasicTool::post('forum_class_id', '所属论坛组不能为空');
         $arr['sort'] = BasicTool::post('sort', false, 3) ?: 0;
-        $arr['img1'] = "";  //升级之后删除
-        //上传图片
-        $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"),BasicTool::post("img_id_4"),BasicTool::post("img_id_5"),BasicTool::post("img_id_6"));
-        if($id){
-            $currImgArr = [
-                BasicTool::post('img_id_1'),
-                BasicTool::post('img_id_2'),
-                BasicTool::post('img_id_3'),
-                BasicTool::post('img_id_4'),
-                BasicTool::post('img_id_5'),
-                BasicTool::post('img_id_6')
-            ];
-        }else{
-            $currImgArr = false;
-        }
-        $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,6,"imgFile",$currentUser->userId,"forum");
-        $arr['img_id_1'] = $imgArr[0]?:0;
-        $arr['img_id_2'] = $imgArr[1]?:0;
-        $arr['img_id_3'] = $imgArr[2]?:0;
-        $arr['img_id_4'] = $imgArr[3]?:0;
-        $arr['img_id_5'] = $imgArr[4]?:0;
-        $arr['img_id_6'] = $imgArr[5]?:0;
         if ($flag == 'add') {
+            //上传图片
+            $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"),BasicTool::post("img_id_4"),BasicTool::post("img_id_5"),BasicTool::post("img_id_6"));
+            if($id){
+                $currImgArr = [
+                    BasicTool::post('img_id_1'),
+                    BasicTool::post('img_id_2'),
+                    BasicTool::post('img_id_3'),
+                    BasicTool::post('img_id_4'),
+                    BasicTool::post('img_id_5'),
+                    BasicTool::post('img_id_6')
+                ];
+            }else{
+                $currImgArr = false;
+            }
+            $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr,$currImgArr,6,"imgFile",$currentUser->userId,"forum");
+            $arr['img_id_1'] = $imgArr[0]?:0;
+            $arr['img_id_2'] = $imgArr[1]?:0;
+            $arr['img_id_3'] = $imgArr[2]?:0;
+            $arr['img_id_4'] = $imgArr[3]?:0;
+            $arr['img_id_5'] = $imgArr[4]?:0;
+            $arr['img_id_6'] = $imgArr[5]?:0;
             $arr['time'] = time();
             $arr['update_time'] = time();
             $arr['user_id'] = $currentUser->userId;
@@ -672,23 +671,23 @@ function getForumByIdWithJson() {
     }
 }
 
-/**
- * 转换数据
- * @throws Exception
- * http://www.atyorku.ca/admin/forum/forumController.php?action=transform
- */
-function transform(){
-    //删除论坛
-    global $currentUser;
-    global $forumModel;
-
-    try {
-        $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权操作");
-        $forumModel->transform();
-    } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
-    }
-}
+// /**
+//  * 转换数据
+//  * @throws Exception
+//  * http://www.atyorku.ca/admin/forum/forumController.php?action=transform
+//  */
+// function transform(){
+//     //删除论坛
+//     global $currentUser;
+//     global $forumModel;
+//
+//     try {
+//         $currentUser->isUserHasAuthority('ADMIN') or BasicTool::throwException("无权操作");
+//         $forumModel->transform();
+//     } catch (Exception $e) {
+//         BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+//     }
+// }
 
 
 ?>
