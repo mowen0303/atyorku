@@ -64,21 +64,45 @@ class BookModel extends Model
     }
 
 
+    /**
+     * 验证学习资料标题
+     * @param $name
+     * @return string
+     * @throws Exception
+     */
     public function validateName($name){
         $name = trim($name) or BasicTool::throwException("学习资料标题不能为空");
         (strlen($name)>0 && strlen($name)<=255) or BasicTool::throwException("学习资料标题长度不能超过255字节");
         return $name;
     }
 
+    /**
+     * 验证是否上架
+     * @param $available
+     * @return int
+     * @throws Exception
+     */
     public function validateIsAvailable($available) {
         $available !== null or BasicTool::throwException("学习资料可用状态不能为空");
         return intval($available == true);
     }
 
+    /**
+     * 验证积分支付
+     * @param $payWithPoints
+     * @return int
+     */
     public function validatePayWithPoints($payWithPoints) {
         return intval($payWithPoints==true);
     }
 
+    /**
+     * 验证是否是电子书
+     * @param $isEDocument
+     * @param bool $payWithCredit
+     * @return int
+     * @throws Exception
+     */
     public function validateIsEDocument($isEDocument, $payWithCredit=false) {
         $isEDocument = intval($isEDocument==true);
         if($payWithCredit && !$isEDocument){
@@ -87,6 +111,13 @@ class BookModel extends Model
         return $isEDocument;
     }
 
+    /**
+     * 验证电子链接
+     * @param $eLink
+     * @param bool $payWithCredit
+     * @return string
+     * @throws Exception
+     */
     public function validateELink($eLink, $payWithCredit=false) {
         $eLink = trim($eLink);
         if($payWithCredit) {
@@ -98,6 +129,13 @@ class BookModel extends Model
         return $eLink;
     }
 
+    /**
+     * 验证价钱
+     * @param $price
+     * @param bool $payWithCredit
+     * @return float|int
+     * @throws Exception
+     */
     public function validatePrice($price, $payWithCredit=false) {
         if($price === null){ BasicTool::throwException("学习资料价格不能为空"); }
         $price = floatval($price);
@@ -110,12 +148,25 @@ class BookModel extends Model
         return floor($price*100)/100;
     }
 
+    /**
+     * 验证二手书描述
+     * @param $description
+     * @return string
+     * @throws Exception
+     */
     public function validateDescription($description) {
         $description = trim($description);
         (strlen($description)<=255) or BasicTool::throwException("学习资料描述长度不能超过255字节");
         return $description;
     }
 
+    /**
+     * 验证科目ID
+     * @param $parentCode
+     * @param $childCode
+     * @return int
+     * @throws Exception
+     */
     public function validateCourseId($parentCode,$childCode) {
         $parentCode = trim($parentCode) or BasicTool::throwException("所属学科大类不能为空");
         $childCode = trim($childCode) or BasicTool::throwException("所属学科课号不能为空");
@@ -124,6 +175,12 @@ class BookModel extends Model
         return $courseId;
     }
 
+    /**
+     * 验证教授名称
+     * @param $profName
+     * @return int
+     * @throws Exception
+     */
     public function validateProfessorName($profName) {
         $profName = trim($profName);
         $profId = 0;
@@ -134,18 +191,35 @@ class BookModel extends Model
         return $profId;
     }
 
+    /**
+     * 验证学年
+     * @param $year
+     * @return int
+     * @throws Exception
+     */
     public function validateYear($year) {
         $year = intval($year);
         $this->isValidYear($year) or BasicTool::throwException("该学年 ({$year}) 不存在");
         return $year;
     }
 
+    /**
+     * 验证学期
+     * @param $term
+     * @return string
+     * @throws Exception
+     */
     public function validateTerm($term) {
         $term = trim($term);
         $this->isValidTerm($term) or BasicTool::throwException("该学期 ({$term}) 不存在");
         return $term;
     }
 
+    /**
+     * @param $bookCategoryId
+     * @return int
+     * @throws Exception
+     */
     public function validateBookCategoryId($bookCategoryId) {
         $bookCategoryId = intval($bookCategoryId);
         $bookCategoryId > 0 or BasicTool::throwException("学习资料所属分类不能为空");
@@ -203,7 +277,8 @@ class BookModel extends Model
 
     /**
      * 查询一本书
-     * @return 一维键值数组
+     * @param $id
+     * @return \一维关联数组
      */
     public function getBookById($id)
     {
@@ -220,7 +295,7 @@ class BookModel extends Model
      * @param bool $userDetail 是否query用户信息
      * @return array
      */
-    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $elink=false, $userDetail=true) {
+    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $eLink=false, $userDetail=true) {
         $q = "NOT b.is_deleted";
         if($availableOnly){
             $q .= " AND b.is_available";
@@ -229,7 +304,7 @@ class BookModel extends Model
             $q .= " AND ({$query})";
         }
         $selectSql = "";
-        if($elink){
+        if($eLink){
             $selectSql = "b.e_link";
         }
         return $this->getBooks($pageSize,$q,$selectSql, $userDetail);
@@ -304,9 +379,10 @@ class BookModel extends Model
     /**
      * 获取一页指定用户购买的二手书
      * @param $userId
-     * @param $pending -1 = 全部, 0 = 完成的交易, 1 = 交易中
+     * @param int $pending -1 = 全部, 0 = 完成的交易, 1 = 交易中
      * @param int $pageSize
      * @return array
+     * @throws Exception
      */
     public function getListOfOrderedBooksByUserId($userId, $pending=-1, $pageSize=20){
         $productTransactionModel = new ProductTransactionModel('book');
@@ -334,13 +410,16 @@ class BookModel extends Model
     }
 
     /**
-    * 调出一页特定二手书类别ID下的二手书
-    * @param int $bookcategoryId 二手书类别ID
-    * @param int 每页显示数
-    * @return 返回二维数组
-    */
-    public function getBooksByCategoryId($bookCategoryId, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "book_category_id={$bookCategoryId}");
+     * 调出一页特定二手书类别ID下的二手书
+     * @param int|string $bookCategoryId 二手书类别ID
+     * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
+     * @return array
+     */
+    public function getBooksByCategoryId($bookCategoryId, $pageSize=40, $availableOnly=true, $eLink=false, $userDetail=true) {
+        return $this->getListOfBooks($pageSize, "book_category_id={$bookCategoryId}", $availableOnly, $eLink, $userDetail);
     }
 
     /**
@@ -349,40 +428,61 @@ class BookModel extends Model
     * @param int 每页显示数
     * @return 返回二维数组
     */
-    public function getBooksByUserId($userId, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "b.user_id={$userId}");
+
+    /**
+     * 调出一页特定用户ID下的二手书
+     * @param int|string $userId 用户ID
+     * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
+     * @return array
+     */
+    public function getBooksByUserId($userId, $pageSize=40, $availableOnly=true, $eLink=false, $userDetail=true) {
+        return $this->getListOfBooks($pageSize, "b.user_id={$userId}", $availableOnly, $eLink, $userDetail);
     }
 
     /**
-    * 调出一页特定用户名下的二手书
-    * @param String $username 用户名
-    * @param int 每页显示数
-    * @return 返回二维数组
-    */
-    public function getBooksByUsername($username, $pageSize=40) {
-        return $this->getListOfBooks($pageSize, "u.name='{$username}'");
+     * 调出一页特定用户名下的二手书
+     * @param string $username 用户名
+     * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
+     * @return array
+     */
+    public function getBooksByUsername($username, $pageSize=40, $availableOnly=true, $eLink=false, $userDetail=true) {
+        return $this->getListOfBooks($pageSize, "u.name='{$username}'", $availableOnly, $eLink, $userDetail);
     }
 
     /**
-    * 通过模糊搜索调出一页二手书
-    * @param String $keywords 搜索关键词
-    * @param int 每页显示数
-    * @return array
-    */
-    public function getBooksByKeywords($keywords, $pageSize=40) {
+     * 通过模糊搜索调出一页二手书
+     *
+     * @param string $keywords 搜索关键词
+     * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
+     * @return array
+     */
+    public function getBooksByKeywords($keywords, $pageSize=40, $availableOnly=true, $eLink=false, $userDetail=true) {
         $trimedKeywords=str_replace(' ','',$keywords);
-        return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%' or CONCAT(c2.title,c1.title) LIKE '{$trimedKeywords}%'");
+        return $this->getListOfBooks($pageSize, "b.name LIKE '%{$keywords}%' or b.description LIKE '%{$keywords}%' or CONCAT(c2.title,c1.title) LIKE '{$trimedKeywords}%'", $availableOnly, $eLink, $userDetail);
     }
 
     /**
      * 通过用户输入的科目名称来搜索一页二手书
+     *
      * @param string $queryValue 搜索科目名
      * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
      * @return array
      */
-    public function getBooksByCourse($queryValue, $pageSize=20) {
+    public function getBooksByCourse($queryValue, $pageSize=20, $availableOnly=true, $eLink=false, $userDetail=true) {
         $trimedValue = str_replace(' ', '', $queryValue);
-        return $this->getListOfBooks($pageSize, "CONCAT(c2.title,c1.title) LIKE '{$trimedValue}%'");
+        return $this->getListOfBooks($pageSize, "CONCAT(c2.title,c1.title) LIKE '{$trimedValue}%'", $availableOnly, $eLink, $userDetail);
     }
 
 
@@ -441,27 +541,30 @@ class BookModel extends Model
      * 搜索二手书
      * @param string|BookSearchType $queryType
      * @param int|string $queryValue
-     * @param int $pageSize
-     * @return 返回二维数组|array
+     * @param int $pageSize 每页显示数
+     * @param bool $availableOnly 只显示上架的产品
+     * @param bool $eLink 显示电子链接
+     * @param bool $userDetail 显示卖家详情
+     * @return array
      * @throws Exception
      */
-    public function searchBooks($queryType, $queryValue, $pageSize=40){
+    public function searchBooks($queryType, $queryValue, $pageSize=40, $availableOnly=true, $eLink=false, $userDetail=true) {
         $result = [];
         switch($queryType) {
             case BookSearchType::KEYWORDS:
-                $result = $this->getBooksByKeywords($queryValue, $pageSize);
+                $result = $this->getBooksByKeywords($queryValue, $pageSize, $availableOnly, $eLink, $userDetail);
                 break;
             case BookSearchType::USER_ID:
-                $result = $this->getBooksByUserId($queryValue, $pageSize);
+                $result = $this->getBooksByUserId($queryValue, $pageSize, $availableOnly, $eLink, $userDetail);
                 break;
             case BookSearchType::USERNAME:
-                $result = $this->getBooksByUsername($queryValue, $pageSize);
+                $result = $this->getBooksByUsername($queryValue, $pageSize, $availableOnly, $eLink, $userDetail);
                 break;
             case BookSearchType::CATEGORY:
-                $result = $this->getBooksByCategoryId($queryValue, $pageSize);
+                $result = $this->getBooksByCategoryId($queryValue, $pageSize, $availableOnly, $eLink, $userDetail);
                 break;
             case BookSearchType::COURSE:
-                $result = $this->getBooksByCourse($queryValue, $pageSize);
+                $result = $this->getBooksByCourse($queryValue, $pageSize, $availableOnly, $eLink, $userDetail);
                 break;
             default:
                 BasicTool::throwException("搜索类别无法识别");

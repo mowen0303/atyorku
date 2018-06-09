@@ -13,29 +13,29 @@ call_user_func(BasicTool::get('action'));
 
 //============ Function with JSON ===============//
 
-/**
- * JSON -  获取指定Id的学习资料信息
- * @param book_id 学习资料ID
- * http://www.atyorku.ca/admin/book/bookController.php?action=getBookByIdWithJson&book_id=1
- */
-function getBookByIdWithJson() {
-    global $bookModel;
-    try {
-        $id = BasicTool::get("book_id","请指定学习资料Id");
-        if (validateId($id)) {
-            $result = $bookModel->getBookById((int)$id);
-            if ($result) {
-                BasicTool::echoJson(1, "成功", $result);
-            } else {
-                BasicTool::echoJson(0, "未找到该ID对应的学习资料");
-            }
-        } else {
-            BasicTool::echoJson("学习资料ID无效");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0,$e->getMessage());
-    }
-}
+///**
+// * JSON -  获取指定Id的学习资料信息
+// * @param book_id 学习资料ID
+// * http://www.atyorku.ca/admin/book/bookController.php?action=getBookByIdWithJson&book_id=1
+// */
+//function getBookByIdWithJson() {
+//    global $bookModel;
+//    try {
+//        $id = BasicTool::get("book_id","请指定学习资料Id");
+//        if (validateId($id)) {
+//            $result = $bookModel->getBookById((int)$id);
+//            if ($result) {
+//                BasicTool::echoJson(1, "成功", $result);
+//            } else {
+//                BasicTool::echoJson(0, "未找到该ID对应的学习资料");
+//            }
+//        } else {
+//            BasicTool::echoJson("学习资料ID无效");
+//        }
+//    } catch (Exception $e) {
+//        BasicTool::echoJson(0,$e->getMessage());
+//    }
+//}
 
 /**
  * JSON -  获取指定学习资料类别ID下的一页学习资料

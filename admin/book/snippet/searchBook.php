@@ -37,7 +37,7 @@ $userModel = new \admin\user\UserModel();
                 try {
                     $searchType = BasicTool::post("search_type","搜索类别不能为空");
                     $searchValue = BasicTool::post("search_value","搜索内容不能为空");
-                    $arr = $bookModel->searchBooks($searchType, $searchValue);
+                    $arr = $bookModel->searchBooks($searchType, $searchValue, 40, true, true);
                 } catch (Exception $e) {
                     BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
                     return;
