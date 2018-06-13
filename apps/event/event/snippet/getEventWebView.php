@@ -69,7 +69,7 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
 
             <p class="content"><span>开始时间</span><?php echo date("Y/m/d H:m",$event['event_time'])?></p>
             <hr/>
-            <p class="content"><span>结束时间</span><?php echo date("Y/m/d H:m",$event['event_time'])?></p>
+            <p class="content"><span>结束时间</span><?php echo date("Y/m/d H:m",$event['expiration_time'])?></p>
             <hr/>
             <p class="content"><span>报名方式</span><?php echo $event['registration_way'] ?></p>
             <hr/>
