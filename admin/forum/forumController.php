@@ -346,6 +346,7 @@ function modifyForum($echoType = "normal") {
         $arr['forum_class_id'] = BasicTool::post('forum_class_id', '所属论坛组不能为空');
         $arr['sort'] = BasicTool::post('sort', false, 3) ?: 0;
         if ($flag == 'add') {
+            $arr['img1']="";
             //上传图片
             $imgArr = array(BasicTool::post("img_id_1"),BasicTool::post("img_id_2"),BasicTool::post("img_id_3"),BasicTool::post("img_id_4"),BasicTool::post("img_id_5"),BasicTool::post("img_id_6"));
             if($id){

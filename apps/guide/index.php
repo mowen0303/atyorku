@@ -27,8 +27,6 @@ if (BasicTool::get(share) != 1) {
                 }, 100);
             })
 
-            $("#coverImgBox img").addClass("animate2");
-
             //----------------fold 折叠------------------------------[start]-------------------
             function fold(obj) {
                 if (obj.parent(".foldBox").hasClass("foldBoxShow")) {

@@ -86,11 +86,15 @@ if ($flag == 'add') {
         <input name="sponsor_user_id" value="<?php echo $user_id ?>" type="hidden"/>
         <section class="formBox">
             <div>
+                <label>标题<i>*</i></label>
+                <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
+            </div>
+            <div>
                 <label>活动类别<i>*</i></label>
-                <select class = 'input input-select' name="event_category_id">
+                <select class = 'input input-select input-size30' name="event_category_id">
                     <?php
                     $placeholderSelected=$flag=='add'?'selected':'';
-                    $html = "<option value='' disabled {$placeholderSelected}>选择活动分类</option>";
+                    $html = "<option value='' disabled {$placeholderSelected}>请选择分类...</option>";
                     echo $html;
                     foreach ($eventCategories as $category){
                         if ($flag == 'update' && $row['event_category_id'] == $category['id'])
@@ -102,19 +106,14 @@ if ($flag == 'add') {
                     ?>
                 </select>
             </div>
-            <div>
-                <label>标题<i>*</i></label>
-                <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
-            </div>
-
             <div style="display:flex;flex-direction:row">
                 <div>
-                    <label>活动时间<i>*</i></label>
-                    <input type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:m:s",$event_time)?>"  id="aa" style="margin-right:3rem"/>
+                    <label>活动开始时间<i>*</i></label>
+                    <input class="input" type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:m:s",$event_time)?>"  id="aa" style="margin-right:3rem"/>
                 </div>
-                <div>
-                    <label>活动有效至<i>*</i></label>
-                    <input type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:m:s",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
+                <div style="margin-left: 20px">
+                    <label>结束时间<i>*</i></label>
+                    <input class="input" type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:m:s",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
                 </div>
             </div>
 
@@ -124,14 +123,14 @@ if ($flag == 'add') {
                     <input type="text" class="input" name="location" value="<?php echo $row['location'] ?>"/>
                 </div>
                 <div style="flex:1">
-                    <label>地图连接</label>
+                    <label>定位连接 (Google Map / 百度地图)</label>
                     <input type="text" class="input" name="location_link" value="<?php echo $row['location_link'] ?>"/>
                 </div>
             </div>
 
              <div style="display:flex;flex-direction:row">
                  <div style="flex:1;margin-right:20px">
-                     <label>报名方式<i>*</i>（walk-in，在线报名）</label>
+                     <label>报名方式<i>*</i>（drop-in / 在线报名）</label>
                      <input type="text" class="input" name="registration_way" value="<?php echo $row['registration_way'] ?>"/>
                  </div>
                  <div style="flex:1;margin-right:20px">
@@ -166,16 +165,14 @@ if ($flag == 'add') {
                     <input type="email" name="sponsor_email" class="input" value="<?php echo $row['sponsor_email'] ?>">
                 </div>
             </div>
-
             <div>
                 <label>活动详情<i>*</i></label>
-                <textarea class="input-textarea" name="description"><?php echo $row["description"] ?></textarea>
+                <textarea class="input input-textarea" name="description"><?php echo $row["description"] ?></textarea>
             </div>
-
-
             <div>
                 <div id="currentImages">
-                    <label style="margin-top:1.5rem">活动图片: 最多上传3张</label>
+                    <label>活动图片: 最多3张 (第1张,封面,尺寸:800*400) (第2,3张,自动嵌入活动介绍,尺寸不限制)</label>
+                    <input type="file" name="imgFile[]" id="imgFile" multiple/>
                     <div id="currentImages">
                         <?php
                         if ($img1) {
@@ -190,17 +187,15 @@ if ($flag == 'add') {
                         ?>
                     </div>
                     <p style="margin-bottom:1rem"><img id="imgOfUpload" style="width: 100px; height: auto; display: none"></p>
-                    <input type="file" name="imgFile[]" id="imgFile" multiple/>
                 </div>
-                <?php
-                if ($currentUser->isUserHasAuthority('ADMIN'))
-                    echo "<div>
-                    <label>顺序</label>
-                    <input class='input-size30' type='number' name='sort' value='{$row["sort"]}'>
-                    </div>";
-                ?>
             </div>
-
+            <?php
+            if ($currentUser->isUserHasAuthority('ADMIN'))
+                echo "<div>
+                    <label>设置排序 (仅管理员可见)</label>
+                    <input class='input input-size30' type='number' name='sort' value='{$row["sort"]}'>
+                    </div>";
+            ?>
         </section>
 
         <footer class="buttonBox">

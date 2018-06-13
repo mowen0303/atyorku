@@ -1,17 +1,16 @@
 *:focus { outline: none;}
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
-body,button,input,select,textarea{ color:rgb(62, 62, 62); font-size:15px; line-height: 2em; font-family:-apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;overflow-wrap:break-word;text-align:justify;}
+body,button,input,select,textarea{ color:rgb(92, 92, 92); font-size:15px; line-height: 2em; font-family: "PingFangSC-light","微软雅黑",Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica;overflow-wrap:break-word;}
 #container {max-width:700px; margin:0 auto; overflow: hidden;white-space:normal; /*word-break:break-all;text-align:justify;*/ background: #fefefe;}
-.context {letter-spacing: 0.55px;}
+.context {letter-spacing: 0.35px;}
 a { color:  #c91448}
-h1,h2,h3,h4,h5,h6 { font-weight: normal;letter-spacing: 1px; }
+h1,h2,h3,h4,h5,h6 { font-weight: normal; color:rgb(72, 72, 72);}
 h3,h4,h5,h6 { margin-top:2em}
-h1{font-size:1.4em; color: #2a2a2a;line-height:1.4em}
-h2{font-size:1.2em; display:block; background:#c83c46; color: #fff; text-align: center; padding: 0.6em; line-height: 1.2em; margin-top:3em; margin-bottom: 1.5em; position: relative; border-radius: 6px}
-h2 em { position:absolute; display: block; width: 10px; height:10px; transform: rotate(45deg); background: #c83c46; bottom: -5px; left: 50%; margin-left:-5px}
+h1{font-size:2.2em; color: #2a2a2a;line-height:1.4em}
+h2{font-size:2em; display:block;line-height: 1.2em; margin-top:2em; margin-bottom: 1em; position: relative; }
 /*h3{font-size:1.2em; line-height: 1.8em; font-weight: bold; margin-left: 25px; margin-right: 25px; border-left: 4px solid #c83c46;border-right: 4px solid #c91448; padding-left: 4px;padding-right: 4px; background: #efefef; text-align: center; font-weight: normal; margin-top: 3em}*/
-h3{font-size:1.2em; line-height: 1.3em; font-weight: bold; border-left: 6px solid #c83c46 ;font-weight: normal; margin-top: 2em; color: #c83c46; font-weight: bold; padding: 0px 4px 0px 8px; margin-bottom: 1em}
+h3{font-size:1.5em; line-height: 1.3em; font-weight: bold;font-weight: normal; margin-top: 2em; margin-bottom: 1em}
 h4{font-size:1.4em; line-height: 1.3em; font-weight: bold;  width: 50%; margin: 0 auto; margin-top: 1.5em; margin-bottom: 2em; border:2px solid #444; color: #444;text-align: center; padding:0.5em 1em; border-left: 0; border-right: 0}
 h4,h5,h6{font-size:1em}
 
@@ -31,7 +30,7 @@ hr { border:none; border-top: 1px dashed #eee; height: 1px; overflow: hidden}
 
 ol,ul{ margin:1.5em 1em 1em 2em}
 table,p,hr,blockquote  {margin:1.2em 0;}
-li { padding: 0.5em 0}
+li { padding: 0.35em 0}
 li p {margin:0}
 blockquote { background: #f8f8f8; padding:3px 0.8em; border-radius: 4px;}
 blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  padding: 1em 0 0.5em 0;  border-bottom: 1px solid #eaeaea;  margin: 0 1em;}

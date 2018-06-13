@@ -7,7 +7,7 @@ use \BasicTool as BasicTool;
 use \Exception as Exception;
 
 class MsgModel extends Model {
-    private $enablePush = false; //测试阶段，禁用信息推送, 新版本删除原始推送
+    private $enablePush = true; //测试阶段，禁用信息推送, 新版本删除原始推送
 
     /**
      * 给指定用户推送一条信息
@@ -30,7 +30,6 @@ class MsgModel extends Model {
         if($senderUser->userId == $receiverUser->userId) {
             return false;
         }
-
         $receiverBadge = $receiverUser->addOnceCountInBadge();
         self::addMsg($senderUser->userId, $receiverUser->userId, $msgType, $msgTypeId, $content);
         //推送
@@ -38,10 +37,10 @@ class MsgModel extends Model {
         //苹果
         if ($receiverUser->deviceToken == '0') return false;
         if ($receiverUser->deviceType == "ios") {
-            //重要:v2中弃用applePush方法,启用applePushRN
-            self::applePush($receiverUser->deviceToken, $senderUser->aliasName, $msgType, $msgTypeId, $content, $receiverBadge);
+            //echo("ios");
             return self::applePushRN($receiverUser->deviceToken, $senderUser->aliasName, $msgType, $msgTypeId, $content, $receiverBadge);
         } else if ($receiverUser->deviceType == "android") {
+            //echo("android");
             return self::androidPushRN($receiverUser->deviceToken, $senderUser->aliasName, $msgType, $msgTypeId, $content, $receiverBadge);
         }
     }
@@ -134,7 +133,7 @@ class MsgModel extends Model {
      * @param bool $silent
      * @return bool
      */
-    private function applePush($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
+    private function applePushRN($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
         if ($deviceToken == '0') return false;
         $senderAlias = $senderAlias ? $senderAlias . ": " : "";
         $passphrase = 'miss0226';
@@ -183,42 +182,6 @@ class MsgModel extends Model {
         }
     }
 
-    private function applePushRN($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
-        if ($deviceToken == '0') return false;
-        $senderAlias = $senderAlias ? $senderAlias . ": " : "";
-
-        //config APNs
-        $tHost = 'gateway.sandbox.push.apple.com';
-        $tPort = 2195;
-        $tCert = $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem';
-        $tPassphrase = 'miss0226';
-        $tToken = $deviceToken;
-
-        //Content
-        $tBody['aps'] = array(
-            'alert' => $senderAlias . $content,
-            'badge' => (int)$badge,
-            'sound' => 'default',
-        );
-
-        $tBody ['payload'] = array(
-            'type' => $msgType,
-            'typeId' => $msgTypeId,
-        );
-
-        // Encode the body to JSON.
-        $tBody = json_encode($tBody);
-        $tContext = stream_context_create();
-        stream_context_set_option($tContext, 'ssl', 'local_cert', $tCert);
-        stream_context_set_option($tContext, 'ssl', 'passphrase', $tPassphrase);
-        $tSocket = stream_socket_client('ssl://' . $tHost . ':' . $tPort, $error, $errstr, 30, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $tContext);
-        if (!$tSocket) exit ("APNS Connection Failed: $error $errstr" . PHP_EOL);
-        $tMsg = chr(0) . chr(0) . chr(32) . pack('H*', $tToken) . pack('n', strlen($tBody)) . $tBody;
-        $tResult = fwrite($tSocket, $tMsg, strlen($tMsg));
-        fclose($tSocket);
-        return $tResult ? true : false;
-    }
-
     private function androidPushRN($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
         if ($deviceToken == '0') return false;
         $senderAlias = $senderAlias ? $senderAlias . ": " : "";
@@ -245,6 +208,7 @@ class MsgModel extends Model {
             'registration_ids' => array($registrationIds),
             'data' => $msg
         );
+
         $headers = array
         (
             'Authorization:key=' . API_ACCESS_KEY,
