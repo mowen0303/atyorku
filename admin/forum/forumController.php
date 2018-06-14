@@ -399,6 +399,7 @@ function modifyForum($echoType = "normal") {
             }
         }
     } catch (Exception $e) {
+        $imageModel->deleteImageById($imgArr);
         if ($echoType == "normal") {
             BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
         } else {

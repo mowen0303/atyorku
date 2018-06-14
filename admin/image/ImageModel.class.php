@@ -347,7 +347,7 @@ class ImageModel extends Model
             if ($numOfNewImages > 0) {
                 $path or BasicTool::throwException("上传新图片需要提供上传路径");
                 $tableName or BasicTool::throwException("上传新图片需要提供表名");
-                ($numOfNewImages <= $maxNum) or BasicTool::throwException("图片上传最多3张");
+                ($numOfNewImages <= $maxNum) or BasicTool::throwException("图片上传最多{$maxNum}张");
                 ($numOfNewImages+count($imgArr)<=$maxNum) or BasicTool::throwException("上传图片数量过多，请先删除当前图片");
                 $newImageIds = $this->uploadImg($uploadInputName, $path, $tableName,$generateThumbnail) or BasicTool::throwException($this->errorMsg);
                 $imgArr = array_merge($imgArr, $newImageIds);
