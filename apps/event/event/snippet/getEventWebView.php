@@ -88,10 +88,10 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
             <p><pre><?php echo $event['description']?></pre></p>
             <?php
             if ($imgUrls[1]) {
-                echo '<p><img class="desImg" src="' . $imgUrls[1] . '"/></p>';
+                echo '<p>&nbsp;</p><p><img class="desImg" src="' . $imgUrls[1] . '"/></p>';
             }
             if ($imgUrls[2]) {
-                echo '<p><img class="desImg"  src="' . $imgUrls[2] . '"/></p>';
+                echo '<p>&nbsp;</p><p><img class="desImg"  src="' . $imgUrls[2] . '"/></p>';
             }
             ?>
         </section>
