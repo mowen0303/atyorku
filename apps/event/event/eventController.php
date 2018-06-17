@@ -61,6 +61,7 @@ function addEvent($echoType = "normal") {
 
         $event_time = BasicTool::translateHTMLTimeToPHPStaple($event_time);
         $expiration_time = BasicTool::translateHTMLTimeToPHPStaple($expiration_time);
+        if ($event_time > $expiration_time) BasicTool::throwException("添加失败");
 
         $sort = BasicTool::post("sort");
         ($sort == 0 || $sort == 1 || $sort == NULL) or BasicTool::echoMessage("添加失败,请输入有效的排序值(0或者1)");

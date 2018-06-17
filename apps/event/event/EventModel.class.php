@@ -90,25 +90,30 @@ class EventModel extends Model
     public function getEventsByCategory($event_category_id,$onlyShowEffectEvent=false,$addExhibitCount=true,$pageSize=20){
         $time = time();
         $condition = "";
-        $order = "";
-        if($event_category_id){
-            $condition .= " event_category_id = {$event_category_id}";
-        }else{
-            $condition .= " true";
+
+        if($event_category_id)
+            $condition .= "event_category_id = {$event_category_id}";
+        else
+            $condition .= "true";
+
+        if ($onlyShowEffectEvent != 2){
+            $condition1 = $condition . " AND event_time <= {$time} AND expiration_time > {$time}";
+            $order = "diff DESC, CASE WHEN (diff = 1 OR diff = 2) THEN event_time END ASC, CASE WHEN diff = 0 THEN event_time END DESC";
+            if ($onlyShowEffectEvent==0)
+                $condition2 = $condition . " AND NOT(event_time <= {$time} AND expiration_time > {$time})";
+            else
+                $condition2 = $condition . " AND event_time > {$time} AND expiration_time >{$time}";
+
+            $innerSql = "SELECT *, 2 AS diff from event WHERE {$condition1} UNION SELECT *, IF(({$time}-CAST(expiration_time as SIGNED))<=0,1,0) AS diff FROM event WHERE {$condition2} ORDER BY {$order}";
+        }
+        else{
+            $order = "event_time DESC";
+            $condition .= " AND event_time < {$time} AND expiration_time <= {$time}";
+            $innerSql = "SELECT * FROM event WHERE {$condition} ORDER BY {$order}";
         }
 
-        if($onlyShowEffectEvent==1){
-            $condition .= " AND expiration_time >= {$time}";
-            $order .= ", event_time ASC";
-        }else if($onlyShowEffectEvent==2){
-            $condition .= " AND expiration_time < {$time}";
-            $order .= ", event_time DESC";
-        }else{
-            $order .= ", event_time DESC";
-        }
-
-        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
-        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
+        $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  ({$innerSql}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id";
+        $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM ({$innerSql}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id";
         $result = $this->getListWithPage("event", $sql, $countSql, $pageSize);
         $addExhibitCount && $this->addExhibitCount($result);
         return $result;

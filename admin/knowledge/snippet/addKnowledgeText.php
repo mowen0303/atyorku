@@ -107,6 +107,10 @@ if ($flag == 'add') {
                 <label>排序值</label>
                 <input class="input" type="number" name="sort" value="<?php echo $row['sort']?1:0?>" />
             </div>
+            <div>
+                <label>卖家留言</label>
+                <textarea placeholder="说点什么吧。。。" name="description" class="input input-textarea"><?php echo $row["description"]?></textarea>
+            </div>
         </section>
         <section class="formBox" id = 'knowledgePointsBox' style="clear:left">
             <label>考点</label>
@@ -131,7 +135,6 @@ if ($flag == 'add') {
                     echo $output;
                 }
             ?>
-
         </section>
         <button type='button' style="background-color:#222222;border-radius: 5px;padding:8px 24px;color:white" onclick="addTextInput()">添加考点</button>
         <footer class="buttonBox">
