@@ -69,10 +69,13 @@ class ProductTransactionModel extends Model {
      * @param bool $extendSelect 外加的选择SQL，用逗号隔开 {交易表名: pt | 卖家交易表名: st | 买家交易表名: bt | 买家表名: buyer | 卖家表名: seller}
      * @param bool $extendFrom 外加的Join表SQL，用JOIN连接表名 ex: 'user u INNER JOIN user_class ON ...'
      * @param bool $usersDetail 是否query 卖家买家详细信息
+     * @param bool $info 是否获取交易section特殊信息
      * @return array
      */
-    public function getListOfTransactions($pageSize=20, $query=false, $order=false, $extendSelect=false, $extendFrom=false, $usersDetail=false){
-        $select = "SELECT pt.*, st.amount AS seller_amount, st.user_id AS seller_id, st.section_id, st.pending AS seller_pending, st.description AS seller_description, bt.user_id AS buyer_id, bt.amount AS buyer_amount, bt.pending AS buyer_pending, bt.time AS purchased_time, bt.description AS buyer_description, bt.time AS transaction_time";
+    public function getListOfTransactions($pageSize=20, $query=false, $order=false, $extendSelect=false, $extendFrom=false, $usersDetail=false, $info=false){
+        $selections = "pt.id, pt.buyer_transaction_id, pt.seller_transaction_id, pt.state, pt.buyer_response, pt.seller_response, pt.admin_response, pt.update_time";
+        if($info){$selections .= ", pt.info";}
+        $select = "SELECT {$selections}, st.amount AS seller_amount, st.user_id AS seller_id, st.section_id, st.pending AS seller_pending, st.description AS seller_description, bt.user_id AS buyer_id, bt.amount AS buyer_amount, bt.pending AS buyer_pending, bt.time AS purchased_time, bt.description AS buyer_description, bt.time AS transaction_time";
         if($usersDetail) {
             $select .= ", seller.user_class_id AS seller_class_id,seller.img AS seller_img,seller.alias AS seller_alias,seller.gender AS seller_gender,seller.major AS seller_major,seller.enroll_year AS seller_enroll_year,seller.degree AS seller_degree, buyer.user_class_id AS buyer_class_id,buyer.img AS buyer_img,buyer.alias AS buyer_alias,buyer.gender AS buyer_gender,buyer.major AS buyer_major,buyer.enroll_year AS buyer_enroll_year,buyer.degree AS buyer_degree";
         }
@@ -118,15 +121,16 @@ class ProductTransactionModel extends Model {
      * @param bool $extendSelect 外加的选择SQL，用逗号隔开 {交易表名: pt | 卖家交易表名: st | 买家交易表名: bt | 买家表名: buyer | 卖家表名: seller}
      * @param bool $extendFrom 外加的Join表SQL，用JOIN连接表名 ex: 'user u INNER JOIN user_class ON ...'
      * @param bool $usersDetail 是否query 卖家买家详细信息
+     * @param bool $getInfo 是否获取交易信息
      * @return array
      */
-    public function getListOfPurchasedTransactionsByUserId($userId, $pageSize=20, $order=false, $extendQuery=false, $extendSelect=false, $extendFrom=false, $usersDetail=false){
+    public function getListOfPurchasedTransactionsByUserId($userId, $pageSize=20, $order=false, $extendQuery=false, $extendSelect=false, $extendFrom=false, $usersDetail=false, $getInfo=false){
         $userId = intval($userId);
         $q = "bt.user_id={$userId}";
         if($extendQuery){
             $q .= " AND (${extendQuery})";
         }
-        return $this->getListOfTransactions($pageSize, $q, $order, $extendSelect, $extendFrom, $usersDetail);
+        return $this->getListOfTransactions($pageSize, $q, $order, $extendSelect, $extendFrom, $usersDetail, $getInfo);
     }
 
     /**
@@ -169,9 +173,10 @@ class ProductTransactionModel extends Model {
      * @param string $buyer_description 买家描述
      * @param string $seller_description 卖家描述
      * @param int $section_id 产品ID
+     * @param string $info 交易保存信息
      * @return bool
      */
-    public function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description, $section_id) {
+    public function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description, $section_id, $info="") {
         try {
             $transactionModel = new TransactionModel();
             $result = $transactionModel->buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description, $this->sectionName, $section_id, 0, 1);
@@ -182,6 +187,7 @@ class ProductTransactionModel extends Model {
                 "buyer_transaction_id" => $buyerTransId,
                 "seller_transaction_id" => $sellerTransId,
                 "state" => ProductTransactionState::WAITING_PAYMENT,
+                "info" => $info,
                 "update_time" => time()
             ];
             return $this->addRow($this->table, $arr);
