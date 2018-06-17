@@ -128,7 +128,8 @@ function getEventsByCategory($echoType = "normal") {
         $event_category_id = BasicTool::get("event_category_id", "请指定广告分类id");
         $onlyShowEffectEvent = BasicTool::get("onlyShowEffectEvent")?:0;
         $pageSize = BasicTool::get("pageSize") ?: 10;
-        $result = $eventModel->getEventsByCategory($event_category_id,$onlyShowEffectEvent,$pageSize) or BasicTool::throwException("查询失败");
+        $addExhibitCount = BasicTool::get("addExhibitCount") ?: true;
+        $result = $eventModel->getEventsByCategory($event_category_id,$onlyShowEffectEvent,$addExhibitCount,$pageSize) or BasicTool::throwException("查询失败");
         $currentTime = time();
 //        echo date("Y-m-d H:m:s",time());
 

@@ -87,7 +87,7 @@ class EventModel extends Model
      * @param int $pageSize
      * @return array                    二维数组
      */
-    public function getEventsByCategory($event_category_id,$onlyShowEffectEvent=false,$pageSize=20){
+    public function getEventsByCategory($event_category_id,$onlyShowEffectEvent=false,$addExhibitCount=true,$pageSize=20){
         $time = time();
         $condition = "";
         $order = "";
@@ -110,14 +110,18 @@ class EventModel extends Model
         $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
         $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
         $result = $this->getListWithPage("event", $sql, $countSql, $pageSize);
-        $this->addExhibitCount($result);
+        $addExhibitCount && $this->addExhibitCount($result);
         return $result;
     }
 
     private function addExhibitCount($events){
         if (is_array($events) && count($events) > 0){
-            $concat = $this->concatField($events,"id");
-            $sql = "UPDATE event SET count_exhibits = count_exhibits + 1 WHERE id in ({$concat})";
+            $ids = "";
+            foreach($events as $event){
+                $ids .= $event['id'].",";
+            }
+            $ids = substr($ids,0,-1);
+            $sql = "UPDATE event SET count_exhibits = count_exhibits + 1 WHERE id in ({$ids})";
             $this->sqltool->query($sql);
         }
     }

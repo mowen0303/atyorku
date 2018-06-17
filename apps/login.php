@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $userModel = new \admin\user\UserModel();
-if ($userModel->isLogin()&&$userModel->isUserHasAuthority('EVENT_ADMIN')) {BasicTool::jumpTo("/apps/event/event");}
+if ($userModel->isLogin()&&$userModel->isUserHasAuthority('EVENT_ADMIN')) {BasicTool::jumpTo("/apps/event/event/index.php");}
 ?>
 <!doctype html>
 <html>

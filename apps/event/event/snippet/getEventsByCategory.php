@@ -5,7 +5,9 @@ $imageModel = new \admin\image\ImageModel();
 $eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 $event_category_id = BasicTool::get('event_category_id');
 $event_category_title = $event_category_id ? $eventCategoryModel->getEventCategory($event_category_id)['title'] : "";
-$arr = $eventModel->getEventsByCategory($event_category_id);
+$isAdmin = $userModel->isUserHasAuthority('ADMIN');
+
+$arr = $isAdmin?$eventModel->getEventsByCategory($event_category_id):$eventModel->getEventsByCategory($event_category_id,false,false);
 
 ?>
     <header class="topBox">
@@ -13,7 +15,7 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
     </header>
     <nav class="mainNav">
         <a class="btn" href="/admin/login/loginController.php?action=logout&url=/index.html">注销</a>
-        <?php if ($userModel->isUserHasAuthority('ADMIN')) echo '<a class="btn" href="./../eventCategory/index.php?s=getEventCategories">分类管理</a>';?>
+        <?php if ($isAdmin) echo '<a class="btn" href="./../eventCategory/index.php?s=getEventCategories">分类管理</a>';?>
         <a class="btn" href="index.php?s=addEvent">发布新活动</a>
 
     </nav>
@@ -29,11 +31,10 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                         <th width="230">封面</th>
                         <th>活动信息</th>
                         <?php
-                        if ($userModel->isUserHasAuthority('ADMIN'))
-                            echo "<th>展示次数</th>";
+                        if ($isAdmin)
+                            echo "<th>展示次数</th><th>点击量</th>";
                         ?>
-                        <th>点击量</th>
-                        <th>人数</th>
+                        <th>人数限制</th>
                         <th>顺序</th>
                         <th>操作</th>
                     </tr>
@@ -45,7 +46,7 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                         ?>
                         <tr>
                             <?php
-                            if ($userModel->isUserHasAuthority('ADMIN') || $userModel->userId == $row["sponsor_user_id"])
+                            if ($isAdmin || $userModel->userId == $row["sponsor_user_id"])
                                 echo "<td><input type='checkbox' class='cBox' name='id[]' value='{$row["id"]}'></td>";
                             else
                                 echo "<td> </td>";
@@ -61,16 +62,16 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                             </td>
                             <?php
                             if ($userModel->isUserHasAuthority("ADMIN")){
-                                $count_exhibits = $row['count_exhibits'];
-                                echo "<td>{$count_exhibits}</td>";
+                                echo "<td>{$row[count_exhibits]}</td><td>{$row[count_clicks]}</td>";
+
                             }
                             ?>
-                            <td><?php echo $row['count_clicks']?></td>
-                            <td><?php echo $row['count_participants']?>/<?php echo $row['max_participants'] ?></td>
+
+                            <td><?php echo $row['max_participants']?:'' ?></td>
                             <td><?php echo $row["sort"]?></td>
                             <td>
                                 <?php
-                                if ($userModel->isUserHasAuthority('ADMIN') || $userModel->userId == $row["sponsor_user_id"])
+                                if ($isAdmin || $userModel->userId == $row["sponsor_user_id"])
                                     echo "<a href='index.php?s=addEvent&id={$row['id']}'>编辑</a>";
                                 ?>
                             </td>

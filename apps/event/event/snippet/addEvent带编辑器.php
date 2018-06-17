@@ -1,8 +1,8 @@
 <?php
-$eventModel = new \admin\event\EventModel();
+$eventModel = new \apps\event\event\EventModel();
 $currentUser = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
-$eventCategoryModel = new \admin\eventCategory\EventCategoryModel();
+$eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 
 $user_id = $currentUser->userId;
 $event_category_id = BasicTool::get('event_category_id',"event_category_id missing");

@@ -9,8 +9,7 @@ $arr = $guideModel->getRowOfGuideById($guide_id);
 
 <?php
 if (BasicTool::get(share) != 1) {
-    ?>
-
+?>
     <script>
         $(function () {
             $("title").text("<?php echo $arr['title']?> - AtYorkU");
@@ -49,7 +48,7 @@ if (BasicTool::get(share) != 1) {
 
         })
     </script>
-    <?php
+<?php
 }
 ?>
 <article id="container">

@@ -375,26 +375,6 @@ abstract class Model
         }
 
     }
-
-    /**
-     * @param $arr 数组或二维数组
-     * @param String $key when $arr is an 2D array, $key specifies the field to concatenate with
-     * @return String  i.e. "37,38,49,51"
-     */
-    function concatField($arr,$key=false){
-        $concat = "";
-        foreach ($arr as $item){
-            if ($key)
-                $temp = $item[$key];
-            else
-                $temp = $item;
-            $temp .= ",";
-            $concat .= $temp;
-        };
-        return substr($concat,0,-1);
-    }
-
-
 }
 
 ?>
