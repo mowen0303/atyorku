@@ -20,7 +20,10 @@ class EventModel extends Model
      * @param int $img_id_2
      * @param int $img_id_3
      * @param String $location_link 活动地址,谷歌地图链接
+     * @param String $detail_url 活动详情链接
      * @param int $registration_fee 活动费
+     * @param String $registration_link
+     * @param String $registration_way
      * @param int $max_participants 活动名额
      * @param int $sponsor_user_id
      * @param String $sponsor_name
@@ -31,7 +34,7 @@ class EventModel extends Model
      * @return bool
      */
     public function addEvent($event_category_id,$title,$description,$expiration_time,$event_time,$location,
-                             $location_link,$registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,
+                             $location_link,$detail_url,$registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,
                              $max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,
                              $sponsor_email,$sponsor_telephone,$sort)
     {
@@ -47,12 +50,14 @@ class EventModel extends Model
         $arr["img_id_3"] = $img_id_3 ?: 0;
         $arr["location"] = $location ?: "";
         $arr["location_link"] = $location_link ?: "";
+        $arr["detail_url"] = $detail_url ?: "";
         $arr["registration_fee"] = $registration_fee ?: 0;
         $arr["registration_way"] = $registration_way ?: "";
         $arr["registration_link"] = $registration_link ?: "";
         $arr["max_participants"]=$max_participants ?: 0;
         $arr["count_participants"] = 0;
-        $arr["count_views"] = 0;
+        $arr["count_clicks"] = 0;
+        $arr["count_exhibits"] = 0;
         $arr["count_comments"] = 0;
         $arr["sponsor_user_id"] = $sponsor_user_id;
         $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
@@ -104,7 +109,17 @@ class EventModel extends Model
 
         $sql = "SELECT event.*,user.alias,user.img FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
         $countSql = "SELECT count(*) FROM (SELECT event.*,image.url FROM  (SELECT * FROM event WHERE {$condition}) as event LEFT JOIN image ON image.id = event.img_id_1) as event INNER JOIN user ON user.id = event.sponsor_user_id ORDER BY sort DESC $order";
-        return $this->getListWithPage("event", $sql, $countSql, $pageSize);
+        $result = $this->getListWithPage("event", $sql, $countSql, $pageSize);
+        $this->addExhibitCount($result);
+        return $result;
+    }
+
+    private function addExhibitCount($events){
+        if (is_array($events) && count($events) > 0){
+            $concat = $this->concatField($events,"id");
+            $sql = "UPDATE event SET count_exhibits = count_exhibits + 1 WHERE id in ({$concat})";
+            $this->sqltool->query($sql);
+        }
     }
 
     /**
@@ -120,7 +135,10 @@ class EventModel extends Model
      * @param int $img_id_2
      * @param int $img_id_3
      * @param String $location_link 活动地址,谷歌地图链接
+     * @param String $detail_url 活动详情链接
      * @param int $registration_fee 活动费
+     * @param String $registration_way
+     * @param String $registration_link
      * @param int $max_participants 活动名额
      * @param int $sponsor_user_id
      * @param String $sponsor_name
@@ -130,7 +148,7 @@ class EventModel extends Model
      * @param int $sort 排序值 0或1
      * @return bool
      */
-    public function updateEvent($id, $old_event_category_id, $event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link,
+    public function updateEvent($id, $old_event_category_id, $event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link, $detail_url,
                                 $registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
@@ -144,6 +162,7 @@ class EventModel extends Model
         $arr["img_id_3"] = $img_id_3 ?: 0;
         $arr["location"] = $location ?: "";
         $arr["location_link"] = $location_link ?: "";
+        $arr["detail_url"] = $detail_url ?: "";
         $arr["registration_fee"] = $registration_fee ?: 0;
         $arr["registration_way"] = $registration_way ?: "";
         $arr["registration_link"] = $registration_link ?: "";
@@ -201,12 +220,12 @@ class EventModel extends Model
         return $bool;
     }
 
-    /**更新阅读量
+    /**添加点击量
      */
-    public function addAmountOfRead($id)
+    public function addClickCount($id)
     {
-        $sql = "UPDATE event SET count_views = count_views + 1 WHERE id = " . $id;
-        $this->sqltool->query($sql);
+        $sql = "UPDATE event SET count_clicks = count_clicks + 1 WHERE id in ({$id})";
+        return $this->sqltool->query($sql);
     }
 }
 ?>

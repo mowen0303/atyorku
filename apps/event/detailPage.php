@@ -5,6 +5,7 @@ $imageModel = new \admin\image\ImageModel();
 $userModel = new \admin\user\UserModel();
 $event_id = BasicTool::get("event_id");
 $event = $eventModel->getEvent($event_id);
+$eventModel->addClickCount($event_id);
 $sponsor = $userModel->getProfileOfUserById($event["sponsor_user_id"]);
 $imgUrls = array();
 if ($event['img_id_1']) $imgUrls[] = $imageModel->getImageById($event['img_id_1'])['url'];

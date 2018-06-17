@@ -16,6 +16,7 @@ call_user_func(BasicTool::get('action'));
  * @param expiration_time 活动截止时间,PHP时间戳
  * @param event_time 活动时间,PHP时间戳
  * @param location_link 活动地址,谷歌地图URL
+ * @param detail_url 活动详情链接
  * @param registration_fee 报名费
  * @param max_participants 活动名额
  * @param sponsor_user_id
@@ -43,6 +44,7 @@ function addEvent($echoType = "normal") {
         $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
         $location = BasicTool::post("location", "请填活动地点");
         $location_link = BasicTool::post("location_link");
+        $detail_url = BasicTool::post("detail_url");
         $registration_fee = BasicTool::post("registration_fee");
         $registration_way = BasicTool::post("registration_way", "请填写报名方式");
         $registration_link = BasicTool::post("registration_link");
@@ -67,7 +69,7 @@ function addEvent($echoType = "normal") {
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
         $eventModel->addEvent($event_category_id, $title, $description,
                             $expiration_time, $event_time, $location,
-                            $location_link, $registration_fee,$registration_way,$registration_link,
+                            $location_link, $detail_url,$registration_fee,$registration_way,$registration_link,
                             $imgArr[0], $imgArr[1], $imgArr[2], $max_participants,
                             $sponsor_user_id, $sponsor_name, $sponsor_wechat,
                             $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("添加失败");
@@ -298,6 +300,7 @@ function deleteEventWithJson() {
  * @param expiration_time 活动截止时间,PHP时间戳
  * @param event_time 活动时间,PHP时间戳
  * @param location_link 活动地址,谷歌地图URL
+ * @param detail_url 活动详情链接
  * @param registration_fee 报名费
  * @param max_participants 活动名额
  * @param sponsor_user_id
@@ -329,6 +332,7 @@ function updateEvent($echoType = "normal") {
         $expiration_time = BasicTool::post("expiration_time", "请填写结束日期");
         $location = BasicTool::post("location", "请填活动地点");
         $location_link = BasicTool::post("location_link");
+        $detail_link = BasicTool::post("detail_url");
         $registration_fee = BasicTool::post("registration_fee");
         $registration_way = BasicTool::post("registration_way", "请填写报名方式");
         $registration_link = BasicTool::post("registration_link");
@@ -366,7 +370,7 @@ function updateEvent($echoType = "normal") {
         $currImgArr = array($event["img_id_1"], $event["img_id_2"], $event["img_id_3"]);
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
 
-        $eventModel->updateEvent($id, $old_event_category_id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link,
+        $eventModel->updateEvent($id, $old_event_category_id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link, $detail_link,
             $registration_fee,$registration_way,$registration_link, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
@@ -432,3 +436,19 @@ function delete($path) {
 
     return false;
 }
+
+// to be deleted
+///**增加点击量 GET传值
+// * @param $event_id
+// */
+//function addClickCountWithJson(){
+//    global $eventModel;
+//    try{
+//        $event_id = BasicTool::get('event_id','Missing event_id');
+//        $eventModel->addClickCount($event_id) or BasicTool::throwException("增加点击量失败");
+//        BasicTool::echoJson(1,"增加点击量成功");
+//
+//    }catch (Exception $e){
+//        BasicTool::echoJson(0, $e->getMessage());
+//    }
+//}

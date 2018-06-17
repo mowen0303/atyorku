@@ -4,7 +4,7 @@ $userModel = new \admin\user\UserModel();
 $imageModel = new \admin\image\ImageModel();
 $eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 $event_category_id = BasicTool::get('event_category_id');
-$event_category_title = $eventModel->getEventsByCategory($event_category_id)["title"];
+$event_category_title = $event_category_id ? $eventCategoryModel->getEventCategory($event_category_id)['title'] : "";
 $arr = $eventModel->getEventsByCategory($event_category_id);
 
 ?>
@@ -28,6 +28,11 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                         <th>ID</th>
                         <th width="230">封面</th>
                         <th>活动信息</th>
+                        <?php
+                        if ($userModel->isUserHasAuthority('ADMIN'))
+                            echo "<th>展示次数</th>";
+                        ?>
+                        <th>点击量</th>
                         <th>人数</th>
                         <th>顺序</th>
                         <th>操作</th>
@@ -54,7 +59,13 @@ $arr = $eventModel->getEventsByCategory($event_category_id);
                                 报名费：<?php echo $row['registration_fee'] ?> &nbsp;&nbsp;&nbsp;&nbsp;报名方式：<?php echo $row['registration_way'] ?>&nbsp;&nbsp;&nbsp;&nbsp;发起人：<?php echo $userModel->getProfileOfUserById($row['sponsor_user_id'])["alias"]?></br>
                                 <?php echo date("Y-m-d H:m",$row['event_time'])?> 至 <?php echo date("Y-m-d H:m",$row['expiration_time'])?></br>
                             </td>
-
+                            <?php
+                            if ($userModel->isUserHasAuthority("ADMIN")){
+                                $count_exhibits = $row['count_exhibits'];
+                                echo "<td>{$count_exhibits}</td>";
+                            }
+                            ?>
+                            <td><?php echo $row['count_clicks']?></td>
                             <td><?php echo $row['count_participants']?>/<?php echo $row['max_participants'] ?></td>
                             <td><?php echo $row["sort"]?></td>
                             <td>

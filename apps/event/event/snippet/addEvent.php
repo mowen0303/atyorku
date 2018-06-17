@@ -169,6 +169,10 @@ if ($flag == 'add') {
                 <label>活动详情<i>*</i></label>
                 <textarea class="input input-textarea" name="description"><?php echo $row["description"] ?></textarea>
             </div>
+            <div style="width:50%">
+                <label>活动详情链接</label>
+                <input type="text" class="input" name="detail_url" value="<?php echo $row['detail_url'] ?>"/>
+            </div>
             <div>
                 <div id="currentImages">
                     <label>活动图片: 最多3张 (第1张,封面,尺寸:800*400) (第2,3张,自动嵌入活动介绍,尺寸不限制)</label>
