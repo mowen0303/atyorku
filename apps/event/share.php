@@ -11,12 +11,18 @@ $imgUrls = array();
 if ($event['img_id_1']) $imgUrls[] = $imageModel->getImageById($event['img_id_1'])['url'];
 if ($event['img_id_2']) $imgUrls[] = $imageModel->getImageById($event['img_id_2'])['url'];
 if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'])['url'];
+//wechat component
+require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/wechat/jssdk.php";
+$jssdk = new JSSDK();
+$signPackage = $jssdk->GetSignPackage();
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <meta charset="UTF-8"/>
+    <title><?php echo $event['title'] ?></title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <style>
         * {margin:0; padding:0}
         *:focus{outline:none}
@@ -104,5 +110,78 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
         ?>
     </article>
 </div>
+<script type="text/javascript">
+    //----------------WeChat Share------------------------------[start]-------------------
+    var shareData = {
+        title: '<?php echo $event['title'];?>',
+        link: window.location.href,
+        imgUrl: 'http://www.atyorku.ca<?php echo $imgUrls[0];?>',
+        desc: '<?php echo mb_substr($event['description'],0,120,'utf-8');?>'
+    }
+
+    wx.config({
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: <?php echo $signPackage["timestamp"];?>,
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: [
+            // 所有要调用的 API 都要加到这个列表中
+            'checkJsApi',
+            'openLocation',
+            'getLocation',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage'
+        ]
+    });
+    wx.ready(function () {
+        timeLine();
+        message();
+    });
+
+    function timeLine() {
+        wx.onMenuShareTimeline({
+            title: shareData.title,
+            link: shareData.link,
+            imgUrl: shareData.imgUrl,
+            trigger: function (res) {
+                // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                // alert('用户点击分享到朋友圈');
+            },
+            success: function (res) {
+                // alert('已分享');
+            },
+            cancel: function (res) {
+                // alert('已取消');
+            },
+            fail: function (res) {
+                // alert(JSON.stringify(res));
+            }
+        });
+    }
+
+    function message() {
+        wx.onMenuShareAppMessage({
+            title: shareData.title,
+            desc: shareData.desc,
+            link: shareData.link,
+            imgUrl: shareData.imgUrl,
+            trigger: function (res) {
+                // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                //alert('用户点击发送给朋友');
+            },
+            success: function (res) {
+                //alert('已分享');
+            },
+            cancel: function (res) {
+                //alert('已取消');
+            },
+            fail: function (res) {
+                //alert(JSON.stringify(res));
+            }
+        });
+    }
+    //----------------WeChat Share------------------------------[end]-------------------
+</script>
 </body>
 </html>
