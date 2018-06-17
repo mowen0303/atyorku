@@ -288,20 +288,24 @@ class BookModel extends Model
 
 
     /**
-     * 获取一页二手书（非删除）
+     * 获取一页二手书（默认：非删除）
      * @param int $pageSize 每页显示数
      * @param bool $query 附加Query条件 e.x. 如果query个别用户ID下的二手书，$condition = "user_id = 123"
      * @param bool $availableOnly
      * @param bool $userDetail 是否query用户信息
+     * @param bool $showDeleted 是否显示已删除产品
      * @return array
      */
-    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $eLink=false, $userDetail=true) {
-        $q = "NOT b.is_deleted";
+    public function getListOfBooks($pageSize=20, $query=false, $availableOnly=true, $eLink=false, $userDetail=true, $showDeleted=false) {
+        $q = "";
+        if(!$showDeleted){
+            $q = "NOT b.is_deleted";
+        }
         if($availableOnly){
-            $q .= " AND b.is_available";
+            $q .= ($q===""?"b.is_available":" AND b.is_available");
         }
         if($query){
-            $q .= " AND ({$query})";
+            $q .= ($q===""?"({$query})":" AND ({$query})");
         }
         $selectSql = "";
         if($eLink){
@@ -387,16 +391,19 @@ class BookModel extends Model
     public function getListOfOrderedBooksByUserId($userId, $pending=-1, $pageSize=20){
         $productTransactionModel = new ProductTransactionModel('book');
         $q = "";
+        $order = "";
         if ($pending===0) {
             $q = "pt.state='".ProductTransactionState::COMPLETED."'";
+            $order .= "pt.update_time DESC";
         } else if($pending===1) {
             $q = "pt.state<>'".ProductTransactionState::COMPLETED."'";
+            $order .= "pt.state ASC, pt.update_time DESC";
         }
-        $transactions = $productTransactionModel->getListOfPurchasedTransactionsByUserId($userId, $pageSize, false, $q, false, false, true);
-        $ids = array_column($transactions, "section_id");
+        $transactions = $productTransactionModel->getListOfPurchasedTransactionsByUserId($userId, $pageSize, $order, $q, false, false, true, $pending===0);
+        $ids = array_filter(array_column($transactions, "section_id"));
         if(!$ids){return [];}
-        $implodedIds = implode($ids, ",");
-        $arr = $this->getListOfBooks($pageSize, "b.id IN ($implodedIds)", false, true, false);
+        $implodedIds = implode(array_unique($ids), ",");
+        $arr = $this->getListOfBooks($pageSize, "b.id IN ($implodedIds)", false, true, false, true);
         $books = [];
         foreach($arr as $item) {
             $books[$item['id']] = $item;

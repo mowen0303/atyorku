@@ -296,7 +296,6 @@ function getListOfOrderedBooksWithJson() {
             BasicTool::throwException("无效索引");
         }
         $result = $bookModel->getListOfOrderedBooksByUserId($userId,$pending,$pageSize);
-
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
         } else {
@@ -421,7 +420,7 @@ function getImagesByBookIdWithJson() {
 
 
 /**
-* http://www.atyorku.ca/admin/book/bookController.php?action=purchaseBookWithJson&book_id=3
+* http://www.atyorku.ca/admin/book/bookController.php?action=purchaseBookWithJson
 * 购买一本学习资料
 * @param bookId 学习资料ID
 * @return JSON
@@ -432,6 +431,7 @@ function purchaseBookWithJson() {
     global $transactionModel;
     global $msgModel;
     try {
+        $productTransactionModel = new \admin\productTransaction\ProductTransactionModel('book');
         $bookId = intval(BasicTool::post('book_id','请指定资料ID'));
         $buyerId = $currentUser->userId;
         $buyerId or BasicTool::throwException("请先登录");
@@ -453,7 +453,7 @@ function purchaseBookWithJson() {
                 $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.",28);
                 BasicTool::throwException("购买失败: 资料链接不存在, 此资料将被自动下架.");
             }
-            $result = $transactionModel->buy($buyerId,$sellerId,$price,$buyerDescription,$sellerDescription,'book',$bookId) or BasicTool::throwException($transactionModel->errorMsg);
+            $result = $productTransactionModel->buy($buyerId, $sellerId, $price, $buyerDescription, $sellerDescription, $bookId, $elink) or BasicTool::throwException($productTransactionModel->errorMsg);
             $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $name.": ".$elink, $sellerId);
             $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "我花了[{$price}]点积分,购买了你的资料[{$name}]",$buyerId);
             BasicTool::echoJson(1, "购买成功", $result);
