@@ -54,6 +54,10 @@ if ($flag == 'add') {
     <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
         <input name="knowledge_id" value="<?php echo $knowledge_id ?>" type="hidden"/>
         <section class="formBox">
+            <div>
+                <label>用户ID</label>
+                <input class="input input-size30" type="text" name="seller_user_id" value="<?php echo $row['seller_user_id']?:$currentUser->userId ?>"> 当前用户<?php echo ": {$currentUser->aliasName} (ID: {$currentUser->userId})" ?>
+            </div>
             <div id="courseCodeInputComponent">
                 <div style="float:left;width:49.3%;margin-right:6px">
                     <label>课程类别 (例如:ADMS)</label>
