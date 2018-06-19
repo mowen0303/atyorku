@@ -65,8 +65,8 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
             ?>
 
             <?php
-            if($event['location_link']>0){
-                echo '<p class="content"><span>活动地点</span><i><a href="'.$event['location_link'].'" target="_blank">'. $event['location'].'</a></i></p>';
+            if($event['location_link']){
+                echo '<p class="content"><span>活动地点</span><i><a href="'.$event['location_link'].'" target="_blank">'. $event['location'].' （导航）</a></i></p>';
             }else{
                 echo '<p class="content"><span>活动地点</span><i>'. $event['location'].'</i></p>';
             }

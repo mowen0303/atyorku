@@ -71,8 +71,8 @@ $signPackage = $jssdk->GetSignPackage();
             ?>
 
             <?php
-            if($event['location_link']>0){
-                echo '<p class="content"><span>活动地点</span><i><a href="'.$event['location_link'].'" target="_blank">'. $event['location'].'</a></i></p>';
+            if($event['location_link']){
+                echo '<p class="content"><span>活动地点</span><i><a href="'.$event['location_link'].'" target="_blank">'. $event['location'].' （导航）</a></i></p>';
             }else{
                 echo '<p class="content"><span>活动地点</span><i>'. $event['location'].'</i></p>';
             }
@@ -116,7 +116,7 @@ $signPackage = $jssdk->GetSignPackage();
         title: '<?php echo $event['title'];?>',
         link: window.location.href,
         imgUrl: 'http://www.atyorku.ca<?php echo $imgUrls[0];?>',
-        desc: '<?php echo mb_substr($event['description'],0,120,'utf-8');?>'
+        desc: '<?php echo str_replace(PHP_EOL, '', mb_substr($event['description'],0,60,'utf-8'));?>'
     }
 
     wx.config({
