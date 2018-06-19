@@ -16,7 +16,7 @@ if(!$userModel->isAdminLogin()){
     <script src="/resource/js/jquery-2.1.4.js" type="text/javascript"></script>
     <script src="/admin/resource/js/main.js" type="text/javascript"></script>
     <script src="/admin/resource/js/component.js" type="text/javascript"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js" type="text/javascript"></script>
 </head>
 
 <body class="bodyMain">

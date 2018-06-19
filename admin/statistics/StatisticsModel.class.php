@@ -53,9 +53,13 @@ class StatisticsModel extends Model
     }
 
 
-    public function getListOfStatic($pageSize = 31){
-        $table = 'forum';
-        $sql = "SELECT * FROM statistics ORDER BY id DESC";
+    public function getListOfStatic($type=0,$pageSize = 30){
+        $table = 'statistics';
+        $condition = "1";
+        if($type){
+            $condition .= " AND type in ({$type})";
+        }
+        $sql = "SELECT * FROM statistics WHERE {$condition} ORDER BY id DESC";
         $countSql = "SELECT count(*) FROM statistics ORDER BY id DESC";
         return parent::getListWithPage($table,$sql,$countSql,$pageSize);
     }
