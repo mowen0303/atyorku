@@ -87,7 +87,7 @@ function getAdsByCategoryWithJson(){
     try {
         $ad_category_id = BasicTool::get("ad_category_id", "请指定广告分类id") ?:1;    //升级到2.1.0之后,拿掉此行
         //$ad_category_id = BasicTool::get("ad_category_id", "请指定广告分类id");
-        $result = $adModel->getAdsByCategory($ad_category_id,1);
+        $result = $adModel->getAdsByCategory($ad_category_id,1, true);
         if ($result)
             BasicTool::echoJson(1, "查询成功", $result);
         else
@@ -240,4 +240,20 @@ function updateAd($echoType="normal"){
  */
 function updateAdWithJson(){
     updateAd("json");
+}
+
+
+/**增加点击量 GET传值
+ * @param $event_id
+ */
+function addOnceView(){
+   global $adModel;
+    try{
+        $ad_id = BasicTool::get('id','Missing event_id');
+        $adModel->addOnceView($ad_id) or BasicTool::throwException("增加点击量失败");
+        BasicTool::echoJson(1,"增加点击量成功");
+
+    }catch (Exception $e){
+        BasicTool::echoJson(0, $e->getMessage());
+    }
 }

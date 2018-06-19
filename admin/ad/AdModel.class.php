@@ -33,6 +33,7 @@ class AdModel extends Model
         $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
         $arr["ad_url"] = $ad_url ? $ad_url : "";
         $arr["view_count"] = 0;
+        $arr["count_exhibits"] = 0;
         $arr["sort"] = $sort? $sort : 0;
         $bool = $this->addRow("ad", $arr);
         if ($bool) {
@@ -50,7 +51,7 @@ class AdModel extends Model
      * @param int $flag
      * @return array
      */
-    public function getAdsByCategory($ad_category_id,$adOption=1){
+    public function getAdsByCategory($ad_category_id,$adOption=1,$addExhibitCount=true){
         $currentTime = time();
         $condition="";
         if($adOption==1){
@@ -62,7 +63,21 @@ class AdModel extends Model
 
         $sql = "SELECT ad.*,image.url AS img_url FROM (SELECT * FROM ad  {$condition} ) AS ad LEFT JOIN image ON ad.img_id_1 = image.id ORDER BY sort DESC, publish_time DESC";
         $countSql = "SELECT COUNT(*) FROM ad {$condition} ORDER BY sort DESC, publish_time DESC";
-        return $this->getListWithPage("ad", $sql, $countSql, 20);
+        $result = $this->getListWithPage("ad", $sql, $countSql, 20);
+        if($addExhibitCount) $this->addExhibitCount($result);
+        return $result;
+    }
+
+    private function addExhibitCount($ads){
+        if (is_array($ads) && count($ads) > 0){
+            $ids = "";
+            foreach($ads as $ad){
+                $ids .= $ad['id'].",";
+            }
+            $ids = substr($ids,0,-1);
+            $sql = "UPDATE ad SET count_exhibits = count_exhibits + 1 WHERE id in ({$ids})";
+            $this->sqltool->query($sql);
+        }
     }
 
     public function getAd($id){
@@ -121,11 +136,13 @@ class AdModel extends Model
         return $bool;
     }
 
-    //更新阅读量
-    public function addAmountOfRead($AdId)
+
+    /**添加点击量
+     */
+    public function addOnceView($id)
     {
-        $sql = "UPDATE ad SET view_count = view_count + 1 WHERE id = " . $AdId;
-        $this->sqltool->query($sql);
+        $sql = "UPDATE ad SET view_count = view_count + 1 WHERE id in ({$id})";
+        return $this->sqltool->query($sql);
     }
 }
 

@@ -6,7 +6,7 @@ $ad_category_id = BasicTool::get('ad_category_id');
 $ad_category_title = $adCategoryModel->getAdCategory($ad_category_id)["title"];
 $imageModel = new\admin\image\ImageModel();
 $flag = BasicTool::get("flag");
-$arr = $adModel->getAdsByCategory($ad_category_id,$flag);
+$arr = $adModel->getAdsByCategory($ad_category_id,$flag,false);
 if($flag == 0){
     $display_option_0 = "style='display:none'";
     $display_option_1 = "";
@@ -39,6 +39,7 @@ else{
                         <th>简介</th>
                         <th width="80px">广告商</th>
                         <th width="100px">广告链接</th>
+                        <th width='40px'>浏览量</th>
                         <th width="40px">浏览量</th>
                         <th width="80px">投放时间</th>
                         <th width="40px">有效至</th>
@@ -58,6 +59,9 @@ else{
                             <td style="max-width:300px"><?php echo $row['description']?></a></td>
                             <td><?php echo $row['sponsor_name'] ?></td>
                             <td><?php echo $row['ad_url']?></td>
+                            <?php
+                            echo "<td>{$row['count_exhibits']}</td>";
+                            ?>
                             <td><?php echo $row['view_count'] ?></td>
                             <td><?php echo date("Y-m-d",($row['publish_time']))?></td>
                             <td><?php echo date("Y-m-d",($row['expiration_time']))?></td>
