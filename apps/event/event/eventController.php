@@ -51,6 +51,7 @@ function addEvent($echoType = "normal") {
         $max_participants = BasicTool::post("max_participants");
         $description = BasicTool::post("description", "missing description");
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
+        if (!$sponsor_user_id) $sponsor_user_id = $currentUser->userId;
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
@@ -340,6 +341,8 @@ function updateEvent($echoType = "normal") {
         $registration_link = BasicTool::post("registration_link");
         $max_participants = BasicTool::post("max_participants");
         $description = BasicTool::post("description", "missing description");
+        $sponsor_user_id = BasicTool::post("sponsor_user_id");
+        if (!$sponsor_user_id) $sponsor_user_id = $currentUser->userId;
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
@@ -373,7 +376,7 @@ function updateEvent($echoType = "normal") {
         $imgArr = $imageModel->uploadImagesWithExistingImages($imgArr, $currImgArr, 3, "imgFile", $currentUser->userId, "event");
 
         $eventModel->updateEvent($id, $old_event_category_id, $event_category_id, $title, $description, $expiration_time, $event_time, $location, $location_link, $detail_link,
-            $registration_fee,$registration_way,$registration_link, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
+            $registration_fee,$registration_way,$registration_link, $imgArr[0], $imgArr[1], $imgArr[2], $max_participants, $sponsor_user_id, $sponsor_name, $sponsor_wechat, $sponsor_email, $sponsor_telephone, $sort) or BasicTool::throwException("更改失败");
 
         if ($echoType == "normal") {
             BasicTool::echoMessage("更改成功", "index.php?s=getEventsByCategory");

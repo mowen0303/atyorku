@@ -158,7 +158,7 @@ class EventModel extends Model
      * @return bool
      */
     public function updateEvent($id, $old_event_category_id, $event_category_id,$title,$description,$expiration_time,$event_time,$location,$location_link, $detail_url,
-                                $registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
+                                $registration_fee,$registration_way,$registration_link,$img_id_1,$img_id_2,$img_id_3,$max_participants,$sponsor_user_id,$sponsor_name,$sponsor_wechat,$sponsor_email,$sponsor_telephone,$sort)
     {
         $arr = [];
         $arr["event_category_id"] = $event_category_id;
@@ -176,6 +176,7 @@ class EventModel extends Model
         $arr["registration_way"] = $registration_way ?: "";
         $arr["registration_link"] = $registration_link ?: "";
         $arr["max_participants"]=$max_participants ? $max_participants : 0;
+        $arr["sponsor_user_id"] = $sponsor_user_id ? : 1;
         $arr["sponsor_name"] = $sponsor_name ? $sponsor_name : "";
         $arr["sponsor_telephone"] = $sponsor_telephone ? $sponsor_telephone : "";
         $arr["sponsor_wechat"] = $sponsor_wechat ? $sponsor_wechat : "";

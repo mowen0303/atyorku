@@ -39,8 +39,8 @@ else{
                         <th>简介</th>
                         <th width="80px">广告商</th>
                         <th width="100px">广告链接</th>
-                        <th width='40px'>浏览量</th>
-                        <th width="40px">浏览量</th>
+                        <th width='40px'>展示次数</th>
+                        <th width="40px">点击量</th>
                         <th width="80px">投放时间</th>
                         <th width="40px">有效至</th>
                         <th width="40px">顺序</th>
@@ -62,7 +62,7 @@ else{
                             <?php
                             echo "<td>{$row['count_exhibits']}</td>";
                             ?>
-                            <td><?php echo $row['view_count'] ?></td>
+                            <td><?php echo $row['count_clicks'] ?></td>
                             <td><?php echo date("Y-m-d",($row['publish_time']))?></td>
                             <td><?php echo date("Y-m-d",($row['expiration_time']))?></td>
                             <td><?php echo $row["sort"] ?></td>

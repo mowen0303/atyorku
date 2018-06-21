@@ -35,7 +35,10 @@ $arr = $isAdmin?$eventModel->getEventsByCategory($event_category_id):$eventModel
                             echo "<th>展示次数</th><th>点击量</th>";
                         ?>
                         <th>人数限制</th>
-                        <th>顺序</th>
+                        <?php
+                        if ($userModel->isAdmin)
+                            echo "<th>顺序</th>";
+                        ?>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -68,7 +71,10 @@ $arr = $isAdmin?$eventModel->getEventsByCategory($event_category_id):$eventModel
                             ?>
 
                             <td><?php echo $row['max_participants']?:'' ?></td>
-                            <td><?php echo $row["sort"]?></td>
+                            <?php
+                            if ($userModel->isAdmin)
+                                echo "<td>{$row['sort']}</td>";
+                            ?>
                             <td>
                                 <?php
                                 if ($isAdmin || $userModel->userId == $row["sponsor_user_id"])

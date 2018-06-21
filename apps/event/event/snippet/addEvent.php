@@ -6,8 +6,6 @@ $imageModel = new \admin\image\ImageModel();
 $eventCategoryModel = new \apps\event\eventCategory\EventCategoryModel();
 $eventCategories = $eventCategoryModel->getEventCategories();
 
-$user_id = $currentUser->userId;
-
 $id = BasicTool::get('id');
 $flag = $id == null ? 'add' : 'update';
 
@@ -82,13 +80,18 @@ if ($flag == 'add') {
 
 <article class="mainBox">
     <form action="<?php echo $form_action ?>" method="post" enctype="multipart/form-data">
-        <input name="id" value="<?php echo $id ?>" type="hidden">
-        <input name="sponsor_user_id" value="<?php echo $user_id ?>" type="hidden"/>
+        <input name="id" value="<?php echo $id ?>" type="hidden"/>
         <section class="formBox">
             <div>
                 <label>标题<i>*</i></label>
                 <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
             </div>
+            <?php
+            $userId = $row['sponsor_user_id']?:$currentUser->userId;
+            $html = "<div><label>用户id</label><input class='input input-size30' type='text' name='sponsor_user_id' value='{$userId}'/>当前用户: {$currentUser->aliasName} (ID: {$currentUser->userId})</div>";
+            if ($currentUser->isAdmin)
+                echo $html;
+            ?>
             <div>
                 <label>活动类别<i>*</i></label>
                 <select class = 'input input-select input-size30' name="event_category_id">

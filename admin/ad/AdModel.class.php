@@ -32,7 +32,7 @@ class AdModel extends Model
         $arr["expiration_time"] = $expiration_time ? $expiration_time : 0;
         $arr["ad_category_id"] = $ad_category_id ? $ad_category_id : 0;
         $arr["ad_url"] = $ad_url ? $ad_url : "";
-        $arr["view_count"] = 0;
+        $arr["count_clicks"] = 0;
         $arr["count_exhibits"] = 0;
         $arr["sort"] = $sort? $sort : 0;
         $bool = $this->addRow("ad", $arr);
@@ -141,7 +141,7 @@ class AdModel extends Model
      */
     public function addOnceView($id)
     {
-        $sql = "UPDATE ad SET view_count = view_count + 1 WHERE id in ({$id})";
+        $sql = "UPDATE ad SET count_clicks = count_clicks + 1 WHERE id in ({$id})";
         return $this->sqltool->query($sql);
     }
 }
