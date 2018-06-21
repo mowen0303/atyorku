@@ -52,6 +52,7 @@ function addEvent($echoType = "normal") {
         $description = BasicTool::post("description", "missing description");
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         if (!$sponsor_user_id) $sponsor_user_id = $currentUser->userId;
+        $currentUser->getProfileOfUserById($sponsor_user_id) or BasicTool::throwException('用户不存在');
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
@@ -343,6 +344,7 @@ function updateEvent($echoType = "normal") {
         $description = BasicTool::post("description", "missing description");
         $sponsor_user_id = BasicTool::post("sponsor_user_id");
         if (!$sponsor_user_id) $sponsor_user_id = $currentUser->userId;
+        $currentUser->getProfileOfUserById($sponsor_user_id) or BasicTool::throwException('用户不存在');
         $sponsor_name = BasicTool::post("sponsor_name");
         $sponsor_wechat = BasicTool::post("sponsor_wechat");
         $sponsor_email = BasicTool::post("sponsor_email");
