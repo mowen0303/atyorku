@@ -7,7 +7,7 @@ $offSet = 200;
     <h1><?php echo $pageTitle?></h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="index.php?s=listForumClass">返回论坛</a>
+
 </nav>
 <article class="mainBox">
     <header><h2>统计数据</h2></header>
@@ -27,24 +27,24 @@ $offSet = 200;
             let data4 = [];
 
             let $type4Label = $('.type-4-label');
-            $type4Label.each((i,val)=>{
+            $type4Label.each((i)=>{
                 label.unshift($type4Label.eq(i).text());
             });
 
             let $type4Val = $('.type-4-val');
-            $type4Val.each((i,val)=>{
+            $type4Val.each((i)=>{
                 data4.unshift($type4Val.eq(i).text());
             });
 
-            sum30 = 0;
-            data4.forEach(val=>{
-                sum30+= parseInt(val);
+            let sum30 = 0;
+            data4.forEach(function(val){
+                sum30 += parseInt(val);
             })
 
-            sum7 = 0;
+            let sum7 = 0;
             data4.length
             for(i=0;i<7;i++){
-                sum7 += parseInt(data4[data4.length-i-1]);
+                sum7 += parseInt(data4[data4.length-i-2]);
             }
 
             $view30.html(Math.ceil(sum30/data4.length));
