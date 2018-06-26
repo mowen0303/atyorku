@@ -67,11 +67,13 @@ class MapModel extends Model {
      * @param $coordinates
      * @return bool
      */
-    public function editBuilding($id,$code,$abbreviation,$fullName,$description,$coordinates){
+    public function editBuilding($id,$code,$abbreviation,$fullName,$type,$price,$description,$coordinates){
         $description = $description?:"暂无简介";
         $arr['code'] = $code;
         $arr['abbreviation'] = $abbreviation?strtoupper($abbreviation):"";
         $arr['full_name'] = ucwords($fullName);
+        $arr['type'] = $type;
+        $arr['price'] = $price?:0;
         $arr['description'] = $description;
         $arr['coordinates'] = $coordinates;
         if($id){
