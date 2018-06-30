@@ -32,6 +32,8 @@ $version = $mapModel->getMapDataVersion();
                     <th>地图CODE</th>
                     <th>缩写</th>
                     <th>全称</th>
+                    <th>类型</th>
+                    <th>价格</th>
                     <th width="35%">坐标</th>
                     <th width="25%">简介</th>
                     <th>操作</th>
@@ -47,6 +49,8 @@ $version = $mapModel->getMapDataVersion();
                         <td><?php echo $building['code'] ?></td>
                         <td><?php echo $building['abbreviation'] ?></td>
                         <td><?php echo $building['full_name'] ?></td>
+                        <td><?php echo $building['type'] ?></td>
+                        <td><?php echo $building['price'] ?></td>
                         <td><?php echo $building['coordinates'] ?></td>
                         <td><?php echo $building['description'] ?></td>
                         <td><a href="index.php?s=editBuilding&id=<?php echo $building['id'] ?>" class="btn">编辑</a></td>
