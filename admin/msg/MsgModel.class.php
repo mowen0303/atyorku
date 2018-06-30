@@ -38,6 +38,7 @@ class MsgModel extends Model {
         if ($receiverUser->deviceToken == '0') return false;
         if ($receiverUser->deviceType == "ios") {
             //echo("ios");
+            //self::applePush($receiverUser->deviceToken, $senderUser->aliasName, $msgType, $msgTypeId, $content, $receiverBadge);
             return self::applePushRN($receiverUser->deviceToken, $senderUser->aliasName, $msgType, $msgTypeId, $content, $receiverBadge);
         } else if ($receiverUser->deviceType == "android") {
             //echo("android");
@@ -74,7 +75,7 @@ class MsgModel extends Model {
                 //if($row['id']!=1) return false;
                 echo $i++ . "--UID:" . $row['id'] . "--" . $row['device_type']."--" . $row['device'];
                 if($row['device_type']=="ios"){
-                    $bool = self::applePush($row['device'], false, $msgType, $msgTypeId, $content, $row['badge'], $silent);
+                    $bool = self::applePushRN($row['device'], false, $msgType, $msgTypeId, $content, $row['badge'], $silent);
                 }else{
                     $bool = self::androidPushRN($row['device'], false,$msgType, $msgTypeId, $content, $row['badge'],$silent);
                 }
@@ -133,53 +134,95 @@ class MsgModel extends Model {
      * @param bool $silent
      * @return bool
      */
+//    private function applePush($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
+//        if ($deviceToken == '0') return false;
+//        $senderAlias = $senderAlias ? $senderAlias . ": " : "";
+//        $passphrase = 'miss0226';
+//        $ctx = stream_context_create();
+//        stream_context_set_option($ctx, 'ssl', 'local_cert', $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem');
+//        stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
+//        // Open a connection to the APNS server
+//        $fp = stream_socket_client(
+//            'ssl://gateway.push.apple.com:2195', $err,
+//            $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+//        if (!$fp) {
+//            $this->errorMsg = "Failed to connect: $err $errstr" . PHP_EOL;
+//            return false;
+//        }
+//        // Create the payload body
+//        if ($silent) {
+//            $body['aps'] = array(
+//                'type' => $msgType,
+//                'typeId' => $msgTypeId,
+//                'badge' => (int)$badge
+//            );
+//        } else {
+//            $body['aps'] = array(
+//                'alert' => $senderAlias . $content,
+//                'type' => $msgType,
+//                'typeId' => $msgTypeId,
+//                'badge' => (int)$badge,
+//                'sound' => 'default'
+//            );
+//        }
+//        // Encode the payload as JSON
+//        $payload = json_encode($body);
+//        // Build the binary notification
+//        $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
+//        // Send it to the server
+//        $result = fwrite($fp, $msg, strlen($msg));
+//        fclose($fp);
+//        if (!$result) {
+//            $this->errorMsg = 'Message not delivered' . PHP_EOL;
+//            return false;
+//        } else {
+//            $this->errorMsg = 'Message successfully delivered' . $deviceToken . PHP_EOL;
+//            return true;
+//        }
+//    }
+
+    /**
+     * 苹果推送
+     * @param $deviceToken
+     * @param bool $senderAlias
+     * @param $msgType
+     * @param $msgTypeId
+     * @param $content
+     * @param $badge
+     * @param bool $silent
+     * @return bool
+     */
     private function applePushRN($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {
         if ($deviceToken == '0') return false;
         $senderAlias = $senderAlias ? $senderAlias . ": " : "";
-        $passphrase = 'miss0226';
-        $ctx = stream_context_create();
-        stream_context_set_option($ctx, 'ssl', 'local_cert', $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem');
-        stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
-
-        // Open a connection to the APNS server
-        $fp = stream_socket_client(
-            'ssl://gateway.push.apple.com:2195', $err,
-            $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-        if (!$fp) {
-            $this->errorMsg = "Failed to connect: $err $errstr" . PHP_EOL;
-            return false;
-        }
-        // Create the payload body
-        if ($silent) {
-            $body['aps'] = array(
-                'type' => $msgType,
-                'typeId' => $msgTypeId,
-                'badge' => (int)$badge
-            );
-        } else {
-            $body['aps'] = array(
-                'alert' => $senderAlias . $content,
-                'type' => $msgType,
-                'typeId' => $msgTypeId,
-                'badge' => (int)$badge,
-                'sound' => 'default'
-            );
-        }
-
-        // Encode the payload as JSON
-        $payload = json_encode($body);
-        // Build the binary notification
-        $msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
-        // Send it to the server
-        $result = fwrite($fp, $msg, strlen($msg));
-        fclose($fp);
-        if (!$result) {
-            $this->errorMsg = 'Message not delivered' . PHP_EOL;
-            return false;
-        } else {
-            $this->errorMsg = 'Message successfully delivered' . $deviceToken . PHP_EOL;
-            return true;
-        }
+        //config APNs
+        $tHost = 'gateway.push.apple.com';
+        //$tHost = 'gateway.sandbox.push.apple.com';
+        $tPort = 2195;
+        $tCert = $_SERVER["DOCUMENT_ROOT"] . '/commonClass/ck2.pem';
+        $tPassphrase = 'miss0226';
+        $tToken = $deviceToken;
+        //Content
+        $tBody['aps'] = array(
+            'alert' => $senderAlias . $content,
+            'badge' => (int)$badge,
+            'sound' => 'default',
+        );
+        $tBody ['payload'] = array(
+            'type' => $msgType,
+            'typeId' => $msgTypeId,
+        );
+        // Encode the body to JSON.
+        $tBody = json_encode($tBody);
+        $tContext = stream_context_create();
+        stream_context_set_option($tContext, 'ssl', 'local_cert', $tCert);
+        stream_context_set_option($tContext, 'ssl', 'passphrase', $tPassphrase);
+        $tSocket = stream_socket_client('ssl://' . $tHost . ':' . $tPort, $error, $errstr, 30, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $tContext);
+        if (!$tSocket) exit ("APNS Connection Failed: $error $errstr" . PHP_EOL);
+        $tMsg = chr(0) . chr(0) . chr(32) . pack('H*', $tToken) . pack('n', strlen($tBody)) . $tBody;
+        $tResult = fwrite($tSocket, $tMsg, strlen($tMsg));
+        fclose($tSocket);
+        return $tResult ? true : false;
     }
 
     private function androidPushRN($deviceToken, $senderAlias = false, $msgType, $msgTypeId, $content, $badge, $silent = false) {

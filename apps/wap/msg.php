@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_header.html";
 ?>
 <style>
-body {background:#fefefe}
+html {background:#fafafa;height:100%}
 .subTitle{color:#989898}
 </style>
 <article id="container">

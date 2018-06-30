@@ -419,7 +419,7 @@ class ForumModel extends Model {
         if($orderBy == "countComments"){
             $order = "f.sort DESC,`count_comments` DESC";
         }else{
-            $order = "f.sort DESC,`update_time` DESC";
+            $order = "f.sort DESC,`time` DESC";
         }
 
         $sql = "SELECT f.*,fc.id AS classId,fc.title AS classTitle, type AS classType FROM (select f.*,u_c.is_admin,u_c.title as userTitle from (SELECT f.*,u.user_class_id,u.img,u.alias,u.gender,u.major,u.enroll_year,u.degree FROM `forum` AS f INNER JOIN `user` AS u ON f.user_id = u.id WHERE {$condition} u.is_del = 0 ) as f INNER JOIN user_class as u_c ON f.user_class_id = u_c.id) as f INNER JOIN forum_class AS fc ON f.forum_class_id = fc.id ORDER BY {$order}";

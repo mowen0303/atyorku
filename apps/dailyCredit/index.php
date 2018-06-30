@@ -34,7 +34,7 @@ $creditAmount = (float) end($dailyCredit)["credit"];
 <head>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
-    <link href="css.css" rel="stylesheet" type="text/css">
+    <link href="css.css?2" rel="stylesheet" type="text/css">
     <title>我的积分</title>
     <script src="/resource/js/jquery-2.1.4.js"></script>
     <script src="/resource/lib/easing.js"></script>
