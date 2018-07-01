@@ -375,8 +375,12 @@ class CourseRatingModel extends Model
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id IN ('{$parentId}');";
             $this->sqltool->query($sql);
         }
+        if($parentId == 0){
+            $q = " ";
+        }else{
+            $q = " AND c1.parent_id in ($parentId)";
+        }
 
-        $q = " AND c1.parent_id in ($parentId)";
         if($orderField=="title"){
             $order = "ORDER BY c2.title, c1.title {$orderModel}";
         }else if($orderField=="diff"){
