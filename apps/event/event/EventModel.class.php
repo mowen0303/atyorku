@@ -76,8 +76,32 @@ class EventModel extends Model
     public function getEvent($id)
     {
         $sql = "SELECT * from event WHERE id = {$id}";
-        $result = $this->sqltool->getRowBySql($sql);
-        return $result;
+        $item = $this->sqltool->getRowBySql($sql);
+        $currentTime = time();
+        if($currentTime<$item['event_time']){
+            //还未开始
+            $time = $item['event_time']-$currentTime;
+            $day = floor($time/(60*60*24));
+            $hour = floor(($time%(60*60*24))/(60*60));
+            $minute = floor(($time%(60*60))/60);
+            $item['state_code'] = "1";
+            if($day){
+                $item['state'] = "倒计时:{$day}天";
+            }else if($hour){
+                $item['state'] = "倒计时:{$hour}小时";
+            }else{
+                $item['state'] = "倒计时:{$minute}分钟";
+            }
+        }else if ($currentTime<$item['expiration_time']){
+            //进行中
+            $item['state'] = "活动进行中";
+            $item['state_code'] = "2";
+        }else{
+            //已结束
+            $item['state'] = "已结束";
+            $item['state_code'] = "0";
+        }
+        return $item;
     }
 
     /**
