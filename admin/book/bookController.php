@@ -184,6 +184,8 @@ function getListOfBooksWithJson($queryType=NULL, $queryValue=NULL) {
         }
 
         if ($result) {
+            $ids = array_column($result, "id");
+            $bookModel->incrementCountViewByBookId($ids);
             BasicTool::echoJson(1, "成功", $result);
         } else {
             BasicTool::echoJson(0, "没有更多内容");
@@ -266,6 +268,8 @@ function getListOfBooksWithJsonV2() {
         }
 
         if ($result) {
+            $ids = array_column($result, "id");
+            $bookModel->incrementCountViewByBookId($ids);
             BasicTool::echoJson(1, "成功", $result);
         } else {
             BasicTool::echoJson(0, "没有更多内容");
@@ -320,7 +324,13 @@ function searchBooksWithJson() {
         $queryType = BasicTool::get("search_type", "搜索类别不能为空");
         $queryValue = BasicTool::get("search_value", "搜索内容不能为空");
         $result = $bookModel->searchBooks($queryType, $queryValue, $pageSize);
-        BasicTool::echoJson(1, "成功", $result);
+        if($result){
+            $ids = array_column($result, "id");
+            $bookModel->incrementCountViewByBookId($ids);
+            BasicTool::echoJson(1, "成功", $result);
+        } else {
+            BasicTool::echoJson(0, "没有更多内容");
+        }
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
@@ -412,7 +422,6 @@ function getImagesByBookIdWithJson() {
         } else {
             BasicTool::echoJson(0, '未找到图片');
         }
-        $bookModel->incrementCountViewByBookId($id);
     } catch (Exception $e) {
         BasicTool::echoJson(0, $e->getMessage());
     }
