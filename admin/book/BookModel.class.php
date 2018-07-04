@@ -534,13 +534,21 @@ class BookModel extends Model
     }
 
     /**
-    * 浏览数 +1
-    * @param id 二手书ID
-    */
+     * 浏览数 +1
+     * @param string|int|array $id
+     * @return bool|\mysqli_result
+     */
     public function incrementCountViewByBookId($id)
     {
+        if(!$id){
+            $this->errorMsg = "Invalid Book Id";
+            return false;
+        }
+        if(is_array($id)) {
+            $id = implode(",", array_unique(array_filter($id)));
+        }
         $sql = "UPDATE book SET count_view = count_view+1 WHERE id in ($id)";
-        $this->sqltool->query($sql);
+        return $this->sqltool->query($sql);
     }
 
 
