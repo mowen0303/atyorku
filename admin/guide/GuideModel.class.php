@@ -203,8 +203,7 @@ class GuideModel extends Model
         $statisticsModel->countStatistics(2);
         $currentUser = new UserModel();
         $currentUser->addActivity();
-
-        $sql = " select G.*,U.id AS uid,U.alias,img from `guide` as G LEFT JOIN `user` as U on G.user_id = U.id WHERE G.id in ({$id});";
+        $sql = "SELECT G.*,GC.title AS category_title,GC.id as category_id,visible FROM (SELECT G.*,U.id AS uid,U.alias,img from `guide` as G LEFT JOIN `user` as U on G.user_id = U.id WHERE G.id in ({$id})) as G INNER JOIN guide_class AS GC ON G.guide_class_id = GC.id;";
         $result = $this->sqltool->getRowBySql($sql);
         return $result;
     }

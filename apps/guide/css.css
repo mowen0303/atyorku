@@ -2,7 +2,7 @@
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
 body{background: #fafafa;}
-body,button,input,select,textarea{ color:rgb(92, 92, 92); font-size:15px; line-height: 2em; font-family: "PingFangSC-light","微软雅黑",Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica;overflow-wrap:break-word;}
+body,button,input,select,textarea{ color:rgb(92, 92, 92); font-size:16px; line-height: 2em; font-family: "PingFangSC-light","微软雅黑",Arial,"Lucida Grande","Heiti SC","San Francisco",Helvetica;overflow-wrap:break-word;}
 #container {max-width:700px; margin:0 auto; overflow: hidden;white-space:normal; /*word-break:break-all;text-align:justify;*/ background-color: #fafafa}
 .context {letter-spacing: 0.35px;}
 a { color:  #c91448}
@@ -28,13 +28,13 @@ section.context { padding-top:0.4em}
 
 mark { background: #f9f2f4; color: #c7254e; padding:0.1em 0.3em; display:inline-block; border-radius:4px; line-height: 1.3em}
 .quot { display: block; text-align:center;}
-hr { border:none; border-top: 1px dashed #eee; height: 1px; overflow: hidden}
+hr { border:none; border-top: 1px dashed #e4e4e4; height: 1px; overflow: hidden}
 
 ol,ul{ margin:1.5em 1em 1em 2em}
 table,p,hr,blockquote  {margin:1.2em 0;}
 li { padding: 0.35em 0}
 li p {margin:0}
-blockquote { background: #f0f0f0; display: block; padding:0.1px 1em; border-radius: 4px;}
+blockquote { background: #f2f2f2; display: block; padding:0.1px 1em; border-radius: 4px;}
 blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  padding: 1em 0 0.5em 0;  border-bottom: 1px solid #eaeaea;  margin: 0 1em;}
 
 .tab td {padding:0.5em; background: #fafafa;word-break:break-all;}
@@ -101,7 +101,8 @@ blockquote header {font-weight: bold;  font-size: 1.2em;  text-align: center;  p
 
 .authorBox {position: relative; display: flex; justify-content: space-between; font-size: 14px;margin-top: 0.5em}
 .authorBox .left{ display: flex; flex-direction: row; align-items: center; color: #aaa}
-.authorBox i { margin-left: 10px; font-style: normal}
+.authorBox i {font-style: normal;padding-right: 10px}
+.authorTitle {padding-left: 10px;line-height: 20px; display: flex; flex-wrap: wrap}
 .authorBox .author { color:#c74457}
 .authorHead {width: 26px; height:26px; border-radius: 45px; border:2px solid #eee;text-align: center; overflow: hidden; background-color:#efefef; background-size: 100% auto; background-position: center;}
 body #container .center { text-align: center; }

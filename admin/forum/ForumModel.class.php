@@ -431,9 +431,6 @@ class ForumModel extends Model {
             $ids[] = $result[$i]['id'];
             $result[$i]['enroll_year'] = BasicTool::translateEnrollYear($result[$i]['enroll_year']);
             $result[$i]['time'] = BasicTool::translateTime($result[$i]['time']);
-            if ($result[$i]['img1']) {
-                list($result[$i]['img1Width'], $result[$i]['img1Height']) = getimagesize($_SERVER['DOCUMENT_ROOT'] . $result[$i]['img1']);
-            }
             $result[$i]['imgs'] = [];
             if ($result[$i]['img_id_1']) $imgIds[] = $result[$i]['img_id_1'];
             if ($result[$i]['img_id_2']) $imgIds[] = $result[$i]['img_id_2'];
@@ -459,9 +456,6 @@ class ForumModel extends Model {
                 if ($result[$i]['img_id_4']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_4']];
                 if ($result[$i]['img_id_5']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_5']];
                 if ($result[$i]['img_id_6']) $result[$i]["imgs"][]=$imgArr[$result[$i]['img_id_6']];
-
-            }
-            foreach ($imgArr as $img) {
 
             }
         }
@@ -545,40 +539,36 @@ class ForumModel extends Model {
         $arr = $this->sqltool->getRowBySql($sql);
         $currentUser = new UserModel();
         $userIsLogin = $currentUser->isLogin();
-        foreach ($arr as $k1 => $v1) {
-            if ($k1 == "img1") {
-                $imgWidth = "";
-                $imgHeight = "";
-                if ($v1 != null) {
-                    $imgSize = getimagesize($_SERVER['DOCUMENT_ROOT'] . $v1);
-                    $imgWidth = $imgSize[0];
-                    $imgHeight = $imgSize[1];
-                }
-                $arr['img1Width'] = "{$imgWidth}";
-                $arr['img1Height'] = "{$imgHeight}";
-            }
 
-            if ($k1 == "time") {
-                $arr[$k1] = BasicTool::translateTime($v1);
-            }
+        $imgIds = [];
+        if ($arr['img_id_1']) $imgIds[]=$arr['img_id_1'];
+        if ($arr['img_id_2']) $imgIds[]=$arr['img_id_2'];
+        if ($arr['img_id_3']) $imgIds[]=$arr['img_id_3'];
+        if ($arr['img_id_4']) $imgIds[]=$arr['img_id_4'];
+        if ($arr['img_id_5']) $imgIds[]=$arr['img_id_5'];
+        if ($arr['img_id_6']) $imgIds[]=$arr['img_id_6'];
+        if(count($imgIds)>0){
+            $imgIds = implode(",",$imgIds);
+            $sql = "SELECT * FROM image WHERE id IN ({$imgIds})";
+            $imgResult = $this->sqltool->getListBySql($sql);
+            $arr['imgs']=$imgResult;
+        }
 
-            if ($k1 == "enroll_year") {
-                $arr[$k1] = BasicTool::translateEnrollYear($v1);
-            }
-
-            if ($k1 == "user_id" && $userIsLogin) {
-                $arr['editable'] = "no";
-                if ($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) {
+        $arr["time"] = BasicTool::translateTime($arr["time"]);
+        $arr["enroll_year"] = BasicTool::translateEnrollYear($arr["enroll_year"]);
+        if($arr["user_id"] && $userIsLogin){
+            $arr['editable'] = "no";
+            if ($currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('FORUM_DELETE')) {
+                $arr['editable'] = "yes";
+            } else {
+                if ($arr["user_id"] == $currentUser->userId) {
                     $arr['editable'] = "yes";
                 } else {
-                    if (v1 == $currentUser->userId) {
-                        $arr['editable'] = "yes";
-                    } else {
-                        $arr['editable'] = "no";
-                    }
+                    $arr['editable'] = "no";
                 }
             }
         }
+
         return $arr;
     }
 
