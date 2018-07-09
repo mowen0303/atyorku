@@ -7,6 +7,29 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/admin/templete/_mainHead.php";
 
     <article class="mainBox">
         <header>
+            <h2>账号id</h2>
+        </header>
+        <section>
+            <p>约克头条 2187, news1@atyorku.ca 654321</p>
+            <p>吃遍多伦多 2364, news2@atyorku.ca 654321</p>
+            <p>跟我一起旅行 2635, news3@atyorku.ca 654321</p>
+            <p>每周话题 2374, news4@atyorku.ca 654321</p>
+            <p>GPA+ 2278</p>
+            <p>Mars书铺 2085</p>
+            <p>智囊团：2105，2106，2107，2108，2109，2110，2111，2112，2113，2114</p>
+        </section>
+    </article>
+    <article class="mainBox">
+        <header>
+            <h2>其他账号</h2>
+        </header>
+        <section>
+            <p>百度网盘：mars95279527 / Abc159357!</p>
+        </section>
+    </article>
+
+    <article class="mainBox">
+        <header>
             <h2>功能组件</h2>
         </header>
         <section class="formBox">
