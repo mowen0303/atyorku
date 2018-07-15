@@ -9,23 +9,46 @@ class TimetableModel extends Model
         $this->table = "timetable";
     }
 
-    public function updateTimetable($courses,$user_id,$term_year,$term_semester){
-        $res = $this->deleteTimetableByTerm($user_id,$term_year,$term_semester);
-        if (!$res){
-            $this->errorMsg = "更新课程表失败:删除旧课程表失败";
-            return false;
+    public function getTimetableCourses($user_id,$term_year=false,$term_semester=false){
+        $condition = "user_id in ({$user_id})";
+        if ($term_year) $condition .= " AND term_year in ('{$term_year}')";
+        if ($term_semester) $condition .= " AND term_semester in ('{$term_semester}')";
+        $sql = "SELECT timetable.*, course_code.title AS course_parent_title FROM (SELECT timetable.*,course_code.parent_id,course_code.title AS course_child_title FROM (SELECT * FROM timetable WHERE {$condition}) AS timetable INNER JOIN course_code ON timetable.course_code_id = course_code.id) AS timetable INNER JOIN course_code ON timetable.parent_id = course_code.id";
+        return $this->sqltool->getListBySql($sql);
+    }
+
+    public function getTerms($user_id){
+        $sql = "SELECT COUNT(*) AS count, term_year, term_semester FROM {$this->table} WHERE user_id in ({$user_id}) GROUP BY term_year, term_semester";
+        return $this->sqltool->getListBySql($sql);
+    }
+
+    public function updateTimetable($courses,$user_id){
+        if (count($courses)>0){
+            $term_year = "";
+            $temp = array();
+            foreach ($courses as $course){
+                if ($course["term_year"]){
+                    if (!in_array($course["term_year"],$temp)){
+                        $term_year .= "'{$course['term_year']}',";
+                        $temp[] = $course["term_year"];
+                    }
+                }
+            }
+            $term_year = substr($term_year, 0, -1);
+            $res = $this->deleteTimetableByTermYear($user_id,$term_year);
+            if (!$res){
+                $this->errorMsg = "更新课程表失败:删除旧课程表失败";
+                return false;
+            }
+            $res = $this->addCourses($courses,$user_id);
+            if (!$res){
+                $this->errorMsg = "添加课程表失败";
+                return false;
+            }
+            return true;
+        }else{
+            return true;
         }
-        $res = $this->addCourses($courses,$user_id);
-        if (!$res){
-            $this->errorMsg = "添加课程表失败";
-            return false;
-        }
-        $sql = "SELECT timetable.*, course_code.title AS course_parent_title FROM (SELECT timetable.*,course_code.parent_id,course_code.title AS course_child_title FROM (SELECT * FROM timetable WHERE user_id IN ({$user_id}) AND term_year IN ('{$term_year}') AND term_semester IN ({$term_semester})) AS timetable INNER JOIN course_code ON timetable.course_code_id = course_code.id) AS timetable INNER JOIN course_code ON timetable.parent_id = course_code.id";
-        $result = $this->sqltool->getListBySql($sql);
-        if (!$result)
-            return [];
-        else
-            return $result;
     }
 
     private function addCourses($courses,$user_id){
@@ -52,24 +75,12 @@ class TimetableModel extends Model
         return $result;
     }
 
-    public function deleteTimetableByTerm($user_id,$term_year,$term_semester){
-        $sql = "DELETE FROM {$this->table} WHERE user_id IN ({$user_id}) AND term_year IN ('{$term_year}') AND term_semester IN ({$term_semester})";
+    public function deleteTimetableByTermYear($user_id,$term_year){
+        $sql = "DELETE FROM {$this->table} WHERE user_id IN ({$user_id}) AND term_year IN ({$term_year})";
         return $this->sqltool->query($sql);
     }
 
-    public function extractTermSemester($term){
-        $term_LOWER_CASE = strtolower($term);
-        $term_semester="''";
-        if (strpos($term_LOWER_CASE, "fall/winter") !== false){
-            $term_semester = "'Fall','Winter','Year'";
-        }
-        else if (strpos($term_LOWER_CASE, "summer") !== false){
-            $term_semester = "'Summer','Summer1','Summer2";
-        }
-        return $term_semester;
-    }
-
-    public function extractTermYear($term){
+    public function parseTermYear($term){
         preg_match_all("/[0-9]+/",$term,$matches);
         if (count($matches[0]) == 2)
             $term_year = $matches[0][0]."-".$matches[0][1];
