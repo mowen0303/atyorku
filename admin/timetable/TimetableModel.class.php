@@ -12,14 +12,83 @@ class TimetableModel extends Model
     public function getTimetableCourses($user_id,$term_year=false,$term_semester=false){
         $condition = "user_id in ({$user_id})";
         if ($term_year) $condition .= " AND term_year in ('{$term_year}')";
-        if ($term_semester) $condition .= " AND term_semester in ('{$term_semester}')";
+        if ($term_semester){
+            if (strtolower($term_semester) == "fall"){
+                $term_semester = "'Fall','Year'";
+            }else if (strtolower($term_semester) == "winter"){
+                $term_semester = "'Winter','Year'";
+            }else if (strtolower($term_semester) == "summer1"){
+                $term_semester = "'Summer','Summer1'";
+            }else if (strtolower($term_semester == "summer2")){
+                $term_semester = "'Summer','Summer2'";
+            }
+            $condition .= " AND term_semester in ({$term_semester})";
+        }
         $sql = "SELECT timetable.*, course_code.title AS course_parent_title FROM (SELECT timetable.*,course_code.parent_id,course_code.title AS course_child_title FROM (SELECT * FROM timetable WHERE {$condition}) AS timetable INNER JOIN course_code ON timetable.course_code_id = course_code.id) AS timetable INNER JOIN course_code ON timetable.parent_id = course_code.id";
         return $this->sqltool->getListBySql($sql);
     }
 
     public function getTerms($user_id){
         $sql = "SELECT COUNT(*) AS count, term_year, term_semester FROM {$this->table} WHERE user_id in ({$user_id}) GROUP BY term_year, term_semester";
-        return $this->sqltool->getListBySql($sql);
+        $flag=false;
+        $result = $this->sqltool->getListBySql($sql);
+        if (!$result)
+            return false;
+        foreach ($result as $i => $_result){
+            if ($_result["term_semester"] == "Year"){
+                $isMergedFall = false;
+                $isMergedWinter = false;
+                foreach ($result as $j => $__result){
+                    if ($__result["term_year"] == $_result["term_year"] && $__result["term_semester"] == "Fall"){
+                        $result[$j]["count"] = $result[$j]["count"] + $result[$i]["count"];
+                        $isMergedFall = true;
+                    }
+                    if ($__result["term_year"] == $_result["term_year"] && $__result["term_semester"] == "Winter"){
+                        $result[$j]["count"] = $result[$j]["count"] + $result[$i]["count"];
+                        $isMergedWinter = true;
+                    }
+                }
+                if (!$isMergedFall){
+                    $result[] = array("term_year"=>$_result["term_year"],"term_semester"=>"Fall","count"=>$_result["count"]);
+                }
+                if (!$isMergedWinter){
+                    $result[] = array("term_year"=>$_result["term_year"],"term_semester"=>"Winter","count"=>$_result["count"]);
+                }
+                unset($result[$i]);
+                $flag = true;
+            }else if ($_result["term_semester"] == "Summer"){
+                $isMergedSummer1 = false;
+                $isMergedSummer2 = false;
+                foreach ($result as $j => $__result){
+                    if ($__result["term_year"] == $_result["term_year"] && $__result["term_semester"] == "Summer1"){
+                        $result[$j]["count"] = $result[$j]["count"] + $result[$i]["count"];
+                        $isMergedSummer1 = true;
+                    }
+                    if ($__result["term_year"] == $_result["term_year"] && $__result["term_semester"] == "Summer2"){
+                        $result[$j]["count"] = $result[$j]["count"] + $result[$i]["count"];
+                        $isMergedSummer2 = true;
+                    }
+                }
+                if (!$isMergedSummer1){
+                    $result[] = array("term_year"=>$_result["term_year"],"term_semester"=>"Summer1","count"=>$_result["count"]);
+                }
+                if (!$isMergedSummer2){
+                    $result[] = array("term_year"=>$_result["term_year"],"term_semester"=>"Summer2","count"=>$_result["count"]);
+                }
+                unset($result[$i]);
+                $flag = true;
+            }
+
+        }
+
+        if ($flag){
+            $results = array();
+            foreach ($result as $_result){
+                $results[] = $_result;
+                $result = $results;
+            }
+        }
+        return $result;
     }
 
     public function updateTimetable($courses,$user_id){
