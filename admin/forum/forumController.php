@@ -252,7 +252,7 @@ function getForumClassListWithJson() {
 
 /**
  * 获取某一分类下的帖子列表
- * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListWithJson&pageSize=15&forum_class_id=4&orderBy=replyTime&page=1
+ * [GET] http://www.atyorku.ca/admin/forum/forumController.php?action=getForumListWithJson&pageSize=15&forum_class_id=4&orderBy=replyTime&version=2&page=1
  * @param forum_class_id 论坛分类id
  * @param page 第几页的数据
  * @return json

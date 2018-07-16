@@ -58,8 +58,15 @@ if (BasicTool::get(share) != 1) {
         <div class="authorBox">
             <div class="left">
                 <div id="authorHead" class="authorHead clickAuthor" style="background-image: url(<?php echo $arr['img'] ?>)"></div>
-                <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
-                <i><?php echo BasicTool::translateTime($arr['time']) ?></i>
+                <div class="authorTitle">
+                    <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
+                    <i> <?php echo BasicTool::translateTime($arr['time']) ?></i>
+                    <?php
+                    if($arr['visible']==0){
+                        echo "<i>{$arr[category_title]}</i>";
+                    }
+                    ?>
+                </div>
             </div>
         </div>
         <section class="context">

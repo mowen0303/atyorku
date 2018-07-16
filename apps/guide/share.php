@@ -14,7 +14,7 @@ $signPackage = $jssdk->GetSignPackage();
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
     <title><?php echo $arr['title'] ?></title>
-    <link href="/apps/guide/css.css?10015" rel="stylesheet" type="text/css">
+    <link href="/apps/guide/css.css?10019" rel="stylesheet" type="text/css">
     <style type="text/css">
         #coverImgBox {
             position: absolute;
@@ -210,8 +210,15 @@ $signPackage = $jssdk->GetSignPackage();
         <div class="authorBox">
             <div class="left">
                 <div id="authorHead" class="authorHead clickAuthor" style="background-image: url(<?php echo $arr['img'] ?>)"></div>
-                <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
-                <i><?php echo BasicTool::translateTime($arr['time']) ?></i>
+                <div class="authorTitle">
+                    <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
+                    <i> <?php echo BasicTool::translateTime($arr['time']) ?></i>
+                    <?php
+                    if($arr['visible']==0){
+                        echo "<i>{$arr[category_title]}</i>";
+                    }
+                    ?>
+                </div>
             </div>
         </div>
         <section class="context">
