@@ -472,9 +472,10 @@ function modifyCourseRating($echoType = "normal") {
 }
 
 /**
-* 删除一个或多个课评
-* @param id 数字或array 要删除的id
-*/
+ * 删除一个或多个课评
+ * @param string $echoType
+ * @param int|array id 要删除的id
+ */
 function deleteCourseRating($echoType = "normal") {
     global $courseRatingModel;
     global $currentUser;
@@ -484,17 +485,27 @@ function deleteCourseRating($echoType = "normal") {
         if (is_array($id)) {
             foreach ($id as $v) {
                 $currentCourseRating = $courseRatingModel->getCourseRatingById($v);
-                $courseRatingUserId = $currentCourseRating['user_id'];
-                checkAuthority('delete', $courseRatingUserId);
-                $courseRatingModel->deleteCourseRatingById($v) or BasicTool::throwException("删除多个课评失败");
-                $i++;
+                if($currentCourseRating){
+                    $courseRatingUserId = $currentCourseRating['user_id'];
+                    checkAuthority('delete', $courseRatingUserId);
+                    if (intval($currentCourseRating['award']) > -1 && !$currentUser->isUserHasAuthority("ADMIN")) {
+                        BasicTool::throwException("无法删除已审核的课评");
+                    }
+                    $courseRatingModel->deleteCourseRatingById($v) or BasicTool::throwException("删除多个课评失败");
+                    $i++;
+                }
             }
         } else {
             $currentCourseRating = $courseRatingModel->getCourseRatingById($id);
-            $courseRatingUserId = $currentCourseRating['user_id'];
-            checkAuthority('delete', $courseRatingUserId);
-            $courseRatingModel->deleteCourseRatingById($id) or BasicTool::throwException("删除1个课评失败");
-            $i++;
+            if($currentCourseRating){
+                $courseRatingUserId = $currentCourseRating['user_id'];
+                checkAuthority('delete', $courseRatingUserId);
+                if (intval($currentCourseRating['award']) > -1 && !$currentUser->isUserHasAuthority("ADMIN")) {
+                    BasicTool::throwException("无法删除已审核的课评");
+                }
+                $courseRatingModel->deleteCourseRatingById($id) or BasicTool::throwException("删除1个课评失败");
+                $i++;
+            }
         }
         if ($echoType == "normal") {
             BasicTool::echoMessage("成功删除{$i}个课评", $_SERVER['HTTP_REFERER']);
@@ -511,10 +522,11 @@ function deleteCourseRating($echoType = "normal") {
 }
 
 /**
-* 检测权限
-* @param flag 'add' | 'update' | 'delete'
-* @param id current course rating user id (required for 'update' and 'delete')
-*/
+ * 检测权限
+ * @param string flag 'add' | 'update' | 'delete'
+ * @param int|string $id current course rating user id (required for 'update' and 'delete')
+ * @throws Exception
+ */
 function checkAuthority($flag, $id) {
     global $currentUser;
     if ($flag == 'add') {
