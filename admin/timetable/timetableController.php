@@ -244,6 +244,21 @@ function getTimetableFromYorkWithHtml($username,$password){
         //------------------------------------------------------------------------------------------------------------------
         foreach ($courses as $index => $course){
             if (array_key_exists("schedule",$course)){
+                if ($course["term_semester"] == "Year" || $course["term_semester"] == "Summer"){
+                    $unsetIndex = [];
+                    foreach ($courses[$index]["schedule"] as $i => $schedule){
+                        if (in_array($i,$unsetIndex))
+                            continue;
+                        foreach ($courses[$index]["schedule"] as $j => $_schedule){
+                            if ($i == $j)
+                                continue;
+                            if (($schedule["start_time"] == $_schedule["start_time"]) && ($schedule["end_time"] == $_schedule["end_time"]) && ($schedule["day"] == $_schedule["day"]) && ($schedule["location"] == $_schedule["location"]) && ($schedule["type"] == $_schedule["type"])){
+                                unset($courses[$index]["schedule"][$j]);
+                                $unsetIndex[] = $j;
+                            }
+                        }
+                    }
+                }
                 $courses[$index]["schedule"] = json_encode($courses[$index]["schedule"]);
             }
             if (array_key_exists("course_code",$course)){
