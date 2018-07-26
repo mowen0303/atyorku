@@ -35,6 +35,28 @@ function getTermsWithJson(){
     }
 }
 
+/**POST传值
+ * term_year, array of term years
+ */
+function deleteTimetable(){
+    global $timetableModel,$currentUser;
+    try{
+        $currentUser->isAdmin or BasicTool::throwException("删除失败:权限不足");
+        $user_id = BasicTool::post("user_id","删除失败:Missing user id");
+        $term_year = BasicTool::post("term_year","删除失败:Missing term year");
+        $concat = "";
+        foreach ($term_year as $year){
+            $concat .= "'{$year}',";
+        }
+        $concat = substr($concat, 0, -1);
+        $timetableModel->deleteTimetableByTermYear($user_id,$concat) or BasicTool::throwException($timetableModel->errorMsg);
+        BasicTool::echoMessage("删除成功");
+
+    }catch (Exception $e){
+        BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+    }
+}
+
 function updateTimetable($echoType="normal"){
     global $timetableModel,$currentUser;
     try{

@@ -91,6 +91,18 @@ class TimetableModel extends Model
         return $result;
     }
 
+    public function getTermYears($user_id){
+        $sql = "SELECT COUNT(*) AS count, term_year FROM {$this->table} WHERE user_id in ({$user_id}) GROUP BY term_year";
+        return $this->sqltool->getListBySql($sql);
+    }
+
+    public function getUserList(){
+        $sql = "SELECT user.* FROM (SELECT user_id FROM {$this->table} GROUP BY user_id) AS user_list INNER JOIN user ON user_list.user_id = user.id ORDER BY user.id DESC
+";
+        $countSql = "SELECT COUNT(*) FROM (SELECT user_id FROM {$this->table} GROUP BY user_id) AS user_list";
+        return $this->getListWithPage($this->table,$sql,$countSql,20);
+    }
+
     public function updateTimetable($courses,$user_id){
         if (count($courses)>0){
             $term_year = "";
