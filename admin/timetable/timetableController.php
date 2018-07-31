@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/simple_html_dom.php";
 $timetableModel = new \admin\timetable\TimetableModel();
 $currentUser = new \admin\user\UserModel();
 $courseCodeModel = new \admin\courseCode\CourseCodeModel();
-$cookie = dirname(__file__).'/cookie.txt';
+$cookieFolder = dirname(__file__).'/cookieFolder';
 call_user_func(BasicTool::get('action'));
 
 function getTimetableCoursesWithJson(){
@@ -58,12 +58,13 @@ function deleteTimetable(){
 }
 
 function updateTimetable($echoType="normal"){
-    global $timetableModel,$currentUser;
+    global $cookieFolder,$timetableModel,$currentUser;
     try{
         $currentUser->userId or BasicTool::throwException("请先登录",3);
         $username = BasicTool::post("username")?:'okcxl3';
         $password = BasicTool::post("password")?:'0745778';
-        $courses = getTimetableFromYorkWithHtml($username,$password);
+        $cookie = $cookieFolder . "/cookie{$currentUser->userId}.txt";
+        $courses = getTimetableFromYorkWithHtml($username,$password,$cookie);
         $timetableModel->updateTimetable($courses,$currentUser->userId) or BasicTool::throwException($timetableModel->errorMsg);
         $terms = $timetableModel->getTerms($currentUser->userId) or BasicTool::throwException("空");
         if ($echoType == "normal") {
@@ -85,8 +86,8 @@ function updateTimetableWithJson(){
     updateTimetable('json');
 }
 
-function getTimetableFromYorkWithHtml($username,$password){
-    global $cookie,$timetableModel;
+function getTimetableFromYorkWithHtml($username,$password,$cookie){
+    global $timetableModel;
     //登陆
     $login_url = 'https://passportyork.yorku.ca/ppylogin/ppylogin';
     $post = [
@@ -151,7 +152,7 @@ function getTimetableFromYorkWithHtml($username,$password){
      */
     $all_courses = [];
     foreach ($timeTableLinkArr as $term => $link){
-        $result = getHtml($link);
+        $result = getHtml($link,$cookie);
         $term_year = $timetableModel->parseTermYear($term);
         if (strpos($result,"You do not appear to be enrolled in any courses for this academic session") !== false)
             continue;
@@ -302,8 +303,7 @@ function getTimetableFromYorkWithHtml($username,$password){
     return $all_courses;
 }
 
-function getHtml($url){
-    global $cookie;
+function getHtml($url,$cookie){
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_HEADER, 0);
