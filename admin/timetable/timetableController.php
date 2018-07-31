@@ -125,7 +125,7 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
     $result = curl_exec($ch);
     curl_close($ch);
     if (strpos($result,"Logged in as") === false){
-        BasicTool::throwException("登录失败：用户名或密码错误",2);
+        BasicTool::throwException("登录失败: 约克账号或密码有误,或约克大学网站接口异常.",2);
     }
 
     /**
