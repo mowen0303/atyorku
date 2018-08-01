@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/simple_html_dom.php";
 $timetableModel = new \admin\timetable\TimetableModel();
 $currentUser = new \admin\user\UserModel();
 $courseCodeModel = new \admin\courseCode\CourseCodeModel();
-$cookie = dirname(__file__).'/cookie.txt';
+$cookieFolder = dirname(__file__).'/cookieFolder';
 call_user_func(BasicTool::get('action'));
 
 function getTimetableCoursesWithJson(){
@@ -35,13 +35,36 @@ function getTermsWithJson(){
     }
 }
 
-function updateTimetable($echoType="normal"){
+/**POST传值
+ * term_year, array of term years
+ */
+function deleteTimetable(){
     global $timetableModel,$currentUser;
+    try{
+        $currentUser->isAdmin or BasicTool::throwException("删除失败:权限不足");
+        $user_id = BasicTool::post("user_id","删除失败:Missing user id");
+        $term_year = BasicTool::post("term_year","删除失败:Missing term year");
+        $concat = "";
+        foreach ($term_year as $year){
+            $concat .= "'{$year}',";
+        }
+        $concat = substr($concat, 0, -1);
+        $timetableModel->deleteTimetableByTermYear($user_id,$concat) or BasicTool::throwException($timetableModel->errorMsg);
+        BasicTool::echoMessage("删除成功");
+
+    }catch (Exception $e){
+        BasicTool::echoMessage($e->getMessage(), $_SERVER["HTTP_REFERER"]);
+    }
+}
+
+function updateTimetable($echoType="normal"){
+    global $cookieFolder,$timetableModel,$currentUser;
     try{
         $currentUser->userId or BasicTool::throwException("请先登录",3);
         $username = BasicTool::post("username")?:'okcxl3';
         $password = BasicTool::post("password")?:'0745778';
-        $courses = getTimetableFromYorkWithHtml($username,$password);
+        $cookie = $cookieFolder . "/cookie{$currentUser->userId}.txt";
+        $courses = getTimetableFromYorkWithHtml($username,$password,$cookie);
         $timetableModel->updateTimetable($courses,$currentUser->userId) or BasicTool::throwException($timetableModel->errorMsg);
         $terms = $timetableModel->getTerms($currentUser->userId) or BasicTool::throwException("空");
         if ($echoType == "normal") {
@@ -63,8 +86,8 @@ function updateTimetableWithJson(){
     updateTimetable('json');
 }
 
-function getTimetableFromYorkWithHtml($username,$password){
-    global $cookie,$timetableModel;
+function getTimetableFromYorkWithHtml($username,$password,$cookie){
+    global $timetableModel;
     //登陆
     $login_url = 'https://passportyork.yorku.ca/ppylogin/ppylogin';
     $post = [
@@ -102,7 +125,7 @@ function getTimetableFromYorkWithHtml($username,$password){
     $result = curl_exec($ch);
     curl_close($ch);
     if (strpos($result,"Logged in as") === false){
-        BasicTool::throwException("登录失败：用户名或密码错误",2);
+        BasicTool::throwException("登录失败: 约克账号或密码有误,或约克大学网站接口异常.",2);
     }
 
     /**
@@ -129,7 +152,7 @@ function getTimetableFromYorkWithHtml($username,$password){
      */
     $all_courses = [];
     foreach ($timeTableLinkArr as $term => $link){
-        $result = getHtml($link);
+        $result = getHtml($link,$cookie);
         $term_year = $timetableModel->parseTermYear($term);
         if (strpos($result,"You do not appear to be enrolled in any courses for this academic session") !== false)
             continue;
@@ -244,6 +267,21 @@ function getTimetableFromYorkWithHtml($username,$password){
         //------------------------------------------------------------------------------------------------------------------
         foreach ($courses as $index => $course){
             if (array_key_exists("schedule",$course)){
+                if ($course["term_semester"] == "Year" || $course["term_semester"] == "Summer"){
+                    $unsetIndex = [];
+                    foreach ($courses[$index]["schedule"] as $i => $schedule){
+                        if (in_array($i,$unsetIndex))
+                            continue;
+                        foreach ($courses[$index]["schedule"] as $j => $_schedule){
+                            if ($i == $j)
+                                continue;
+                            if (($schedule["start_time"] == $_schedule["start_time"]) && ($schedule["end_time"] == $_schedule["end_time"]) && ($schedule["day"] == $_schedule["day"]) && ($schedule["location"] == $_schedule["location"]) && ($schedule["type"] == $_schedule["type"])){
+                                unset($courses[$index]["schedule"][$j]);
+                                $unsetIndex[] = $j;
+                            }
+                        }
+                    }
+                }
                 $courses[$index]["schedule"] = json_encode($courses[$index]["schedule"]);
             }
             if (array_key_exists("course_code",$course)){
@@ -265,8 +303,7 @@ function getTimetableFromYorkWithHtml($username,$password){
     return $all_courses;
 }
 
-function getHtml($url){
-    global $cookie;
+function getHtml($url,$cookie){
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_HEADER, 0);

@@ -128,7 +128,7 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
         </section>
         <h2>活动简介</h2>
         <section class="infoBlock">
-            <p><pre><?php echo $event['description']?></pre></p>
+            <p><pre id="desc"><?php echo $event['description']?></pre></p>
             <?php
             if ($imgUrls[1]) {
                 echo '<p>&nbsp;</p><p><img class="desImg" src="' . $imgUrls[1] . '"/></p>';

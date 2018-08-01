@@ -95,7 +95,7 @@ $signPackage = $jssdk->GetSignPackage();
         </section>
         <h2>活动简介</h2>
         <section class="infoBlock">
-            <p><pre><?php echo $event['description']?></pre></p>
+            <p><pre id="desc"><?php echo $event['description']?></pre></p>
             <?php
             if ($imgUrls[1]) {
                 echo '<p>&nbsp;</p><p><img class="desImg" src="' . $imgUrls[1] . '"/></p>';
@@ -124,7 +124,7 @@ $signPackage = $jssdk->GetSignPackage();
         title: '<?php echo $event['title'];?>',
         link: window.location.href,
         imgUrl: 'http://www.atyorku.ca<?php echo $imgUrls[0];?>',
-        desc: '<?php echo str_replace(PHP_EOL, '', mb_substr($event['description'],0,60,'utf-8'));?>'
+        desc: document.getElementById("desc").innerHTML
     }
 
     wx.config({

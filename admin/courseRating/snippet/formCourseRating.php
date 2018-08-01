@@ -133,7 +133,7 @@ $userID = $row['user_id']?:$userModel->userId;
                 </div>
             </div>
             <div>
-                <label>课程内容总结</label>
+                <label>课程内容总结 • 【】</label>
                 <textarea class="input input-textarea" name="content_summary" placeholder="这个课主要是学什么，这个教授是如何分配分数比重的，这个课怎么复习等等"><?php echo $row['content_summary'] ?></textarea>
             </div>
             <div>
