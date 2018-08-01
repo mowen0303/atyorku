@@ -60,7 +60,6 @@ class ProductTransactionModel extends Model {
         return $this->sqltool->getRowBySql($sql);
     }
 
-
     /**
      * Get a list of transactions
      * @param int $pageSize
@@ -69,36 +68,44 @@ class ProductTransactionModel extends Model {
      * @param bool $extendSelect 外加的选择SQL，用逗号隔开 {交易表名: pt | 卖家交易表名: st | 买家交易表名: bt | 买家表名: buyer | 卖家表名: seller}
      * @param bool $extendFrom 外加的Join表SQL，用JOIN连接表名 ex: 'user u INNER JOIN user_class ON ...'
      * @param bool $usersDetail 是否query 卖家买家详细信息
-     * @param bool $info 是否获取交易section特殊信息
      * @return array
      */
-    public function getListOfTransactions($pageSize=20, $query=false, $order=false, $extendSelect=false, $extendFrom=false, $usersDetail=false, $info=false){
-        $selections = "pt.id, pt.buyer_transaction_id, pt.seller_transaction_id, pt.state, pt.buyer_response, pt.seller_response, pt.admin_response, pt.update_time";
-        if($info){$selections .= ", pt.info";}
-        $select = "SELECT {$selections}, st.amount AS seller_amount, st.user_id AS seller_id, st.section_id, st.pending AS seller_pending, st.description AS seller_description, bt.user_id AS buyer_id, bt.amount AS buyer_amount, bt.pending AS buyer_pending, bt.time AS purchased_time, bt.description AS buyer_description, bt.time AS transaction_time";
-        if($usersDetail) {
-            $select .= ", seller.user_class_id AS seller_class_id,seller.img AS seller_img,seller.alias AS seller_alias,seller.gender AS seller_gender,seller.major AS seller_major,seller.enroll_year AS seller_enroll_year,seller.degree AS seller_degree, buyer.user_class_id AS buyer_class_id,buyer.img AS buyer_img,buyer.alias AS buyer_alias,buyer.gender AS buyer_gender,buyer.major AS buyer_major,buyer.enroll_year AS buyer_enroll_year,buyer.degree AS buyer_degree";
-        }
-        if($extendSelect) {
-            $select .= ",{$extendSelect}";
-        }
+    public function getListOfTransactions($pageSize=20, $query=false, $order=false, $extendSelect=false, $extendFrom=false, $usersDetail=false){
+        $productTransactionSelect = "pt.*";
+        $sellerTransactionSelect = "st.amount AS seller_amount, st.user_id AS seller_id, st.section_id, st.pending AS seller_pending, st.description AS seller_description";
+        $buyerTransactionSelect = "bt.user_id AS buyer_id, bt.amount AS buyer_amount, bt.pending AS buyer_pending, bt.time AS purchased_time, bt.description AS buyer_description, bt.time AS transaction_time";
+
+        $select = "SELECT {$productTransactionSelect}, {$sellerTransactionSelect}, {$buyerTransactionSelect}";
         $from = "FROM (product_transaction pt INNER JOIN transaction bt ON pt.buyer_transaction_id=bt.id INNER JOIN transaction st ON pt.seller_transaction_id=st.id)";
+
         if($usersDetail) {
+            $sellerSelect = "seller.user_class_id AS seller_class_id,seller.img AS seller_img,seller.alias AS seller_alias,seller.gender AS seller_gender,seller.major AS seller_major,seller.enroll_year AS seller_enroll_year,seller.degree AS seller_degree";
+            $buyerSelect = "buyer.user_class_id AS buyer_class_id,buyer.img AS buyer_img,buyer.alias AS buyer_alias,buyer.gender AS buyer_gender,buyer.major AS buyer_major,buyer.enroll_year AS buyer_enroll_year,buyer.degree AS buyer_degree";
+            $select .= ", {$sellerSelect}, {$buyerSelect}";
             $from .= " INNER JOIN user buyer ON bt.user_id=buyer.id INNER JOIN user seller ON st.user_id=seller.id";
         }
+
+        if($extendSelect) {
+            $select .= ", {$extendSelect}";
+        }
+
         if($extendFrom) {
             $from .= " {$extendFrom}";
         }
+
         $where = $query ? " WHERE {$query}" : "";
         $sql = "{$select} {$from}";
         $countSql = "SELECT COUNT(*) {$from}";
+
         if($where){
             $sql .= $where;
             $countSql .= $where;
         }
+
         if($order){
             $sql .= " ORDER BY {$order}";
         }
+
         $results = $this->getListWithPage("product_transaction",$sql,$countSql,$pageSize);
 
         if($results){
@@ -106,9 +113,44 @@ class ProductTransactionModel extends Model {
                 $result['state_description'] = ProductTransactionState::translateState($result['state']);
                 $result['transaction_time'] = BasicTool::translateTime($result['transaction_time']);
                 $result['update_time'] = BasicTool::translateTime($result['update_time']);
+                if ($result['expiration_time']) {
+                    $result['expiration_time'] = BasicTool::translateTime($result['expiration_time']);
+                }
             }
         }
         return $results;
+    }
+
+    /**
+     * Get a list of purchased product transactions
+     * @param int|string $userId buyer id
+     * @param int|string $sectionId section row id
+     * @param string $sectionName section table name
+     * @param bool $extendSelect 外加的选择SQL，用逗号隔开 {交易表名: pt | 买家交易表名: bt}
+     * @param bool $extendFrom 外加的Join表SQL，用JOIN连接表名 ex: 'user u INNER JOIN user_class ON ...'
+     * @param bool $extendWhere 外加的判断SQL
+     * @return array
+     */
+    public function getListOfPurchasedTransactionsBy($userId, $sectionId, $sectionName, $extendSelect=false, $extendFrom=false, $extendWhere=false) {
+        $userId = intval($userId);
+        $sectionId = intval($sectionId);
+
+        $select = "pt.*, bt.user_id AS buyer_id, bt.amount, bt.description, bt.section_name, bt.section_id, bt.pending";
+        $from = "{$this->table} INNER JOIN transaction bt ON pt.buyer_transaction_id = bt.id";
+        $where = "bt.user_id = {$userId} AND bt.section_name = {$sectionName} AND bt.section_id = {$sectionId}";
+
+        if($extendSelect) {
+            $select .= ",{$extendSelect}";
+        }
+        if($extendFrom) {
+            $from .= " {$extendFrom}";
+        }
+        if ($extendWhere) {
+            $where .= " AND ({$extendWhere})";
+        }
+
+        $sql = "SELECT {$select} FROM {$from} WHERE {$where}";
+        return $this->sqltool->getListBySql($sql);
     }
 
 
@@ -121,16 +163,15 @@ class ProductTransactionModel extends Model {
      * @param bool $extendSelect 外加的选择SQL，用逗号隔开 {交易表名: pt | 卖家交易表名: st | 买家交易表名: bt | 买家表名: buyer | 卖家表名: seller}
      * @param bool $extendFrom 外加的Join表SQL，用JOIN连接表名 ex: 'user u INNER JOIN user_class ON ...'
      * @param bool $usersDetail 是否query 卖家买家详细信息
-     * @param bool $getInfo 是否获取交易信息
      * @return array
      */
-    public function getListOfPurchasedTransactionsByUserId($userId, $pageSize=20, $order=false, $extendQuery=false, $extendSelect=false, $extendFrom=false, $usersDetail=false, $getInfo=false){
+    public function getListOfPurchasedTransactionsByUserId($userId, $pageSize=20, $order=false, $extendQuery=false, $extendSelect=false, $extendFrom=false, $usersDetail=false){
         $userId = intval($userId);
         $q = "bt.user_id={$userId}";
         if($extendQuery){
             $q .= " AND (${extendQuery})";
         }
-        return $this->getListOfTransactions($pageSize, $q, $order, $extendSelect, $extendFrom, $usersDetail, $getInfo);
+        return $this->getListOfTransactions($pageSize, $q, $order, $extendSelect, $extendFrom, $usersDetail);
     }
 
     /**
@@ -167,19 +208,18 @@ class ProductTransactionModel extends Model {
 
     /**
      * Buy a product
-     * @param int $buyer_user_id 买家ID
-     * @param int $seller_user_id 卖家ID
+     * @param int $buyerUserId 买家ID
+     * @param int $sellerUserId 卖家ID
      * @param int $amount 价格
-     * @param string $buyer_description 买家描述
-     * @param string $seller_description 卖家描述
-     * @param int $section_id 产品ID
-     * @param string $info 交易保存信息
+     * @param string $buyerDescription 买家描述
+     * @param string $sellerDescription 卖家描述
+     * @param int $sectionId 产品ID
      * @return bool
      */
-    public function buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description, $section_id, $info="") {
+    public function buy($buyerUserId, $sellerUserId, $amount, $buyerDescription, $sellerDescription, $sectionId, $expirationTime=0) {
         try {
             $transactionModel = new TransactionModel();
-            $result = $transactionModel->buy($buyer_user_id, $seller_user_id, $amount, $buyer_description, $seller_description, $this->sectionName, $section_id, 0, 1);
+            $result = $transactionModel->buy($buyerUserId, $sellerUserId, $amount, $buyerDescription, $sellerDescription, $this->sectionName, $sectionId, 0, 1);
             if(!$result) BasicTool::throwException($transactionModel->errorMsg);
             $buyerTransId = $result['buyer_transaction_id'];
             $sellerTransId = $result['seller_transaction_id'];
@@ -187,8 +227,8 @@ class ProductTransactionModel extends Model {
                 "buyer_transaction_id" => $buyerTransId,
                 "seller_transaction_id" => $sellerTransId,
                 "state" => ProductTransactionState::WAITING_PAYMENT,
-                "info" => $info,
-                "update_time" => time()
+                "update_time" => time(),
+                "expirationTime" => $expirationTime
             ];
             return $this->addRow($this->table, $arr);
         } catch (Exception $e) {

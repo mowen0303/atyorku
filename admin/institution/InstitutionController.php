@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$lectureAlbumCategoryModel = new \admin\lectureAlbumCategory\LectureAlbumModel();
+$lectureAlbumCategoryModel = new \admin\lectureAlbumCategory\LectureAlbumCategoryModel();
 $currentUser = new \admin\user\UserModel();
 call_user_func(BasicTool::get('action'));
 
@@ -18,7 +18,7 @@ function getListOfLectureAlbumCategoriesWithJson() {
     }
 }
 
-function modifyLectureAlbum() {
+function modifyLectureAlbumCategory($echoType='normal') {
     global $lectureAlbumCategoryModel;
     global $currentUser;
     try{
@@ -26,25 +26,38 @@ function modifyLectureAlbum() {
         $title = BasicTool::post("title", "分类名称不能为空");
         if(BasicTool::post('flag') == 'update'){
             $arr['id'] = BasicTool::post('id',"分类ID不能为空");
-            !$lectureAlbumCategoryModel->isExistOfLectureAlbumTitle($title, $arr['id']) or BasicTool::throwException("此分类名称已经存在");
-            $lectureAlbumCategoryModel->updateLectureAlbumTitle($arr['id'], $title) or BasicTool::throwException($lectureAlbumCategoryModel->errorMsg);
-            BasicTool::echoMessage("修改成功","/admin/lectureAlbumCategory/");
+            !$lectureAlbumCategoryModel->isExistOfLectureAlbumCategoryTitle($title, $arr['id']) or BasicTool::throwException("此分类名称已经存在");
+            $lectureAlbumCategoryModel->updateLectureAlbumCategoryTitle($arr['id'], $title) or BasicTool::throwException($lectureAlbumCategoryModel->errorMsg);
+
+            if ($echoType == "normal") {
+                BasicTool::echoMessage("修改成功","/admin/lectureAlbumCategory/");
+            } else {
+                BasicTool::echoJson(1, "修改成功");
+            }
         } else {
-            !$lectureAlbumCategoryModel->isExistOfLectureAlbumTitle($title) or BasicTool::throwException("此分类名称已经存在");
-            $lectureAlbumCategoryModel->addLectureAlbum($title);
-            BasicTool::echoMessage("添加成功","/admin/lectureAlbumCategory/");
+            !$lectureAlbumCategoryModel->isExistOfLectureAlbumCategoryTitle($title) or BasicTool::throwException("此分类名称已经存在");
+            $lectureAlbumCategoryModel->addLectureAlbumCategory($title);
+            if ($echoType == "normal") {
+                BasicTool::echoMessage("添加成功","/admin/lectureAlbumCategory/");
+            } else {
+                BasicTool::echoJson(1, "添加成功");
+            }
         }
     }
     catch (Exception $e){
-        BasicTool::echoMessage($e->getMessage(),-1);
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
     }
 }
 
-//function getLectureAlbumById($id) {
+//function getLectureAlbumCategoryById($id) {
 //    global $lectureAlbumCategoryModel;
 //    global $currentUser;
 //    try {
-//        BasicTool::echoJson(1,"获取课程专辑类别成功",$lectureAlbumCategoryModel->getLectureAlbum($id));
+//        BasicTool::echoJson(1,"获取课程专辑类别成功",$lectureAlbumCategoryModel->getLectureAlbumCategory($id));
 //    }
 //    catch(Exception $e){
 //        BasicTool::echoMessage($e->getMessage(),-1);
@@ -56,22 +69,22 @@ function modifyLectureAlbum() {
 * @param $id 课程专辑分类ID
 * @return bool
 */
-function deleteLectureAlbumById($id) {
+function deleteLectureAlbumCategoryById($id) {
     global $lectureAlbumCategoryModel;
-    return $lectureAlbumCategoryModel->deleteLectureAlbum($id);
+    return $lectureAlbumCategoryModel->deleteLectureAlbumCategory($id);
 }
 
 /**
 * 删除1个或多个课程专辑分类
 * @param $id 要删除的课程专辑分类id array
 */
-function deleteLectureAlbum() {
+function deleteLectureAlbumCategory() {
     global $currentUser;
     try {
         $idArray = BasicTool::post("id", "请指定要删除的课程专辑分类Id");
         $currentUser->isUserHasAuthority('GOD') or BasicTool::throwException("权限不足");
         foreach($idArray as $id) {
-            deleteLectureAlbumById($id) or BasicTool::echoMessage("课程专辑分类ID ({$id}) 删除失败");
+            deleteLectureAlbumCategoryById($id) or BasicTool::echoMessage("课程专辑分类ID ({$id}) 删除失败");
         }
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage(),-1);

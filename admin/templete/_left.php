@@ -49,7 +49,7 @@ if(!$userModel->isAdminLogin()){
 				<li><a href="/admin/msg/index.php" target="mainFrame">小纸条</a></li>
                 <li><a href="/admin/taskTransaction/index.php?s=listTaskTransaction" target="mainFrame">成就记录管理</a></li>
                 <li><a href="/admin/taskDesign/index.php?s=listTaskDesign" target="mainFrame">成就设计管理</a></li>
-                <li><a href="/admin/lectureAlbum/index.php?s=listLectureAlbum" target="mainFrame">课程专辑管理</a></li>
+                <li><a href="/admin/videoAlbum/index.php?s=listVideoAlbum" target="mainFrame">课程专辑管理</a></li>
 			</ul>
 		</article>
 	</section>

@@ -399,7 +399,7 @@ class BookModel extends Model
             $q = "pt.state<>'".ProductTransactionState::COMPLETED."'";
             $order .= "pt.state ASC, pt.update_time DESC";
         }
-        $transactions = $productTransactionModel->getListOfPurchasedTransactionsByUserId($userId, $pageSize, $order, $q, false, false, true, $pending===0);
+        $transactions = $productTransactionModel->getListOfPurchasedTransactionsByUserId($userId, $pageSize, $order, $q, false, false, true);
         $ids = array_filter(array_column($transactions, "section_id"));
         if(!$ids){return [];}
         $implodedIds = implode(array_unique($ids), ",");
