@@ -121,9 +121,11 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
     $result = curl_exec($ch);
     curl_close($ch);
+    //echo $result;
     if (strpos($result,"Logged in as") === false){
         BasicTool::throwException("登录失败: 约克账号或密码有误,或约克大学网站接口异常.",2);
     }
