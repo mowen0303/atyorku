@@ -66,11 +66,11 @@ function updateTimetable($echoType="normal"){
         $cookie = $cookieFolder . "/cookie{$currentUser->userId}.txt";
         $courses = getTimetableFromYorkWithHtml($username,$password,$cookie);
         $timetableModel->updateTimetable($courses,$currentUser->userId) or BasicTool::throwException($timetableModel->errorMsg);
-        $terms = $timetableModel->getTerms($currentUser->userId) or BasicTool::throwException("空");
+        $result = $timetableModel->getUserTermsAndCourses($currentUser->userId) or BasicTool::throwException("空");
         if ($echoType == "normal") {
             BasicTool::echoMessage("更新课程表成功");
         } else {
-            BasicTool::echoJson(1, "更新课程表成功",$terms);
+            BasicTool::echoJson(1, "更新课程表成功",$result);
         }
 
     }catch (Exception $e){

@@ -9,6 +9,28 @@ class TimetableModel extends Model
         $this->table = "timetable";
     }
 
+    public function getUserTermsAndCourses($user_id){
+        $result = [];
+        $terms = $this->getTerms($user_id);
+        if (!$terms){
+            return false;
+        }
+        foreach ($terms as $term){
+            $res = $this->getTimetableCourses($user_id,$term["term_year"],$term["term_semester"]);
+
+            if ($res){
+                $temp = [];
+                foreach ($res as $r){
+                    $r['schedule'] = json_decode($r['schedule']);
+                    $temp[] = $r;
+                }
+                $term["courses"] = $temp;
+                $result[] = $term;
+            }
+        }
+        return $result;
+    }
+
     public function getTimetableCourses($user_id,$term_year=false,$term_semester=false){
         $condition = "user_id in ({$user_id})";
         if ($term_year) $condition .= " AND term_year in ('{$term_year}')";
