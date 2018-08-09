@@ -19,7 +19,7 @@ try{
     <h1><?php echo $pageTitle?> - 学期</h1>
 </header>
 <nav class="mainNav">
-    <a class="btn" href="javascript:history.go(-1);">返回</a>
+    <a class="btn" href="index.php?s=getUserList">返回</a>
 </nav>
 <article class="mainBox">
     <form action="timetableController.php?action=deleteTimetable" method="post">
@@ -31,7 +31,7 @@ try{
                         <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                         <th>学年</th>
                         <th>节课</th>
-                        <th>&nbsp;</th>
+                        <?php if ($userModel->isUserHasAuthority('GOD')) echo "<th>&nbsp;</th>"?>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,7 +42,10 @@ try{
                         <td><input type="checkbox" class="cBox" name="term_year[]" value="<?php echo $row['term_year']?>"></td>
                         <td><?php echo $row['term_year'] ?></td>
                         <td><?php echo $row['count'] ?></td>
-                        <td><a href="index.php?s=getTimetableCourses&term_year=<?php echo $row['term_year']?>&user_id=<?php echo $user_id?>">查看</a></td>
+                        <?php
+                            if ($userModel->isUserHasAuthority('GOD'))
+                                echo "<td><a href='index.php?s=getTimetableCourses&term_year={$row['term_year']}&user_id={$user_id}'>查看</a></td>";
+                        ?>
                     </tr>
                     <?php
                 }
