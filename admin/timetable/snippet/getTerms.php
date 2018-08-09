@@ -42,7 +42,7 @@ try{
                         <td><input type="checkbox" class="cBox" name="term_year[]" value="<?php echo $row['term_year']?>"></td>
                         <td><?php echo $row['term_year'] ?></td>
                         <td><?php echo $row['count'] ?></td>
-                        <td><a href="index.php?s=getTimetable">查看</a></td>
+                        <td><a href="index.php?s=getTimetableCourses&term_year=<?php echo $row['term_year']?>&user_id=<?php echo $user_id?>">查看</a></td>
                     </tr>
                     <?php
                 }

@@ -41,7 +41,7 @@ function getTermsWithJson(){
 function deleteTimetable(){
     global $timetableModel,$currentUser;
     try{
-        $currentUser->isAdmin or BasicTool::throwException("删除失败:权限不足");
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("删除失败:权限不足");
         $user_id = BasicTool::post("user_id","删除失败:Missing user id");
         $term_year = BasicTool::post("term_year","删除失败:Missing term year");
         $concat = "";
