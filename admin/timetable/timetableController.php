@@ -41,7 +41,7 @@ function getTermsWithJson(){
 function deleteTimetable(){
     global $timetableModel,$currentUser;
     try{
-        $currentUser->isAdmin or BasicTool::throwException("删除失败:权限不足");
+        $currentUser->isUserHasAuthority("GOD") or BasicTool::throwException("删除失败:权限不足");
         $user_id = BasicTool::post("user_id","删除失败:Missing user id");
         $term_year = BasicTool::post("term_year","删除失败:Missing term year");
         $concat = "";
@@ -66,11 +66,11 @@ function updateTimetable($echoType="normal"){
         $cookie = $cookieFolder . "/cookie{$currentUser->userId}.txt";
         $courses = getTimetableFromYorkWithHtml($username,$password,$cookie);
         $timetableModel->updateTimetable($courses,$currentUser->userId) or BasicTool::throwException($timetableModel->errorMsg);
-        $terms = $timetableModel->getTerms($currentUser->userId) or BasicTool::throwException("空");
+        $result = $timetableModel->getUserTermsAndCourses($currentUser->userId) or BasicTool::throwException("空");
         if ($echoType == "normal") {
             BasicTool::echoMessage("更新课程表成功");
         } else {
-            BasicTool::echoJson(1, "更新课程表成功",$terms);
+            BasicTool::echoJson(1, "更新课程表成功",$result);
         }
 
     }catch (Exception $e){
@@ -121,9 +121,11 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
     $result = curl_exec($ch);
     curl_close($ch);
+    //echo $result;
     if (strpos($result,"Logged in as") === false){
         BasicTool::throwException("登录失败: 约克账号或密码有误,或约克大学网站接口异常.",2);
     }

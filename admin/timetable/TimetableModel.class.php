@@ -9,6 +9,28 @@ class TimetableModel extends Model
         $this->table = "timetable";
     }
 
+    public function getUserTermsAndCourses($user_id){
+        $result = [];
+        $terms = $this->getTerms($user_id);
+        if (!$terms){
+            return false;
+        }
+        foreach ($terms as $term){
+            $res = $this->getTimetableCourses($user_id,$term["term_year"],$term["term_semester"]);
+
+            if ($res){
+                $temp = [];
+                foreach ($res as $r){
+                    $r['schedule'] = json_decode($r['schedule']);
+                    $temp[] = $r;
+                }
+                $term["courses"] = $temp;
+                $result[] = $term;
+            }
+        }
+        return $result;
+    }
+
     public function getTimetableCourses($user_id,$term_year=false,$term_semester=false){
         $condition = "user_id in ({$user_id})";
         if ($term_year) $condition .= " AND term_year in ('{$term_year}')";
@@ -29,7 +51,7 @@ class TimetableModel extends Model
     }
 
     public function getTerms($user_id){
-        $sql = "SELECT COUNT(*) AS count, term_year, term_semester FROM {$this->table} WHERE user_id in ({$user_id}) GROUP BY term_year, term_semester";
+        $sql = "SELECT COUNT(*) AS count, term_year, term_semester FROM {$this->table} WHERE user_id in ({$user_id}) GROUP BY term_year, term_semester ORDER BY term_year DESC, term_semester DESC";
         $flag=false;
         $result = $this->sqltool->getListBySql($sql);
         if (!$result)
@@ -105,18 +127,18 @@ class TimetableModel extends Model
 
     public function updateTimetable($courses,$user_id){
         if (count($courses)>0){
-            $term_year = "";
-            $temp = array();
-            foreach ($courses as $course){
-                if ($course["term_year"]){
-                    if (!in_array($course["term_year"],$temp)){
-                        $term_year .= "'{$course['term_year']}',";
-                        $temp[] = $course["term_year"];
-                    }
-                }
-            }
-            $term_year = substr($term_year, 0, -1);
-            $res = $this->deleteTimetableByTermYear($user_id,$term_year);
+//            $term_year = "";
+//            $temp = array();
+//            foreach ($courses as $course){
+//                if ($course["term_year"]){
+//                    if (!in_array($course["term_year"],$temp)){
+//                        $term_year .= "'{$course['term_year']}',";
+//                        $temp[] = $course["term_year"];
+//                    }
+//                }
+//            }
+//            $term_year = substr($term_year, 0, -1);
+            $res = $this->deleteTimetableByTermYear($user_id,false);
             if (!$res){
                 $this->errorMsg = "更新课程表失败:删除旧课程表失败";
                 return false;
@@ -156,8 +178,10 @@ class TimetableModel extends Model
         return $result;
     }
 
-    public function deleteTimetableByTermYear($user_id,$term_year){
-        $sql = "DELETE FROM {$this->table} WHERE user_id IN ({$user_id}) AND term_year IN ({$term_year})";
+    public function deleteTimetableByTermYear($user_id,$term_year=false){
+        $condition = "true AND user_id IN ({$user_id})";
+        if ($term_year) $condition .= "AND term_year IN ({$term_year})";
+        $sql = "DELETE FROM {$this->table} WHERE {$condition}";
         return $this->sqltool->query($sql);
     }
 
