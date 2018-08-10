@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
 $currentUser = new \admin\user\UserModel();
+$institutionModel = new \admin\institution\InstitutionModel();
 call_user_func(BasicTool::get('action'));
 
 
@@ -465,10 +466,14 @@ function clearBadge() {
  */
 function userRegisterWithJson() {
     global $currentUser;
+    global $institutionModel;
     try {
         //不能为空,需要验证的字段
         $name = BasicTool::post('username', '请填写用户名', 80);
         $pwd = BasicTool::post('password', '请填写密码');
+        $institutionId = 1; // TODO: remove hard code
+//        $institutionId = BasicTool::post('institution_id', '请选择学校');
+//        $institutionModel->getInstitution($institutionId) or BasicTool::throwException("学校没找到");
         BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
         !$currentUser->isExistByFieldValue('user', 'name', $name) or BasicTool::throwException("用户名邮箱已存在");
         strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
@@ -479,7 +484,7 @@ function userRegisterWithJson() {
         $major = BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException("注册失败");
+        $currentUser->register($user_class_id, $institutionId, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException("注册失败");
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
         $msg = "注册成功";
         if ($currentUser->enableEmailVerify) {
@@ -502,11 +507,15 @@ function userRegisterWithJson() {
 //管理员直接添加用户
 function addUser() {
     global $currentUser;
+    global $institutionModel;
     try {
         $currentUser->isUserHasAuthority("ADMIN") && $currentUser->isUserHasAuthority("USER_ADD") or BasicTool::throwException("权限不足");
         //不能为空,需要验证的字段
         $name = BasicTool::post('username', '请填写用户名', 80);
         $pwd = BasicTool::post('password', '请填写密码');
+        $institutionId = 1; // TODO: remove hard code
+//        $institutionId = BasicTool::post('institution_id', '请选择学校');
+//        $institutionModel->getInstitution($institutionId) or BasicTool::throwException("学校没找到");
         BasicTool::checkFormatOfEmail($name) or BasicTool::throwException("邮箱格式不正确");
         !$currentUser->isExistByFieldValue('user', 'name', $name) or BasicTool::throwException("用户名邮箱已存在");
         strlen($pwd) >= 6 or BasicTool::throwException("密码最少6个字符");
@@ -517,7 +526,7 @@ function addUser() {
         $major = BasicTool::post('major');
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
-        $currentUser->register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException($currentUser->errorMsg);
+        $currentUser->register($user_class_id, $institutionId, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException($currentUser->errorMsg);
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
         BasicTool::echoMessage("注册成功");
     } catch (Exception $e) {
@@ -528,6 +537,7 @@ function addUser() {
 //管理员->添加或修改一个用户
 function updateUser() {
     global $currentUser;
+    global $institutionModel;
     try {
         //判断当前用户是否有"用户修改","用户添加"权限
         $currentUser->isUserHasAuthority('ADMIN') && $currentUser->isUserHasAuthority('USER_UPDATE') or BasicTool::throwException($currentUser->errorMsg);
@@ -535,6 +545,9 @@ function updateUser() {
         $alias = BasicTool::post('alias', false, 28);
         $user_class_id = BasicTool::post('user_class_id', '所属用户组不能为空');
         $gender = BasicTool::post('gender', '性别不能为空');
+        $institutionId = 1; // TODO: remove hard code
+//        $institutionId = BasicTool::post('institution_id', '学校不能为空');
+//        $institutionModel->getInstitution($institutionId) or BasicTool::throwException("学校没找到");
         $blocktime = BasicTool::post('setblocktime');
         $blockreason = BasicTool::post('blockreason', false, 70);
         $major = BasicTool::post('major', false, 30);
@@ -560,7 +573,7 @@ function updateUser() {
             $blocktime = 0;
         }
         //修改用户
-        $currentUser->updateUserByAdmin($targetUserId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat);
+        $currentUser->updateUserByAdmin($targetUserId, $institutionId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat);
         BasicTool::echoMessage("修改成功");
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage());

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 01, 2018 at 03:25 PM
+-- Generation Time: Aug 10, 2018 at 03:34 AM
 -- Server version: 10.1.32-MariaDB
 -- PHP Version: 7.0.30
 
@@ -74,7 +74,6 @@ CREATE TABLE `video_album` (
   `id` int(11) UNSIGNED NOT NULL,
   `title` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` char(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `category_id` int(11) UNSIGNED NOT NULL,
   `user_id` int(11) UNSIGNED NOT NULL,
   `course_code_id` int(11) UNSIGNED NOT NULL,
   `professor_id` int(11) UNSIGNED NOT NULL,
@@ -95,13 +94,26 @@ CREATE TABLE `video_album` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `video_album_category`
+-- Table structure for table `video_album_tag`
 --
 
-CREATE TABLE `video_album_category` (
+CREATE TABLE `video_album_tag` (
   `id` int(11) UNSIGNED NOT NULL,
   `title` char(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cover_img_id` int(11) UNSIGNED NOT NULL,
   `count_album` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `video_album_tag_video_album`
+--
+
+CREATE TABLE `video_album_tag_video_album` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `album_id` int(11) UNSIGNED NOT NULL,
+  `tag_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -167,16 +179,23 @@ ALTER TABLE `video_album`
   ADD KEY `title` (`title`(191)),
   ADD KEY `course_code_id` (`course_code_id`),
   ADD KEY `professor_id` (`professor_id`),
-  ADD KEY `category_id` (`category_id`),
   ADD KEY `fk_video_album_image_id` (`cover_img_id`) USING BTREE,
   ADD KEY `fk_video_album_user_id` (`user_id`) USING BTREE;
 
 --
--- Indexes for table `video_album_category`
+-- Indexes for table `video_album_tag`
 --
-ALTER TABLE `video_album_category`
+ALTER TABLE `video_album_tag`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_video_album_category_title` (`title`) USING BTREE;
+
+--
+-- Indexes for table `video_album_tag_video_album`
+--
+ALTER TABLE `video_album_tag_video_album`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_video_album_tag_video_album_tag_album_id` (`tag_id`,`album_id`),
+  ADD KEY `fk_video_album_tag_album_album_id` (`album_id`);
 
 --
 -- Indexes for table `video_section`
@@ -215,9 +234,15 @@ ALTER TABLE `video_album`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `video_album_category`
+-- AUTO_INCREMENT for table `video_album_tag`
 --
-ALTER TABLE `video_album_category`
+ALTER TABLE `video_album_tag`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `video_album_tag_video_album`
+--
+ALTER TABLE `video_album_tag_video_album`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -248,8 +273,14 @@ ALTER TABLE `video`
 -- Constraints for table `video_album`
 --
 ALTER TABLE `video_album`
-  ADD CONSTRAINT `fk_video_album_category_id` FOREIGN KEY (`category_id`) REFERENCES `video_album_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_video_album_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `video_album_tag_video_album`
+--
+ALTER TABLE `video_album_tag_video_album`
+  ADD CONSTRAINT `fk_video_album_tag_album_album_id` FOREIGN KEY (`album_id`) REFERENCES `video_album` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_video_album_tag_album_tag_id` FOREIGN KEY (`tag_id`) REFERENCES `video_album_tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -34,6 +34,7 @@ $classId = BasicTool::get('classId') ? BasicTool::get('classId') : false;
                     <th>ID</th>
                     <th>头像</th>
                     <th>用户名</th>
+                    <th>学校</th>
                     <th>昵称</th>
                     <th>点券</th>
                     <th>活跃度</th>
@@ -54,6 +55,7 @@ $classId = BasicTool::get('classId') ? BasicTool::get('classId') : false;
                         <td><?php echo $row['id']?></td>
                         <td><img width="36" height="36" src="<?php echo $row['img']?>"></td>
                         <td><a href="index.php?s=formUser&uid=<?php echo  $row['id']?>"><?php echo $row['name'] ?></a></td>
+                        <td><?php echo $row['institution_title']?></td>
                         <td><?php echo $row['alias']?></td>
                         <td><a href="/admin/transaction/index.php?s=getTransactions&uid=<?php echo $row['id']?>"><?php echo $row['credit']?></a> </td>
                         <td><?php echo $row['activist']?></td>

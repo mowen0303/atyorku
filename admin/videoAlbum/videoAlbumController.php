@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-$videoAlbumCategoryModel = new \admin\videoAlbumCategory\VideoAlbumCategoryModel();
+$videoAlbumTagModel = new \admin\videoAlbumTag\VideoAlbumTagModel();
 $videoAlbumModel = new \admin\videoAlbum\VideoAlbumModel();
 $videoAlbumValidator = new \admin\videoAlbum\VideoAlbumValidator();
 $imageModel = new \admin\image\ImageModel();
@@ -16,12 +16,65 @@ call_user_func(BasicTool::get('action'));
 /**
  * JSON -  获取一页视频专辑 (GET)
  * http://www.atyorku.ca/admin/videoAlbum/videoAlbumController.php?action=getListOfVideoAlbumWithJson
+ *
+ * [POST][optional] - categories : string with category ids, separated with comma ( '2,3,5' )
+ * [POST][optional] - text : string to search album title and description
  */
 function getListOfVideoAlbumWithJson() {
     global $videoAlbumModel;
     try {
         $pageSize = BasicTool::get("pageSize") ?: 20;
-        $result = $videoAlbumModel->getListOfVideoAlbum($pageSize);
+        $conditions = [];
+
+        // Check and build tag filter
+        $tags = trim(BasicTool::get("tags"));
+        if ($tags) {
+            $tags = implode(
+                ",",
+                array_unique(
+                    array_filter(
+                        explode(",", $tags),
+                        function($id){
+                            return intval($id);
+                        }
+                    )
+                )
+            );
+        }
+        if ($tags) {
+            array_push($conditions, "(ta.tag_id IN ({$tags}))");
+        }
+
+        // Check and build category filter
+        $categories = trim(BasicTool::get("categories")); // string of ids with comma
+        if ($categories) {
+            $categories = implode(
+                ",",
+                array_unique(
+                    array_filter(
+                        explode(",", $categories),
+                        function($id){
+                            return intval($id);
+                        }
+                    )
+                )
+            );
+        }
+
+        if ($categories) {
+            array_push($conditions, "(va.category_id IN ({$categories}))");
+        }
+
+        // Check and build full text filter
+        $text = trim(BasicTool::get("text"));
+        if ($text) {
+            array_push($conditions, "(va.title LIKE '%{$text}%' OR va.description LIKE '%{$text}%')");
+        }
+
+        $q = implode(" AND ", $conditions);
+
+        $result = $videoAlbumModel->getListOfVideoAlbum($pageSize, 0, 1, $q);
+
         if ($result) {
             BasicTool::echoJson(1, "成功", $result);
         } else {
@@ -87,10 +140,8 @@ function modifyVideoAlbum($echoType='normal') {
         // 验证fields
         $title = $videoAlbumValidator::validateTitle(BasicTool::post("title"));
         $description = $videoAlbumValidator::validateDescription(BasicTool::post("description"));
-        $categoryId = $videoAlbumValidator::validateVideoAlbumCategoryId(BasicTool::post("category_id"));
+        $categoryId = $videoAlbumValidator::validateVideoAlbumTagId(BasicTool::post("category_id"));
         $institutionId = $videoAlbumValidator::validateInstitutionId(BasicTool::post("institution_id"));
-        // is available for new album always be 0 ( require one introduction (free) video upload )
-        $isAvailable = ($flag=='update') ? $videoAlbumValidator::validateIsAvailable(BasicTool::post("is_available")) : 0;
         $courseCodeId = $videoAlbumValidator::validateCourseId(BasicTool::post("course_code_parent_title"), BasicTool::post("course_code_child_title"));
         $professorId = $videoAlbumValidator::validateProfessorName(BasicTool::post("prof_name"));
         $price = $videoAlbumValidator::validatePrice(BasicTool::post("price"));
@@ -114,7 +165,6 @@ function modifyVideoAlbum($echoType='normal') {
                 $professorId,
                 $institutionId,
                 $price,
-                $isAvailable,
                 $imgArr[0]
             ) or BasicTool::throwException($videoAlbumModel->errorMsg);
             if ($echoType == "normal") {
@@ -192,6 +242,11 @@ function deleteVideoAlbum($echoType="normal") {
             BasicTool::echoJson(0, $e->getMessage());
         }
     }
+}
+
+
+function updateAvailability($echoType="normal") {
+
 }
 
 

@@ -56,7 +56,7 @@ class InstitutionModel extends Model
      * @param int $pageSize
      * @return array
      */
-    public function getListOfInstitutions($pageSize=20) {
+    public function getListOfInstitution($pageSize=20) {
       $sql = "SELECT * FROM {$this->table}";
       $countSql = "SELECT COUNT(*) FROM {$this->table}";
       return $this->getListWithPage($this->table, $sql, $countSql, $pageSize);
@@ -91,6 +91,24 @@ class InstitutionModel extends Model
     }
 
     /**
+     * 验证学校ID是否与当前登录用户的学校ID一致
+     * @param int $id 学校ID
+     * @return bool
+     */
+    public function authenticateInstitutionId($id) {
+        $currentUser = new UserModel();
+        if (!$currentUser->userId) {
+            $this->errorMsg = "请先登录";
+            return false;
+        }
+        if (!$currentUser->isUserHasAuthority("ADMIN") || !$currentUser->institutionId || intval($currentUser->institutionId) !== intval($id)) {
+            $this->errorMsg = "学校ID不匹配";
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 解析并获取当前学期截止日期
      * @param string $termEndingDates 学期所有截止日期 format example: '01-03,04-22,09-07' 顺序可有可无, 单数必须要有leading 0
      * @return string
@@ -113,6 +131,9 @@ class InstitutionModel extends Model
     }
 }
 
+abstract class InstitutionError {
+    const INSTITUTION_ID_NOT_EXIST = "Institution Id does not exist";
+}
 
 
 ?>

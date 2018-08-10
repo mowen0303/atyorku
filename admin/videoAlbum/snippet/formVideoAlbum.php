@@ -2,7 +2,7 @@
 $videoAlbumModel = new \admin\videoAlbum\VideoAlbumModel();
 $institutionModel= new \admin\institution\InstitutionModel();
 $imageModel = new \admin\image\ImageModel();
-$videoAlbumCategoryModel = new \admin\videoAlbumCategory\VideoAlbumCategoryModel();
+$videoAlbumTagModel = new \admin\videoAlbumTag\VideoAlbumTagModel();
 $currentUser = new \admin\user\UserModel();
 $flag = BasicTool::get("flag");
 $userId = $flag=="add" ? $currentUser->userId : BasicTool::get("user_id");
@@ -48,7 +48,7 @@ $userId = $flag=="add" ? $currentUser->userId : BasicTool::get("user_id");
                 <label>所属分类<i>*</i></label>
                 <select class="input input-select input-size50 selectDefault" name="category_id" defvalue="<?php echo BasicTool::get('category_id') ?>">
                     <?php
-                    $arrOfCategory = $videoAlbumCategoryModel->getListOfVideoAlbumCategories();
+                    $arrOfCategory = $videoAlbumTagModel->getListOfVideoAlbumTag();
                     foreach($arrOfCategory as $rowOfCategory){
                         echo '<option value="'.$rowOfCategory['id'].'">'.$rowOfCategory['title'].'</option>';
                     }
@@ -59,7 +59,7 @@ $userId = $flag=="add" ? $currentUser->userId : BasicTool::get("user_id");
                 <label>学校<i>*</i></label>
                 <select class="input input-select input-size50 selectDefault" name="institution_id" defvalue="<?php echo BasicTool::get('institution_id') ?>">
                     <?php
-                    $arrOfInstitutions = $institutionModel->getListOfInstitutions();
+                    $arrOfInstitutions = $institutionModel->getListOfInstitution();
                     foreach($arrOfInstitutions as $rowOfInstitution){
                         echo '<option value="'.$rowOfInstitution['id'].'">'.$rowOfInstitution['title'].'</option>';
                     }

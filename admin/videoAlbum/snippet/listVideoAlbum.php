@@ -9,7 +9,7 @@ $userModel = new \admin\user\UserModel();
     <div style="display: flex; justify-content: flex-end">
         <a class="btn" href="/admin/video/index.php?s=listVideo">视频</a>
         <a class="btn" href="/admin/videoAlbum/index.php?s=formVideoAlbum&flag=add">添加视频专辑</a>
-        <a class="btn" href="/admin/videoAlbumCategory/index.php?s=listVideoAlbumCategory">视频专辑分类</a>
+        <a class="btn" href="/admin/videoAlbumTag/index.php?s=listVideoAlbumTag">视频专辑分类</a>
     </div>
 </nav>
 <article class="mainBox">
@@ -53,7 +53,7 @@ $userModel = new \admin\user\UserModel();
                             echo "<a href=\"/admin/videoSection/index.php?s=listVideoSection&album_id={$id}\">{$title}</a>";
                             ?>
                         </td>
-                        <td><?php echo $row['video_album_category_title'] ?></td>
+                        <td><?php echo $row['video_album_tag_title'] ?></td>
                         <td><?php echo $row['alias'] ?></td>
                         <td><?php echo $row['course_code_parent_title'] + $row['course_code_child_title'] ?></td>
                         <td><?php echo $row['prof_name'] ?></td>

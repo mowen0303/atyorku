@@ -28,7 +28,7 @@ $userModel = new \admin\user\UserModel();
                 </thead>
                 <tbody>
                 <?php
-                $arr = $institutionModel->getListOfInstitutions();
+                $arr = $institutionModel->getListOfInstitution();
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

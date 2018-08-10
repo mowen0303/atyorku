@@ -36,6 +36,7 @@ class UserModel extends Model {
     public $wechat = null;
     public $deviceToken = 0;
     public $deviceType = null;
+    public $institutionId = null;
 
 
     public $row = null;
@@ -73,6 +74,7 @@ class UserModel extends Model {
             $this->authorityTitle = @$_COOKIE['cc_title'];
             $this->blockTime = @$_COOKIE['cc_bl'];
             $this->blockReason = @$_COOKIE['cc_br'];
+            $this->institutionId = @$_COOKIE['cc_ii'];
         } else if ($userId >= 1) {
             $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$userId})";
             $arr = $this->sqltool->getRowBySql($sql);
@@ -96,6 +98,7 @@ class UserModel extends Model {
             $this->wechat = $arr['wechat'];
             $this->deviceToken = $arr['device'];
             $this->deviceType = $arr['device_type'];
+            $this->institutionId = $arr['institution_id'];
         }
     }
 
@@ -109,7 +112,7 @@ class UserModel extends Model {
      */
     public function getProfileOfUserById($id, $onlyShowBasic = false) {
         $condition = $onlyShowBasic == true ? "" : ",u.activist,u.credit,u.name,u_c.is_admin,u_c.authority";
-        $sql = "SELECT u.id,u.degree,u.checkin_count,u.checkin_last_time,u.device,u.wechat,u.user_class_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE u.id in ({$id}) AND u.is_del = 0";
+        $sql = "SELECT u.id,u.degree,u.checkin_count,u.checkin_last_time,u.device,u.wechat,u.user_class_id,u.institution_id,u.registertime,u.major,u.enroll_year,u.description,u.img,u.alias,u.gender,u_c.title,u.blocktime,u.blockreason,i.title AS institution_title {$condition} FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id INNER JOIN institution i ON u.institution_id = i.id WHERE u.id in ({$id}) AND u.is_del = 0";
         $row = $this->sqltool->getRowBySql($sql);
         foreach ($row as $k => $v) {
             if ($k == "enroll_year") {
@@ -155,7 +158,7 @@ class UserModel extends Model {
             $orderCondition .= "u.{$orderBy} DESC,";
         }
         $table = 'user';
-        $sql = "SELECT u.*,u_c.title,is_admin,authority FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE  {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
+        $sql = "SELECT u.*,u_c.title,is_admin,authority,i.title AS institution_title FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id INNER JOIN institution i ON u.institution_id = i.id WHERE  {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
         $countSql = "SELECT COUNT(*) FROM user AS u INNER JOIN user_class AS u_c ON u.user_class_id = u_c.id WHERE {$condition} AND is_del =0 ORDER BY {$orderCondition} u.id DESC";
         return parent::getListWithPage($table, $sql, $countSql, $pageSize);
     }
@@ -298,7 +301,7 @@ class UserModel extends Model {
      * @return bool
      */
     public function isLogin() {
-        $encodeKey = md5($_COOKIE['cc_id'] . $_COOKIE['cc_uc'] . $_COOKIE['cc_na'] . $_COOKIE['cc_ia'] . $_COOKIE['cc_au'] . $_COOKIE['cc_bl'] . self::$key);
+        $encodeKey = md5($_COOKIE['cc_id'] . $_COOKIE['cc_uc'] . $_COOKIE['cc_ii'] . $_COOKIE['cc_na'] . $_COOKIE['cc_ia'] . $_COOKIE['cc_au'] . $_COOKIE['cc_bl'] . self::$key);
         //return $encodeKey == $_COOKIE['cc_cc'] ? true : false;
         if ($encodeKey !== $_COOKIE['cc_cc']) {
             return false;
@@ -338,7 +341,7 @@ class UserModel extends Model {
             if ($row['pwd'] == md5($pwd)) {
 
                 //编码秘钥
-                $encodeKey = md5($row['id'] . $row['user_class_id'] . $row['name'] . $row['is_admin'] . $row['authority'] . $row['blocktime'] . self::$key);
+                $encodeKey = md5($row['id'] . $row['user_class_id'] . $row['institution_id'] . $row['name'] . $row['is_admin'] . $row['authority'] . $row['blocktime'] . self::$key);
 
                 $time = $usertype == "user" ? time() + 3600 * 24 * 365 * 10 : 0;
 
@@ -348,6 +351,7 @@ class UserModel extends Model {
                 $arr['cc_ge'] = $row['gender'];
                 $arr['cc_id'] = $row['id'];//保护
                 $arr['cc_uc'] = $row['user_class_id'];//保护
+                $arr['cc_ii'] = $row['institution_id'];//保护
                 $arr['cc_na'] = $row['name'];//保护
                 $arr['cc_ia'] = $row['is_admin'];//保护
                 $arr['cc_au'] = $row['authority'];//保护
@@ -424,7 +428,7 @@ class UserModel extends Model {
 
         if ($row = $this->sqltool->getRowBySql($sql)) {
             //编码秘钥
-            $encodeKey = md5($row['id'] . $row['user_class_id'] . $row['name'] . $row['is_admin'] . $row['authority'] . $row['blocktime'] . self::$key);
+            $encodeKey = md5($row['id'] . $row['user_class_id'] . $row['institution_id'] . $row['name'] . $row['is_admin'] . $row['authority'] . $row['blocktime'] . self::$key);
 
             $time = time() + 3600 * 24 * 365 * 10;
 
@@ -434,6 +438,7 @@ class UserModel extends Model {
             $arr['cc_ge'] = $row['gender'];
             $arr['cc_id'] = $row['id'];//保护
             $arr['cc_uc'] = $row['user_class_id'];//保护
+            $arr['cc_ii'] = $row['institution_id'];//保护
             $arr['cc_na'] = $row['name'];//保护
             $arr['cc_ia'] = $row['is_admin'];//保护
             $arr['cc_au'] = $row['authority'];//保护
@@ -541,10 +546,11 @@ class UserModel extends Model {
      * @param $password
      * @return user|bool
      */
-    public function register($user_class_id, $name, $pwd, $degree, $alias, $major, $wechat, $description) {
+    public function register($user_class_id, $institutionId, $name, $pwd, $degree, $alias, $major, $wechat, $description) {
         $arr['name'] = $name;
         $arr['pwd'] = md5($pwd);
         $arr['user_class_id'] = $user_class_id ? $user_class_id : 7;
+        $arr['institution_id'] = $institutionId ? $institutionId : 1;
         $arr['degree'] = $degree ? $degree : "";
         $arr['alias'] = $alias ? $alias : "";
         $arr['major'] = $major ? $major : "";
@@ -554,8 +560,8 @@ class UserModel extends Model {
         return $this->addRow('user', $arr);
     }
 
-    public function updateUserByAdmin($targetUserId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat) {
-        $sql = "UPDATE user SET alias='{$alias}',user_class_id='{$user_class_id}',gender='{$gender}',blocktime='{$blocktime}',blockreason='{$blockreason}',major='{$major}',enroll_year='{$enroll_year}',description='{$description}',wechat='{$wechat}' WHERE id in ({$targetUserId})";
+    public function updateUserByAdmin($targetUserId, $institutionId, $alias, $user_class_id, $gender, $blocktime, $blockreason, $major, $enroll_year, $description, $wechat) {
+        $sql = "UPDATE user SET alias='{$alias}',user_class_id='{$user_class_id}',institution_id='{$institutionId}',gender='{$gender}',blocktime='{$blocktime}',blockreason='{$blockreason}',major='{$major}',enroll_year='{$enroll_year}',description='{$description}',wechat='{$wechat}' WHERE id in ({$targetUserId})";
         return $this->sqltool->query($sql);
     }
 
