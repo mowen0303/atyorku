@@ -29,7 +29,7 @@ $row = $id ? $mapModel->getBuildingByID($id) : [];
                 <label>类型<i>*</i></label>
                 <select class="input input-select input-size30 selectDefault" name="type" defvalue="<?php echo $row['type'] ?>">
                     <option value='0'>无类型</option>
-                    <option value='办公室'>办公室(department)</option>
+                    <option value='办公室'>办公室</option>
                     <option value='图书馆'>图书馆</option>
                     <option value='学院楼'>学院楼</option>
                     <option value='宿舍'>宿舍</option>
