@@ -138,7 +138,7 @@ if ($flag == 'add') {
                  </div>
                  <div style="flex:1;margin-right:20px">
                     <label>活动金额（不填代表免费）</label>
-                    <input type="number" class="input" name="registration_fee" value="<?php echo $row['registration_fee'] ?>"/>
+                    <input type="text" class="input" name="registration_fee" value="<?php echo $row['registration_fee'] ?>"/>
                 </div>
                  <div style="flex:1;margin-right:20px">
                      <label>报名连接（非在线报名可不填）</label>

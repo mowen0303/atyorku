@@ -143,11 +143,13 @@ function modifyCourseCode($echoType = "normal") {
         $title = BasicTool::post("title","需要提供 Course Code Title");
         $fullTitle = BasicTool::post("full_title","需要提供 Course Code Full Title");
         $credits = BasicTool::post("credits");
+        $description = BasicTool::post("description");
+        $course_code_sort = BasicTool::post("course_code_sort");
         if(!$credits) $credits = 0;
         $parentId = (int) BasicTool::post("parent_id","请提供父类科目ID");
         checkAuthority();
         if ($flag == "add") {
-            $result = $courseCodeModel->addCourseCode($title, $fullTitle, $credits, $parentId);
+            $result = $courseCodeModel->addCourseCode($title, $fullTitle, $credits, $parentId,$description,$course_code_sort);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("添加成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
             } else {
@@ -155,7 +157,7 @@ function modifyCourseCode($echoType = "normal") {
             }
         } else if ($flag == "update") {
             $id = BasicTool::post("id","需要提供要修改的Course Code ID");
-            $result = $courseCodeModel->updateCourseCodeById($id, $title, $fullTitle, $credits);
+            $result = $courseCodeModel->updateCourseCodeById($id, $title, $fullTitle, $credits,$description,$course_code_sort);
             if ($echoType == "normal") {
                 BasicTool::echoMessage("修改成功","/admin/courseCode/index.php?listCourseCode&parent_id={$parentId}");
             } else {
