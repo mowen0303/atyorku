@@ -41,7 +41,7 @@ class TimetableModel extends Model
                 $term_semester = "'Winter','Year'";
             }else if (strtolower($term_semester) == "summer 1"){
                 $term_semester = "'Summer','Summer 1'";
-            }else if (strtolower($term_semester == "summer 2")){
+            }else if (strtolower($term_semester) == "summer 2"){
                 $term_semester = "'Summer','Summer 2'";
             }
             $condition .= " AND term_semester in ({$term_semester})";
