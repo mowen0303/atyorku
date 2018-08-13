@@ -285,6 +285,7 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
                         }
                     }
                 }
+                $courses[$index]["schedule"] = array_values($courses[$index]["schedule"]);
                 $courses[$index]["schedule"] = json_encode($courses[$index]["schedule"]);
             }
             if (array_key_exists("course_code",$course)){

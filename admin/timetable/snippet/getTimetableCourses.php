@@ -25,6 +25,7 @@ try{
                     <th>课码</th>
                     <th>学期</th>
                     <th>Section</th>
+                    <th>Schedule</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +36,7 @@ try{
                     <td><?php echo $row['course_parent_title']." ".$row['course_child_title']?></td>
                     <td><?php echo $row['term_semester']?></td>
                     <td><?php echo $row['section']?></td>
+                    <td><?php echo $row['schedule']?></td>
                 </tr>
                 <?php
             }
