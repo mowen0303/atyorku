@@ -112,11 +112,11 @@ if ($flag == 'add') {
             <div style="display:flex;flex-direction:row">
                 <div>
                     <label>活动开始时间<i>*</i></label>
-                    <input class="input" type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:m:s",$event_time)?>"  id="aa" style="margin-right:3rem"/>
+                    <input id="i1" class="input" type="datetime-local" name="event_time" value="<?php echo date("Y-m-d",$event_time)."T".date("H:i",$event_time)?>"  id="aa" style="margin-right:3rem"/>
                 </div>
                 <div style="margin-left: 20px">
                     <label>结束时间<i>*</i></label>
-                    <input class="input" type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:m:s",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
+                    <input class="input" type="datetime-local" name="expiration_time" value="<?php echo date("Y-m-d",$expiration_time)."T".date("H:i",$expiration_time)?>" id="bb" style="margin-right:3rem"/>
                 </div>
             </div>
 

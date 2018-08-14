@@ -324,10 +324,14 @@ class BasicTool
     //将html时间转成php时间戳
     //2018-01-29T01:01:00 (HTML时间戳)
     static function translateHTMLTimeToPHPStaple($htmlTime){
-        $timeArr = explode("T",$htmlTime);
-        $ymdArr = explode("-",$timeArr[0]);
-        $hms = explode(":",$timeArr[1]);
-        return mktime($hms[0],$hms[1],$hms[2],$ymdArr[1],$ymdArr[2],$ymdArr[0]);
+        //strtotime("2018-08-21 12:00:00");
+        if($htmlTime){
+            $htmlTime = str_replace("T"," ",$htmlTime);
+            return strtotime($htmlTime);
+        }else{
+            return 0;
+        }
+
     }
 
     /**

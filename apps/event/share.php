@@ -57,6 +57,12 @@ $signPackage = $jssdk->GetSignPackage();
         .statusBox span {font-size: 1.5em}
         .priceBox {color:#F36700;font-size:2em;text-align: center;font-family:Impact, Charcoal, sans-serif;margin: 1em 0}
         .priceBox span {position:relative;top:-1em;font-size: 14px;}
+        .statusBox span {
+            background: #fff;
+            border-radius:  6px;
+            padding: 10px 8px;
+            font-size:  2em;
+        }
     </style>
 </head>
 <body>
@@ -69,8 +75,8 @@ $signPackage = $jssdk->GetSignPackage();
         <p class="priceBox"><?php echo $event['registration_fee']? "<span>$</span>".$event['registration_fee'] : "免费"?></p>
         <p class="statusBox status-<?php echo $event['state_code']?>" id="time" status-code="<?php echo $event['state_code']?>" time="<?php echo $event['event_time']?>">活动状态获取中...</p>
         <section class="infoBlock">
-            <p class="content"><span>开始时间</span><i><?php echo date("Y/m/d H:m",$event['event_time'])?></i></p>
-            <p class="content"><span>结束时间</span><i><?php echo date("Y/m/d H:m",$event['expiration_time'])?></i></p>
+            <p class="content"><span>开始时间</span><i><?php echo date("Y/m/d H:i",$event['event_time'])?></i></p>
+            <p class="content"><span>结束时间</span><i><?php echo date("Y/m/d H:i",$event['expiration_time'])?></i></p>
             <?php
             if($event['registration_link']){
                 echo '<p class="content"><span>报名方式</span><i><a href="'.$event['registration_link'].'" target="_blank">'. $event['registration_way'].'</a></i></p>';
