@@ -527,7 +527,10 @@ function addUser() {
         $wechat = BasicTool::post('wechat');
         $description = BasicTool::post('description');
         $currentUser->register($user_class_id, $institutionId, $name, $pwd, $degree, $alias, $major, $wechat, $description) or BasicTool::throwException($currentUser->errorMsg);
+        echo "11111";
         $userInfo = $currentUser->login($name, $pwd) or BasicTool::throwException($currentUser->errorMsg);
+        echo "2222";
+        var_dump($userInfo);
         BasicTool::echoMessage("注册成功");
     } catch (Exception $e) {
         BasicTool::echoMessage($e->getMessage());

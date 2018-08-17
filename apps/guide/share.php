@@ -14,7 +14,7 @@ $signPackage = $jssdk->GetSignPackage();
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
     <meta charset="UTF-8">
     <title><?php echo $arr['title'] ?></title>
-    <link href="/apps/guide/css.css?10019" rel="stylesheet" type="text/css">
+    <link href="/apps/guide/css.css?10020" rel="stylesheet" type="text/css">
     <style type="text/css">
         #coverImgBox {
             position: absolute;
@@ -224,7 +224,11 @@ $signPackage = $jssdk->GetSignPackage();
         <section class="context">
             <?php echo $arr['content']; ?>
         </section>
-        <div class="readCount"><em></em><span>浏览量：<?php echo $arr['view_no']; ?></span><em></em></div>
+        <?php
+        if($arr['view_no']>=500){
+            echo '<div class="readCount"><em></em><span>浏览量：'.$arr['view_no'].'</span><em></em></div>';
+        }
+        ?>
     </div>
     <!--评论组件 S-->
     <!--
