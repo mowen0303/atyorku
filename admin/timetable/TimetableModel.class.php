@@ -41,7 +41,7 @@ class TimetableModel extends Model
                 $term_semester = "'Winter','Year'";
             }else if (strtolower($term_semester) == "summer 1"){
                 $term_semester = "'Summer','Summer 1'";
-            }else if (strtolower($term_semester == "summer 2")){
+            }else if (strtolower($term_semester) == "summer 2"){
                 $term_semester = "'Summer','Summer 2'";
             }
             $condition .= " AND term_semester in ({$term_semester})";
@@ -225,6 +225,53 @@ class TimetableModel extends Model
         }else{
             return 5;
         }
+    }
+
+    public function awesomeFunction(&$occupied,$start_time,$rowspan,$j){
+        //---------------------------------------------------------recover
+
+        if ($occupied[$start_time.""] && is_array($occupied[$start_time.""]) && count($occupied[$start_time.""])>0){
+            $recovered_day=$this->recoverDay($occupied[$start_time.""],$j);
+        }else{
+            $recovered_day=$j;
+        }
+        //---------------------------------------------------------affect
+        if ($rowspan && intval($rowspan) > 1){
+            for ($i=1;$i<intval($rowspan);$i++){
+                $index = $start_time+0.5*$i;
+                if (!($occupied[$index.""])){
+                    $occupied[$index.""] = [];
+                }
+                $occupied[$index.""][$recovered_day] = true;
+            }
+        }
+        return $recovered_day;
+    }
+
+    private function recoverDay($arr,$j){
+        $temp=[];
+        $index=1;
+        if (!$arr[1]){
+            $temp[$index]=1;
+            $index++;
+        }
+        if (!$arr[2]){
+            $temp[$index]=2;
+            $index++;
+        }
+        if (!$arr[3]){
+            $temp[$index]=3;
+            $index++;
+        }
+        if (!$arr[4]){
+            $temp[$index]=4;
+            $index++;
+        }
+        if (!$arr[5]){
+            $temp[$index]=5;
+            $index++;
+        }
+        return $temp[$j];
     }
 }
 

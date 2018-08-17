@@ -16,8 +16,12 @@ $classId = BasicTool::get('classId') ? BasicTool::get('classId') : false;
 <article class="mainBox">
     <form class="" action="index.php" method="get">
         <section class="formRow">
+            <select class="input input-select input-size30 selectDefault" name="field_name">
+                <option value="name" selected="selected">用户名邮箱</option>
+                <option value="alias">昵称</option>
+            </select>
             <input type="hidden" name="s" value="userInfo">
-            <input class="input" placeholder="用户名邮箱" type="text" name="username" value="">
+            <input class="input" placeholder="用户名邮箱" type="text" name="search_value" value="">
             <input class="btn btn-center" type="submit" title="查询课评记录" value="查询用户">
         </section>
     </form>

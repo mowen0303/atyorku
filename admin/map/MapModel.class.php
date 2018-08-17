@@ -41,8 +41,14 @@ class MapModel extends Model {
      * 获取所有大楼
      * @return array|bool
      */
-    public function getAllBuildings(){
-        $sql = "SELECT * FROM map ORDER BY abbreviation='',abbreviation";
+    public function getAllBuildings($orderBy=false){
+
+        if($orderBy=="code_number"){
+            $order = "code_number desc,";
+        }else{
+            $order = "";
+        }
+        $sql = "SELECT *,(code-0) as code_number FROM map ORDER BY {$order} abbreviation='',abbreviation";
         $result = $this->getListWithPage("map",$sql,null,500);
         if($result){
             return $result;

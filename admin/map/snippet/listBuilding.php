@@ -1,6 +1,7 @@
 <?php
 $mapModel = new \admin\map\MapModel();
-$buildingList = $mapModel->getAllBuildings();
+$orderBy = BasicTool::get('orderBy');
+$buildingList = $mapModel->getAllBuildings($orderBy);
 $version = $mapModel->getMapDataVersion();
 ?>
 <style>
@@ -19,6 +20,7 @@ $version = $mapModel->getMapDataVersion();
     </form>
 </article>
 <article class="mainBox">
+    <h2>按 <a href="index.php?s=listBuilding&orderBy=code_number" class="btn">Code</a> 排序</h2>
     <form action="mapController.php?action=deleteBuildingByIDs" method="post">
         <header>
             <h2>大楼位置</h2>

@@ -61,7 +61,7 @@ $arr = $isAdmin?$eventModel->getEventsByCategory($event_category_id):$eventModel
                                 <p><b><a href="/apps/event/detailPage.php?event_id=<?php echo $row['id'] ?>" target="_blank"><?php echo $row['title']?></a></b></p>
                                 活动类别：<?php echo $eventCategoryModel->getEventCategory($row['event_category_id'])['title'] ?></br>
                                 报名费：<?php echo $row['registration_fee'] ?> &nbsp;&nbsp;&nbsp;&nbsp;报名方式：<?php echo $row['registration_way'] ?>&nbsp;&nbsp;&nbsp;&nbsp;发起人：<?php echo $userModel->getProfileOfUserById($row['sponsor_user_id'])["alias"]?></br>
-                                <?php echo date("Y-m-d H:m",$row['event_time'])?> 至 <?php echo date("Y-m-d H:m",$row['expiration_time'])?></br>
+                                <?php echo date("Y-m-d H:i",$row['event_time'])?> 至 <?php echo date("Y-m-d H:i",$row['expiration_time'])?></br>
                             </td>
                             <?php
                             if ($userModel->isUserHasAuthority("ADMIN")){

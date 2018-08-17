@@ -54,8 +54,8 @@ if ($event['img_id_3']) $imgUrls[] = $imageModel->getImageById($event['img_id_3'
         </header>
         <p class="priceBox"><?php echo $event['registration_fee']? "<span>$</span>".$event['registration_fee'] : "免费"?></p>
         <section class="infoBlock">
-            <p class="content"><span>开始时间</span><i><?php echo date("Y/m/d H:m",$event['event_time'])?></i></p>
-            <p class="content"><span>结束时间</span><i><?php echo date("Y/m/d H:m",$event['expiration_time'])?></i></p>
+            <p class="content"><span>开始时间</span><i><?php echo date("Y/m/d H:i",$event['event_time'])?></i></p>
+            <p class="content"><span>结束时间</span><i><?php echo date("Y/m/d H:i",$event['expiration_time'])?></i></p>
             <?php
             if($event['registration_link']){
                 echo '<p class="content"><span>报名方式</span><i><a href="'.$event['registration_link'].'" target="_blank">'. $event['registration_way'].'</a></i></p>';

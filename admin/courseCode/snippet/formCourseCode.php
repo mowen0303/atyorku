@@ -23,9 +23,17 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
         <section class="formBox">
             <div>
                 <label><?php echo $typeStr ?>科目缩写<i>*</i></label>
-                <input class="input" type="text" name="title" value="<?php echo BasicTool::get('title') ?>">
+                <input class="input input-size30" type="text" name="title" value="<?php echo BasicTool::get('title') ?>">
+            </div>
+            <div>
                 <label><?php echo $typeStr ?>科目全称<i>*</i></label>
-                <input class="input" type="text" name="full_title" value="<?php echo BasicTool::get('full_title') ?>">
+                <input class="input input-size30" type="text" name="full_title" value="<?php echo BasicTool::get('full_title') ?>">
+            </div>
+            <div>
+                <label><?php echo $typeStr ?>描述<i>*</i></label>
+                <input class="input" type="text" name="description" value="<?php echo BasicTool::get('description') ?>">
+            </div>
+            <div>
                 <?php
                 if($parentId){
                     $credits = BasicTool::get('credits');
@@ -33,6 +41,10 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                     echo "<label>科目学分<i>*</i></label><input class='input' type='text' name='credits' value='{$credits}'>";
                 }
                 ?>
+            </div>
+            <div>
+                <label><?php echo $typeStr ?>排序</label>
+                <input class="input" type="text" name="course_code_sort" value="<?php echo BasicTool::get('course_code_sort') ?>">
             </div>
         </section>
         <footer class="submitBox">

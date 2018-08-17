@@ -163,6 +163,7 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
         $html->load($result);
         $courses = array();
         foreach($html->find('table[class=timetable] tbody') as $index =>$table){
+            $occupied = [];
             if ($index ==0)
                 $parentContainer = $table->parent();
             foreach ($table->find('tr') as $i => $row){
@@ -191,9 +192,9 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
                         $type = $temp[4];
                         $location = $temp[count($temp)-2]." ".$temp[count($temp)-1];
                         //-----------------------------------------------------------------------------------判断时间
-                        $day = $j;
                         $start_time = 8+($i-1)*0.5;
                         $end_time = $start_time + $col->rowspan * 0.5;
+                        $day = $timetableModel->awesomeFunction($occupied,$start_time,$col->rowspan,$j);
                         //-----------------------------------------------------------------------------------------
                         $key = $course_code.$term_semester.$section.$term_year;
                         if (!array_key_exists($key,$courses)){
@@ -284,6 +285,7 @@ function getTimetableFromYorkWithHtml($username,$password,$cookie){
                         }
                     }
                 }
+                $courses[$index]["schedule"] = array_values($courses[$index]["schedule"]);
                 $courses[$index]["schedule"] = json_encode($courses[$index]["schedule"]);
             }
             if (array_key_exists("course_code",$course)){

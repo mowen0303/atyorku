@@ -20,6 +20,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                 <tr>
                     <th width="21px"><input id="cBoxAll" type="checkbox"></th>
                     <th width="60px">ID</th>
+                    <th width="60px">排序</th>
                     <th width="100px"><?php echo $typeStr ?>科目简称</th>
                     <th width="80px">浏览量</th>
                     <th><?php echo $typeStr ?>科目全称</th>
@@ -40,6 +41,7 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id'] ?>"></td>
                         <td><?php echo $row["id"] ?></td>
+                        <td><?php echo $row["course_code_sort"] ?></td>
                         <td><?php
                             $id = $row["id"];
                             $title = $row["title"];
@@ -47,7 +49,10 @@ $typeStr = $parentId > 0 ? "子类" : "父类";
                             ?>
                         </td>
                         <td width="80px"><?php echo $row['view_count']?></td>
-                        <td><?php echo $row["full_title"]; ?></td>
+                        <td>
+                            <p><?php echo $row["full_title"]; ?></p>
+                            <p><?php echo $row["description"]; ?></p>
+                        </td>
                         <?php if($parentId>0) echo "<td>{$row['credits']}</td>"; ?>
                         <td><a class="btn" href="index.php?s=formCourseCode&flag=update<?php echo $argument?>">修改</a></td>
                     </tr>

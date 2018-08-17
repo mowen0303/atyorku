@@ -34,7 +34,7 @@ class CourseCodeModel extends Model
             $sql = "UPDATE course_code SET view_count = view_count+1 WHERE id IN ('{$id}');";
             $this->sqltool->query($sql);
         }
-        $sql = "SELECT * FROM course_code c WHERE c.parent_id={$id} ORDER BY view_count desc, title asc";
+        $sql = "SELECT * FROM course_code c WHERE c.parent_id={$id} ORDER BY course_code_sort desc, view_count desc, title asc";
         return $this->sqltool->getListBySql($sql);
     }
 
@@ -184,14 +184,16 @@ class CourseCodeModel extends Model
      * @return bool
      * @throws Exception
      */
-    public function addCourseCode($title, $fullTitle, $credits=0, $parentId=0) {
+    public function addCourseCode($title, $fullTitle, $credits=0, $parentId=0,$description="",$course_code_sort=0) {
         if ($parentId != 0) {
             $sql = "SELECT * FROM course_code c WHERE c.id={$parentId}";
             $this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code父类ID={$parentId} 不存在");
         }
         $sql = "SELECT * FROM {$this->table} WHERE parent_id={$parentId} AND title='{$title}' LIMIT 1";
         !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("Course Code名称={$title} 已存在");
-        $arr = array("title"=>$title, "full_title"=>$fullTitle, "credits"=>$credits, "parent_id"=>$parentId);
+
+        $course_code_sort = $course_code_sort ?: 0;
+        $arr = array("title"=>$title, "full_title"=>$fullTitle, "credits"=>$credits, "parent_id"=>$parentId,"description"=>$description,"course_code_sort"=>$course_code_sort);
         return $this->addRow($this->table,$arr);
     }
 
@@ -223,12 +225,14 @@ class CourseCodeModel extends Model
      * @return bool
      * @throws Exception
      */
-    public function updateCourseCodeById($id, $title, $fullTitle, $credits) {
+    public function updateCourseCodeById($id, $title, $fullTitle, $credits,$description="",$course_code_sort=0) {
         $result = $this->getRowById($this->table, $id) or BasicTool::throwException("没有找到 Course Code");
         $arr = [];
         $arr["title"] = $title;
         $arr["full_title"] = $fullTitle;
         $arr["credits"] = $credits;
+        $arr["description"] = $description;
+        $arr["course_code_sort"] = $course_code_sort ?: 0;
         return $this->updateRowById($this->table, $id, $arr);
     }
 

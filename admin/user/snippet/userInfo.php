@@ -1,9 +1,9 @@
 <?php
 try{
-    $searchedUsername = BasicTool::get("username","用户名邮箱不能为空");
+    $fieldName = BasicTool::get("field_name","field_name不能为空");
+    $searchValue = BasicTool::get("search_value","用户名邮箱不能为空");
     $userModel = new \admin\user\UserModel();
-    $searchedUID = $userModel->getUserIdByName($searchedUsername) or BasicTool::throwException("用户不存在");
-    $row = $userModel->getProfileOfUserById($searchedUID);
+    $result = $userModel->getUserListBySearch($fieldName,$searchValue);
 }catch(Exception $e){
     BasicTool::echoMessage($e->getMessage());
     die();
@@ -36,6 +36,9 @@ try{
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+                        foreach ($result as $row) {
+                    ?>
                     <tr>
                         <td><input type="checkbox" class="cBox" name="id[]" value="<?php echo $row['id']?>"><input type="hidden" name="isAdmin[]" value="<?php echo $row['is_admin']?>"></td>
                         <td><?php echo $row['id']?></td>
@@ -51,6 +54,9 @@ try{
                         <td><?php echo $row['device'] == false ? "0" : "绑" ?></td>
                         <td><a class="btn" href="index.php?s=formCredit&uid=<?php echo $row['id']?>">点券管理</a></td>
                     </tr>
+                    <?php
+                        }
+                    ?>
                 </tbody>
             </table>
         </section>
