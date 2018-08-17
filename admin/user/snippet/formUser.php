@@ -75,6 +75,10 @@ $headDefault = '/resource/img/head-default.png';
                 <input class="input" type="text" name="alias" value="<?php echo $inquiredUser->aliasName?>">
             </div>
             <div>
+                <label>学校ID</label>
+                <input class="input" type="text" name="institution_id" value="<?php echo $inquiredUser->institutionId?>">
+            </div>
+            <div>
                 <label>微信号</label>
                 <input class="input input-size50" type="text" name="wechat" value="<?php echo $inquiredUser->wechat?>">
             </div>
