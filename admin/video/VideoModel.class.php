@@ -9,7 +9,6 @@ use \Model as Model;
 use \BasicTool as BasicTool;
 use \Exception as Exception;
 
-
 class VideoModel extends Model
 {
     public function __construct()
@@ -23,23 +22,17 @@ class VideoModel extends Model
     /**
      * 获取一行视频
      * @param int|string $id 视频ID
-     * @param bool $showVideo
      * @return \一维关联数组|bool
      */
-    public function getVideoById($id, $showVideo=false) {
+    public function getVideoById($id) {
         $id = intval($id);
-        $videoSelect = "v.id, v.album_id, v.section_id, v.instructor_id, v.price, v.description, v.title, v.cover_img_id, v.review_status, v.review_response, v.sort, v.report, v.publish_time, v.update_time";
+        $videoSelect = "v.*";
         $videoAlbumSelect = "va.user_id, va.institution_id";
         $videoSectionSelect = "vs.title AS section_title, vs.count_video, vs.sort AS section_sort, vs.publish_time AS section_publish_time, vs.update_time AS section_update_time";
         $imageSelect = "img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width";
         $institutionSelect = "i.term_end_dates";
         $from = "video v INNER JOIN video_album va ON v.album_id = va.id INNER JOIN video_section vs ON v.section_id = vs.id INNER JOIN image img ON v.cover_img_id = img.id INNER JOIN institution i ON va.institution_id = i.id";
         $where = "v.id = {$id}";
-
-        // include video information
-        if ($showVideo) {
-            $videoSelect .= ", v.url, v.size, v.length";
-        }
 
         $sql = "SELECT {$videoSelect}, {$videoAlbumSelect}, {$videoSectionSelect}, {$imageSelect}, {$institutionSelect} FROM {$from} WHERE {$where}";
         return $this->sqltool->getRowBySql($sql);
@@ -50,11 +43,9 @@ class VideoModel extends Model
      * @param int|string $albumId 视频专辑ID [optional]
      * @param int|string $sectionId 视频章节ID [optional]
      * @param int $status 视频审核状况 [optional] [null | -1 | 0 | 1]
-     * @param int $pageSize
-     * @param bool $showVideo
      * @return array|bool
      */
-    public function getListOfVideoByConditions($albumId=null, $sectionId=null, $status=null, $pageSize=30, $showVideo=false) {
+    public function getListOfVideoByConditions($albumId=null, $sectionId=null, $status=null) {
         $albumId = intval($albumId);
         $sectionId = intval($sectionId);
         $conditions = [];
@@ -76,7 +67,7 @@ class VideoModel extends Model
 
         $where = implode(" AND ", $conditions);
 
-        return $this->getListOfVideoBy($where, $pageSize, $showVideo);
+        return $this->getListOfVideoBy($where);
     }
 
 
@@ -271,41 +262,6 @@ class VideoModel extends Model
         return $this->purgeVideo("album_id = {$albumId}");
     }
 
-    public function purchaseVideoById($id, $buyerId) {
-        //TODO:
-        $id = intval($id);
-        $buyerId = intval($buyerId);
-        if (!$id) {
-            $this->errorMsg = VideoError::INVALID_PARAMETERS . " [ id ]";
-            return false;
-        }
-        if (!$buyerId) {
-            $this->errorMsg = VideoError::INVALID_PARAMETERS . " [ id ]";
-            return false;
-        }
-
-        $result = $this->getVideoById($id);
-        if ($result) {
-            $buyerDescription = "购买视频: " . $result["title"] . " ID: " . $result["id"];
-            $sellerDescription = "售出视频: " . $result["title"] . " ID: " . $result["id"];
-            $expirationTime = "";
-            $ptm = new ProductTransactionModel($this->table);
-            $ptm->buy(
-                $buyerId,
-                $result['user_id'],
-                $result['price'],
-                $buyerDescription,
-                $sellerDescription,
-                $id,
-                $expirationTime
-            );
-        } else {
-            $this->errorMsg = VideoError::ID_NOT_EXIST;
-            return false;
-        }
-    }
-
-
     /**
      * 更新一个视频的审核状态
      * @param int|string $id video id
@@ -317,7 +273,7 @@ class VideoModel extends Model
         $status = intval($status);
         if ($status === 0 || $status === -1 || $status === 1) {
             $arr = ["review_status"=>$status];
-            return $this->updateRowById("video", $id, $arr);
+            return $this->updateRowById($this->table, $id, $arr);
         } else {
             $this->errorMsg = VideoError::INVALID_PARAMETERS . " [ review_status ]";
             return false;
@@ -329,10 +285,9 @@ class VideoModel extends Model
      * Check if given user is authorized to watch given video id
      * @param $id
      * @param $userId
-     * @return bool
      * @throws Exception
      */
-    public function checkAuthorization($id, $userId) {
+    public function checkAuthentication($id, $userId) {
         $ptm = new ProductTransactionModel($this->table);
         $vLimit = VideoModel::NUM_OF_WATCH_LIMITS;
         $currentTime = time();
@@ -342,9 +297,11 @@ class VideoModel extends Model
             $this->table,
             false,
             false,
-            "pt.video_view_count < {$vLimit} AND pt.expiration_time > {$currentTime}"
+            "pt.count_video_view < {$vLimit} AND pt.expiration_time > {$currentTime}"
         );
-        return sizeof($result) > 0;
+        if (!$result || sizeof($result) <= 0) {
+            BasicTool::throwException("请先购买");
+        }
     }
 
     /**==================**/
@@ -358,19 +315,14 @@ class VideoModel extends Model
      * @param bool $showVideo
      * @return array
      */
-    private function getListOfVideoBy($q="", $pageSize=30, $showVideo=false) {
-        $videoSelect = "v.id, v.album_id, v.section_id, v.instructor_id, v.price, v.description, v.title, v.cover_img_id, v.review_status, v.review_response, v.sort, v.report, v.publish_time, v.update_time";
+    private function getListOfVideoBy($q="") {
+        $videoSelect = "v.*";
         $videoAlbumSelect = "va.user_id, va.institution_id";
         $videoSectionSelect = "vs.title AS section_title, vs.count_video, vs.sort AS section_sort, vs.publish_time AS section_publish_time, vs.update_time AS section_update_time";
         $imageSelect = "img.thumbnail_url AS thumbnail_url, img.height AS img_height, img.width AS img_width";
         $institutionSelect = "i.term_end_dates";
-        $from = "video v INNER JOIN video_album va ON v.album_id = va.id INNER JOIN video_section vs ON v.section_id = vs.id INNER JOIN image img ON v.cover_img_id = img.id INNER JOIN institution i ON va.institution_id = i.id";
+        $from = "video v INNER JOIN video_album va ON v.album_id = va.id INNER JOIN video_section vs ON v.section_id = vs.id LEFT JOIN image img ON v.cover_img_id = img.id INNER JOIN institution i ON va.institution_id = i.id";
         $order = "vs.sort, vs.publish_time, v.sort, v.publish_time";
-
-        // include video information
-        if ($showVideo) {
-            $videoSelect .= ", v.url, v.size, v.length";
-        }
 
         $sql = "SELECT {$videoSelect}, {$videoAlbumSelect}, {$videoSectionSelect}, {$imageSelect}, {$institutionSelect} FROM {$from}";
         $countSql = "SELECT COUNT(*) FROM {$from}";
@@ -379,7 +331,7 @@ class VideoModel extends Model
             $countSql .= " WHERE {$q}";
         }
         $sql .= " ORDER BY {$order}";
-        return $this->getListWithPage($this->table, $sql, $countSql, $pageSize);
+        return $this->getListWithPage($this->table, $sql, $countSql, 10000);
     }
 
     /**
@@ -406,6 +358,7 @@ class VideoModel extends Model
             return false;
         }
     }
+
 }
 
 

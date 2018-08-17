@@ -49,7 +49,7 @@ $filterReviewStatus = BasicTool::get("review_status");
                 </thead>
                 <tbody>
                 <?php
-                $arr = $videoModel->getListOfVideoByConditions($albumId, $sectionId, $filterReviewStatus, 30, true);
+                $arr = $videoModel->getListOfVideoByConditions($albumId, $sectionId, $filterReviewStatus);
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

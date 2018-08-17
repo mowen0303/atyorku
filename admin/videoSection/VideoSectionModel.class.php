@@ -75,7 +75,8 @@ class VideoSectionModel extends Model
         $arr["title"] = $title;
         $arr["album_id"] = $videoAlbumId;
         $arr["publish_time"] = time();
-        $arr["last_modified_time"] = $arr["publish_time"];
+        $arr["update_time"] = $arr["publish_time"];
+        $arr["sort"] = $this->getNextVideoSectionSortByAlbumId($videoAlbumId);
 
         return $this->addRow($this->table, $arr);
     }
@@ -98,7 +99,7 @@ class VideoSectionModel extends Model
             $arr["id"] = $id;
             $arr["title"] = $title;
             $arr["album_id"] = $videoAlbumId;
-            $arr["last_modified_time"] = time();
+            $arr["update_time"] = time();
 
             $bool = $this->updateRowById($this->table, $id, $arr);
             return $bool;
@@ -169,6 +170,22 @@ class VideoSectionModel extends Model
         return $this->sqltool->query($sql);
     }
 
+
+    /**
+     * Get next video section sort
+     * @param $albumId
+     * @return bool
+     */
+    private function getNextVideoSectionSortByAlbumId($albumId) {
+        $albumId = intval($albumId);
+        $sql = "SELECT MAX(sort)+1 AS sort FROM video_section WHERE album_id = {$albumId}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if ($result) {
+            return $result['sort'];
+        } else {
+            return false;
+        }
+    }
 
 }
 

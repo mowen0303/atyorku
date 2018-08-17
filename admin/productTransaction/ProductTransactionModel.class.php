@@ -136,8 +136,8 @@ class ProductTransactionModel extends Model {
         $sectionId = intval($sectionId);
 
         $select = "pt.*, bt.user_id AS buyer_id, bt.amount, bt.description, bt.section_name, bt.section_id, bt.pending";
-        $from = "{$this->table} INNER JOIN transaction bt ON pt.buyer_transaction_id = bt.id";
-        $where = "bt.user_id = {$userId} AND bt.section_name = {$sectionName} AND bt.section_id = {$sectionId}";
+        $from = "{$this->table} pt INNER JOIN transaction bt ON pt.buyer_transaction_id = bt.id";
+        $where = "bt.user_id = {$userId} AND bt.section_name = '{$sectionName}' AND bt.section_id = {$sectionId}";
 
         if($extendSelect) {
             $select .= ",{$extendSelect}";

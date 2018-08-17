@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 10, 2018 at 03:34 AM
+-- Generation Time: Aug 17, 2018 at 10:12 PM
 -- Server version: 10.1.32-MariaDB
 -- PHP Version: 7.0.30
 
@@ -37,6 +37,33 @@ CREATE TABLE `institution` (
   `term_end_dates` char(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `institution`
+--
+
+INSERT INTO `institution` (`id`, `title`, `type`, `coordinate`, `term_start_dates`, `term_end_dates`) VALUES
+(1, 'York University', '大学', '12.232,34.523', '', ''),
+(2, 'University of Toronto', '大学', '23.232,123.232', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_transaction`
+--
+
+CREATE TABLE `product_transaction` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `buyer_transaction_id` int(11) UNSIGNED NOT NULL,
+  `seller_transaction_id` int(11) UNSIGNED NOT NULL,
+  `state` enum('waiting_payment','waiting_seller_refund','seller_refused_refund','waiting_admin','transaction_refunded','transaction_complete') NOT NULL DEFAULT 'waiting_payment',
+  `buyer_response` char(150) NOT NULL DEFAULT '',
+  `seller_response` char(150) NOT NULL DEFAULT '',
+  `admin_response` char(150) NOT NULL DEFAULT '',
+  `update_time` int(10) UNSIGNED NOT NULL,
+  `expiration_time` int(11) NOT NULL DEFAULT '0',
+  `count_video_view` tinyint(8) NOT NULL DEFAULT '0' COMMENT '单个视频观看次数'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- --------------------------------------------------------
 
 --
@@ -63,6 +90,15 @@ CREATE TABLE `video` (
   `sort` int(11) UNSIGNED NOT NULL,
   `report` tinyint(8) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `video`
+--
+
+INSERT INTO `video` (`id`, `url`, `size`, `length`, `album_id`, `section_id`, `instructor_id`, `price`, `description`, `publish_time`, `update_time`, `title`, `cover_img_id`, `is_deleted`, `review_status`, `review_response`, `sort`, `report`) VALUES
+(1, '5c7960e277674781b09533fb4eaf2d49', 32, 149, 43, 6, 1, '12.00', 'This is a test video', 1533872506, 1534535399, 'æµ‹è¯•è§†é¢‘', 1344, 0, 1, '', 1, 0),
+(2, 'a392849cdce84ef2b7e1169a8a86344e', 88, 1441, 43, 7, 1, '50.00', 'Watch our video to see two Google engineers demonstrate a mock interview question. After they code, our engineers highlight best practices for interviewing at Google.', 1534534882, 1534534882, 'How to Work at Google', 1344, 0, 1, '', 1, 0),
+(3, '4dae9c252a62439085d74c7cafed4524', 131, 2388, 43, 7, 1, '90.00', 'Lecture 1: The Geometry of Linear Equations.\r\nView the complete course at: http://ocw.mit.edu/18-06S05', 1534535149, 1534535149, 'Lec 1  MIT 18.06 Linear Algebr', 1346, 0, 1, '', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -91,6 +127,13 @@ CREATE TABLE `video_album` (
   `sort` tinyint(8) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `video_album`
+--
+
+INSERT INTO `video_album` (`id`, `title`, `description`, `user_id`, `course_code_id`, `professor_id`, `institution_id`, `price`, `publish_time`, `last_modified_time`, `is_deleted`, `is_available`, `cover_img_id`, `count_video`, `count_participants`, `count_clicks`, `count_comments`, `sort`) VALUES
+(43, 'test video album one', 'This is a test video album', 1, 188, 1, 1, '900.00', 1533604161, 1533604161, 0, 1, 1340, 3, 0, 0, 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -104,6 +147,16 @@ CREATE TABLE `video_album_tag` (
   `count_album` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `video_album_tag`
+--
+
+INSERT INTO `video_album_tag` (`id`, `title`, `cover_img_id`, `count_album`) VALUES
+(6, 'category_1', 1342, 0),
+(7, 'category_2', 1340, 0),
+(8, 'category_3', 0, 0),
+(9, 'category_4', 1343, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -115,6 +168,13 @@ CREATE TABLE `video_album_tag_video_album` (
   `album_id` int(11) UNSIGNED NOT NULL,
   `tag_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `video_album_tag_video_album`
+--
+
+INSERT INTO `video_album_tag_video_album` (`id`, `album_id`, `tag_id`) VALUES
+(1, 43, 6);
 
 -- --------------------------------------------------------
 
@@ -132,6 +192,19 @@ CREATE TABLE `video_section` (
   `publish_time` int(11) UNSIGNED NOT NULL,
   `update_time` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `video_section`
+--
+
+INSERT INTO `video_section` (`id`, `title`, `album_id`, `count_video`, `is_deleted`, `sort`, `publish_time`, `update_time`) VALUES
+(1, 'section 1', 1, 0, 1, 0, 1532313914, 1532313928),
+(2, 'section 1', 2, 5, 0, 0, 1532373378, 1532373378),
+(3, 'section 2', 2, 0, 1, 0, 1532373388, 1532373388),
+(4, 'æµ‹è¯•3', 2, 0, 1, 0, 1532874993, 1532874999),
+(5, 'section 2', 2, 0, 0, 0, 1532875841, 1532875841),
+(6, 'æµ‹è¯•ç« èŠ‚', 43, 1, 0, 1, 1533872373, 1533872373),
+(7, 'æµ‹è¯•ç« èŠ‚ 2', 43, 2, 0, 2, 1534534450, 1534534450);
 
 -- --------------------------------------------------------
 
@@ -158,6 +231,14 @@ CREATE TABLE `video_stats` (
 --
 ALTER TABLE `institution`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `product_transaction`
+--
+ALTER TABLE `product_transaction`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_product_transaction_buyer_transaction_id` (`buyer_transaction_id`),
+  ADD KEY `fk_product_transaction_seller_transaction_id` (`seller_transaction_id`);
 
 --
 -- Indexes for table `video`
@@ -219,37 +300,43 @@ ALTER TABLE `video_stats`
 -- AUTO_INCREMENT for table `institution`
 --
 ALTER TABLE `institution`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `product_transaction`
+--
+ALTER TABLE `product_transaction`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `video`
 --
 ALTER TABLE `video`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `video_album`
 --
 ALTER TABLE `video_album`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `video_album_tag`
 --
 ALTER TABLE `video_album_tag`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `video_album_tag_video_album`
 --
 ALTER TABLE `video_album_tag_video_album`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `video_section`
 --
 ALTER TABLE `video_section`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `video_stats`
@@ -260,6 +347,13 @@ ALTER TABLE `video_stats`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `product_transaction`
+--
+ALTER TABLE `product_transaction`
+  ADD CONSTRAINT `fk_product_transaction_buyer_transaction_id` FOREIGN KEY (`buyer_transaction_id`) REFERENCES `transaction` (`id`),
+  ADD CONSTRAINT `fk_product_transaction_seller_transaction_id` FOREIGN KEY (`seller_transaction_id`) REFERENCES `transaction` (`id`);
 
 --
 -- Constraints for table `video`

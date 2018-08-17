@@ -7,7 +7,7 @@ $userModel = new \admin\user\UserModel();
 </header>
 <nav class="mainNav">
     <a class="btn" href="/admin/videoAlbum/index.php?listVideoAlbum">返回</a>
-    <a class="btn" href="index.php?s=formVideoAlbumTag&flag=add">添加课程专辑分类</a>
+    <a class="btn" href="index.php?s=formVideoAlbumTag&flag=last_modified_time">添加课程专辑分类</a>
 </nav>
 <article class="mainBox">
     <header><h2>课程专辑分类列表</h2></header>

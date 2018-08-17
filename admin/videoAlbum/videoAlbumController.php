@@ -81,7 +81,7 @@ function getListOfVideoAlbumWithJson() {
             BasicTool::echoJson(0, "获取视频专辑类别列表失败");
         }
     } catch (Exception $e) {
-        BasicTool::echoMessage($e->getMessage(),-1);
+        BasicTool::echoJson(0, $e->getMessage());
     }
 }
 
