@@ -693,6 +693,11 @@ class UserModel extends Model {
         return $this->sqltool->getRowBySql($sql)['id'];
     }
 
+    public function getUserListBySearch($fieldName,$value){
+        $sql = "SELECT * FROM user WHERE {$fieldName} LIKE '%{$value}%'";
+        return $this->sqltool->getListBySql($sql);
+    }
+
      public function updateDevice($uid,$deviceType,$deviceToken){
         if(!$this->userId) return false;
         $sql = "UPDATE user SET device = '0' WHERE device in ('{$deviceToken}')";
