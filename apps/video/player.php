@@ -9,7 +9,6 @@ if(!$currentUser->isLogin()){
 }
 
 $vid = BasicTool::get("vid") ?: "";
-//$playAuth = BasicTool::get("playauth") ?: "";
 
 ?>
 
@@ -66,7 +65,6 @@ $vid = BasicTool::get("vid") ?: "";
             json = JSON.parse(json);
             if (json.code === 1) {
                 const {VideoMeta:{CoverURL, VideoId}, PlayAuth} = json.result;
-                console.log(json.result);
                 let player = new Aliplayer({
                     id: 'J_prismPlayer',
                     width: '100%',
