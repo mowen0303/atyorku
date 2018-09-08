@@ -228,7 +228,7 @@ class ProductTransactionModel extends Model {
                 "seller_transaction_id" => $sellerTransId,
                 "state" => ProductTransactionState::WAITING_PAYMENT,
                 "update_time" => time(),
-                "expirationTime" => $expirationTime
+                "expiration_time" => $expirationTime
             ];
             return $this->addRow($this->table, $arr);
         } catch (Exception $e) {
