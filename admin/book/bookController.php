@@ -462,7 +462,7 @@ function purchaseBookWithJson() {
                 $msgModel->pushMsgToUser($sellerId,"notice",0,"下架通知: 你的资料[{$name}]因[无效的网盘链接]被系统自动下架.",28);
                 BasicTool::throwException("购买失败: 资料链接不存在, 此资料将被自动下架.");
             }
-            $result = $productTransactionModel->buy($buyerId, $sellerId, $price, $buyerDescription, $sellerDescription, $bookId, $elink) or BasicTool::throwException($productTransactionModel->errorMsg);
+            $result = $productTransactionModel->buy($buyerId, $sellerId, $price, $buyerDescription, $sellerDescription, $bookId) or BasicTool::throwException($productTransactionModel->errorMsg);
             $msgModel->pushMsgToUser($buyerId, 'book', $bookId, $name.": ".$elink, $sellerId);
             $msgModel->pushMsgToUser($sellerId, 'book', $bookId, "我花了[{$price}]点积分,购买了你的资料[{$name}]",$buyerId);
             BasicTool::echoJson(1, "购买成功", $result);
