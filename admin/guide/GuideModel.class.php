@@ -163,7 +163,7 @@ class GuideModel extends Model
         }
     }
 
-    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order, $classOrder)
+    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order, $classOrder, $isReproduced, $sourceTitle, $sourceUrl)
     {
         $arr['guide_class_id'] = $guideClassID; //14草稿箱
         $arr['user_id'] = $userID;
@@ -173,6 +173,9 @@ class GuideModel extends Model
         $arr['guide_order'] = $order ?: 0;
         $arr['guide_class_order'] = $classOrder ?: 0;
         $arr['cover'] = $cover ? $cover : "";
+        $arr["is_reproduced"] = $isReproduced ? 1 : 0;
+        $arr["source_title"] = $sourceTitle ?: "";
+        $arr["source_url"] = $sourceUrl ?: "";
         $this->updateRowById('guide', $guideID, $arr);
         return true;
     }

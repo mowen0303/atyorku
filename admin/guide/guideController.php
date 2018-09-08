@@ -82,6 +82,17 @@ function updateGuide(){
         $guideID = BasicTool::post('guide_id') or BasicTool::throwException("缺少Guide ID");
         $guideClassID = BasicTool::post('guide_class_id', '所属指南组不能为空');
         $title = BasicTool::post('title', '标题不能为空',255);
+        //-----------------------转载
+        $isReproduced = BasicTool::post("is_reproduced","请注明该文章是否为转载文章");
+        $sourceTitle = BasicTool::post("source_title");
+        $sourceUrl = BasicTool::post("source_url");
+        if ($isReproduced){
+            $sourceTitle && $sourceUrl or BasicTool::throwException("请注明文章来源,并填入文章转载链接");
+        }else{
+            $sourceTitle = "";
+            $sourceUrl = "";
+        }
+        //-----------------------
         $content = $_POST['content'];
         $contentLength = strlen($content);
         $contentLength < 16777215 or BasicTool::throwException("内容超出字符限制{$contentLength}/65500");
@@ -92,7 +103,7 @@ function updateGuide(){
         $userID = BasicTool::post('userID');
         $classOrder = BasicTool::post('guide_class_order');
 
-        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order,$classOrder) or BasicTool::throwException($guideModel->errorMsg);
+        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order,$classOrder, $isReproduced, $sourceTitle , $sourceUrl) or BasicTool::throwException($guideModel->errorMsg);
         if( $oldClassId != null && $oldClassId != $guideClassID){
             $guideModel->updateAmountOfArticleByClassId($guideClassID);
             $guideModel->updateAmountOfArticleByClassId($oldClassId);

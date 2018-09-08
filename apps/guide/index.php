@@ -1,10 +1,14 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/config.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_header.html";
 $guideModel = new \admin\guide\GuideModel();
 $guide_id = BasicTool::get('guide_id');
 $guideModel->increaseCountNumber($guide_id);
 $arr = $guideModel->getRowOfGuideById($guide_id);
+if ($arr["is_reproduced"]){
+    header('Location: '.$arr["source_url"]);
+    die();
+}
+require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_header.html";
 ?>
 
 <?php
