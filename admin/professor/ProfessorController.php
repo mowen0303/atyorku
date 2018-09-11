@@ -26,6 +26,13 @@ function getProfessorByIdWithJson() {
     }
 }
 
+/**
+ * 通过提供的教授名称来获取一个教授ID， 如果没有该名称，新建一个教授返回ID
+ * http://www.atyorku.ca/admin/professor/professorController.php?action=getProfessorIdByFullNameWithJson
+ */
+function getProfessorIdByFullNameWithJson() {
+    getProfessorIdByFullName("json");
+}
 
 /**
  * JSON -  获取教授列表
@@ -159,6 +166,29 @@ function deleteProfessor($echoType = "normal") {
             BasicTool::echoMessage("成功删除{$i}个教授", $_SERVER['HTTP_REFERER']);
         } else {
             BasicTool::echoJson(1, "成功删除{$i}个教授");
+        }
+    } catch (Exception $e) {
+        if ($echoType == "normal") {
+            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
+        } else {
+            BasicTool::echoJson(0, $e->getMessage());
+        }
+    }
+}
+
+function getProfessorIdByFullName($echoType = "normal") {
+    global $professorModel;
+    try {
+        $profName = BasicTool::post('name') or BasicTool::throwException("教授名称不能为空");
+        $id = $professorModel->getProfessorIdByFullName($profName);
+        if ($id) {
+            if ($echoType == "normal") {
+                BasicTool::echoMessage("成功", $_SERVER['HTTP_REFERER']);
+            } else {
+                BasicTool::echoJson(1, "成功", $id);
+            }
+        } else {
+            BasicTool::throwException($professorModel->errorMsg);
         }
     } catch (Exception $e) {
         if ($echoType == "normal") {

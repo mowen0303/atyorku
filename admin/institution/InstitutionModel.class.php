@@ -119,15 +119,19 @@ class InstitutionModel extends Model
         $currentDate = date('m-d');
         $result = "";
         foreach ($endingDates as $d) {
-            if ($currentDate < $d) {
+            if (strcmp($currentDate, $d) < 0) {
                 $result = $d;
                 break;
             }
         }
+        $year = date("Y");
         if ($result === "") {
-            $result = $endingDates[1];
+            // 意味着下一年
+            $result = $endingDates[0];
+            $year = $year + 1;
         }
-        return $result;
+        $parts = explode('-', $result);
+        return mktime(0,0,0,$parts[0], 1, $year);
     }
 }
 
