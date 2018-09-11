@@ -155,6 +155,9 @@ class GuideModel extends Model
         $arr['post_time'] = time();
         $arr['count_comments'] = 0;
         $arr['is_del'] = 0;
+        $arr['is_reproduced'] = 0;
+        $arr['source_url'] = "";
+        $arr['source_title'] = "";
         if ($this->addRow('guide', $arr)) {
             return $this->idOfInsert;
         } else {

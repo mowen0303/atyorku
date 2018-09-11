@@ -4,6 +4,10 @@ $guideModel = new \admin\guide\GuideModel();
 $guide_id = BasicTool::get('guide_id');
 $guideModel->increaseCountNumber($guide_id);
 $arr = $guideModel->getRowOfGuideById($guide_id);
+if ($arr["is_reproduced"]){
+    header('Location: '.$arr["source_url"]);
+    die();
+}
 //wechat component
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/wechat/jssdk.php";
 $jssdk = new JSSDK();
@@ -128,28 +132,28 @@ $signPackage = $jssdk->GetSignPackage();
             //----------------fold 折叠------------------------------[end]start----------------
 
             //----复制---
-            var u = navigator.userAgent;
-            var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
-            var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-            $(".copyDoc").each(function(){
-                $(this).click(function(){
-                    console.log($(this));
-                    // const input = document.createElement('input');
-                    // input.setAttribute('readonly', 'readonly');
-                    // input.setAttribute('value', copyText);
-                    // document.body.appendChild(input);
-                    // if(isiOS){
-                    //   input.setSelectionRange(0, 9999);
-                    // }else{
-                    //   input.select();
-                    // }
-                  	// if (document.execCommand('copy')) {
-                  	// 	document.execCommand('copy');
-                  	// 	alert(`微信号已复制: ${copyText}`);
-                  	// }
-                    // document.body.removeChild(input);
-                })
-            })
+            // var u = navigator.userAgent;
+            // var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+            // var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+            // $(".copyDoc").each(function(){
+            //     $(this).click(function(){
+            //         console.log($(this));
+            //         // const input = document.createElement('input');
+            //         // input.setAttribute('readonly', 'readonly');
+            //         // input.setAttribute('value', copyText);
+            //         // document.body.appendChild(input);
+            //         // if(isiOS){
+            //         //   input.setSelectionRange(0, 9999);
+            //         // }else{
+            //         //   input.select();
+            //         // }
+            //       	// if (document.execCommand('copy')) {
+            //       	// 	document.execCommand('copy');
+            //       	// 	alert(`微信号已复制: ${copyText}`);
+            //       	// }
+            //         // document.body.removeChild(input);
+            //     })
+            // })
             //----复制---
 
             //----------------WeChat Share------------------------------[start]-------------------
@@ -248,11 +252,8 @@ $signPackage = $jssdk->GetSignPackage();
         </div>
         <section class="context">
             <?php echo $arr['content']; ?>
+            <p style="margin-top:4em"><img src="/resource/img/gzhqr.jpg" alt=""><p><p class="copyDoc"></p>
         </section>
-        <blockquote style="margin-top:4em">
-            <p><img src="/resource/img/gzhqr.jpg" alt=""><p>
-                <p class="copyDoc"></p>
-        </blockquote>
         <?php
         if($arr['view_no']>=500){
             echo '<div class="readCount"><em></em><span>浏览量：'.$arr['view_no'].'</span><em></em></div>';

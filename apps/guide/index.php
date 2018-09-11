@@ -75,6 +75,7 @@ if (BasicTool::get(share) != 1) {
         </div>
         <section class="context">
             <?php echo $arr['content']; ?>
+            <p style="margin-top:4em"><img src="/resource/img/gzhqr.jpg" alt=""><p><p class="copyDoc"></p>
         </section>
         <?php
             if($arr['view_no']>=500){

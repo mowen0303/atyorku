@@ -1,7 +1,7 @@
 <?php
 $statisticsModel = new \admin\statistics\StatisticsModel();
 $currentUser = new \admin\user\UserModel();
-$offSet = 200;
+$offSet = 150;
 ?>
 <header class="topBox">
     <h1><?php echo $pageTitle?></h1>
@@ -14,8 +14,8 @@ $offSet = 200;
     <section>
         <p><b>最近30天平均访问：</b><span id="view30"></span></p>
         <p><b>最近7天平均访问：</b><span id="view7"></span></p>
-        <p>有效用户:<?php echo $offSet+700+$currentUser->getCountOfUserForValid() ?></p>
-        <p>设备注册量:<?php echo $currentUser->getCountOfDevice()+$offSet+700 ?></p>
+        <p>有效用户:<?php echo $offSet+500+$currentUser->getCountOfUserForValid() ?></p>
+        <p>设备注册量:<?php echo $currentUser->getCountOfDevice()+$offSet+500 ?></p>
         <canvas id="lineChart" width="400" height="400"></canvas>
         <script type="text/javascript">
         $(document).ready(function(){
