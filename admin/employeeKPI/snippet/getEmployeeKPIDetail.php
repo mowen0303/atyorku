@@ -10,16 +10,23 @@ try{
         $main_uid = $userModel->getUserIdByName($searchedUsername) or BasicTool::throwException("用户不存在");
         $profile = $employeeKPIModel->getEmployeeKPIProfileByMainUserId($main_uid) or BasicTool::throwException("查询失败");
     }
+    //-----------------------------------------------时间
+    $start_time = BasicTool::get("start_time");
+    $start_time = $start_time ? BasicTool::translateHTMLTimeToPHPStaple($start_time) : time() - 604800;
+    $end_time = BasicTool::get("end_time");
+    $end_time = $end_time ? BasicTool::translateHTMLTimeToPHPStaple($end_time) : time();
+    $start_time < $end_time or BasicTool::throwException("查询失败:初始时间>截止时间");
+    //------------------------------------------------------
+
 }catch(Exception $e){
     BasicTool::echoMessage($e->getMessage());
     die();
 }
+
 $user_ids = $profile["user_ids"];
 sort($user_ids);
 $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
 
-$start_time = time()-86400;
-$end_time = time();
 ?>
 
 <header class="topBox">
@@ -28,6 +35,30 @@ $end_time = time();
 <nav class="mainNav">
     <a class="btn" href="index.php?s=getEmployeeKPIProfiles">返回</a>
 </nav>
+
+<article class="mainBox">
+    <header><h2>统计周期</h2></header>
+    <form action="index.php" method="get">
+        <input name="s" value="getEmployeeKPIDetail" hidden/>
+        <input name="id" value='<?php echo $id ?>' hidden/>
+        <input name="username" value='<?php echo $searchedUsername ?>' hidden/>
+        <section class="formBox">
+            <div style="display:flex;flex-direction:row">
+                <div>
+                    <label>开始时间<i>*</i></label>
+                    <input class="input" type="datetime-local" name="start_time" value="<?php echo date("Y-m-d",$start_time)."T".date("H:i",$start_time)?>" style="margin-right:3rem"/>
+                </div>
+                <div style="margin-left: 20px">
+                    <label>截止时间<i>*</i></label>
+                    <input class="input" type="datetime-local" name="end_time" value="<?php echo date("Y-m-d",$end_time)."T".date("H:i",$end_time)?>" style="margin-right:3rem"/>
+                </div>
+            </div>
+        </section>
+        <footer class="buttonBox">
+            <input type="submit" value="提交" class="btn">
+        </footer>
+    </form>
+</article>
 
 <article class="mainBox">
     <header><h2>账户列表</h2></header>
