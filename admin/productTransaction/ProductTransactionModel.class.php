@@ -1,5 +1,6 @@
 <?php
 namespace admin\productTransaction;
+use admin\video\VideoModel;
 use \Model as Model;
 use admin\transaction\TransactionModel as TransactionModel;
 use \BasicTool as BasicTool;
@@ -133,11 +134,15 @@ class ProductTransactionModel extends Model {
      */
     public function getListOfPurchasedTransactionsBy($userId, $sectionId, $sectionName, $extendSelect=false, $extendFrom=false, $extendWhere=false) {
         $userId = intval($userId);
-        $sectionId = intval($sectionId);
+        if (is_array($sectionId)) {
+            $sectionId = implode(',', $sectionId);
+        } else {
+            $sectionId = intval($sectionId);
+        }
 
         $select = "pt.*, bt.user_id AS buyer_id, bt.amount, bt.description, bt.section_name, bt.section_id, bt.pending";
         $from = "{$this->table} pt INNER JOIN transaction bt ON pt.buyer_transaction_id = bt.id";
-        $where = "bt.user_id = {$userId} AND bt.section_name = '{$sectionName}' AND bt.section_id = {$sectionId}";
+        $where = "bt.user_id = {$userId} AND bt.section_name = '{$sectionName}' AND bt.section_id IN ({$sectionId})";
 
         if($extendSelect) {
             $select .= ",{$extendSelect}";
@@ -199,6 +204,29 @@ class ProductTransactionModel extends Model {
     }
 
 
+    public function getListOfPurchasedVideoTransaction($userId, $videoIds) {
+        if ($this->sectionName !== 'video') {
+            // invalid section name
+            BasicTool::throwException('无效表名');
+        }
+
+    }
+
+    public function incrementVideoViewCount($userId, $vid) {
+        $userId = intval($userId);
+        $vid = intval($vid);
+        $maxCount = VideoModel::NUM_OF_WATCH_LIMITS;
+        $sql = "SELECT pt.id, pt.count_video_view FROM product_transaction pt INNER JOIN transaction bt ON pt.buyer_transaction_id = bt.id WHERE bt.section_name = 'video' AND bt.section_id = {$vid} AND bt.user_id = {$userId} AND pt.count_video_view < {$maxCount}";
+        $result = $this->sqltool->getRowBySql($sql);
+        if ($result) {
+            $newCount = $result['count_video_view'] + 1;
+            $arr = ['count_video_view'=> $newCount];
+            return $this->updateRowById('product_transaction', $result['id'], $arr);
+        } else {
+            $this->errorMsg = '请先购买';
+            return false;
+        }
+    }
 
 
     /**********************************/

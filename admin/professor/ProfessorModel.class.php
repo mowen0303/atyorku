@@ -1,5 +1,6 @@
 <?php
 namespace admin\professor;   //-- 注意 --//
+use admin\courseRating\CourseRatingModel;
 use admin\statistics\StatisticsModel;
 use \Model as Model;
 use \BasicTool as BasicTool;
@@ -69,8 +70,13 @@ class ProfessorModel extends Model
 
         //如果没有此教授, 则添加,并返回id
         if($professorId==0){
-            $this->addProfessor($firstName,$lastName);
-            $professorId = intval($this->sqltool->getInsertId());
+            $bool = $this->addProfessor($firstName,$lastName);
+            if ($bool) {
+                $professorId = intval($this->sqltool->getInsertId());
+            } else {
+                // 新教授添加失败
+                return 0;
+            }
         }
         //增加热度
         $sql = "UPDATE professor SET view_count = view_count + 1 WHERE id = {$professorId}";
@@ -92,7 +98,13 @@ class ProfessorModel extends Model
         $sql = "SELECT * FROM {$this->table} WHERE firstname='{$firstname}' AND lastname='{$lastname}' LIMIT 1";
         !$this->sqltool->getRowBySql($sql) or BasicTool::throwException("professor名称:{$firstname} {$lastname} 已存在");
         $arr = array("firstname"=>$firstname,"lastname"=>$lastname);
-        return $this->addRow($this->table, $arr);
+        $result = $this->addRow($this->table, $arr);
+        if ($result) {
+            // add new prof reportaddCourseRatingWithJson
+            $courseRatingModel = new CourseRatingModel();
+            $courseRatingModel->addReport(false, $this->idOfInsert);
+        }
+        return $result;
     }
 
     /**
