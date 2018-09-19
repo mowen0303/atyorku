@@ -104,3 +104,73 @@ $end_time = time();
         </table>
     </section>
 </article>
+
+<article class="mainBox">
+    <header><h2>同学圈评论</h2></header>
+    <section>
+        <table class="tab">
+            <thead>
+            <tr>
+                <th>头像</th>
+                <th>昵称</th>
+                <th>内容</th>
+                <th>发布时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            $arr = $employeeKPIModel->getCommentsByUserId($user_ids,$start_time,$end_time);
+            foreach ($arr as $temp) {
+                $user_profile = $userModel->getProfileOfUserById($temp["user_id"]);
+                foreach ($temp["data"] as $row) {
+                    ?>
+                    <tr>
+                        <td><img width="36" height="36" src="<?php echo $user_profile['img'] ?>"></td>
+                        <td><?php echo $user_profile["alias"] ?></td>
+                        <td><?php echo $row['comment'] ?></td>
+                        <td><?php echo BasicTool::translateTime($row['time']) ?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </section>
+</article>
+
+<article class="mainBox">
+    <header><h2>同学圈</h2></header>
+    <section>
+        <table class="tab">
+            <thead>
+            <tr>
+                <th>头像</th>
+                <th>昵称</th>
+                <th>图片</th>
+                <th>内容</th>
+                <th>发布时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            $arr = $employeeKPIModel->getForumsByUserId($user_ids,$start_time,$end_time);
+            foreach ($arr as $temp) {
+                $user_profile = $userModel->getProfileOfUserById($temp["user_id"]);
+                foreach ($temp["data"] as $row) {
+                    ?>
+                    <tr>
+                        <td><img width="36" height="36" src="<?php echo $user_profile['img'] ?>"></td>
+                        <td><?php echo $user_profile["alias"] ?></td>
+                        <td><img width="60px" height="auto" src="<?php echo $row['img_url'] ?>"></td>
+                        <td><?php echo $row['content'] ?></td>
+                        <td><?php echo BasicTool::translateTime($row['time']) ?></td>
+                    </tr>
+                    <?php
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </section>
+</article>
