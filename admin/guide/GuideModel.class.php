@@ -95,7 +95,7 @@ class GuideModel extends Model
         $order = $guide_classId == 0 ? "" : "g.guide_class_order DESC,";
 
 
-        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order DESC ,g.time DESC";
+        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,source_url,source_title,is_reproduced, u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order DESC ,g.time DESC";
 
         $countSql = "SELECT count(*) FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order,time";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);
@@ -104,19 +104,13 @@ class GuideModel extends Model
         $idIndex = 0;
 
         foreach ($result as $k1 => $v1) {
-            foreach ($v1 as $k2 => $v2) {
-                if ($k2 == "time") {
-                    $result[$k1][$k2] = BasicTool::translateTime($v2);
-                }
-                if ($k2 == "id") {
-
-                    if ($idIndex < 5) {
-                        $id .= ($v2 . ",");
-                        $idIndex++;
-                    }
-
-                }
-
+            $result[$k1]["time"] = BasicTool::translateTime($result[$k1]["time"]);
+            if( $result[$k1]["is_reproduced"]==1){
+                $result[$k1]["alias"] = $result[$k1]["source_title"];
+            }
+            if ($idIndex < 3) {
+                $id .= ($result[$k1]["id"] . ",");
+                $idIndex++;
             }
         }
 
