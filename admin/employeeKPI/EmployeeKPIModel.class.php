@@ -14,6 +14,9 @@ class EmployeeKPIModel extends Model {
     private static $uids = "user_ids";
     private static $pageSize = 30;
     private static $count_accounts = "count_accounts";
+    private static $count_guides = "count_guides";
+    private static $count_forums = "count_forums";
+    private static $count_comments = "count_comments";
 
     public function getEmployeeKPIProfiles($id=false){
         $condition = "true";
@@ -32,11 +35,11 @@ class EmployeeKPIModel extends Model {
 
     public function getEmployeeKPIProfileByMainUserId($main_uid){
         $sql = "SELECT {$this::$pk} FROM {$this::$table_name} WHERE {$this::$main_uid} IN ({$main_uid})";
-        $id = $this->sqltool->getRowBySql($sql);
+        $id = $this->sqltool->getRowBySql($sql)[self::$pk];
         if (!$id)
             return false;
         else
-            return $this->getEmployeeKPIProfiles($id);
+            return $this->getEmployeeKPIProfiles($id)[0];
     }
 
     public function insertOrUpdate($main_uid,$uids,$id=false){
@@ -110,7 +113,90 @@ class EmployeeKPIModel extends Model {
             return false;
     }
 
+    public function getPostCountByUserId($uid,$start_time,$end_time){
+        $res=[];
+        foreach($uid as $id){
+            $res[$id.""] = array("user_id"=>$id,self::$count_guides=>0,self::$count_comments=>0,self::$count_forums=>0);
+        }
+        $concat = self::convertArrayToString($uid);
+        $sql_count_forums = "SELECT COUNT(*) AS count,user_id FROM forum WHERE user_id IN ({$concat}) AND time < {$end_time} AND time > {$start_time} GROUP BY user_id";
+        $sql_count_guides = "SELECT COUNT(*) AS count,user_id FROM guide WHERE user_id IN ({$concat}) AND post_time < {$end_time} AND post_time > {$start_time} GROUP BY user_id";
+        $sql_count_comments = "SELECT COUNT(*) AS count,sender_id AS user_id FROM comment WHERE section_name='forum' AND sender_id IN ({$concat}) AND time < {$end_time} AND time > {$start_time}  GROUP BY sender_id";
+        $count_forums=$this->sqltool->getListBySql($sql_count_forums);
+        $count_guides = $this->sqltool->getListBySql($sql_count_guides);
+        $count_comments = $this->sqltool->getListBySql($sql_count_comments);
 
+        foreach ($count_forums as $temp){
+           if (array_key_exists($temp["user_id"]."",$res))
+               $res[$temp["user_id"].""][self::$count_forums] = $temp["count"];
+        }
+        foreach ($count_guides as $temp){
+            if (array_key_exists($temp["user_id"]."",$res))
+                $res[$temp["user_id"].""][self::$count_guides] = $temp["count"];
+        }
+        foreach ($count_comments as $temp){
+            if (array_key_exists($temp["user_id"]."",$res))
+                $res[$temp["user_id"].""][self::$count_comments] = $temp["count"];
+        }
+        return $res;
+    }
+
+    public function getCommentsByUserId($uid,$start_time,$end_time){
+        $res=[];
+        foreach($uid as $id){
+            $res[$id.""] = array("user_id"=>$id,"data"=>[]);
+        }
+        $concat = self::convertArrayToString($uid);
+        $condition = "section_name IN ('forum') AND sender_id IN ({$concat}) AND {$start_time} < time AND {$end_time} > time";
+        $sort = "time DESC";
+
+        $sql = "SELECT comment.*,user.id AS user_id,user.alias,user.img,user.name FROM (SELECT * FROM comment WHERE {$condition}) AS comment INNER JOIN user ON comment.sender_id = user.id ORDER BY {$sort}";
+        $result = $this->sqltool->getListBySql($sql);
+        foreach ($result as $temp){
+            if (array_key_exists($temp["user_id"]."",$res)){
+                $res[$temp["user_id"].""]["data"][] = $temp;
+            }
+        }
+        return $res;
+    }
+
+    public function getForumsByUserId($uid,$start_time,$end_time){
+        $res=[];
+        foreach($uid as $id){
+            $res[$id.""] = array("user_id"=>$id,"data"=>[]);
+        }
+        $concat = self::convertArrayToString($uid);
+        $condition = "user_id IN ({$concat}) AND {$start_time} < time AND {$end_time} > time";
+        $sort = "time DESC";
+
+        $sql = "SELECT forum.*,image.url AS img_url FROM (SELECT forum.*,user.name,user.img,user.alias FROM (SELECT user_id,content,img_id_1,time FROM forum WHERE {$condition}) AS forum INNER JOIN user ON forum.user_id = user.id) AS forum LEFT JOIN image ON forum.img_id_1 = image.id ORDER BY {$sort}";
+        $result = $this->sqltool->getListBySql($sql);
+        foreach ($result as $temp){
+            if (array_key_exists($temp["user_id"]."",$res)){
+                $res[$temp["user_id"].""]["data"][] = $temp;
+            }
+        }
+        return $res;
+    }
+
+    public function getGuidesByUserId($uid,$start_time,$end_time){
+        $res=[];
+        foreach($uid as $id){
+            $res[$id.""] = array("user_id"=>$id,"data"=>[]);
+        }
+        $concat = self::convertArrayToString($uid);
+        $condition = "user_id IN ({$concat}) AND {$start_time} < time AND {$end_time} > time";
+        $sort = "time DESC";
+
+        $sql = "SELECT guide.*,user.name,user.img,user.alias FROM (SELECT user_id,title,introduction,cover AS img_url,time FROM guide WHERE {$condition}) AS guide INNER JOIN user ON guide.user_id = user.id ORDER BY {$sort}";
+        $result = $this->sqltool->getListBySql($sql);
+        foreach ($result as $temp){
+            if (array_key_exists($temp["user_id"]."",$res)){
+                $res[$temp["user_id"].""]["data"][] = $temp;
+            }
+        }
+        return $res;
+    }
 }
 
 
