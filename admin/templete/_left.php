@@ -32,6 +32,7 @@ if(!$userModel->isAdminLogin()){
 		<article class="navCon">
 			<ul>
 				<li><a href="/admin/adCategory/index.php" target="mainFrame">广告管理</a></li>
+                <li><a href="/admin/employeeKPI/index.php" target="mainFrame">KPI统计</a></li>
                 <li><a href ="/admin/timetable/index.php" target="mainFrame">课程表</a></li>
 				<li><a href ="/apps/event/event/index.php" target="mainFrame">活动管理</a></li>
                 <li><a href ="/admin/knowledge/index.php" target="mainFrame">考试回忆录</a></li>
