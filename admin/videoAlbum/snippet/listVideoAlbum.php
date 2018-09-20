@@ -37,6 +37,10 @@ $userModel = new \admin\user\UserModel();
                 <tbody>
                 <?php
                 $arr = $videoAlbumModel->getListOfVideoAlbum();
+                if(!$arr){
+                    echo $videoAlbumModel->errorMsg;
+                }
+                var_dump($arr);
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

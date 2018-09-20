@@ -8,14 +8,14 @@ use \Exception as Exception;
 
 class InstitutionModel extends Model
 {
+    // 机构类别
+    private $institutionType = ["university"=>1, "highSchool"=>2];
+
     public function __construct()
     {
         parent::__construct();
         $this->table = "institution";
     }
-
-    // 机构类别
-    const TYPE = ["university"=>1, "highSchool"=>2];
 
     /**
      * 添加一个机构
@@ -30,7 +30,7 @@ class InstitutionModel extends Model
     {
         $arr = [];
         $arr["title"] = $title;
-        $arr["type"] = InstitutionModel::TYPE[$type];
+        $arr["type"] = $this->institutionType[$type];
         $arr["coordinate"] = $coordinate;
         $arr["term_start_dates"] = $termStartDates;
         $arr["term_end_dates"] = $termEndDates;
@@ -57,9 +57,9 @@ class InstitutionModel extends Model
      * @return array
      */
     public function getListOfInstitution($pageSize=20) {
-      $sql = "SELECT * FROM {$this->table}";
-      $countSql = "SELECT COUNT(*) FROM {$this->table}";
-      return $this->getListWithPage($this->table, $sql, $countSql, $pageSize);
+        $sql = "SELECT * FROM {$this->table}";
+        $countSql = "SELECT COUNT(*) FROM {$this->table}";
+        return $this->getListWithPage($this->table, $sql, $countSql, $pageSize);
     }
 
     /**
@@ -119,15 +119,19 @@ class InstitutionModel extends Model
         $currentDate = date('m-d');
         $result = "";
         foreach ($endingDates as $d) {
-            if ($currentDate < $d) {
+            if (strcmp($currentDate, $d) < 0) {
                 $result = $d;
                 break;
             }
         }
+        $year = date("Y");
         if ($result === "") {
-            $result = $endingDates[1];
+            // 意味着下一年
+            $result = $endingDates[0];
+            $year = $year + 1;
         }
-        return $result;
+        $parts = explode('-', $result);
+        return mktime(0,0,0,$parts[0], 1, $year);
     }
 }
 
