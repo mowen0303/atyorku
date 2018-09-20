@@ -561,6 +561,18 @@ class CourseRatingModel extends Model
         return $bool;
     }
 
+    function addReport($courseCodeId, $profId) {
+        ($courseCodeId || $profId) || BasicTool::throwException("course code id or profId must not be empty");
+        $result = $this->getAnalyzedData($courseCodeId, $profId);
+        if($result){
+            $table = $courseCodeId ? ($profId ? "course_prof_report" : "course_report") : "professor_report";
+            $result = $this->handleReportChange($table, $result, $courseCodeId, $profId);
+            return $result;
+        }
+        return false;
+
+    }
+
     /**
      * 更新报告 (指定科目ID和教授ID)
      * @param $courseCodeId 指定的科目ID
@@ -620,14 +632,12 @@ class CourseRatingModel extends Model
         $this->parseUpdateReportArray($result, $arr, $table, $updateTime);
 
         // modify report
-        if($arr["rating_count"]){
-            if($report){
-                // update existing report
-                return parent::updateRowById($table, $report["id"], $arr);
-            } else {
-                // add new report
-                return parent::addRow($table, $arr);
-            }
+        if($arr["rating_count"] && $report){
+            // update existing report
+            return parent::updateRowById($table, $report["id"], $arr);
+        } else {
+            // add new report
+            return parent::addRow($table, $arr);
         }
 //        if(!$arr["rating_count"]){
 //            // remove empty rating report if exists

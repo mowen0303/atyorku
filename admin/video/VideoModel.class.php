@@ -43,9 +43,10 @@ class VideoModel extends Model
      * @param int|string $albumId 视频专辑ID [optional]
      * @param int|string $sectionId 视频章节ID [optional]
      * @param int $status 视频审核状况 [optional] [null | -1 | 0 | 1]
+     * @param int $isDeleted 是否被删除
      * @return array|bool
      */
-    public function getListOfVideoByConditions($albumId=null, $sectionId=null, $status=null) {
+    public function getListOfVideoByConditions($albumId=null, $sectionId=null, $status=null, $isDeleted=0) {
         $albumId = intval($albumId);
         $sectionId = intval($sectionId);
         $conditions = [];
@@ -65,9 +66,13 @@ class VideoModel extends Model
             array_push($conditions, "v.review_status = {$status}");
         }
 
+        array_push($conditions, "v.is_deleted = {$isDeleted}");
+
         $where = implode(" AND ", $conditions);
 
-        return $this->getListOfVideoBy($where);
+        $result = $this->getListOfVideoBy($where);
+
+        return $result;
     }
 
 
@@ -280,11 +285,11 @@ class VideoModel extends Model
         }
     }
 
-
     /**
      * Check if given user is authorized to watch given video id
      * @param $id
      * @param $userId
+     * @return bool
      * @throws Exception
      */
     public function checkAuthentication($id, $userId) {
@@ -299,9 +304,29 @@ class VideoModel extends Model
             false,
             "pt.count_video_view < {$vLimit} AND pt.expiration_time > {$currentTime}"
         );
-        if (!$result || sizeof($result) <= 0) {
-            BasicTool::throwException("请先购买");
-        }
+        return ($result && sizeof($result) > 0);
+    }
+
+    /**
+     * 获取指定用户的指定一列视频ID的购买交易列表
+     * @param int|array $vids 指定视频ID列表
+     * @param $userId
+     * @return array
+     * @throws Exception
+     */
+    public function getListOfPurchasedVideoTransaction($vids, $userId) {
+        $ptm = new ProductTransactionModel($this->table);
+        $vLimit = VideoModel::NUM_OF_WATCH_LIMITS;
+        $currentTime = time();
+        $result = $ptm->getListOfPurchasedTransactionsBy(
+            $userId,
+            $vids,
+            $this->table,
+            false,
+            false,
+            "pt.count_video_view < {$vLimit} AND pt.expiration_time > {$currentTime}"
+        );
+        return $result;
     }
 
     /**==================**/

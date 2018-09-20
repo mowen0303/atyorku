@@ -7,12 +7,9 @@ $videoValidator = new \admin\video\VideoValidator();
 $institutionModel = new \admin\institution\InstitutionModel();
 $imageModel = new \admin\image\ImageModel();
 $currentUser = new \admin\user\UserModel();
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/aliyun-php-sdk/aliyun-php-sdk-core/Config.php';
-use vod\Request\V20170321 as vod;
-use Sts\Request\V20150401 as sts;
-use Mts\Request\V20140618 as Mts;
-
+$awsModel = new \admin\aws\AwsModel();
+$transactionModel = new \admin\transaction\TransactionModel();
+$msgModel = new \admin\msg\MsgModel();
 
 call_user_func(BasicTool::get('action'));
 
@@ -29,15 +26,20 @@ call_user_func(BasicTool::get('action'));
  */
 function getListOfVideoWithJson() {
     global $videoModel;
+    global $currentUser;
     try {
-        $reviewStatus = BasicTool::get("review_status");
         $albumId = intval(BasicTool::get("album_id"));
         $sectionId = intval(BasicTool::get("section_id"));
 
-        $result = $videoModel->getListOfVideoByConditions($albumId, $sectionId, $reviewStatus);
+        $result = $videoModel->getListOfVideoByConditions($albumId, $sectionId, 1);
 
         if ($result) {
-            BasicTool::echoJson(1, "成功", $result);
+            $purchasedTransactions = [];
+            if ($currentUser->userId) {
+                $vids = array_column($result, 'id');
+                $purchasedTransactions = $videoModel->getListOfPurchasedVideoTransaction($vids, $currentUser->userId);
+            }
+            BasicTool::echoJson(1, "成功", $result, $purchasedTransactions);
         } else {
             BasicTool::echoJson(0, "获取视频专辑类别列表失败");
         }
@@ -86,6 +88,45 @@ function purchaseVideoWithJson() {
  */
 function updateReviewStatusWithJson() {
     updateReviewStatus("json");
+}
+
+/**
+ * http://www.atyorku.ca/admin/video/videoController.php?action=getVideoPlayAuthWithJson&vid=VIDEO_ID
+ * 获取一个视频播放权限码
+ *
+ * [GET]
+ *
+ * string vid 视频ID
+ */
+function getVideoPlayAuthWithJson() {
+    global $awsModel;
+    global $currentUser;
+    global $videoModel;
+    try {
+        $vid = BasicTool::get('vid') or BasicTool::throwException('视频ID不能为空');
+        $video = $videoModel->getVideoById($vid);
+        if (!$video) { BasicTool::throwException('视频不存在'); }
+        $currentUser->userId or BasicTool::throwException('请先登录');
+
+        $price = floatval($video['price']);
+
+        // check authorization
+        if (!$currentUser->isUserHasAuthority("ADMIN") && $price > 0 && !$videoModel->checkAuthentication($vid, $currentUser->userId)) {
+            BasicTool::throwException("请先购买");
+        }
+        $url = "http://video.zaiyueke.ca/{$vid}/*";
+        $awsModel->initSignedCookieFromCloudFront($url);
+        if ($price > 0) {
+            $ptm = new \admin\productTransaction\ProductTransactionModel('video');
+            $result = $ptm->incrementVideoViewCount($currentUser->userId, $vid);
+            if (!$result) {
+                BasicTool::throwException($ptm->errorMsg);
+            }
+        }
+        BasicTool::echoJson(1, "成功");
+    } catch (Exception $e) {
+        BasicTool::echoJson(0, $e->getMessage());
+    }
 }
 
 /**=============**/
@@ -267,6 +308,11 @@ function purchaseVideo($echoType="normal") {
             $price = floatval($result["price"]);
             $transactionModel->isCreditDeductible($buyerId, $price) || BasicTool::throwException($transactionModel->errorMsg);
 
+            // 检测是否已购买
+            if ($videoModel->checkAuthentication($id, $currentUser->userId)) {
+                BasicTool::throwException("您已购买此视频");
+            }
+
             // 获取过期时间
             $expirationDate = $institutionModel->getCurrentTermEndingDate($result['term_end_dates']);
 
@@ -353,138 +399,4 @@ function checkAuthority($flag, $id, $op=null) {
     }
 }
 
-/**=============**/
-/**   Ali VOD   **/
-/**=============**/
-
-
-
-function getVideoPlayAuthWithJson() {
-    try {
-        getVideoPlayAuth('json');
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
-}
-
-/**
- * Retrieve one video play information
- * @param string $echoType
- */
-function getVideoPlayAuth($echoType='normal') {
-    global $videoModel;
-    global $currentUser;
-    try {
-        $vid = BasicTool::get('vid') or BasicTool::throwException('视频ID不能为空');
-        $currentUser->userId or BasicTool::throwException('请先登录');
-
-        // check authorization
-        $currentUser->isUserHasAuthority("ADMIN") or $videoModel->checkAuthentication($vid, $currentUser->userId);
-
-        $client = _initVodClient();
-        $playAuth = _getPlayAuth($client, $vid);
-        if ($echoType == 'json') {
-            if ($playAuth) {
-                BasicTool::echoJson(1, "成功", $playAuth);
-            } else {
-                BasicTool::echoJson(0, "获取 playAuth 失败");
-            }
-        } else {
-            if ($playAuth) {
-                BasicTool::echoMessage($playAuth);
-            } else {
-                BasicTool::echoMessage("获取 playAuth 失败");
-            }
-        }
-    } catch (Exception $e) {
-        if ($echoType == 'json') {
-            BasicTool::echoJson(0, $e->getMessage());
-        } else {
-            BasicTool::echoMessage($e->getMessage(), $_SERVER['HTTP_REFERER']);
-        }
-    }
-}
-
-/**
- * init VOD client
- * @return DefaultAcsClient
- */
-function _initVodClient() {
-    $accessKeyId = "LTAIh2nVinWvn1T5";
-    $accessKeySecret = "2OmNCMI2M7CnsUvD8lYb7MkJ5rpMWf";
-    $regionId = 'cn-shanghai';  // 点播服务所在的Region，国内请填cn-shanghai，不要填写别的区域
-    $profile = DefaultProfile::getProfile($regionId, $accessKeyId, $accessKeySecret);
-    return new DefaultAcsClient($profile);
-}
-
-function _initMtsClient() {
-    $accessKeyId = "LTAIIwQ9XuZ4abJq";
-    $accessKeySecret = "u9RUQTZWkXZg603NUgQTDBt4yuLG8s";
-    $regionId = 'cn-hangzhou';  // 点播服务所在的Region，国内请填cn-shanghai，不要填写别的区域
-    $profile = DefaultProfile::getProfile($regionId, $accessKeyId, $accessKeySecret);
-    return new DefaultAcsClient($profile);
-}
-
-function _getPlayAuth($client, $vid) {
-    $request = new vod\GetVideoPlayAuthRequest();
-    $request->setAcceptFormat('JSON');
-    $request->setVideoId($vid);
-    try {
-        $response = $client->getAcsResponse($request);
-        return $response;
-    } catch(ServerException $e) {
-        print "Error: " . $e->getCode() . " Message: " . $e->getMessage() . "\n";
-    } catch(ClientException $e) {
-        print "Error: " . $e->getCode() . " Message: " . $e->getMessage() . "\n";
-    }
-}
-
-function getPlayCredentialsWithJson() {
-    $vid = BasicTool::get('vid', '媒体ID不能为空');
-    try {
-        $response = _getMtsPlayCredentials($vid);
-        if ($response) {
-            $authInfo = _getAuthInfo($vid);
-            BasicTool::echoJson(1, "成功", $response->Credentials, $authInfo);
-        } else {
-            BasicTool::echoJson(0, "播放权限获取失败");
-        }
-    } catch (Exception $e) {
-        BasicTool::echoJson(0, $e->getMessage());
-    }
-}
-
-function _getMtsPlayCredentials($vid) {
-    $client = _initMtsClient();
-    $arn = "acs:ram::1489533743474643:role/mtsplay";
-    $response = _assumeRole($client, $arn);
-    return $response;
-}
-
-function _getAuthInfo($vid) {
-    date_default_timezone_set('UTC');
-    $key = "atyorkutest";
-    $expiration = str_replace('+00:00', 'Z', gmdate('c', strtotime('+ 1 hour')));
-    $encodedExpiration = urlencode($expiration);
-    $encodedVid = urlencode($vid);
-    $str = "ExpireTime={$encodedExpiration}&MediaId={$encodedVid}";
-    $signature = base64_encode(hash_hmac('sha1', $str, $key, true));
-    $authInfo = [
-        "ExpireTime" => $expiration,
-        "MediaId" => $vid,
-        "Signature" => $signature
-    ];
-    return json_encode($authInfo);
-}
-
-function _assumeRole($client, $roleArn) {
-    $request = new sts\AssumeRoleRequest();
-    $request->setVersion("2015-04-01");
-    $request->setProtocol("https");
-    $request->setMethod("POST");
-    $request->setDurationSeconds(900);
-    $request->setRoleArn($roleArn);
-    $request->setRoleSessionName("test-token");
-    return $client->getAcsResponse($request);
-}
 ?>
