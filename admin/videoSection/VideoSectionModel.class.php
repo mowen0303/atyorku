@@ -180,11 +180,7 @@ class VideoSectionModel extends Model
         $albumId = intval($albumId);
         $sql = "SELECT MAX(sort)+1 AS sort FROM video_section WHERE album_id = {$albumId}";
         $result = $this->sqltool->getRowBySql($sql);
-        if ($result) {
-            return $result['sort'];
-        } else {
-            return false;
-        }
+        return $result['sort'] || 1;
     }
 
 }
