@@ -4,10 +4,14 @@ $guideModel = new \admin\guide\GuideModel();
 $guide_id = BasicTool::get('guide_id');
 $guideModel->increaseCountNumber($guide_id);
 $arr = $guideModel->getRowOfGuideById($guide_id);
-if ($arr["is_reproduced"]){
-    header('Location: '.$arr["source_url"]);
+if ($arr["type"] == "reproduced"){
+    header('Location: '.$arr["reproduced_source_url"]);
+    die();
+}else if ($arr["type"] == "video"){
+    header('Location: '.$arr["video_source_url"]);
     die();
 }
+
 //wechat component
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/wechat/jssdk.php";
 $jssdk = new JSSDK();
