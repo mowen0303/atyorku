@@ -53,9 +53,16 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
             </thead>
             <tbody>
             <?php
+            $sum_guides = 0;
+            $sum_forums = 0;
+            $sum_comments = 0;
+
             $arr = $employeeKPIModel->getPostCountByUserId($user_ids,$start_time,$end_time);
             foreach ($arr as $row) {
                 $user_profile = $userModel->getProfileOfUserById($row["user_id"]);
+                $sum_guides += intval($row['count_guides']);
+                $sum_forums += intval($row['count_forums']);
+                $sum_comments += intval($row['count_comments']);
                 ?>
                 <tr>
                     <td><?php echo $user_profile["id"]?></td>
@@ -69,6 +76,15 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
                 <?php
             }
             ?>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>合计</td>
+                <td><?php echo $sum_guides?></td>
+                <td><?php echo $sum_forums?></td>
+                <td><?php echo $sum_comments?></td>
+            </tr>
             </tbody>
         </table>
     </section>
