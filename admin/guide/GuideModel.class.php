@@ -108,8 +108,8 @@ class GuideModel extends Model
 
         foreach ($result as $k1 => $v1) {
             $result[$k1]["time"] = BasicTool::translateTime($result[$k1]["time"]);
-            if( $result[$k1]["is_reproduced"]==1){
-                $result[$k1]["alias"] = $result[$k1]["source_title"];
+            if( $result[$k1]["type"]=="reproduced"){
+                $result[$k1]["alias"] = $result[$k1]["reproduced_source_title"];
             }
             if ($idIndex < 3) {
                 $id .= ($result[$k1]["id"] . ",");

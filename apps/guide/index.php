@@ -5,7 +5,7 @@ $guide_id = BasicTool::get('guide_id');
 $guideModel->increaseCountNumber($guide_id);
 $arr = $guideModel->getRowOfGuideById($guide_id);
 if ($arr["type"] == "reproduced"){
-    header('Location: '.$arr["source_url"]);
+    header('Location: '.$arr["reproduced_source_url"]);
     die();
 }
 
