@@ -80,10 +80,10 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                <td>合计</td>
-                <td><?php echo $sum_guides?></td>
-                <td><?php echo $sum_forums?></td>
-                <td><?php echo $sum_comments?></td>
+                <td style="color:black;font-style:italic;">合计</td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_guides?></td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_forums?></td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_comments?></td>
             </tr>
             </tbody>
         </table>

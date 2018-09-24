@@ -1,3 +1,13 @@
+<?php
+$videoGuideClassId = 25;
+$relatedGuides = $guideModel->getListOfGuideByGuideClassId($videoGuideClassId,40);
+foreach ($relatedGuides as $index=>$guide){
+    if ($guide["id"] == $guide_id){
+        unset($relatedGuides[$index]);
+    }
+}
+?>
+
 <article id="container" class="videoContainer">
     <div id="videoBox">
         <div class="aspectration" style="position: relative; height: 0; width: 100%; padding-top: 56.25%;" data-ratio="16:9">
@@ -33,6 +43,24 @@
             </section>
         </div>
 
+        <!--相关视频 S-->
+        <div class="relatedVideoBox">
+            <h6>相 关 视 频</h6>
+            <div class="scrollingWrapper">
+                <?php
+                foreach($relatedGuides as $guide){
+                ?>
+                    <a href="index.php?guide_id=<?php echo $guide['id']?>">
+                        <div class="relatedVideoCell">
+                            <div class="relatedVideoCover" style='background-image:url("<?php echo $guide["cover"]?>")'></div>
+                            <h6 class="relatedVideoTitle"><?php echo $guide['title'] ?></h6>
+                        </div>
+                    </a>
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
         <!--评论组件 S-->
         <!--
         data-category 产品数据库表名
