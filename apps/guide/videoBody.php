@@ -9,12 +9,12 @@ foreach ($relatedGuides as $index=>$guide){
 ?>
 
 <article id="container" class="videoContainer">
-    <div id="videoBox">
+    <div style="position:fixed;top:0;width: 100%;max-width: 700px; z-index:999; border-bottom: 2px solid #f2f2f2">
         <div class="aspectration" style="position: relative; height: 0; width: 100%; padding-top: 56.25%;" data-ratio="16:9">
             <?php
             if($arr['video_vendor']=="youtube"){
                 ?>
-                <iframe style="position: absolute; left:0;top:0;width:100%;height:100%" src="<?php echo $arr["video_source_url"]?>?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+                <iframe style="position: absolute; left:0;top:0;width:100%;height:100%" src="<?php echo $arr["video_source_url"]?>?rel=0&amp;showinfo=0&playsinline=1&fs=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>
                 <?php
             }else {
                 ?>
@@ -23,6 +23,9 @@ foreach ($relatedGuides as $index=>$guide){
             }
             ?>
         </div>
+    </div>
+    <div id="videoBox">
+        <div class="aspectration" style="position: relative; height: 0; width: 100%; padding-top: 56.25%;" data-ratio="16:9"></div>
     </div>
     <div id="videoBody">
         <div class="videoTitleBox">
@@ -53,7 +56,7 @@ foreach ($relatedGuides as $index=>$guide){
                     <a href="index.php?guide_id=<?php echo $guide['id']?>">
                         <div class="relatedVideoCell">
                             <div class="relatedVideoCover" style='background-image:url("<?php echo $guide["cover"]?>")'></div>
-                            <h6 class="relatedVideoTitle"><?php echo $guide['title'] ?></h6>
+                            <p class="relatedVideoTitle"><?php echo $guide['title'] ?></p>
                         </div>
                     </a>
                     <?php
@@ -82,7 +85,7 @@ foreach ($relatedGuides as $index=>$guide){
             </section>
         </div>
         <!--评论组件 E-->
-        <div style="padding:2em 0; background: #f2f2f2"><img src="/resource/img/gzhqr.jpg" alt=""></div>
+<!--        <div style="padding:2em 0; background: #f2f2f2"><img src="/resource/img/gzhqr.jpg" alt=""></div>-->
     </div>
 </article>
 

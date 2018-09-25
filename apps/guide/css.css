@@ -166,16 +166,14 @@ body #container .center * { text-align: center;}
 .videoTitleBox {padding:10px;}
 .videoReadCount {position: absolute;bottom:0;right: 0; z-index: 999; color:#fff; font-size: 12px; }
 .videoReadCount span {background: rgba(0,0,0,0.4); border-color: #000}
-#videoBody {overflow: scroll; flex:1}
-.videoContext {font-size: 0.9em; color:#999}
+.videoContext {font-size: 0.9em; color:#999; border-top: 1px solid #f2f2f2;margin-top: 1em}
 .videoContext p { margin: 1em 0}
-.videoContainer { height:100%;display: flex; flex-direction: column}
 
 .relatedVideoHeading {margin:0; font-weight:bold; color:#282828; line-height:normal; margin-bottom: 0.6em;}
-.relatedVideoBox {padding:0 0.6em; padding-top:0.6em; width:100%; overflow:hidden;}
+.relatedVideoBox {padding:20px 0 20px 15px;width:100%; overflow:hidden; border-top: 6px solid #f2f2f2}
 .scrollingWrapper {padding-bottom: 0.6em; position:relative;width:100%; overflow-x:scroll; overflow-y:hidden; white-space:nowrap; -webkit-overflow-scrolling: touch; margin-bottom: -10px;}
 .relatedVideoCell {width:40%;display:inline-block;white-space:normal; margin-right:0.3em;}
 .relatedVideoCover {position:relative;width:100%;padding-top:66.6666%;background-repeat: no-repeat; background-size:cover; background-position: center;}
-.relatedVideoCover::after {content:""; background-repeat: no-repeat; background-position:center; background-image:url("/resource/img/play.png"); background-color:rgba(0,0,0,0.2); position:absolute; top:0; left:0; right:0; bottom:0;z-index:33;}
-.relatedVideoTitle {margin:0; margin-top:0.6em; font-size:0.9em; color:#484848;  overflow: hidden; text-overflow: ellipsis; line-height:1.2em; max-height: 2.4em;}
+.relatedVideoCover::after {content:""; background-repeat: no-repeat; background-position:10% 90%; background-image:url("/resource/img/play.png"); background-color:rgba(0,0,0,0.2); position:absolute; top:0; left:0; right:0; bottom:0;z-index:33;background-size:20px}
+.relatedVideoTitle {margin:0; margin-top:0.6em; font-size:0.8em; color:#484848;  overflow: hidden; text-overflow: ellipsis; line-height:1.4em; max-height: 2.4em;}
 

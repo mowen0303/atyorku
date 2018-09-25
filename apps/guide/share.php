@@ -4,18 +4,14 @@ $guideModel = new \admin\guide\GuideModel();
 $guide_id = BasicTool::get('guide_id');
 $guideModel->increaseCountNumber($guide_id);
 $arr = $guideModel->getRowOfGuideById($guide_id);
-if ($arr["type"] == "reproduced"){
-    header('Location: '.$arr["reproduced_source_url"]);
-    die();
-}else if ($arr["type"] == "video"){
-    header('Location: '.$arr["video_source_url"]);
-    die();
-}
-
 //wechat component
 require_once $_SERVER['DOCUMENT_ROOT'] . "/commonClass/wechat/jssdk.php";
 $jssdk = new JSSDK();
 $signPackage = $jssdk->GetSignPackage();
+if ($arr["type"] == "reproduced"){
+    header('Location: '.$arr["reproduced_source_url"]);
+    die();
+}else {
 ?>
 <!DOCTYPE html>
 <head>
@@ -236,61 +232,79 @@ $signPackage = $jssdk->GetSignPackage();
     </script>
 </head>
 <body>
-<div style="display:none"><img src="http://www.atyorku.ca/resource/img/logo.jpg"></div>
-<article id="container">
-    <div class="articleContainer">
-        <h1><?php echo $arr['title'] ?></h1>
-        <div class="authorBox">
-            <div class="left">
-                <div id="authorHead" class="authorHead clickAuthor" style="background-image: url(<?php echo $arr['img'] ?>)"></div>
-                <div class="authorTitle">
-                    <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
-                    <i> <?php echo BasicTool::translateTime($arr['time']) ?></i>
-                    <?php
-                    if($arr['visible']==0){
-                        echo "<i>{$arr[category_title]}</i>";
-                    }
-                    ?>
+<?php
+    if ($arr["type"] == "video"){
+        require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/videoBody.php";
+    }else{
+?>
+        <div style="display:none"><img src="http://www.atyorku.ca/resource/img/logo.jpg"></div>
+        <article id="container">
+            <div class="articleContainer">
+                <h1><?php echo $arr['title'] ?></h1>
+                <div class="authorBox">
+                    <div class="left">
+                        <div id="authorHead" class="authorHead clickAuthor" style="background-image: url(<?php echo $arr['img'] ?>)"></div>
+                        <div class="authorTitle">
+                            <i>作者：<span class="author clickAuthor"><?php echo $arr['alias']; ?></span></i>
+                            <i> <?php echo BasicTool::translateTime($arr['time']) ?></i>
+                            <?php
+                            if($arr['visible']==0){
+                                echo "<i>{$arr[category_title]}</i>";
+                            }
+                            ?>
+                        </div>
+                    </div>
                 </div>
+                <section class="context">
+                    <?php echo $arr['content']; ?>
+                    <p style="margin-top:4em"><img src="/resource/img/gzhqr.jpg" alt=""><p><p class="copyDoc"></p>
+                </section>
+                <?php
+                if($arr['view_no']>=500){
+                    echo '<div class="readCount"><em></em><span>浏览量：'.$arr['view_no'].'</span><em></em></div>';
+                }
+                ?>
             </div>
+            <!--评论组件 S-->
+            <!--
+            data-category 产品数据库表名
+            data-production-id 产品ID（文章、二手书、分享、同学圈）
+            data-receiver-id 产品作者ID
+            -->
+            <script type="text/javascript" src="/admin/resource/js/component.js"></script>
+            <div id="commentComponent"
+                 data-category="guide"
+                 data-production-id="<?php echo $arr['id']; ?>"
+                 data-receiver-id="<?php echo $arr['uid']; ?>">
+                <header><span>用户评论（<?php echo $arr['count_comments']; ?>）</span></header>
+                <section id="commentListContainer"></section>
+                <section id="loadMoreButton">点击加载更多</section>
+                <section class="textAreaContainer">
+                    <textarea name="comment" placeholder="说两句吧..."></textarea>
+                    <div id="commentButton">评论</div>
+                </section>
+            </div>
+            <!--评论组件 E-->
+        </article>
+        <div id="appBox" class="fix">
+            <div><img src="/resource/img/icon.png"></div>
+            <div class="t2"><p>学习资料 · 考点回忆  ·  作业问答</p><p>课程点评 · 找教学楼 · 同学圈</p><p><b>AtYorkU -约克大学专属APP</b></p></div>
+            <div class="t3"><a href="http://www.atyorku.ca/download_v2.html">下载<br>App</a></div>
         </div>
-        <section class="context">
-            <?php echo $arr['content']; ?>
-            <p style="margin-top:4em"><img src="/resource/img/gzhqr.jpg" alt=""><p><p class="copyDoc"></p>
-        </section>
-        <?php
-        if($arr['view_no']>=500){
-            echo '<div class="readCount"><em></em><span>浏览量：'.$arr['view_no'].'</span><em></em></div>';
-        }
-        ?>
-    </div>
-    <!--评论组件 S-->
-    <!--
-    data-category 产品数据库表名
-    data-production-id 产品ID（文章、二手书、分享、同学圈）
-    data-receiver-id 产品作者ID
-    -->
-    <script type="text/javascript" src="/admin/resource/js/component.js"></script>
-    <div id="commentComponent"
-         data-category="guide"
-         data-production-id="<?php echo $arr['id']; ?>"
-         data-receiver-id="<?php echo $arr['uid']; ?>">
-        <header><span>用户评论（<?php echo $arr['count_comments']; ?>）</span></header>
-        <section id="commentListContainer"></section>
-        <section id="loadMoreButton">点击加载更多</section>
-        <section class="textAreaContainer">
-            <textarea name="comment" placeholder="说两句吧..."></textarea>
-            <div id="commentButton">评论</div>
-        </section>
-    </div>
-    <!--评论组件 E-->
-</article>
-<div id="appBox" class="fix">
-    <div><img src="/resource/img/icon.png"></div>
-    <div class="t2"><p>学习资料 · 考点回忆  ·  作业问答</p><p>课程点评 · 找教学楼 · 同学圈</p><p><b>AtYorkU -约克大学专属APP</b></p></div>
-    <div class="t3"><a href="http://www.atyorku.ca/download_v2.html">下载<br>App</a></div>
-</div>
+<?php
 
+    }
+?>
+
+
+<?php
+}
+?>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/apps/guide/_footer.html";
 ?>
+
+
+
+
+
