@@ -45,7 +45,7 @@ foreach ($relatedGuides as $index=>$guide){
 
         <!--相关视频 S-->
         <div class="relatedVideoBox">
-            <h6>相 关 视 频</h6>
+            <h6 class="relatedVideoHeading">相 关 视 频</h6>
             <div class="scrollingWrapper">
                 <?php
                 foreach($relatedGuides as $guide){
