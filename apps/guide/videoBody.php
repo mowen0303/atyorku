@@ -1,6 +1,6 @@
 <?php
 $videoGuideClassId = 25;
-$relatedGuides = $guideModel->getListOfGuideByGuideClassId($videoGuideClassId,40);
+$relatedGuides = $guideModel->getListOfGuideByGuideClassId($videoGuideClassId,5);
 foreach ($relatedGuides as $index=>$guide){
     if ($guide["id"] == $guide_id){
         unset($relatedGuides[$index]);
@@ -49,20 +49,23 @@ foreach ($relatedGuides as $index=>$guide){
         <!--相关视频 S-->
         <div class="relatedVideoBox">
             <h6 class="relatedVideoHeading">相 关 视 频</h6>
-            <div class="scrollingWrapper">
-                <?php
-                foreach($relatedGuides as $guide){
+            <?php
+            foreach($relatedGuides as $guide){
                 ?>
-                    <a href="index.php?guide_id=<?php echo $guide['id']?>">
-                        <div class="relatedVideoCell">
-                            <div class="relatedVideoCover" style='background-image:url("<?php echo $guide["cover"]?>")'></div>
-                            <p class="relatedVideoTitle"><?php echo $guide['title'] ?></p>
+                <a href="index.php?guide_id=<?php echo $guide['id']?>">
+                    <div class="relatedVideoCell">
+                        <div class="relatedVideoCover" style='background-image:url("<?php echo $guide["cover"]?>")'></div>
+                        <div class="relatedVideoContent">
+                            <p><?php echo $guide['title'] ?></p>
+                            <span><?php echo BasicTool::translateTime($arr["time"])?></span>
+                            <span>&middot;</span>
+                            <span><?php echo $arr["category_title"]?></span>
                         </div>
-                    </a>
-                    <?php
-                }
-                ?>
-            </div>
+                    </div>
+                </a>
+                <?php
+            }
+            ?>
         </div>
         <!--评论组件 S-->
         <!--

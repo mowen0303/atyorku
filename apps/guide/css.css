@@ -169,11 +169,14 @@ body #container .center * { text-align: center;}
 .videoContext {font-size: 0.9em; color:#999; border-top: 1px solid #f2f2f2;margin-top: 1em}
 .videoContext p { margin: 1em 0}
 
-.relatedVideoHeading {margin:0; font-weight:bold; color:#282828; line-height:normal; margin-bottom: 0.6em;}
-.relatedVideoBox {padding:20px 0 20px 15px;width:100%; overflow:hidden; border-top: 6px solid #f2f2f2}
-.scrollingWrapper {padding-bottom: 0.6em; position:relative;width:100%; overflow-x:scroll; overflow-y:hidden; white-space:nowrap; -webkit-overflow-scrolling: touch; margin-bottom: -10px;}
-.relatedVideoCell {width:40%;display:inline-block;white-space:normal; margin-right:0.3em;}
-.relatedVideoCover {position:relative;width:100%;padding-top:66.6666%;background-repeat: no-repeat; background-size:cover; background-position: center;}
+:root {
+    --videoBoxPadding:20px;
+}
+.relatedVideoHeading {margin:0; font-weight:bold; color:#484848; line-height:normal; margin-bottom: var(--videoBoxPadding);}
+.relatedVideoBox {padding:var(--videoBoxPadding); padding-bottom: 0; position:relative; overflow:hidden; border-top:0.6px solid rgba(0,0,0,0.08);}
+.relatedVideoCell {display:flex; margin-bottom:var(--videoBoxPadding);}
+.relatedVideoCover {margin-right:12px;flex:9;position:relative;padding-top:22.2222%;background-repeat: no-repeat; background-size:cover; background-position: center;}
 .relatedVideoCover::after {content:""; background-repeat: no-repeat; background-position:10% 90%; background-image:url("/resource/img/play.png"); background-color:rgba(0,0,0,0.2); position:absolute; top:0; left:0; right:0; bottom:0;z-index:33;background-size:20px}
-.relatedVideoTitle {margin:0; margin-top:0.6em; font-size:0.8em; color:#484848;  overflow: hidden; text-overflow: ellipsis; line-height:1.4em; max-height: 2.4em;}
-
+.relatedVideoContent {flex:11}
+.relatedVideoContent p {margin:0; font-size:0.9em; color:#484848; overflow:hidden; text-overflow: ellipsis; line-height:1.4em; max-height: 4.2em;}
+.relatedVideoContent span {font-size:0.8em; color: #ccc;}
