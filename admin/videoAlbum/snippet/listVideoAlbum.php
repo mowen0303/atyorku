@@ -40,7 +40,6 @@ $userModel = new \admin\user\UserModel();
                 if(!$arr){
                     echo $videoAlbumModel->errorMsg;
                 }
-                var_dump($arr);
                 foreach ($arr as $row) {
                     $argument = "";
                     foreach($row as $key=>$value) {

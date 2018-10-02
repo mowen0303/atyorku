@@ -18,8 +18,11 @@ require_once $_SERVER['DOCUMENT_ROOT']."/commonClass/Credit.class.php";
 use \admin\user\UserModel as UserModel;
 
 function __autoload($name){
+
     $name = str_replace("\\","/",$name);
-    include_once $_SERVER['DOCUMENT_ROOT']."/{$name}.class.php";
+    if(!include_once $_SERVER['DOCUMENT_ROOT']."/{$name}.class.php"){
+        !include_once $_SERVER['DOCUMENT_ROOT']."/admin/aws/{$name}.php";
+    };
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 //隐藏notice和warning级别错误
