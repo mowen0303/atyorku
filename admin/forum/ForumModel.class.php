@@ -430,7 +430,9 @@ class ForumModel extends Model {
         for($i=0;$i<count($result);$i++) {
             $ids[] = $result[$i]['id'];
             $result[$i]['enroll_year'] = BasicTool::translateEnrollYear($result[$i]['enroll_year']);
-            $result[$i]['time'] = BasicTool::translateTime($result[$i]['time']);
+            $result[$i]['time'] = " ";
+            $result[$i]['count_view'] = " ";
+            //$result[$i]['time'] = BasicTool::translateTime($result[$i]['time']);
             $result[$i]['imgs'] = [];
             if ($result[$i]['img_id_1']) $imgIds[] = $result[$i]['img_id_1'];
             if ($result[$i]['img_id_2']) $imgIds[] = $result[$i]['img_id_2'];

@@ -37,30 +37,6 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
 </nav>
 
 <article class="mainBox">
-    <header><h2>统计周期</h2></header>
-    <form action="index.php" method="get">
-        <input name="s" value="getEmployeeKPIDetail" hidden/>
-        <input name="id" value='<?php echo $id ?>' hidden/>
-        <input name="username" value='<?php echo $searchedUsername ?>' hidden/>
-        <section class="formBox">
-            <div style="display:flex;flex-direction:row">
-                <div>
-                    <label>开始时间<i>*</i></label>
-                    <input class="input" type="datetime-local" name="start_time" value="<?php echo date("Y-m-d",$start_time)."T".date("H:i",$start_time)?>" style="margin-right:3rem"/>
-                </div>
-                <div style="margin-left: 20px">
-                    <label>截止时间<i>*</i></label>
-                    <input class="input" type="datetime-local" name="end_time" value="<?php echo date("Y-m-d",$end_time)."T".date("H:i",$end_time)?>" style="margin-right:3rem"/>
-                </div>
-            </div>
-        </section>
-        <footer class="buttonBox">
-            <input type="submit" value="提交" class="btn">
-        </footer>
-    </form>
-</article>
-
-<article class="mainBox">
     <header><h2>账户列表</h2></header>
     <section>
         <table class="tab">
@@ -77,9 +53,16 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
             </thead>
             <tbody>
             <?php
+            $sum_guides = 0;
+            $sum_forums = 0;
+            $sum_comments = 0;
+
             $arr = $employeeKPIModel->getPostCountByUserId($user_ids,$start_time,$end_time);
             foreach ($arr as $row) {
                 $user_profile = $userModel->getProfileOfUserById($row["user_id"]);
+                $sum_guides += intval($row['count_guides']);
+                $sum_forums += intval($row['count_forums']);
+                $sum_comments += intval($row['count_comments']);
                 ?>
                 <tr>
                     <td><?php echo $user_profile["id"]?></td>
@@ -93,6 +76,15 @@ $user_ids = array_merge([$profile["main_user_id"]],$user_ids);
                 <?php
             }
             ?>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="color:black;font-style:italic;">合计</td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_guides?></td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_forums?></td>
+                <td style="color:black;font-style:italic;"><?php echo $sum_comments?></td>
+            </tr>
             </tbody>
         </table>
     </section>

@@ -126,21 +126,37 @@ $_SESSION["ueditor_upload_location"] = "guide2/" . $guide_id;
                     <input class="input" type="text" name="title" value="<?php echo $row['title'] ?>">
                 </div>
                 <div>
-                    <label>是否为转载<i>*</i></label>
-                    <select class="input input-select input-size50 selectDefault" name="is_reproduced"
-                            defvalue="<?php echo $row['is_reproduced']?:0 ?>">
-                        <option value="0">否</option>
-                        <option value="1">是</option>
+                    <label>文章类型<i>*</i></label>
+                    <select class="input input-select input-size50 selectDefault" name="type"
+                            defvalue="<?php echo $row['type']?:'original' ?>">
+                        <option value="original">原创</option>
+                        <option value="reproduced">转载</option>
+                        <option value="video">视频</option>
                     </select>
                 </div>
                 <div class="row">
                     <div class="col-2">
                         <label>文章转载来源</label>
-                        <input class="input" type="text"  name="source_title" value="<?php echo $row['source_title']?>">
+                        <input class="input" type="text"  name="reproduced_source_title" value="<?php echo $row['reproduced_source_title']?>">
                     </div>
                     <div class="col-2">
                         <label>文章转载地址URL</label>
-                        <input class="input" type="text" name="source_url" value="<?php echo $row['source_url']?>">
+                        <input class="input" type="text" name="reproduced_source_url" value="<?php echo $row['reproduced_source_url']?>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <label>Video Vendor</label>
+                        <select class="input input-select input-size50 selectDefault" name="video_vendor"
+                                defvalue="<?php echo $row['video_vendor']?:'' ?>">
+                            <option value="">无</option>
+                            <option value="youtube">Youtube</option>
+                            <option value="tencent">腾讯</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label>视频URL</label>
+                        <input class="input" type="text" name="video_source_url" value="<?php echo $row['video_source_url']?>">
                     </div>
                 </div>
                 <div>

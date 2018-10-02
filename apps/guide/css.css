@@ -1,3 +1,4 @@
+html,body {height: 100%;}
 *:focus { outline: none;}
 input,textarea {-webkit-appearance: none;outline:none;-webkit-tap-highlight-color:rgba(255,255,255,0);}
 blockquote,body,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,hr,input,legend,li,ol,p,pre,td,textarea,th,ul{margin:0;padding:0}
@@ -18,7 +19,7 @@ h4{font-size:1.3em; line-height: 1.3em; font-weight: bold;  width: 50%; margin: 
 h4,h5,h6{font-size:1em}
 
 a{text-decoration:none; word-wrap: break-word; word-break:break-all}
-a:hover{text-decoration:underline}
+a:hover{text-decoration:none}
 img{border:0;width: 96%; height: auto; border-radius: 8px; box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); display: block; margin: auto}
 .no-shadow img { box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);}
 button,input,select,textarea{font-size:1em}
@@ -130,7 +131,7 @@ body #container .center * { text-align: center;}
 
 
 /*评论*/
-#commentComponent { font-size: 15px; line-height: 17px; padding:1.5em;  margin-top: 1.5em;  background:#fafafa;border-top: 10px solid #f2f2f2}
+#commentComponent { font-size: 15px; line-height: 17px; padding:1.5em;  margin-top: 1.5em;  background:#fafafa;border-top: 6px solid #f2f2f2}
 #commentComponent .textAreaContainer {display: flex;margin-bottom: 5em; position: relative}
 #commentComponent .textAreaContainer textarea { flex:1; color:#484848; padding: 10px; border:2px solid #ccc; border-radius: 4px}
 #commentComponent .textAreaContainer #commentButton { width: 120px; height: 36px; line-height: 36px; background: #c83c46; color: #fff; text-align:center; margin-left:10px; cursor: pointer; border-radius: 4px; position: absolute; right: 0px; bottom:-45px}
@@ -157,3 +158,25 @@ body #container .center * { text-align: center;}
 #commentListContainer .postButton { width: 50px; height: 30px; line-height: 30px; color: #fff; background:#c83c46; text-align: center; font-size: 12px; margin-left: 10px; border-radius: 4px; cursor: pointer}
 #commentListContainer .postButton.loading {background: #ccc}
 #commentComponent #loadMoreButton { margin: 2em auto 2em auto; padding: 10px 0; border-radius: 4px; background: #666; width: 200px; text-align: center; cursor: pointer; color:#fff;display: none}
+
+/*-----Video-------*/
+.videoTitle {font-size:1em; margin-top:5px; line-height: 1.3em}
+.videoSubtitle {font-size: 0.8em;color:#ccc}
+.videoSubtitle span { padding-right: 10px}
+.videoTitleBox {padding:10px;}
+.videoReadCount {position: absolute;bottom:0;right: 0; z-index: 999; color:#fff; font-size: 12px; }
+.videoReadCount span {background: rgba(0,0,0,0.4); border-color: #000}
+.videoContext {font-size: 0.9em; color:#999; border-top: 1px solid #f2f2f2;margin-top: 1em}
+.videoContext p { margin: 1em 0}
+
+:root {
+    --videoBoxPadding:20px;
+}
+.relatedVideoHeading {margin:0; font-weight:bold; color:#484848; line-height:normal; margin-bottom: var(--videoBoxPadding);}
+.relatedVideoBox {padding:var(--videoBoxPadding); padding-bottom: 0; position:relative; overflow:hidden; border-top:0.6px solid rgba(0,0,0,0.08);}
+.relatedVideoCell {display:flex; margin-bottom:var(--videoBoxPadding);}
+.relatedVideoCover {margin-right:12px;flex:9;position:relative;padding-top:22.2222%;background-repeat: no-repeat; background-size:cover; background-position: center;}
+.relatedVideoCover::after {content:""; background-repeat: no-repeat; background-position:10% 90%; background-image:url("/resource/img/play.png"); background-color:rgba(0,0,0,0.2); position:absolute; top:0; left:0; right:0; bottom:0;z-index:33;background-size:20px}
+.relatedVideoContent {flex:11}
+.relatedVideoContent p {margin:0; font-size:0.9em; color:#484848; overflow:hidden; text-overflow: ellipsis; line-height:1.4em; max-height: 4.2em;}
+.relatedVideoContent span {font-size:0.8em; color: #ccc;}

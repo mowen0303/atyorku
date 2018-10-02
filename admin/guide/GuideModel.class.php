@@ -9,6 +9,9 @@ use \Exception as Exception;
 
 class GuideModel extends Model
 {
+    private static $type_enum = ['original','reproduced','video'];
+    private static $videoVendor_enum = ['','youtube','tencent'];
+
     public function getListOfGuideClass($pageSize = 20)
     {
         $table = 'guide_class';
@@ -95,7 +98,7 @@ class GuideModel extends Model
         $order = $guide_classId == 0 ? "" : "g.guide_class_order DESC,";
 
 
-        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,source_url,source_title,is_reproduced, u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order DESC ,g.time DESC";
+        $sql = "SELECT g.id,title,time,user_id,view_no,cover,introduction,classTitle,guide_order,reproduced_source_url,reproduced_source_title,type,video_vendor,video_source_url, u.img AS imgOfUserHead,alias FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order DESC ,g.time DESC";
 
         $countSql = "SELECT count(*) FROM (SELECT g.*, gc.title AS classTitle FROM guide AS g INNER JOIN guide_class AS gc ON g.guide_class_id = gc.id WHERE g.is_del = 0 {$condition}) AS g INNER JOIN user AS u ON g.user_id = u.id ORDER BY {$order} g.guide_order,time";
         $result = parent::getListWithPage($table, $sql, $countSql, $pageSize);
@@ -105,8 +108,8 @@ class GuideModel extends Model
 
         foreach ($result as $k1 => $v1) {
             $result[$k1]["time"] = BasicTool::translateTime($result[$k1]["time"]);
-            if( $result[$k1]["is_reproduced"]==1){
-                $result[$k1]["alias"] = $result[$k1]["source_title"];
+            if( $result[$k1]["type"]=="reproduced"){
+                $result[$k1]["alias"] = $result[$k1]["reproduced_source_title"];
             }
             if ($idIndex < 3) {
                 $id .= ($result[$k1]["id"] . ",");
@@ -149,9 +152,11 @@ class GuideModel extends Model
         $arr['post_time'] = time();
         $arr['count_comments'] = 0;
         $arr['is_del'] = 0;
-        $arr['is_reproduced'] = 0;
-        $arr['source_url'] = "";
-        $arr['source_title'] = "";
+        $arr['type'] = 'original';
+        $arr['reproduced_source_url'] = "";
+        $arr['reproduced_source_title'] = "";
+        $arr['video_source_url']="";
+        $arr['video_vendor'] = '';
         if ($this->addRow('guide', $arr)) {
             return $this->idOfInsert;
         } else {
@@ -160,7 +165,7 @@ class GuideModel extends Model
         }
     }
 
-    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order, $classOrder, $isReproduced, $sourceTitle, $sourceUrl)
+    public function updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order, $classOrder, $type, $reproducedSourceTitle, $reproducedSourceUrl,$videoSourceUrl,$videoVendor)
     {
         $arr['guide_class_id'] = $guideClassID; //14草稿箱
         $arr['user_id'] = $userID;
@@ -170,9 +175,19 @@ class GuideModel extends Model
         $arr['guide_order'] = $order ?: 0;
         $arr['guide_class_order'] = $classOrder ?: 0;
         $arr['cover'] = $cover ? $cover : "";
-        $arr["is_reproduced"] = $isReproduced ? 1 : 0;
-        $arr["source_title"] = $sourceTitle ?: "";
-        $arr["source_url"] = $sourceUrl ?: "";
+        if (!in_array($type,self::$type_enum)){
+            $this->errorMsg = "修改失败:type must equal to one of (original,reproduced,video)";
+            return false;
+        }
+        $arr['type'] = $type;
+        $arr["reproduced_source_title"] = $reproducedSourceTitle ?: "";
+        $arr["reproduced_source_url"] = $reproducedSourceUrl ?: "";
+        $arr["video_source_url"] = $videoSourceUrl?:"";
+        if (!in_array($videoVendor,self::$videoVendor_enum)){
+            $this->errorMsg = "修改失败:video_vender must equal to one of ('','youtube','tencent')";
+            return false;
+        }
+        $arr['video_vendor'] = $videoVendor;
         $this->updateRowById('guide', $guideID, $arr);
         return true;
     }

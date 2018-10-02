@@ -82,15 +82,26 @@ function updateGuide(){
         $guideID = BasicTool::post('guide_id') or BasicTool::throwException("缺少Guide ID");
         $guideClassID = BasicTool::post('guide_class_id', '所属指南组不能为空');
         $title = BasicTool::post('title', '标题不能为空',255);
-        //-----------------------转载
-        $isReproduced = BasicTool::post("is_reproduced","请注明该文章是否为转载文章");
-        $sourceTitle = BasicTool::post("source_title");
-        $sourceUrl = BasicTool::post("source_url");
-        if ($isReproduced){
-            $sourceTitle && $sourceUrl or BasicTool::throwException("请注明文章来源,并填入文章转载链接");
+        //-----------------------
+        $type = BasicTool::post("type","请选择文章类型");
+        $reproducedSourceTitle = BasicTool::post("reproduced_source_title");
+        $reproducedSourceUrl = BasicTool::post("reproduced_source_url");
+        $videoSourceUrl = BasicTool::post("video_source_url");
+        $videoVendor = BasicTool::post("video_vendor");
+        if ($type == "reproduced"){
+            $reproducedSourceTitle && $reproducedSourceUrl or BasicTool::throwException("请注明文章来源,并填入文章转载链接");
+            $videoSourceUrl = "";
+            $videoVendor = "";
+
+        }else if ($type == "video"){
+            $videoSourceUrl && $videoVendor or BasicTool::throwException("请选择Video Vendor，并填入视频链接");
+            $reproducedSourceTitle="";
+            $reproducedSourceUrl="";
         }else{
-            $sourceTitle = "";
-            $sourceUrl = "";
+            $reproducedSourceTitle="";
+            $reproducedSourceUrl="";
+            $videoSourceUrl="";
+            $videoVendor="";
         }
         //-----------------------
         $content = $_POST['content'];
@@ -103,7 +114,7 @@ function updateGuide(){
         $userID = BasicTool::post('userID');
         $classOrder = BasicTool::post('guide_class_order');
 
-        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order,$classOrder, $isReproduced, $sourceTitle , $sourceUrl) or BasicTool::throwException($guideModel->errorMsg);
+        $guideModel->updateGuide($guideID, $guideClassID, $title, $content, $introduction, $userID, $cover, $order,$classOrder, $type, $reproducedSourceTitle, $reproducedSourceUrl, $videoSourceUrl, $videoVendor) or BasicTool::throwException($guideModel->errorMsg);
         if( $oldClassId != null && $oldClassId != $guideClassID){
             $guideModel->updateAmountOfArticleByClassId($guideClassID);
             $guideModel->updateAmountOfArticleByClassId($oldClassId);
