@@ -1,37 +1,37 @@
 <?php
 namespace admin\aws;   //-- 注意 --//
 
+//// 取原有的加载方法
+//$oldFunctions = spl_autoload_functions();
+//// 逐个卸载
+//if ($oldFunctions){
+//    foreach ($oldFunctions as $f) {
+//        spl_autoload_unregister($f);
+//    }
+//}
+require $_SERVER['DOCUMENT_ROOT'] . '/admin/aws/aws-autoloader.php';
+//// 如果引用本框架的其它框架已经定义了__autoload,要保持其使用
+//if (function_exists('__autoload')) {
+//    spl_autoload_register('__autoload');
+//}
+//// 再将原来的自动加载函数放回去
+//if ($oldFunctions){
+//    foreach ($oldFunctions as $f) {
+//        spl_autoload_register($f);
+//    }
+//}
+
+
+use \Model as Model;
+//use \BasicTool as BasicTool;
+use \Exception as Exception;
 use \Datetime;
-
-// 取原有的加载方法
-$oldFunctions = spl_autoload_functions();
-
-// 逐个卸载
-if ($oldFunctions){
-    foreach ($oldFunctions as $f) {
-        spl_autoload_unregister($f);
-    }
-}
-require __DIR__ . '/../../vendor/autoload.php';
-// 如果引用本框架的其它框架已经定义了__autoload,要保持其使用
-if (function_exists('__autoload')) {
-    spl_autoload_register('__autoload');
-}
-
-// 再将原来的自动加载函数放回去
-if ($oldFunctions){
-    foreach ($oldFunctions as $f) {
-        spl_autoload_register($f);
-    }
-}
 
 use Aws\Credentials\CredentialProvider;
 use Aws\S3\S3Client;
 use Aws\Sdk as Sdk;
-use Aws\CloudFront as CloudFront;
-use \Model as Model;
-//use \BasicTool as BasicTool;
-use \Exception as Exception;
+
+use admin\aws\Aws\CloudFront as CloudFront;
 
 class S3Buckets {
     public static $TRANSCODED_BUCKET = "pocket.school.video.trans";
