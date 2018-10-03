@@ -1,5 +1,5 @@
 <?php
-$videoGuideClassId = 25;
+$videoGuideClassId = $arr["guide_class_id"];
 $relatedGuides = $guideModel->getListOfGuideByGuideClassId($videoGuideClassId,5);
 foreach ($relatedGuides as $index=>$guide){
     if ($guide["id"] == $guide_id){
